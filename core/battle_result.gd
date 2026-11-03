@@ -22,6 +22,7 @@ var attr_def: int = 0
 var atk_fusion: StringName = &""  # карты «Слияния» сторон
 var def_fusion: StringName = &""
 var plays: Array = []  # все карты боя по порядку: [[сторона, card_id], ...] (прикреплённые — первыми)
+var ability_counts: Array[int] = [0, 0] # расход лимита, включая карты ушедшего при подмене бойца
 var battle_plays: Array = []  # только карты обмена боя (без прикреплённых) — для предпросмотра ИИ
 var passed: Array[bool] = [false, false]  # предпросмотр: стороны, уже вышедшие из обмена (заполняет контроллер)
 var cancelled_plays: Array = []  # отменённые карты: [[сторона, card_id], ...]
@@ -43,6 +44,13 @@ var revive: Array[bool] = [false, false]  # «Возрождение»: посл
 var recall: Array[StringName] = [&"", &""]  # «Второе дыхание»: id карты, вернуть сыгранные способности стороны
 var marks: Array = []  # новые метки на следующий бой: [[uid, {"src", "delta"|"fix"}], ...] (контроллер вешает живым)
 var copies: Array = []  # «Отпечаток в камне»: [[сторона, id копии, id повторённой карты], ...]
+
+
+func ability_count(side: int) -> int:
+	var active := 0
+	for pl in plays:
+		if int(pl[0]) == side: active += 1
+	return maxi(ability_counts[side], active)
 
 
 func add(side: int, source: String, delta: int) -> void:

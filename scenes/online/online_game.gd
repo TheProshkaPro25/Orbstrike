@@ -314,7 +314,7 @@ func _apply_snapshot(data: Dictionary) -> void:
 			await director.battle_started(preview.slot,preview.attacker_uid,preview.defender_uid,preview.powers,preview.momentum)
 			if _closed or epoch != _connection_epoch: return
 		battle_hud.set_powers(preview.powers)
-		battle_hud.set_chain(preview.plays, preview.passed, 0 if _owner_of(preview.attacker_uid) == view.active_player else 1)
+		battle_hud.set_chain(preview.plays, preview.passed, 0 if _owner_of(preview.attacker_uid) == view.active_player else 1, preview.cancelled_plays, preview.ability_counts)
 	else:
 		battle_hud.close()
 		hud.set_battle_mode(false)

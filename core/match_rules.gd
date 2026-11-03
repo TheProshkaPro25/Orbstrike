@@ -1,5 +1,7 @@
 class_name MatchRules
 extends RefCounted
+
+const MAX_BATTLE_ABILITIES: int = 3
 ## Направление правил, не заявление о точном воспроизведении аниме.
 ## LEGACY сохраняет авторские бонусы прежней версии для сравнения и старых сценариев.
 enum Ruleset { ANIME_INSPIRED, LEGACY }

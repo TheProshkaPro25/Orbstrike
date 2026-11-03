@@ -844,7 +844,7 @@ func _on_battle_started(slot: int, attacker_uid: int, defender_uid: int) -> void
 	_log("Бой: %s против %s" % [_cname(attacker_uid), _cname(defender_uid)], UiTheme.GOLD)
 	events.push(_anim_battle_started.bind(slot, attacker_uid, defender_uid, pw, mo))
 	if pre != null:
-		events.push(battle_hud.set_chain.bind(pre.plays.duplicate(true), [false, false]))  # прикреплённые карты
+		events.push(battle_hud.set_chain.bind(pre.plays.duplicate(true), [false, false], -1, pre.cancelled_plays.duplicate(true), pre.ability_counts.duplicate()))  # прикреплённые карты
 
 
 func _on_card_revealed(slot: int, card_id: StringName) -> void:
@@ -865,7 +865,7 @@ func _on_ability_played(player: int, card_id: StringName) -> void:
 	var pw: Array = [pre.powers[0], pre.powers[1]] if pre != null else []
 	events.push(_anim_ability_msg.bind(player, card_id, false, pw))
 	if pre != null:
-		events.push(battle_hud.set_chain.bind(pre.plays.duplicate(true), pre.passed.duplicate()))
+		events.push(battle_hud.set_chain.bind(pre.plays.duplicate(true), pre.passed.duplicate(), -1, pre.cancelled_plays.duplicate(true), pre.ability_counts.duplicate()))
 
 
 func _on_ability_cancelled(player: int, card_id: StringName) -> void:
@@ -1561,7 +1561,7 @@ func _do_ability(player: int) -> void:
 	if preview == null:
 		push_error("Окно способностей без предпросмотра боя")
 		return
-	battle_hud.set_chain(preview.plays, preview.passed, 0 if _owner_of(preview.attacker_uid) == player else 1)
+	battle_hud.set_chain(preview.plays, preview.passed, 0 if _owner_of(preview.attacker_uid) == player else 1, preview.cancelled_plays, preview.ability_counts)
 	if player == HUMAN:
 		var entries: Array = []
 		for cid in ctrl.legal_abilities(HUMAN):

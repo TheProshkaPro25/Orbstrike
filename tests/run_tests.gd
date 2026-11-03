@@ -292,7 +292,7 @@ func _test_card_db() -> void:
 		per_attr[d.attribute] += 1
 	_check(per_attr.min() >= 3, "по 3+ существа каждой стихии: %s" % str(per_attr))
 	_check(CardDB.arena_ids().size() == 25, "25 карт ворот (7 стихии + 8 вида + 10 командных): %d" % CardDB.arena_ids().size())
-	_check(CardDB.ability_ids().size() == 48, "48 способностей (14 стихийных + 18 усилений + 16 видовых): %d" % CardDB.ability_ids().size())
+	_check(CardDB.ability_ids().size() == 54, "54 способности (20 стихийных + 18 усилений + 16 видовых): %d" % CardDB.ability_ids().size())
 	var counts: Dictionary = {}
 	for id in CardDB.arena_ids() + CardDB.ability_ids():
 		var c: CardDef = CardDB.card(id)

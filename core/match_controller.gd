@@ -21,11 +21,11 @@ const MAX_TURNS: int = 60
 const WIN_CAPTURES: int = 3
 const NUM_SLOTS: int = 6
 ## Предел карт способностей одного игрока в одном бою (прикреплённые к бойцу заранее тоже считаются).
-const MAX_BATTLE_ABILITIES: int = 3
+const MAX_BATTLE_ABILITIES: int = MatchRules.MAX_BATTLE_ABILITIES
 ## Перезарядка: сколько боёв после розыгрыша карта способности отдыхает, прежде чем вернуться в руку.
 const RECHARGE_BATTLES: int = 2
 ## Карты, которые и у последнего существа отдыхают полный срок (см. _recharge_abilities).
-const RESCUE_EFFECTS: Array[String] = ["ebb", "doom"]
+const RESCUE_EFFECTS: Array[String] = ["ebb", "doom", "revive", "copy"]
 
 signal phase_changed(phase: int, active_player: int)
 signal setup_requested(player: int)
@@ -297,20 +297,21 @@ func legal_abilities(player: int) -> Array[StringName]:
 	var own: Array = []
 	var limit_left: int = 0
 	var mom: StringName = &""
+	var battle_pre: BattleResult = null
 	match state.phase:
 		Phase.ABILITY_WINDOW:
 			var side: int = _b_turn
 			if _battle_player(side) != player or _b_passed[side]:
 				return out
 			var pre: BattleResult = PowerCalc.compute_seq(state, _b_atk, _b_def, _b_slot, _b_plays)
-			if pre.silenced[side]:
-				return out  # «Глухие врата» / «Глубинная тишь»: способности этой стороне запрещены
+			battle_pre = pre
+			if PowerCalc.side_locked(pre, side):
+				return out
 			uid = _b_atk if side == 0 else _b_def
 			for pl in PowerCalc.attached_plays(state, _b_atk, _b_def) + _b_plays:
 				if int(pl[0]) == side and not pre.cancelled_plays.has(pl):
 					own.append(pl[1])
-					if CardEffects.is_lockout(CardDB.card(StringName(pl[1]))):
-						return out  # «Кольца глубин»: после неё своя сторона не играет
+
 			limit_left = MAX_BATTLE_ABILITIES - _b_count[side]
 			mom = &"battle"
 		Phase.AWAIT_LANDING, Phase.AFTER_LANDING:
@@ -326,6 +327,8 @@ func legal_abilities(player: int) -> Array[StringName]:
 	for id in state.players[player].ability_hand:
 		var c: CardDef = CardDB.card(id)
 		if limit_left <= 0:
+			continue
+		if battle_pre != null and battle_pre.silenced[_b_turn] and not (c != null and bool(c.params.get("reactive", false)) and PowerCalc.reactive_allowed(battle_pre, _b_turn)):
 			continue
 		if _ability_legal(uid, id, own, mom):
 			out.append(id)
@@ -360,6 +363,10 @@ func _ability_requirement_reason(uid: int, id: StringName, own: Array, mom: Stri
 	if sp != &"" and cdef.species != sp:
 		return "Карта предназначена для другого вида существ"
 	var owner: int = state.creatures[uid].owner
+	if bool(c.params.get("reactive", false)) and mom == &"battle":
+		var pre := get_battle_preview()
+		if pre == null or not PowerCalc.reactive_allowed(pre, 0 if uid == _b_atk else 1):
+			return "Нужна уже действующая отменяемая основная карта соперника"
 	if mom == &"battle" and c.effect_id == &"boost" and c.params.get("cond", "") != "":
 		var foe: int = _b_def if uid == _b_atk else _b_atk
 		var fdef: CreatureDef = CardDB.creature(state.creatures[foe].def_id)
@@ -375,6 +382,8 @@ func _ability_requirement_reason(uid: int, id: StringName, own: Array, mom: Stri
 		"swap_fighter":
 			if PowerCalc.swap_candidate(state, owner, [_b_atk, _b_def]) < 0:
 				return "Нет другого живого существа для замены"
+			if PowerCalc.swap_candidate(state, owner, [_b_atk, _b_def], MAX_BATTLE_ABILITIES - _b_count[_b_turn] - 1) < 0:
+				return "Прикрепления замены превысят лимит трёх способностей на бой"
 		"shift_gate":
 			if PowerCalc.best_gate_swap(state, _b_atk, _b_def, _b_slot, _b_plays, _b_turn) < 0:
 				return "Нет подходящих свободных ворот для обмена"
@@ -396,14 +405,16 @@ func ability_unavailable_reason(player: int, id: StringName) -> String:
 		if _battle_player(side) != player or _b_passed[side]:
 			return "Дождитесь своего ответа в обмене способностями"
 		var pre := get_battle_preview()
-		if pre.silenced[side]:
+		var c := CardDB.card(id)
+		if pre.silenced[side] and not (c != null and bool(c.params.get("reactive", false)) and PowerCalc.reactive_allowed(pre, side)):
 			return "Способности запрещены действием ворот или карты соперника"
+		if PowerCalc.side_locked(pre, side):
+			return "Ваша карта или скопированный эффект запрещает дальнейшие способности в этом бою"
 		uid = _b_atk if side == 0 else _b_def
 		for pl in PowerCalc.attached_plays(state, _b_atk, _b_def) + _b_plays:
 			if int(pl[0]) == side and not pre.cancelled_plays.has(pl):
 				own.append(pl[1])
-				if CardEffects.is_lockout(CardDB.card(StringName(pl[1]))):
-					return "Ваша последняя карта запрещает дальнейшие способности в этом бою"
+
 		if _b_count[side] >= MAX_BATTLE_ABILITIES:
 			return "Лимит: не больше трёх способностей на бой"
 	elif state.phase in [Phase.AWAIT_LANDING, Phase.AFTER_LANDING]:
@@ -428,6 +439,7 @@ func get_battle_preview() -> BattleResult:
 	# до открытия ворот игрок знает только свою карту ворот
 	var v: MatchState = state.duplicate_view(state.active_player)
 	var r: BattleResult = PowerCalc.compute_seq(v, _b_atk, _b_def, _b_slot, _b_plays)
+	r.ability_counts.assign(_b_count)
 	r.passed = [_b_passed[0], _b_passed[1]]
 	return r
 
@@ -721,9 +733,11 @@ func _shift_gate(side: int) -> void:
 	if j < 0:
 		return
 	PowerCalc._swap_cards(state, _b_slot, j)
-	state.slots[_b_slot].revealed = true
 	_ev(&"gates_swapped", [_b_slot, j])
-	_ev(&"card_revealed", [_b_slot, state.slots[_b_slot].card_id])
+	if not state.slots[_b_slot].revealed:
+		_reveal_battle_gate()
+	else:
+		_ev(&"card_revealed", [_b_slot, state.slots[_b_slot].card_id])
 
 
 ## «Вихревая подмена»: боец стороны уходит в руку (прикреплённые карты остаются на нём), сильнейшее существо
@@ -731,7 +745,7 @@ func _shift_gate(side: int) -> void:
 func _swap_fighter(side: int) -> void:
 	var old: int = _b_atk if side == 0 else _b_def
 	var player: int = state.creatures[old].owner
-	var nu: int = PowerCalc.swap_candidate(state, player, [_b_atk, _b_def])
+	var nu: int = PowerCalc.swap_candidate(state, player, [_b_atk, _b_def], MAX_BATTLE_ABILITIES - _b_count[side])
 	if nu < 0:
 		return
 	var oc: CreatureState = state.creatures[old]
@@ -745,11 +759,8 @@ func _swap_fighter(side: int) -> void:
 		_b_atk = nu
 	oc.used = false
 	nc.used = false
-	var count: int = nc.attached.size()
-	for pl in _b_plays:
-		if int(pl[0]) == side:
-			count += 1
-	_b_count[side] = count
+	# Карты прежнего бойца уже участвовали и не освобождают лимит при замене.
+	_b_count[side] += nc.attached.size()
 	state.battle_context = BattleContext.duel(state, _b_atk, _b_def, _b_slot)
 	_ev(&"fighter_swapped", [old, nu, _b_slot])
 
@@ -962,6 +973,7 @@ func _open_window() -> void:
 func _resolve() -> void:
 	state.phase = Phase.RESOLVING
 	var r: BattleResult = PowerCalc.compute_seq(state, _b_atk, _b_def, _b_slot, _b_plays)
+	r.ability_counts.assign(_b_count)
 	var s: SlotState = state.slots[_b_slot]
 	var slot: int = _b_slot
 	var uids: Array[int] = [_b_atk, _b_def]
@@ -1093,7 +1105,7 @@ func _recharge_abilities() -> void:
 				attached.erase(id)
 				continue
 			var left: int = int(ps.ability_cooldown.get(id, RECHARGE_BATTLES + 1)) - 1
-			# карты-«спасатели» («Отлив», «Общая бездна») отдыхают всегда: иначе последнее существо уходило бы
+			# карты-«спасатели» и Копия отдыхают всегда: иначе последнее существо уходило бы
 			# от боя каждый ход или сводило матч к ничьей
 			if left <= 0 or (last_one and not RESCUE_EFFECTS.has(String(CardDB.card(id).effect_id))):
 				ps.ability_cooldown.erase(id)

@@ -22,7 +22,7 @@ args = parser.parse_args()
 if args.only and args.profile:
     parser.error('--only и --profile выбирают область разными способами; укажите один')
 MODELS = ['animation', 'support', 'flight', 'idle', 'stance', 'review-state', 'preparation-cache', 'preview-pool']
-RULES = ['campaign', 'tournament', 'rules', 'rules-edges', 'cards', 'card-balance', 'card-matches', 'card-scenarios', 'card-choices', 'ai', 'shot-physics']
+RULES = ['campaign', 'tournament', 'rules', 'rules-edges', 'cards', 'card-balance', 'card-matches', 'card-counters', 'card-scenarios', 'card-choices', 'card-audit-positions', 'ai', 'ai-gates', 'ai-outcomes', 'ai-rescue-matches', 'shot-physics']
 SCRIPTS = {
     'duel-exit': 'tests/duel_exit_tests.gd',
     'online-core': 'tests/online_core_tests.gd',
@@ -48,11 +48,14 @@ SCRIPTS = {
     'fighter-lighting': 'tests/fighter_lighting_tests.gd',
     'motion-bank': 'tests/motion_bank_review.gd',
     'character-editor': 'tests/character_editor_tests.gd',
-    'card-balance': 'tools/card_balance_probe.gd', 'card-matches': 'tools/card_balance_matches.gd', 'card-scenarios': 'tests/card_balance_scenarios.gd', 'card-choices': 'tools/card_choice_audit.gd',
+    'card-balance': 'tools/card_balance_probe.gd', 'card-matches': 'tools/card_balance_matches.gd', 'card-counters': 'tools/card_counter_probe.gd', 'card-scenarios': 'tests/card_balance_scenarios.gd', 'card-choices': 'tools/card_choice_audit.gd',
+    'card-audit-positions': 'tests/card_audit_balance_tests.gd', 'card-audit-balance': 'tools/card_audit_balance_probe.gd',
+    'battle-card-hover': 'tests/battle_card_hover_tests.gd',
     'cards': 'tests/card_revision_tests.gd', 'cards-ui': 'tests/card_readability_tests.gd',
     'menu-lighting': 'tools/menu_lighting_review.gd', 'sanctuary-mood': 'tools/sanctuary_mood_review.gd',
     'preview-pool': 'tests/preview_pool_tests.gd',
     'startup-loading': 'tools/startup_loading_review.gd', 'high-graphics': 'tools/high_graphics_review.gd', 'reveal-camera': 'tests/reveal_camera_tests.gd', 'window-lighting': 'tools/window_lighting_review.gd', 'turn-pool': 'tools/perf_turn_pool.gd', 'preparation-cache': 'tests/preparation_cache_tests.gd', 'sphere-pose': 'tests/sphere_pose_tests.gd', 'ability-input': 'tests/ability_input_tests.gd', 'shot-physics': 'tests/shot_physics_tests.gd', 'rules': 'tests/run_tests.gd', 'rules-edges': 'tests/rules_edge_tests.gd',
+    'ai-rescue-matches': 'tools/ai_rescue_probe.gd', 'ai-gates': 'tests/ai_gate_strategy_tests.gd', 'ai-outcomes': 'tests/ai_outcome_strategy_tests.gd',
     'ai': 'tests/ai_tactics_tests.gd', 'animation': 'tests/animation_tests.gd',
     'support': 'tests/support_tests.gd', 'flight': 'tests/flight_pose_tests.gd',
     'idle': 'tests/idle_loop_tests.gd', 'stance': 'tests/stance_frame_tests.gd',
@@ -62,11 +65,11 @@ SCRIPTS = {
 if args.profile == 'gameplay':
     plan = ['import', *RULES, 'online-core', 'online-messages', 'online-physics', 'online-ui', 'startup-loading', 'turn-pool', 'duel-exit', 'campaign-flow', 'tournament-flow', 'autoplay']
 elif args.profile == 'presentation':
-    plan = ['import', 'duel-exit', 'online-ui', 'online-disconnect', 'online-gate-result', 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'npc-appearance', 'hand-placement', 'campaign-ui', 'tournament-ui', 'menu-lighting', 'sanctuary-mood', 'shot-physics', 'sphere-pose', 'reveal-camera', 'ability-input', 'cards-ui', 'window-lighting', 'high-graphics', 'experience']
+    plan = ['import', 'duel-exit', 'online-ui', 'online-disconnect', 'online-gate-result', 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'npc-appearance', 'hand-placement', 'campaign-ui', 'tournament-ui', 'menu-lighting', 'sanctuary-mood', 'shot-physics', 'sphere-pose', 'reveal-camera', 'ability-input', 'battle-card-hover', 'cards-ui', 'window-lighting', 'high-graphics', 'experience']
 elif args.profile == 'models':
     plan = ['import', *MODELS]
 elif args.profile == 'full':
-    plan = ['import', *RULES, 'online-core', 'online-messages', 'online-physics', 'online-ui', *MODELS, 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'npc-appearance', 'hand-placement', 'campaign-ui', 'tournament-ui', 'gpu-core', 'menu-lighting', 'sanctuary-mood', 'sphere-pose', 'reveal-camera', 'ability-input', 'cards-ui', 'window-lighting', 'high-graphics', 'experience', 'startup-loading', 'turn-pool', 'duel-exit', 'campaign-flow', 'tournament-flow', 'autoplay']
+    plan = ['import', *RULES, 'online-core', 'online-messages', 'online-physics', 'online-ui', *MODELS, 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'npc-appearance', 'hand-placement', 'campaign-ui', 'tournament-ui', 'gpu-core', 'menu-lighting', 'sanctuary-mood', 'sphere-pose', 'reveal-camera', 'ability-input', 'battle-card-hover', 'cards-ui', 'window-lighting', 'high-graphics', 'experience', 'startup-loading', 'turn-pool', 'duel-exit', 'campaign-flow', 'tournament-flow', 'autoplay']
 elif args.only:
     plan = args.only
 else:
@@ -75,6 +78,10 @@ else:
         plan += MODELS
     if args.visual:
         plan += ['gpu-core', 'ability-input', 'experience', 'autoplay']
+# Статистический аудит запускается лишь явно: не добавлять 400 матчей к обычной
+# проверке gameplay/full после каждого изменения правил.
+if args.profile in ['gameplay', 'full'] and args.checks and 'card-audit-balance' in args.checks:
+    plan.append('card-audit-balance')
 if args.checks:
     unknown = set(args.checks) - set(plan)
     if unknown:
@@ -120,7 +127,7 @@ for name in plan:
     if name == 'import':
         command += ['--headless', '--editor', '--import']
     else:
-        graphics = name in ['duel-exit', 'online-ui', 'online-disconnect', 'online-gate-result', 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'cards-ui', 'menu-lighting', 'sanctuary-mood', 'startup-loading', 'experience', 'autoplay', 'gpu-core', 'ability-input', 'window-lighting', 'high-graphics', 'turn-pool', 'campaign-flow', 'campaign-flow', 'tournament-flow', 'tournament-ui', 'hand-placement', 'npc-appearance', 'campaign-ui'] or (name in MODELS and (args.visual or args.profile == 'full'))
+        graphics = name in ['duel-exit', 'online-ui', 'online-disconnect', 'online-gate-result', 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'battle-card-hover', 'cards-ui', 'menu-lighting', 'sanctuary-mood', 'startup-loading', 'experience', 'autoplay', 'gpu-core', 'ability-input', 'window-lighting', 'high-graphics', 'turn-pool', 'campaign-flow', 'campaign-flow', 'tournament-flow', 'tournament-ui', 'hand-placement', 'npc-appearance', 'campaign-ui'] or (name in MODELS and (args.visual or args.profile == 'full'))
         if not graphics:
             command += ['--headless']
         script = SCRIPTS[name]
@@ -142,12 +149,22 @@ for name in plan:
             command += ['--', str(OUT/'startup-loading')]
         elif name == 'experience':
             command += ['--', str(OUT/'experience')]
+        elif name == 'battle-card-hover':
+            command += ['--', str(OUT/'battle-card-hover')]
         elif name == 'cards-ui':
             command += ['--', str(OUT/'cards-ui')]
         elif name == 'card-balance':
             command += ['--', str(OUT/'card-balance.json')]
+        elif name in ['card-audit-positions', 'card-audit-balance']:
+            command += ['--', str(OUT/(name + '.json'))]
         elif name == 'card-matches':
             command += ['--', str(OUT/'card-balance-matches.json')]
+        elif name == 'card-counters':
+            command += ['--', str(OUT/'card-counters.json')]
+        elif name == 'ai-rescue-matches':
+            command += ['--', str(OUT/'ai-rescue-matches.json')]
+        elif name == 'ai-outcomes':
+            command += ['--', str(OUT/'ai-outcomes.json')]
         elif name == 'card-scenarios':
             command += ['--', str(OUT/'card-balance-scenarios.json')]
         elif name == 'card-choices':
@@ -159,7 +176,8 @@ for name in plan:
             command += ['--', str(OUT/'window-lighting')]
         elif name == 'turn-pool':
             command += ['--', str(OUT/'turn-pool-timings.json')]
-    run(name, command, 600 if name in MODELS or name in ['autoplay', 'tournament-flow', 'online-ui'] else 360)
+    timeout = 1200 if name == 'card-audit-balance' else (600 if name in MODELS or name in ['autoplay', 'tournament-flow', 'online-ui'] else 360)
+    run(name, command, timeout)
 
 # Явные профили имеют собственную свежую сводку; результаты разных областей не смешиваются.
 if args.only:

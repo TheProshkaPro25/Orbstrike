@@ -71,7 +71,7 @@ static func preview(result: BattleResult) -> Dictionary:
 		data[key] = value.duplicate(true) if value is Array or value is Dictionary else value
 	return data
 
-const BATTLE_FIELDS := ["slot", "attacker_uid", "defender_uid", "winner_uid", "loser_uid", "powers", "breakdown", "atk_ability", "def_ability", "atk_cancelled", "def_cancelled", "arena_card_id", "arena_cancelled", "attr_atk", "attr_def", "atk_fusion", "def_fusion", "plays", "battle_plays", "passed", "cancelled_plays", "trap_id", "sealed", "mirrored", "final_round", "momentum", "gate_effect", "gate_owner_side", "silenced", "interrupted", "relocate_uid", "relocate_to", "both_lose", "winner_stays", "auto_win", "revive", "recall", "marks", "copies"]
+const BATTLE_FIELDS := ["slot", "attacker_uid", "defender_uid", "winner_uid", "loser_uid", "powers", "breakdown", "atk_ability", "def_ability", "atk_cancelled", "def_cancelled", "arena_card_id", "arena_cancelled", "attr_atk", "attr_def", "atk_fusion", "def_fusion", "plays", "ability_counts", "battle_plays", "passed", "cancelled_plays", "trap_id", "sealed", "mirrored", "final_round", "momentum", "gate_effect", "gate_owner_side", "silenced", "interrupted", "relocate_uid", "relocate_to", "both_lose", "winner_stays", "auto_win", "revive", "recall", "marks", "copies"]
 
 static func decode_battle(data: Dictionary, view: MatchState = null) -> BattleResult:
 	if data.is_empty(): return null
@@ -168,6 +168,9 @@ static func valid_battle(data: Variant) -> bool:
 		if not _array(data[key],2,2): return false
 		for value in data[key]:
 			if not _int(value,-100000,100000): return false
+	if not _array(data.ability_counts,2,2): return false
+	for value in data.ability_counts:
+		if not _int(value,0,MatchRules.MAX_BATTLE_ABILITIES): return false
 	for key in ["passed","silenced","revive"]:
 		if not _array(data[key],2,2): return false
 		for value in data[key]:

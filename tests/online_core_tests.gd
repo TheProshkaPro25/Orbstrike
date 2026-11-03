@@ -89,9 +89,11 @@ func _test_codec() -> void:
 	battle.defender_uid = 3
 	battle.atk_ability = &"ability_test"
 	battle.plays = [[0, &"ability_test"]]
+	battle.ability_counts = [3, 1]
 	battle.breakdown = [{"side": 0, "source": "base", "delta": 410}]
 	var restored := Codec.decode_battle(JSON.parse_string(JSON.stringify(Codec.preview(battle))), ctrl.get_view(0))
 	check(restored.powers == battle.powers and restored.atk_ability == battle.atk_ability, "battle typed fields roundtrip")
+	check(restored.ability_counts == [3, 1], "spent card counts roundtrip independently from active plays")
 	check(restored.context != null and restored.context.participants.size() == 2, "battle public context reconstructed")
 
 func _test_server() -> void:
@@ -143,6 +145,37 @@ func _test_server() -> void:
 	# Explicit core fixture endpoint is internal only; network schema rejects it above.
 	ctrl.report_landing(0, slot)
 	check(ctrl.get_selected_uid() == -1, "internal authoritative landing advances rules")
+	# Расход включает прикрепления ушедшего при подмене бойца, которых уже нет в plays.
+	ctrl._start_battle(3, 0, slot)
+	ctrl._b_plays = [[0, &"ability_tide_hush"]]
+	ctrl._b_count = [3, 1]
+	server._states(room)
+	for peer in [1, 2]:
+		var wire := server.last(peer, "state")
+		check(wire.preview.ability_counts == [3, 1], "masked recipient preview retains authoritative spent counts")
+		check(Codec.valid_battle(JSON.parse_string(JSON.stringify(wire.preview))), "new counted preview passes strict wire validation")
+	# Новая реакция: сервер разрешает ответ Тиши только своей стороне и рассылает один итог.
+	ctrl._b_atk = 0
+	ctrl._b_def = 3
+	ctrl.state.battle_context = BattleContext.duel(ctrl.state, 0, 3, slot)
+	ctrl._b_plays = [[1, &"ability_tide_hush"]]
+	ctrl._b_count = [0, 1]
+	ctrl._b_turn = 0
+	ctrl._b_passed = [false, false]
+	ctrl.state.phase = MatchController.Phase.ABILITY_WINDOW
+	ctrl.state.active_player = 0
+	ctrl.state.players[0].ability_hand = [&"ability_fire_counter", &"ability_fire_assault"]
+	ctrl.state.players[1].ability_hand = [&"ability_tide_spray"]
+	server._states(room)
+	check(server.last(1, "state").legal.abilities.has(&"ability_fire_counter"), "server offers reactive answer to silence")
+	server._handle(2, {"t": "action", "command": "ability", "args": {"card": "ability_fire_counter"}})
+	check(ctrl._b_plays.size() == 1 and ctrl.state.players[0].ability_hand.has(&"ability_fire_counter"), "wrong seat cannot spend reaction")
+	server._handle(1, {"t": "action", "command": "ability", "args": {"card": "ability_fire_counter"}})
+	check(ctrl._b_plays.has([0, &"ability_fire_counter"]) and ctrl._b_count[0] == 1, "server applies reaction once within shared limit")
+	for peer in [1, 2]:
+		var wire := server.last(peer, "state")
+		check(wire.preview.cancelled_plays.has([1, &"ability_tide_hush"]) and not wire.preview.silenced[0], "both recipients see cancelled silence")
+		check(Codec.valid_battle(JSON.parse_string(JSON.stringify(wire.preview))), "reactive preview passes strict wire validation")
 	ctrl._end_game(0, &"fixture")
 	var old_physics: Node = room.physics
 	server._handle(1, {"t": "rematch"})

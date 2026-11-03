@@ -14,7 +14,7 @@ static func is_effect(card: CardDef, effect: StringName) -> bool:
 	return card != null and card.effect_id == effect
 
 
-## Отмена способности соперника («Волчья хватка»).
+## Отмена способности соперника: «Волчья хватка» или стихийная ответная отмена.
 static func is_negate(card: CardDef) -> bool:
 	return card != null and card.effect_id == &"negate"
 

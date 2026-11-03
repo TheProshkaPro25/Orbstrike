@@ -20,6 +20,8 @@ var _bg: ColorRect
 var _mat: ShaderMaterial
 var _title: Label
 var _kind: Label
+var _role: Label
+var _rule: Label
 var _text: Label
 var _power: Label
 var _lift_tw: Tween
@@ -58,6 +60,9 @@ func _build() -> void:
 
 	_title = _mk_label(title_font())
 	_kind = _mk_label(null)
+	_role = _mk_label(title_font())
+	_role.clip_text = true
+	_rule = _mk_label(null)
 	_text = _mk_label(null)
 	_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -71,6 +76,9 @@ func _mk_label(font: Font) -> Label:
 	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	l.clip_text = false
+	# Не дать первичному минимуму системного 16px раздуть будущую компактную плашку.
+	l.add_theme_font_size_override("font_size", 9)
+	l.add_theme_constant_override("shadow_outline_size", 0)
 	if font != null:
 		l.add_theme_font_override("font", font)
 	l.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.02, 0.95))
@@ -96,9 +104,9 @@ static func layout(aspect: float, with_text: bool, short_text: bool = false) -> 
 		return {
 			"title": Rect2(0.075, 0.05, 0.85, 0.14),
 			"kind_y": 0.2,
-			"win": Vector3(0.5, 0.555, 0.232),
-			"plaque": Vector4(0.5, 0.85, 0.2, 0.056),
-			"text": Rect2(0.075, 0.85, 0.85, aspect - 0.85 - 0.055),
+			"win": Vector3(0.5, 0.455, 0.165),
+			"plaque": Vector4(0.5, 0.60, 0.2, 0.056),
+			"text": Rect2(0.065, 0.77, 0.87, aspect - 0.77 - 0.055),
 		}
 	return {
 		"title": Rect2(0.07, 0.05, 0.86, 0.165),
@@ -195,6 +203,8 @@ static func power_font() -> FontVariation:
 ## short_text — мало текста (карта существа): крупнее окно.
 func setup(title: String, kind: String, text: String, _foot: String, base: Color, glow: Color, size_px: Vector2 = Vector2(150, 210), short_text: bool = false) -> CardView:
 	_card_size = size_px
+	_role.visible = false
+	_rule.visible = false
 	_glow = glow
 	custom_minimum_size = size_px
 	_inner.size = size_px
@@ -202,6 +212,10 @@ func setup(title: String, kind: String, text: String, _foot: String, base: Color
 	var aspect: float = size_px.y / size_px.x
 	var with_text: bool = w >= 112.0
 	_lay = layout(aspect, with_text, short_text)
+	# Только 2D-компакт: оставить место для роли. Общая layout(false) нужна воротам арены.
+	if not with_text:
+		_lay["win"] = Vector3(0.5, aspect * 0.5 - 0.03, 0.235)
+		_lay["plaque"] = Vector4(0.5, aspect - 0.28, 0.23, 0.072)
 	var m: float = MARGIN * w
 	_bg.position = Vector2(-m, -m)
 	_bg.size = size_px + Vector2(m, m) * 2.0
@@ -232,16 +246,16 @@ func setup(title: String, kind: String, text: String, _foot: String, base: Color
 
 	_kind.text = kind.to_upper()
 	_kind.visible = with_text and kind != ""
-	_kind.add_theme_font_size_override("font_size", maxi(7, int(w * 0.056)))
+	_kind.add_theme_font_size_override("font_size", maxi(9, int(w * 0.062)))
 	_kind.add_theme_color_override("font_color", glow.lerp(Color.WHITE, 0.45))
 	_kind.add_theme_constant_override("outline_size", 3)
 	if _kind.visible:
 		var kw: float = w * 0.8
 		var ky: float = float(_lay["kind_y"]) * w
-		var kf: Dictionary = fit_title(_kind.get_theme_font("font"), _kind.text, int(w * 0.056), kw, w * 0.06)
+		var kf: Dictionary = fit_title(_kind.get_theme_font("font"), _kind.text, maxi(9, int(w * 0.062)), kw, w * 0.075)
 		_kind.text = String(kf["text"]).replace("\n", " ")
 		_kind.add_theme_font_size_override("font_size", int(kf["fs"]))
-		_kind.size = Vector2(kw / float(kf["sx"]), w * 0.06)
+		_kind.size = Vector2(kw / float(kf["sx"]), w * 0.075)
 		_kind.pivot_offset = _kind.size * 0.5
 		_kind.scale = Vector2(float(kf["sx"]), 1.0)
 		_kind.position = Vector2(w * 0.5, ky + w * 0.03) - _kind.size * 0.5
@@ -250,15 +264,42 @@ func setup(title: String, kind: String, text: String, _foot: String, base: Color
 	_text.text = text
 	_text.visible = with_text
 	_text.add_theme_color_override("font_color", Color(0.93, 0.91, 0.86))
-	_text.add_theme_constant_override("outline_size", 2)
-	_text.add_theme_constant_override("line_spacing", -2)
+	_text.add_theme_constant_override("outline_size", 1)
+	_text.add_theme_constant_override("line_spacing", -1)
 	if with_text:
-		_text.position = Vector2(xr.position.x + 0.035, xr.position.y + 0.065) * w
-		_text.size = Vector2(xr.size.x - 0.07, xr.size.y - 0.08) * w
-		_fit(_text, int(w * 0.078), 7, _text.size.x, _text.size.y)
+		_text.position = Vector2(xr.position.x + 0.025, xr.position.y + 0.025) * w
+		_text.size = Vector2(xr.size.x - 0.05, xr.size.y - 0.05) * w
+		_fit(_text, maxi(11, int(w * 0.082)), 10, _text.size.x, _text.size.y)
 	tooltip_text = "%s\n%s" % [title, text]
 	_power.visible = false
 	return self
+
+
+## Роль читается и у компактных ворот, условия — над знаком на полной карте.
+## Это краткая навигация: исходный текст и подробная подсказка сохраняют точные правила.
+func _set_mechanics(role: String, rule: String, color: Color) -> void:
+	var w := _card_size.x
+	var full := w >= 112.0
+	_role.visible = not role.is_empty()
+	_role.text = role.to_upper()
+	_role.position = Vector2(w * 0.08, w * 0.675 if full else _card_size.y - w * 0.16)
+	_role.add_theme_font_size_override("font_size", maxi(9, int(w * 0.065)))
+	_role.add_theme_color_override("font_color", color.lightened(0.35))
+	_role.add_theme_constant_override("outline_size", 1)
+	_role.add_theme_constant_override("shadow_outline_size", 0)
+	_role.add_theme_stylebox_override("normal", UiTheme.box(Color(0.025, 0.035, 0.06, 0.97), Color(color, 0.65), 1, 3, 0))
+	var role_box := Vector2(w * 0.84, maxf(13.0, w * 0.075))
+	_fit(_role, maxi(9, int(w * 0.065)), 8, role_box.x - 4, role_box.y)
+	_role.size = role_box
+	_role.set_deferred("size", role_box)
+	_rule.visible = full and not rule.is_empty()
+	_rule.text = rule.to_upper()
+	_rule.position = Vector2(w * 0.08, w * 0.275)
+	_rule.add_theme_color_override("font_color", Color(0.98, 0.91, 0.7))
+	_rule.add_theme_constant_override("outline_size", 2)
+	var rule_box := Vector2(w * 0.84, maxf(11.0, w * 0.07))
+	_fit(_rule, maxi(8, int(w * 0.057)), 8, rule_box.x, rule_box.y)
+	_rule.size = rule_box
 
 
 ## Название в прямоугольнике плашки r (px): отступ под заострённые концы, подбор кегля/строк/ужатия.
@@ -266,11 +307,29 @@ func _place_title(l: Label, text: String, r: Rect2, max_fs: int) -> void:
 	var inset: float = r.size.y * 0.42
 	var aw: float = r.size.x - inset * 2.0
 	var ah: float = r.size.y * 0.96
+	if _card_size.x < 112.0:
+		# В маленькой руке сохраняем читаемый кегль: длинное имя сокращается,
+		# полное имя остаётся в hover. Ни ужатия до 6px, ни выхода за плашку.
+		l.clip_text = true
+		l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		l.text = text
+		l.add_theme_font_size_override("font_size", maxi(10, max_fs))
+		l.add_theme_constant_override("outline_size", 1)
+		l.add_theme_constant_override("shadow_outline_size", 0)
+		l.scale = Vector2.ONE
+		l.pivot_offset = Vector2.ZERO
+		l.position = r.position + Vector2(inset, 0)
+		l.size = Vector2(aw, ah)
+		l.set_deferred("size", Vector2(aw, ah))
+		return
+	l.clip_text = false
+	l.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 	var f: Dictionary = fit_title(l.get_theme_font("font"), text, max_fs, aw, ah)
 	l.text = f["text"]
 	l.add_theme_font_size_override("font_size", int(f["fs"]))
 	var sx: float = float(f["sx"])
 	l.size = Vector2(aw / sx, ah)
+	l.set_deferred("size", Vector2(aw / sx, ah))
 	l.pivot_offset = l.size * 0.5
 	l.scale = Vector2(sx, 1.0)
 	l.position = r.get_center() - l.size * 0.5
@@ -348,9 +407,10 @@ func for_card(def: CardDef, size_px: Vector2 = Vector2(150, 210)) -> CardView:
 	card_id = def.id
 	_help = UiTheme.card_help(def)
 	var cols: Array = UiTheme.card_colors(def)
-	setup(def.display_name, UiTheme.card_kind(def), def.text, "", cols[0], cols[1], size_px)
+	setup(def.display_name, UiTheme.card_kind(def), UiTheme.card_face_text(def), "", cols[0], cols[1], size_px)
 	set_frame(UiTheme.card_frame(def), UiTheme.card_tier(def))
 	set_elements(UiTheme.card_elements(def))
+	_set_mechanics(UiTheme.card_role(def), UiTheme.card_rule_tag(def), UiTheme.card_role_color(def))
 	return set_mark(UiTheme.card_sigil(def), UiTheme.card_badge(def), cols[1])
 
 
@@ -375,7 +435,7 @@ func set_dimmed(on: bool, readable: bool = false) -> void:
 	_dimmed = on
 	disabled = on
 	_mat.set_shader_parameter("dim", (0.38 if readable else 0.75) if on else 0.0)
-	for l in [_title, _kind, _text, _power]:
+	for l in [_title, _kind, _role, _rule, _text, _power]:
 		(l as Label).self_modulate = Color(0.76, 0.76, 0.76) if on and readable else (Color(0.55, 0.55, 0.55) if on else Color.WHITE)
 	if on:
 		_set_hover(0.0)

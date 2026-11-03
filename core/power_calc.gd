@@ -2,7 +2,7 @@ class_name PowerCalc
 extends RefCounted
 ## Детерминированный расчёт силы боя. Способности — упорядоченный список розыгрышей plays = [[сторона, card_id], ...]
 ## (сторона 0 = атакующий, 1 = защитник), в который сначала входят прикреплённые к бойцам карты (по времени розыгрыша),
-## затем карты, сыгранные в обмене боя. Состояние не изменяется (пробные перестановки возвращаются на место).
+## затем карты, сыгранные в обмене боя. Исходное состояние не изменяется: пробные перестановки выполняются на копиях.
 ## Набор карт — DESIGN.md «Карты по мотивам аниме (2026-10-28)».
 ##
 ## Порядок шагов:
@@ -10,7 +10,9 @@ extends RefCounted
 ##    (как стопка): отменяет последнюю действующую основную карту соперника ДО себя, а если такой нет — первую
 ##    следующую (кроме отмены); карты с «нельзя отменить» (sure) и мгновенные не трогает. «Глубинная тишь» гасит все
 ##    следующие за ней карты соперника (кроме sure). Слияние без действующей основной карты не действует.
-##    «Отпечаток в камне» повторяет последнюю действующую карту соперника (иначе — первую следующую).
+##    Источники отмен/Тиши разрешаются устойчиво: подавленная отмена не оставляет эффект. Новая reactive-отмена
+##    выбирает только уже действующую предыдущую цель. «Отпечаток в камне» повторяет последнюю действующую
+##    карту соперника (иначе — первую следующую).
 ## 1. БС. 3. Ворота: «Каменный взгляд» (любые, кроме ворот вида), «Очищающий луч» / «Затмение врат» (ворота соперника)
 ##    отменяют ворота; «Взор с высоты» не даёт воротам усилить соперника.
 ## 5. Преимущество стихии +60 (финальный раунд ×2), «Натиск» и метки на этот бой.
@@ -64,6 +66,7 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 	var plays: Array = attached_plays(state, atk_uid, def_uid)
 	plays.append_array(battle_plays)
 	r.plays = plays.duplicate(true)
+	for pl in plays: r.ability_counts[int(pl[0])] += 1
 	r.battle_plays = battle_plays.duplicate(true)
 
 	var uids: Array[int] = [atk_uid, def_uid]
@@ -104,33 +107,10 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 		else:
 			main_of.append(-1)
 			last_main[sd] = k
-	var cancelled: Array[bool] = []
+	var cancelled: Array[bool] = _resolve_cancellations(cards, sides, muted)
 	for k in range(n):
-		cancelled.append(cards[k] == null or sides[k] == muted)
-	for k in range(n - 1, -1, -1):
-		if cancelled[k] or not CardEffects.is_negate(cards[k]):
-			continue
-		var foe: int = 1 - sides[k]
-		var target: int = -1
-		for j in range(k - 1, -1, -1):
-			if sides[j] == foe and not cancelled[j] and _negatable(cards[j]):
-				target = j
-				break
-		if target < 0:
-			for j in range(k + 1, n):
-				if sides[j] == foe and not cancelled[j] and _negatable(cards[j]) and not CardEffects.is_negate(cards[j]):
-					target = j
-					break
-		if target >= 0:
-			cancelled[target] = true
-	for k in range(n):
-		if cancelled[k] or not CardEffects.is_effect(cards[k], &"silence"):
-			continue
-		var foe2: int = 1 - sides[k]
-		r.silenced[foe2] = true
-		for j in range(k + 1, n):
-			if sides[j] == foe2 and not cancelled[j] and not CardEffects.is_sure(cards[j]):
-				cancelled[j] = true
+		if not cancelled[k] and CardEffects.is_effect(cards[k], &"silence"):
+			r.silenced[1 - sides[k]] = true
 	# слияние без действующей основной карты не действует
 	for k in range(n):
 		if CardEffects.is_fusion(cards[k]) and not cancelled[k]:
@@ -505,12 +485,12 @@ static func gust_target(state: MatchState, player: int) -> int:
 
 
 ## «Вихревая подмена»: сильнейшее существо игрока в руке или в зоне использованных (не на воротах), кроме exclude.
-static func swap_candidate(state: MatchState, player: int, exclude: Array) -> int:
+static func swap_candidate(state: MatchState, player: int, exclude: Array, max_attached: int = -1) -> int:
 	var best: int = -1
 	var best_pw: int = -1
 	for u in state.players[player].creature_uids:
 		var c: CreatureState = state.creatures[u]
-		if not c.alive or c.slot >= 0 or exclude.has(u):
+		if not c.alive or c.slot >= 0 or exclude.has(u) or (max_attached >= 0 and c.attached.size() > max_attached):
 			continue
 		var pw: int = CardDB.creature(c.def_id).base_power
 		if pw > best_pw:
@@ -534,13 +514,11 @@ static func best_gate_swap(state: MatchState, atk_uid: int, def_uid: int, slot: 
 		var c: CardDef = CardDB.card(s.card_id)
 		if c == null or CardEffects.is_gate_trap(c):
 			continue
-		_swap_cards(state, slot, j)
-		# Сдвиг сам открывает новые ворота: сравнивать их действующие бонусы.
-		var was_revealed: bool = state.slots[slot].revealed
-		state.slots[slot].revealed = true
-		var r: BattleResult = compute_seq(state, atk_uid, def_uid, slot, with_shift)
-		state.slots[slot].revealed = was_revealed
-		_swap_cards(state, slot, j)
+		var candidate := state.duplicate_full()
+		_swap_cards(candidate, slot, j)
+		# Открытие «Зова павших» меняет условия last/behind/fallen уже в этом бою.
+		var opened := preview_open_gate(candidate, slot)
+		var r: BattleResult = compute_seq(opened, atk_uid, def_uid, slot, with_shift)
 		var m: int = r.powers[side] - r.powers[1 - side]
 		var own_uid: int = atk_uid if side == 0 else def_uid
 		# Исход важнее числового перевеса; при равном исходе — больший перевес, затем первый слот.
@@ -567,9 +545,32 @@ static func _swap_cards(state: MatchState, a: int, b: int) -> void:
 	sb.revealed = t_rev
 
 
+## Копия после открытия ворот: учитывает немедленное воскрешение, не трогая исходное состояние.
+## Уже открытый «Зов павших» повторно не воскрешает при перемещении карты.
+static func preview_open_gate(state: MatchState, slot: int) -> MatchState:
+	var opened := state.duplicate_full()
+	var gate := opened.slots[slot]
+	if gate.revealed:
+		return opened
+	gate.revealed = true
+	if CardEffects.is_effect(CardDB.card(gate.card_id), &"fallen_call"):
+		for cs in opened.creatures.values():
+			if not cs.alive:
+				cs.alive = true
+				cs.used = true
+				cs.slot = -1
+	return opened
+
+
 ## Предпросмотр: сторона side играет card_id следующей картой обмена (учитывает мгновенные «Сдвиг плит» и
 ## «Вихревую подмену» на копии состояния). Для ИИ.
-static func compute_with(state: MatchState, atk_uid: int, def_uid: int, slot: int, battle_plays: Array, side: int, card_id: StringName) -> BattleResult:
+static func compute_with(state: MatchState, atk_uid: int, def_uid: int, slot: int, battle_plays: Array, side: int, card_id: StringName, spent_counts: Array = []) -> BattleResult:
+	var counts: Array = spent_counts.duplicate()
+	if counts.is_empty():
+		counts = [0, 0]
+		for pl in attached_plays(state, atk_uid, def_uid) + battle_plays:
+			counts[int(pl[0])] += 1
+	counts[side] += 1
 	var bp: Array = battle_plays.duplicate(true)
 	bp.append([side, card_id])
 	var c: CardDef = CardDB.card(card_id)
@@ -578,11 +579,10 @@ static func compute_with(state: MatchState, atk_uid: int, def_uid: int, slot: in
 		if j >= 0:
 			var v: MatchState = state.duplicate_full()
 			_swap_cards(v, slot, j)
-			v.slots[slot].revealed = true
-			return compute_seq(v, atk_uid, def_uid, slot, bp)
+			return _counted_result(compute_seq(preview_open_gate(v, slot), atk_uid, def_uid, slot, bp), counts)
 	elif CardEffects.is_effect(c, &"swap_fighter"):
 		var player: int = state.creatures[atk_uid if side == 0 else def_uid].owner
-		var nu: int = swap_candidate(state, player, [atk_uid, def_uid])
+		var nu: int = swap_candidate(state, player, [atk_uid, def_uid], maxi(0, MatchRules.MAX_BATTLE_ABILITIES - int(counts[side])))
 		if nu >= 0:
 			var v2: MatchState = state.duplicate_full()
 			var old: int = atk_uid if side == 0 else def_uid
@@ -590,5 +590,95 @@ static func compute_with(state: MatchState, atk_uid: int, def_uid: int, slot: in
 				v2.creatures[old].slot = -1
 				v2.creatures[nu].slot = slot
 				v2.slots[slot].occupant_uid = nu
-			return compute_seq(v2, nu if side == 0 else atk_uid, nu if side == 1 else def_uid, slot, bp)
-	return compute_seq(state, atk_uid, def_uid, slot, bp)
+			counts[side] += state.creatures[nu].attached.size()
+			return _counted_result(compute_seq(v2, nu if side == 0 else atk_uid, nu if side == 1 else def_uid, slot, bp), counts)
+	return _counted_result(compute_seq(state, atk_uid, def_uid, slot, bp), counts)
+
+
+static func _counted_result(result: BattleResult, counts: Array) -> BattleResult:
+	result.ability_counts.assign(counts)
+	return result
+
+
+## Отмена принадлежит источнику: подавленная отмена не оставляет последствия.
+## До шести карт в обычном бою. Перебираются только состояния источников отмен/Тиши,
+## выбирая устойчивое разрешение; поздняя отмена приоритетнее подавления самой себя.
+## Это сохраняет ответ «Хватка отменяет Тишь», не сохраняя отмену подавленной Хватки.
+static func _resolve_cancellations(cards: Array[CardDef], sides: Array[int], muted: int) -> Array[bool]:
+	var sources: Array[int] = []
+	for effect in [&"silence", &"negate"]:
+		for k in cards.size():
+			if cards[k] != null and cards[k].effect_id == effect and sides[k] != muted:
+				sources.append(k)
+	var base: Array[bool] = []
+	for k in cards.size():
+		base.append(cards[k] == null or sides[k] == muted)
+	for mask in range((1 << sources.size()) - 1, -1, -1):
+		var enabled: Array[bool] = []
+		enabled.resize(cards.size())
+		for bit in sources.size():
+			enabled[sources[bit]] = bool(mask & (1 << bit))
+		var cancelled: Array[bool] = base.duplicate()
+		# Цель отмены должна быть действующей и после подавления активной Тишью.
+		# Состояния источников ещё проверяются ниже: отмена самой Тиши сохраняется.
+		for k in cards.size():
+			if not enabled[k] or not CardEffects.is_effect(cards[k], &"silence"):
+				continue
+			for j in range(k + 1, cards.size()):
+				if sides[j] != sides[k] and not CardEffects.is_sure(cards[j]):
+					cancelled[j] = true
+		for k in range(cards.size() - 1, -1, -1):
+			if not enabled[k] or not CardEffects.is_negate(cards[k]):
+				continue
+			var target := _negate_target(cards, sides, cancelled, k)
+			if target >= 0:
+				cancelled[target] = true
+		var stable := true
+		for k in sources:
+			if enabled[k] == cancelled[k]:
+				stable = false
+				break
+		if stable:
+			return cancelled
+	push_error("Невозможно разрешить зависимости отмен: " + str(cards))
+	return base
+
+
+static func _negate_target(cards: Array[CardDef], sides: Array[int], cancelled: Array[bool], k: int) -> int:
+	for j in range(k - 1, -1, -1):
+		if sides[j] != sides[k] and not cancelled[j] and _negatable(cards[j]):
+			return j
+	if not bool(cards[k].params.get("reactive", false)):
+		for j in range(k + 1, cards.size()):
+			if sides[j] != sides[k] and not cancelled[j] and _negatable(cards[j]) and not CardEffects.is_negate(cards[j]):
+				return j
+	return -1
+
+
+## Последняя уже действующая основная карта соперника — единственная цель новой реакции.
+static func reactive_target(r: BattleResult, side: int) -> CardDef:
+	for k in range(r.plays.size() - 1, -1, -1):
+		var pl: Array = r.plays[k]
+		var c := CardDB.card(StringName(pl[1]))
+		if int(pl[0]) != side and not r.cancelled_plays.has(pl) and _negatable(c):
+			return c
+	return null
+
+
+## Новая реакция обходит только запрет той Тиши, которую сама отменяет; ворота не обходит.
+static func reactive_allowed(r: BattleResult, side: int) -> bool:
+	var target := reactive_target(r, side)
+	if target == null or (r.sealed and r.gate_owner_side == 1 - side):
+		return false
+	return not r.silenced[side] or target.effect_id == &"silence"
+
+
+## Копируется контракт эффекта: запрет дальнейших карт действует и у Копии.
+static func side_locked(r: BattleResult, side: int) -> bool:
+	for pl in r.plays:
+		if int(pl[0]) == side and not r.cancelled_plays.has(pl) and CardEffects.is_lockout(CardDB.card(StringName(pl[1]))):
+			return true
+	for cp in r.copies:
+		if int(cp[0]) == side and CardEffects.is_lockout(CardDB.card(StringName(cp[2]))):
+			return true
+	return false

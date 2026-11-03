@@ -8,7 +8,7 @@ const COMMANDS := ["place_gate", "skip_gate", "select", "launch", "ability", "pa
 
 static func content_tag() -> String:
 	# Bump online-rules when a rule or physics implementation changes independently of data.
-	return JSON.stringify(["online-rules-1", GameData.SPECIES, GameData.CARDS,
+	return JSON.stringify(["online-rules-3", GameData.SPECIES, GameData.CARDS,
 		GameData.ATTR_POWER_SHIFT, GameData.TEAM_POWER_LIMIT]).sha256_text()
 
 static func integer(value: Variant, low: int, high: int) -> bool:

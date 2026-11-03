@@ -110,8 +110,57 @@ func early_return() -> void:
 	observations.append({"case": "early_conditional_return", "card": String(blue), "own_alive": ctrl.state.alive_count(0), "foe_alive": ctrl.state.alive_count(1),
 		"returned": ctrl.state.players[0].ability_hand.has(blue), "condition_still_met": ctrl.state.alive_count(0) < ctrl.state.alive_count(1)})
 
+## Локальная ценность ворот: одинаковая позиция, меняется только проверяемая карта.
+func gate_position(own: StringName, foe: StringName, gate: StringName, owner: int, attack: bool = false) -> MatchState:
+	var state := MatchState.new()
+	state.ruleset = MatchRules.Ruleset.ANIME_INSPIRED
+	state.manual_gates = true
+	state.creatures[0] = CreatureState.new(0, own if attack else foe, 0)
+	state.creatures[1] = CreatureState.new(1, foe if attack else own, 1)
+	state.players[0].creature_uids.assign([0])
+	state.players[1].creature_uids.assign([1])
+	state.slots[0].has_card = true
+	state.slots[0].card_owner = owner
+	state.slots[0].card_id = gate
+	state.slots[0].revealed = true
+	return state
+
+func gate_tradeoffs() -> void:
+	var counter_ids := [&"ability_fire_counter", &"ability_gale_rebuttal", &"ability_light_counter", &"ability_stone_counter", &"ability_shadow_counter", &"ability_tide_counter"]
+	for el in range(6):
+		var own := StringName("creature_dragnar_" + GameData.ATTR_KEYS[el])
+		var foe := StringName("creature_ratnik_" + GameData.ATTR_KEYS[(el + 3) % 6])
+		var field := StringName("arena_field_" + GameData.ATTR_KEYS[el])
+		var amount: int = int(CardDB.card(field).params.amount)
+		var result := {"case": "gold_silver_tradeoffs", "element": String(GameData.ATTR_KEYS[el]), "field_defense": amount, "altar_defense": 300, "field_attack": amount, "altar_attack": 0, "same_species_den_swing": 0}
+		for attack in [false, true]:
+			for gate in [field, &"arena_altar"]:
+				var side: int = 0 if attack else 1
+				var state := gate_position(own, foe, gate, side, attack)
+				var actual := PowerCalc.compute_seq(state, 0, 1, 0, [])
+				state.slots[0].revealed = false
+				var closed := PowerCalc.compute_seq(state, 0, 1, 0, [])
+				var gain: int = actual.powers[side] - closed.powers[side]
+				check(gain == (amount if gate == field else (0 if attack else 300)), "Поле/Алтарь: выгода зависит от роли владельца")
+		var mirror := gate_position(own, own, &"arena_den_dragnar", 1)
+		var mirrored := PowerCalc.compute_seq(mirror, 0, 1, 0, [])
+		check(mirrored.powers[0] == mirrored.powers[1] and mirrored.powers[0] == 2 * CardDB.creature(own).base_power, "видовые ворота не дают перевеса в зеркальном виде")
+		# Подавление ворот и ответ на подавление: новые реакции не решают бой сами,
+		# но позволяют защищать тот же сильный золотой/серебряный бонус.
+		for gate in [&"arena_altar", &"arena_den_dragnar"]:
+			var state := gate_position(own, &"creature_ratnik_light", gate, 1)
+			var original := PowerCalc.compute_seq(state, 0, 1, 0, [])
+			var purge := PowerCalc.compute_seq(state, 0, 1, 0, [[0, &"ability_light_purge"]])
+			var defended := PowerCalc.compute_seq(state, 0, 1, 0, [[0, &"ability_light_purge"], [1, counter_ids[el]]])
+			var answered := PowerCalc.compute_seq(state, 0, 1, 0, [[0, &"ability_light_purge"], [1, counter_ids[el]], [0, &"ability_light_counter"]])
+			check(purge.arena_cancelled and defended.powers == original.powers and not defended.arena_cancelled, "ответная отмена защищает ворота от Луча")
+			check(answered.arena_cancelled and answered.powers == purge.powers, "контротмена возвращает подавление ворот")
+		observations.append(result)
+
 func _initialize() -> void:
+	Engine.max_fps = 60
 	CardDB.load_all()
+	gate_tradeoffs()
 	recall_pair()
 	mute_timing()
 	throne_counters()
@@ -122,7 +171,7 @@ func _initialize() -> void:
 	var f := FileAccess.open(path, FileAccess.WRITE)
 	check(f != null, "отчёт записывается")
 	if f != null:
-		f.store_string(JSON.stringify({"assertions": assertions, "failures": failures, "observations": observations, "scope": "7 контрольных позиций, 9 боёв. Расстановка сценарная; правила, отмены, исходы и возврат через MatchController."}, "\t") + "\n")
+		f.store_string(JSON.stringify({"assertions": assertions, "failures": failures, "observations": observations, "scope": "7 контрольных позиций, 9 боёв + 6 стихий × позиционные сравнения Поля/Алтаря/ворот вида и цепи подавления. Расстановка сценарная; правила, отмены, исходы и возврат через MatchController."}, "\t") + "\n")
 		f.close()
 	print("CARD-10 контрольные бои: ", assertions, " проверок, ", failures, " ошибок")
 	quit(1 if failures else 0)

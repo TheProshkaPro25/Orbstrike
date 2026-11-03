@@ -15,7 +15,20 @@ var _counts: Array[Label] = []        # «СПОСОБНОСТИ ●●○ 2/3»
 var _shown: Array[float] = [0.0, 0.0]
 var _vs: Label
 var _target: Array[int] = [0, 0]     # последние заданные силы (для всплывающих +/−)
-var _chain: HBoxContainer            # лента карт боя: «Пожирающий жар → Волчья хватка → ПАС»
+var _chain: HFlowContainer            # лента карт боя: «Пожирающий жар → Волчья хватка → ПАС»
+var _chain_state: Array = []
+var _chain_width := 0.0
+var _chain_turn := -1
+var _chain_counts: Array = []
+
+
+## Сыгранная карта остаётся читаемой, но не становится игровым действием.
+class PlayedCardChip extends PanelContainer:
+	var help: Array = []
+	func _make_custom_tooltip(_for_text: String) -> Object:
+		return UiTheme.help_panel(help) if not help.is_empty() else null
+
+
 var _open := false
 var _built := false
 
@@ -62,15 +75,17 @@ func _build() -> void:
 	_vs.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_vs.visible = false
 	add_child(_vs)
-	_chain = HBoxContainer.new()
+	_chain = HFlowContainer.new()
 	_chain.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_chain.add_theme_constant_override("separation", 6)
-	_chain.alignment = BoxContainer.ALIGNMENT_CENTER
+	_chain.add_theme_constant_override("h_separation", 6)
+	_chain.add_theme_constant_override("v_separation", 4)
+	_chain.alignment = FlowContainer.ALIGNMENT_CENTER
 	_chain.anchor_left = 0.0
 	_chain.anchor_right = 1.0
-	_chain.offset_top = BAR_H + 108.0
-	_chain.offset_bottom = BAR_H + 146.0
+	_chain.offset_top = BAR_H + 170.0
+	_chain.offset_bottom = BAR_H + 208.0
 	add_child(_chain)
+	get_viewport().size_changed.connect(_resize_chain)
 
 
 func _bar(top: bool) -> ColorRect:
@@ -179,21 +194,43 @@ func _float_number(side: int, delta: int) -> void:
 
 ## Лента карт боя по порядку (прикреплённые — первыми): plays — [[сторона, card_id], ...], passed — кто спасовал.
 ## Лента карт боя и счётчики «Способности N/3» на плашках. turn — чья очередь обмена (сторона, -1 — ничья).
-func set_chain(plays: Array, passed: Array, turn: int = -1) -> void:
+func set_chain(plays: Array, passed: Array, turn: int = -1, cancelled: Array = [], ability_counts: Array = []) -> void:
 	_build()
-	VisualUtil.clear_children(_chain)
+	_chain_turn = turn
+	_chain_counts = ability_counts.duplicate()
 	var used: Array[int] = [0, 0]
 	for pl in plays:
-		var side: int = int(pl[0])
-		used[side] += 1
-		var c: CardDef = CardDB.card(StringName(pl[1]))
-		_chain.add_child(_chip(c.display_name if c != null else str(pl[1]), side))
-	for side in range(2):
-		if side < passed.size() and bool(passed[side]):
-			_chain.add_child(_chip("ПАС", side, true))
+		used[int(pl[0])] += 1
+	if ability_counts.size() == 2: used.assign(ability_counts)
+	# Повторный сетевой снимок не пересоздаёт Control под мышью и его подсказку.
+	var snapshot: Array = [plays, passed, cancelled]
+	var width := get_viewport_rect().size.x
+	if snapshot != _chain_state or width != _chain_width:
+		_chain_state = snapshot.duplicate(true)
+		_chain_width = width
+		VisualUtil.clear_children(_chain)
+		for pl in plays:
+			var side: int = int(pl[0])
+			var c: CardDef = CardDB.card(StringName(pl[1]))
+			var inactive := cancelled.has(pl)
+			var chip := _chip(("× " if inactive else "") + (c.display_name if c != null else str(pl[1])), side, inactive)
+			if c != null:
+				chip.help = UiTheme.card_help(c)
+				chip.help[6] = ("Атакующий. " if side == 0 else "Защитник. ") + ("Карта отменена или подавлена в расчёте этого боя." if inactive else "Карта сыграна в этом бою.")
+				chip.tooltip_text = c.display_name + "\n" + c.full_text()
+				chip.mouse_filter = Control.MOUSE_FILTER_STOP
+			_chain.add_child(chip)
+		for side in range(2):
+			if side < passed.size() and bool(passed[side]):
+				_chain.add_child(_chip("ПАС", side, true))
 	_chain.visible = _open and _chain.get_child_count() > 0
 	for side in range(2):
 		_set_count(side, used[side], side < passed.size() and bool(passed[side]), side == turn)
+
+
+func _resize_chain() -> void:
+	if _chain_state.size() == 3:
+		set_chain(_chain_state[0], _chain_state[1], _chain_turn, _chain_state[2], _chain_counts)
 
 
 ## Счётчик карт стороны: закрашенные кружки — сыгранные (с прикреплёнными), «ПАС» — сторона вышла из обмена.
@@ -220,14 +257,17 @@ func _set_count(side: int, used: int, passed: bool, turn: bool) -> void:
 		_pulse(l, Color(1.4, 1.3, 1.0))
 
 
-func _chip(text: String, side: int, dim: bool = false) -> Control:
+func _chip(text: String, side: int, dim: bool = false) -> PlayedCardChip:
 	var c: Color = Color(0.5, 0.75, 1.0) if side == 0 else Color(1.0, 0.55, 0.5)
 	if dim:
 		c = c.darkened(0.35)
-	var pc := PanelContainer.new()
+	var pc := PlayedCardChip.new()
 	pc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	pc.add_theme_stylebox_override("panel", UiTheme.box(Color(c.r * 0.15, c.g * 0.15, c.b * 0.15, 0.9), c, 2, 6, 5))
 	var l := VisualUtil.label(text, 16)
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	l.custom_minimum_size.x = minf(180.0, get_viewport_rect().size.x / 6.0 - 26.0) if text != "ПАС" else 40.0
 	l.add_theme_color_override("font_color", c.lightened(0.4))
 	pc.add_child(l)
 	pc.pivot_offset = Vector2(40, 14)

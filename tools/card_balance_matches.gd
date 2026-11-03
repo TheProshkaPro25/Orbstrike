@@ -39,6 +39,10 @@ func compare(group: String, sample: String, baseline: DeckDef, candidate: DeckDe
 				matches.append(row)
 	print("CARD-10 ", group, "/", sample, ": ", seeds.size() * 4, " матчей, всего ", matches.size())
 
+## Узкие сравнения политики могут заменить только ИИ, сохранив правила и runner.
+func make_ai(player: int, rng_seed: int) -> AIPlayer:
+	return AIPlayer.new(player, rng_seed, -1.0, AIPlayer.Difficulty.HARD)
+
 func run_match(subject: DeckDef, foe: DeckDef, seed_value: int, side: int, target: StringName, excluded: Array) -> Dictionary:
 	var decks: Array = [subject, foe] if side == 0 else [foe, subject]
 	var ctrl := MatchController.new(decks[0], decks[1], seed_value)
@@ -51,7 +55,7 @@ func run_match(subject: DeckDef, foe: DeckDef, seed_value: int, side: int, targe
 	var ais: Array = []
 	for player in [0, 1]:
 		# Один seed привязан к роли команды, а не к номеру стороны.
-		ais.append(AIPlayer.new(player, seed_value * 7 + (1 if player == side else 2), -1.0, AIPlayer.Difficulty.HARD))
+		ais.append(make_ai(player, seed_value * 7 + (1 if player == side else 2)))
 	var m := {"seed": seed_value, "side": side, "target": String(target), "decks": [ids(subject), ids(foe)], "pool_hash": pool_hash,
 		"steps": 0, "hand_windows": 0, "legal_windows": 0, "plays": 0, "attached": 0, "placed": 0, "open_opportunities": 0, "opened": 0,
 		"battles": 0, "active_battles": 0, "cancelled": 0, "local_outcome_changes": 0, "returned_target": 0, "returned_other": 0,

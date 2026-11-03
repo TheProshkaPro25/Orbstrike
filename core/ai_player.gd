@@ -10,7 +10,7 @@ extends RefCounted
 ##   на своё «Зеркало» (приманка) с учётом угрозы; после приземления прикрепляет защиту.
 ## - HARD («Мастер»): плюс блеф (ловушку кладёт первой и сажает на неё приманку), оценка риска ловушки на чужих
 ##   закрытых воротах (по уже раскрытым картам соперника), оценка ворот соперника под его существом (скорее всего
-##   «Поле» его стихии), счёт карт: возможные способности соперника — по его стихии, видам и уже сыгранным классам;
+##   «Поле» его стихии), счёт карт: возможные способности — по стихии, видам, публичным ID и размеру руки после добора;
 ##   в обмене выбирает пас или карту по шансу, что соперник не перевернёт бой (минус цена карты), цель броска —
 ##   по шансу выиграть бой со своими картами; розыгрыш пары карт, если одной мало. Ворота кладёт каждый ход,
 ##   защитные карты после приземления не прикрепляет.
@@ -32,8 +32,6 @@ const ABILITY_COST_ORDER: Array[String] = [
 	"boost_fix", "fusion_boost", "drain", "copy", "shift_gate", "silence", "negate", "cap_own_base", "strip",
 	"reset_base", "siphon", "swap_fighter", "revive", "recall", "doom", "ebb",
 ]
-## Доля ловушек среди командных ворот (4 из 10): априорная вероятность, что бронзовая карта соперника — ловушка.
-const TRAP_SHARE: float = 0.4
 ## Штраф оценки броска в бой на чужие закрытые ворота за вероятность ловушки (HARD).
 const TRAP_RISK_PENALTY: float = 300.0
 ## Мастер: цена разовой способности в долях шанса победы в бою (тратить карту ради малого прироста невыгодно);
@@ -45,9 +43,8 @@ var player: int = 1
 var difficulty: int = Difficulty.NORMAL
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _aim_error: float = 0.42
-## Свои карты ворот на начало матча (чтобы отличать раскрытые карты соперника среди захваченных).
+## Все увиденные свои ворота, включая добор: совпавший ID захвата не раскрывает прежнего владельца.
 var _my_gates: Dictionary = {}
-var _gates_known: bool = false
 ## Ограниченные предпочтения NPC: меняют оценку решений, не правила/силу/точность.
 var personality: Dictionary = {"attack_bias": 0.0, "trap_bias": 0.0, "safe_margin": 0.0, "card_cost_bias": 0.0}
 
@@ -188,11 +185,50 @@ func should_open_gate(view: MatchState, preview: BattleResult) -> bool:
 	var gate: SlotState = view.slots[preview.slot]
 	if gate.revealed or gate.card_owner != player:
 		return false
-	var opened := view.duplicate_full()
-	opened.slots[preview.slot].revealed = true
+	var opened := PowerCalc.preview_open_gate(view, preview.slot)
 	var after := PowerCalc.compute_seq(opened, preview.attacker_uid, preview.defender_uid, preview.slot, preview.battle_plays)
 	var side := 0 if view.creatures[preview.attacker_uid].owner == player else 1
-	return _margin(after, side) > _margin(preview, side) or (CardEffects.is_effect(CardDB.card(gate.card_id), &"fallen_call") and view.dead_count(player) > 0)
+	if _margin(after, side) > _margin(preview, side) or (CardEffects.is_effect(CardDB.card(gate.card_id), &"fallen_call") and view.dead_count(player) > 0):
+		return true
+	# Обычное усиление можно заглушить следующим ответом, сохранив ловушку до траты карты.
+	# Но Сдвиг/Подмена меняют позицию необратимо: после паса прежнее окно уже не вернуть.
+	# Проверяем только публично возможный ответ, без настоящих ID чужой руки/закрытых ворот.
+	return after.sealed and not preview.sealed and _margin(after, side) >= _margin(preview, side) and _gate_escape_possible(view, preview, side)
+
+
+func _gate_escape_possible(view: MatchState, preview: BattleResult, side: int) -> bool:
+	if _foe_plays_left(view, preview, side, true) <= 0:
+		return false
+	var fs: int = 1 - side
+	var fighter: int = preview.attacker_uid if fs == 0 else preview.defender_uid
+	var foe: int = view.creatures[fighter].owner
+	for group in _foe_pool(view, foe):
+		for id in group:
+			var card: CardDef = CardDB.card(id)
+			if CardEffects.is_effect(card, &"swap_fighter") and _forecast_legal(view, preview, id, fs):
+				return true
+			if not CardEffects.is_effect(card, &"shift_gate") or not _forecast_shift_fighter(view, preview, fs, card):
+				continue
+			for i in range(view.slots.size()):
+				var sl: SlotState = view.slots[i]
+				if i != preview.slot and sl.has_card and sl.card_owner == foe and sl.occupant_uid < 0:
+					# Неизвестные ворота могут оказаться допустимой целью Сдвига; открытая ловушка — нет.
+					if not sl.revealed or not CardEffects.is_gate_trap(CardDB.card(sl.card_id)):
+						return true
+	return false
+
+
+func _forecast_shift_fighter(view: MatchState, preview: BattleResult, side: int, card: CardDef) -> bool:
+	var fighter: int = preview.attacker_uid if side == 0 else preview.defender_uid
+	return CardEffects.lock_attr(card) == CardDB.creature(view.creatures[fighter].def_id).attribute and not preview.silenced[side] and not PowerCalc.side_locked(preview, side)
+
+
+## При выборе будущего боя владелец знает свои ворота и сохраняет право открыть их.
+## Рассматриваем открытие только на копии и только если текущая политика выбрала бы его.
+func _planned_gate_state(view: MatchState, preview: BattleResult) -> MatchState:
+	if view.manual_gates and should_open_gate(view, preview):
+		return PowerCalc.preview_open_gate(view, preview.slot)
+	return view
 
 
 func choose_ability(view: MatchState, preview: BattleResult, legal = null) -> StringName:
@@ -201,7 +237,7 @@ func choose_ability(view: MatchState, preview: BattleResult, legal = null) -> St
 	var side: int = 0 if view.creatures[preview.attacker_uid].owner == player else 1
 	var cards: Array[StringName] = []
 	for id in (legal if legal != null else view.players[player].ability_hand):
-		if id != &"":
+		if id != &"" and _forecast_legal(view, preview, StringName(id), side):
 			cards.append(StringName(id))
 	if cards.is_empty():
 		return &""
@@ -219,8 +255,10 @@ func choose_ability(view: MatchState, preview: BattleResult, legal = null) -> St
 	cards.sort_custom(_cheaper)
 	if difficulty == Difficulty.HARD:
 		var pick: StringName = _choose_hard(view, preview, cards, side)
-		if pick != &"" or margin > 0.0:
+		if pick != &"":
 			return pick
+		if margin > 0.0:
+			return _choose_revival(view, preview, cards, side)
 	# запас перевеса, при котором можно спокойно пасовать: соперник ещё может ответить картами
 	var safe: float = 0.0
 	if foe_can > 0:
@@ -231,12 +269,12 @@ func choose_ability(view: MatchState, preview: BattleResult, legal = null) -> St
 		safe_play = (80.0 if difficulty == Difficulty.NORMAL else 60.0 + 40.0 * foe_reply) + float(personality.safe_margin)
 	if margin > 0.0:
 		if margin >= safe:
-			return &""
+			return _choose_revival(view, preview, cards, side)
 		# выигрываю впритык, а соперник ещё ответит: усилиться, если это даёт запас
 		for id in cards:
 			if _margin(_with_card(view, preview, id, side), side) >= safe_play:
 				return id
-		return &""
+		return _choose_revival(view, preview, cards, side)
 	var best_id: StringName = &""
 	var best_m: float = -INF
 	for id in cards:
@@ -267,6 +305,37 @@ func choose_ability(view: MatchState, preview: BattleResult, legal = null) -> St
 				var r: BattleResult = PowerCalc.compute_seq(view, preview.attacker_uid, preview.defender_uid, preview.slot, bp)
 				if _margin(r, side) > 0.0:
 					return cards[i]
+	return _choose_revival(view, preview, cards, side)
+
+
+## Число живых после показанного исхода и Возрождения, включая только что проигравшего.
+## Это локальный прогноз, не симуляция скрытых ответов или следующего боя.
+func _alive_after(view: MatchState, r: BattleResult, side: int) -> int:
+	var uid: int = r.attacker_uid if side == 0 else r.defender_uid
+	var owner: int = view.creatures[uid].owner
+	var alive: int = view.alive_count(owner)
+	if not r.interrupted and (r.both_lose or r.loser_uid == uid):
+		alive -= 1
+	if r.revive[side] and alive < view.players[owner].creature_uids.size():
+		alive += 1
+	return alive
+
+
+## Когда обычная политика собиралась пасовать, не забывать послебоевое спасение.
+## Оно должно дать ещё одного живого союзника без уступки победы/размена сопернику.
+## Скрытые ID не нужны: действующий эффект Копии/Возрождения берётся из PowerCalc.
+func _choose_revival(view: MatchState, preview: BattleResult, cards: Array[StringName], side: int) -> StringName:
+	var own_before: int = _alive_after(view, preview, side)
+	var foe_before: int = _alive_after(view, preview, 1 - side)
+	if foe_before == 0 and own_before > 0:
+		return &"" # матч уже выигрывается без траты карты
+	for id in cards:
+		var card := CardDB.card(id)
+		if card.effect_id not in [&"revive", &"copy"]:
+			continue
+		var after := _with_card(view, preview, id, side)
+		if after.revive[side] and _alive_after(view, after, side) > own_before and _alive_after(view, after, 1 - side) <= foe_before:
+			return id
 	return &""
 
 
@@ -311,7 +380,7 @@ func choose_attach(view: MatchState, uid: int, legal: Array, moment: StringName 
 
 ## Предпросмотр боя, если сторона side сыграет id следующей картой обмена.
 func _with_card(view: MatchState, preview: BattleResult, id: StringName, side: int) -> BattleResult:
-	return PowerCalc.compute_with(view, preview.attacker_uid, preview.defender_uid, preview.slot, preview.battle_plays, side, id)
+	return PowerCalc.compute_with(view, preview.attacker_uid, preview.defender_uid, preview.slot, preview.battle_plays, side, id, [preview.ability_count(0), preview.ability_count(1)])
 
 
 ## Перевес стороны side (ничья — в пользу защитника: атакующему нужен перевес > 0).
@@ -338,21 +407,15 @@ func _margin(r: BattleResult, side: int) -> float:
 ## и мой пас решает бой). after_play — ответ на мою карту: пас соперника тогда не мешает.
 func _foe_plays_left(view: MatchState, preview: BattleResult, side: int, after_play: bool = false) -> int:
 	var foe: int = 1 - side
-	if (preview.passed[foe] and not after_play) or preview.silenced[foe]:
+	if (preview.passed[foe] and not after_play) or (preview.silenced[foe] and not PowerCalc.reactive_allowed(preview, foe)):
 		return 0
-	var used: int = 0
-	for pl in preview.plays:
-		if int(pl[0]) == foe:
-			used += 1
+	var used: int = preview.ability_count(foe)
 	var foe_player: int = view.creatures[preview.defender_uid if foe == 1 else preview.attacker_uid].owner
 	return mini(view.players[foe_player].ability_hand.size(), MatchController.MAX_BATTLE_ABILITIES - used)
 
 
 func _my_plays_left(view: MatchState, preview: BattleResult, side: int) -> int:
-	var used: int = 0
-	for pl in preview.plays:
-		if int(pl[0]) == side:
-			used += 1
+	var used: int = preview.ability_count(side)
 	return mini(view.players[player].ability_hand.size(), MatchController.MAX_BATTLE_ABILITIES - used)
 
 
@@ -393,11 +456,8 @@ func _candidates(view: MatchState) -> Array[int]:
 	return ready
 
 
-## Запомнить свои карты ворот на начало матча (первый вызов, пока рука ворот полная).
+## Запоминать свои доступные карты при каждом решении, включая поздний добор.
 func _remember_gates(view: MatchState) -> void:
-	if _gates_known:
-		return
-	_gates_known = true
 	for id in view.players[player].arena_hand:
 		_my_gates[String(id)] = true
 	for s in view.slots:
@@ -405,22 +465,31 @@ func _remember_gates(view: MatchState) -> void:
 			_my_gates[String(s.card_id)] = true
 
 
-## Вероятность, что конкретные закрытые ворота соперника — ловушка. Бронзовая карта у соперника одна;
-## если она уже раскрыта (видна среди захваченных), риска нет; иначе она равновероятно любая из неизвестных.
+## Доля ловушек среди неизвестных ворот: старт по классам + добор без повторов.
+## Захват не хранит прежнего владельца; совпадающий со своими ID остаётся неопределённым.
 func _foe_trap_prob(view: MatchState) -> float:
+	_remember_gates(view)
 	var foe: int = 1 - player
+	var known: Dictionary = {}
 	for p in range(2):
 		for id in view.players[p].captured:
-			var c: CardDef = CardDB.card(id)
-			if c != null and not _my_gates.has(String(id)) and CardDB.card_class(c) == &"bronze":
-				return 0.0
+			if not _my_gates.has(String(id)):
+				known[id] = true
 	var unknown: int = view.players[foe].arena_hand.size()
 	for s in view.slots:
-		if s.has_card and s.card_owner == foe and s.card_id == &"":
-			unknown += 1
-	if unknown <= 0:
-		return 0.0
-	return TRAP_SHARE / float(unknown)
+		if s.has_card and s.card_owner == foe:
+			if s.revealed:
+				known[s.card_id] = true
+			else:
+				unknown += 1
+	var groups: Array = _public_card_pool(view, foe, CardDef.Kind.ARENA)
+	var counts: Array[int] = _remove_known_cards(groups, known)
+	var traps: Dictionary = {}
+	for group in groups:
+		for id in group:
+			if CardEffects.is_gate_trap(CardDB.card(id)):
+				traps[id] = true
+	return _hidden_card_odds(groups, counts, traps, unknown).share
 
 
 ## Оценка цели: больше — лучше; <= -500 — слот бессмыслен.
@@ -455,6 +524,9 @@ func _score(view: MatchState, uid: int, slot: int) -> float:
 	if occ >= 0:
 		# чужая закрытая карта в виде пуста = нейтральная арена (своя карта, в том числе ловушка, учтена)
 		var r: BattleResult = PowerCalc.compute(view, uid, occ, slot, &"", &"")
+		var planned := _planned_gate_state(view, r)
+		if planned != view:
+			r = PowerCalc.compute(planned, uid, occ, slot, &"", &"")
 		if r.both_lose:
 			return 450.0  # размен один на один
 		var margin: float = _margin(r, 0)
@@ -483,8 +555,15 @@ func _score(view: MatchState, uid: int, slot: int) -> float:
 
 ## Проверка следующей предполагаемой карты с учётом бойца и последней своей карты.
 func _forecast_legal(view: MatchState, r: BattleResult, id: StringName, side: int, previous: StringName = &"") -> bool:
+	if previous != &"":
+		r = _with_card(view, r, previous, side)
 	var c: CardDef = CardDB.card(id)
-	if c == null or CardEffects.moment(c) == &"landing":
+	if c == null or CardEffects.moment(c) == &"landing" or r.ability_count(side) >= MatchRules.MAX_BATTLE_ABILITIES or PowerCalc.side_locked(r, side):
+		return false
+	if bool(c.params.get("reactive", false)):
+		if not PowerCalc.reactive_allowed(r, side):
+			return false
+	elif r.silenced[side]:
 		return false
 	var fighter: int = r.attacker_uid if side == 0 else r.defender_uid
 	var d: CreatureDef = CardDB.creature(view.creatures[fighter].def_id)
@@ -492,19 +571,15 @@ func _forecast_legal(view: MatchState, r: BattleResult, id: StringName, side: in
 	var attr: int = CardEffects.lock_attr(c)
 	if (species != &"" and species != d.species) or (attr >= 0 and attr != d.attribute):
 		return false
-	var last: StringName = previous
-	if last == &"":
-		for pl in r.plays:
-			if int(pl[0]) == side:
-				last = StringName(pl[1])
-				if CardEffects.is_lockout(CardDB.card(last)):
-					return false
-	if last != &"" and CardEffects.is_lockout(CardDB.card(last)):
-		return false
+	var last: StringName = &""
+	for pl in r.plays:
+		if int(pl[0]) == side and not r.cancelled_plays.has(pl):
+			last = StringName(pl[1])
 	if CardEffects.is_fusion(c) and (last == &"" or CardEffects.is_fusion(CardDB.card(last))):
 		return false
 	if CardEffects.is_effect(c, &"swap_fighter"):
-		return PowerCalc.swap_candidate(view, view.creatures[fighter].owner, [r.attacker_uid, r.defender_uid]) >= 0
+		var spent: int = r.ability_count(side) + 1
+		return PowerCalc.swap_candidate(view, view.creatures[fighter].owner, [r.attacker_uid, r.defender_uid], maxi(0, MatchRules.MAX_BATTLE_ABILITIES - spent)) >= 0
 	if CardEffects.is_effect(c, &"shift_gate"):
 		return PowerCalc.best_gate_swap(view, r.attacker_uid, r.defender_uid, r.slot, r.battle_plays, side) >= 0
 	return true
@@ -531,45 +606,134 @@ func _choose_hard(view: MatchState, preview: BattleResult, cards: Array[StringNa
 	return best_id
 
 
-## Мастер: возможные карты соперника foe по классам (счёт карт). В колоде по одной способности каждого класса
-## своей стихии и своих видов; класс, карта которого уже сыграна (и не вернулась в руку), из руки выпал.
-func _foe_pool(view: MatchState, foe: int) -> Array:
-	var used_cls: Dictionary = {}
-	for id in view.players[foe].abilities_used:
-		used_cls[CardDB.card_class(CardDB.card(id))] = true
+## Совместимый публичный каталог; содержимое чужой руки не читается.
+func _public_card_pool(view: MatchState, foe: int, kind: int) -> Array:
 	var el: int = -1
 	var species: Array = []
 	for u in view.players[foe].creature_uids:
 		var d: CreatureDef = CardDB.creature(view.creatures[u].def_id)
-		el = d.attribute
+		if el < 0:
+			el = d.attribute
 		if not species.has(d.species):
 			species.append(d.species)
 	var out: Array = []
-	for cls in CardDB.ABILITY_CLASSES:
-		if not used_cls.has(cls):
-			out.append(CardDB.cards_of(CardDef.Kind.ABILITY, cls, el, species))
+	for cls in (CardDB.ABILITY_CLASSES if kind == CardDef.Kind.ABILITY else CardDB.GATE_CLASSES):
+		out.append(CardDB.cards_of(kind, cls, el, species))
 	return out
 
 
-## Мастер: вероятность, что соперник (сторона 1 − side) следующей картой перевернёт бой r. Карта класса в его руке —
-## любая из возможных равновероятно; видовые карты другого вида бойцу не подходят.
+func _remove_known_cards(groups: Array, known: Dictionary) -> Array[int]:
+	var counts: Array[int] = []
+	for group in groups:
+		var count: int = 0
+		for id in group.duplicate():
+			if known.has(id):
+				group.erase(id)
+				count += 1
+		counts.append(count)
+	return counts
+
+
+## Сыгранный ID временно недоступен; другие карты того же класса могли прийти добором.
+func _foe_pool(view: MatchState, foe: int) -> Array:
+	var groups: Array = _public_card_pool(view, foe, CardDef.Kind.ABILITY)
+	var known: Dictionary = {}
+	for id in view.players[foe].abilities_used:
+		known[id] = true
+	_remove_known_cards(groups, known)
+	return groups
+
+
+func _combinations(n: int, k: int) -> float:
+	if k < 0 or k > n:
+		return 0.0
+	var result: float = 1.0
+	for i in range(1, mini(k, n - k) + 1):
+		result *= float(n - i + 1) / float(i)
+	return result
+
+
+## Вероятностная модель, а не знание выбранной колоды: старт по одному ID каждого класса,
+## затем равномерный добор без повторов. Публичны только ID вне руки и её размер.
+## Набор уже полученных карт имеет вес произведения численностей его классов:
+## столько стартовых троек могло дать тот же набор. Маленький DP суммирует эти веса.
+## any — шанс хотя бы одного matching в руке; share — их ожидаемая доля.
+func _hidden_card_odds(groups: Array, known_counts: Array[int], matching: Dictionary, hidden: int) -> Dictionary:
+	if hidden <= 0:
+		return {"any": 0.0, "share": 0.0}
+	var total: int = 0
+	var hits: int = 0
+	for group in groups:
+		total += group.size()
+		for id in group:
+			if matching.has(id):
+				hits += 1
+	if total <= 0 or hits <= 0:
+		return {"any": 0.0, "share": 0.0}
+	hidden = mini(hidden, total)
+	var weight: Array[float] = []
+	var safe: Array[float] = []
+	var matched: Array[float] = []
+	weight.resize(hidden + 1)
+	safe.resize(hidden + 1)
+	matched.resize(hidden + 1)
+	weight[0] = 1.0
+	safe[0] = 1.0
+	for g in range(groups.size()):
+		var n: int = groups[g].size()
+		var used: int = known_counts[g]
+		if n + used == 0:
+			continue
+		var found: int = 0
+		for id in groups[g]:
+			if matching.has(id):
+				found += 1
+		var next_weight: Array[float] = []
+		var next_safe: Array[float] = []
+		var next_matched: Array[float] = []
+		next_weight.resize(hidden + 1)
+		next_safe.resize(hidden + 1)
+		next_matched.resize(hidden + 1)
+		for before in range(hidden + 1):
+			for k in range(mini(n, hidden - before) + 1):
+				var choices: float = float(used + k)
+				var w: float = choices * _combinations(n, k)
+				var target: int = before + k
+				next_weight[target] += weight[before] * w
+				next_safe[target] += safe[before] * choices * _combinations(n - found, k)
+				next_matched[target] += matched[before] * w
+				if n > 0:
+					next_matched[target] += weight[before] * w * float(k * found) / float(n)
+		weight = next_weight
+		safe = next_safe
+		matched = next_matched
+	if weight[hidden] > 0.0:
+		return {"any": clampf(1.0 - safe[hidden] / weight[hidden], 0.0, 1.0), "share": clampf(matched[hidden] / weight[hidden] / float(hidden), 0.0, 1.0)}
+	# Изолированный стенд/неполная стартовая рука: равномерная выборка оставшихся ID.
+	return {"any": clampf(1.0 - _combinations(total - hits, hidden) / _combinations(total, hidden), 0.0, 1.0), "share": float(hits) / float(total)}
+
+
+## Мастер: шанс допустимого ответа, переворачивающего бой. Размер скрытой руки и публичные
+## использованные ID учитываются; даже сыгранный класс может снова оказаться в руке после добора.
 func _flip_prob(view: MatchState, r: BattleResult, side: int) -> float:
 	var fs: int = 1 - side
-	if r.passed[fs] or r.silenced[fs] or _foe_plays_left(view, r, side) <= 0:
+	if r.passed[fs] or _foe_plays_left(view, r, side) <= 0:
 		return 0.0
 	var fighter: int = r.attacker_uid if fs == 0 else r.defender_uid
-	var keep: float = 1.0
-	for cands in _foe_pool(view, view.creatures[fighter].owner):
-		if cands.is_empty():
-			continue
-		var flips: int = 0
+	var foe: int = view.creatures[fighter].owner
+	var groups: Array = _public_card_pool(view, foe, CardDef.Kind.ABILITY)
+	var known: Dictionary = {}
+	for id in view.players[foe].abilities_used:
+		known[id] = true
+	var counts: Array[int] = _remove_known_cards(groups, known)
+	var flips: Dictionary = {}
+	for cands in groups:
 		for id in cands:
 			if not _forecast_legal(view, r, id, fs):
 				continue
 			if _margin(_with_card(view, r, id, fs), side) <= 0.0:
-				flips += 1
-		keep *= 1.0 - float(flips) / float(cands.size())
-	return 1.0 - keep
+				flips[id] = true
+	return _hidden_card_odds(groups, counts, flips, view.players[foe].ability_hand.size()).any
 
 
 ## Мастер: шанс выиграть бой атакой uid на occ (слот slot): лучший из вариантов «без карты» и «одна своя карта»
@@ -578,7 +742,13 @@ func _attack_win_prob(view: MatchState, uid: int, occ: int, slot: int, gate_id: 
 	if gate_id != &"":
 		view = view.duplicate_full()
 		view.slots[slot].card_id = gate_id
+		# Предполагаемое Поле оценивается открытым: закрытая карта не даёт G.
+		view.slots[slot].revealed = true
 	var r: BattleResult = PowerCalc.compute_seq(view, uid, occ, slot, [])
+	var planned := _planned_gate_state(view, r)
+	if planned != view:
+		view = planned
+		r = PowerCalc.compute_seq(view, uid, occ, slot, [])
 	var best: float = 0.0
 	if _margin(r, 0) > 0.0:
 		best = 1.0 - _flip_prob(view, r, 0)
@@ -600,7 +770,9 @@ func _field_of(c: CreatureState) -> StringName:
 
 
 ## Угроза для существа, вставшего на ворота: насколько сильнейший готовый к броску боец соперника
-## перебьёт его здесь (без способностей; чужая закрытая карта — нейтральная). 0 — угрозы нет.
+## перебьёт его здесь. Базовая оценка — без карт, отдельно учитывается публичная вероятность
+## первого необратимого Сдвига/Подмены до ответа защитника; остальные чужие карты не ищутся.
+## Чужая закрытая карта нейтральна в базе, для Сдвига рассматриваются явные гипотезы. 0 — угрозы нет.
 ## extra — карта, которую защитник прикрепил бы к себе (для choose_attach).
 func _exposure(view: MatchState, uid: int, slot: int, extra: StringName = &"") -> float:
 	var worst: float = 0.0
@@ -617,9 +789,78 @@ func _exposure(view: MatchState, uid: int, slot: int, extra: StringName = &"") -
 				ready.append(fu)
 	for fu in ready:
 		var r: BattleResult = PowerCalc.compute_seq(view, fu, uid, slot, bp)
-		var m: float = _margin(r, 0)
-		if m > 0.0:
-			worst = maxf(worst, 150.0 + m * 0.5)
+		var planned := _planned_gate_state(view, r)
+		if planned != view:
+			r = PowerCalc.compute_seq(planned, fu, uid, slot, bp)
+		var base: float = _exposure_cost(r)
+		# Атакующий отвечает первым. Открытый в базовом прогнозе Алтарь/Глухие
+		# не должен задним числом запрещать ему мгновенную карту на закрытых воротах.
+		var closed := PowerCalc.compute_seq(view, fu, uid, slot, bp)
+		worst = maxf(worst, base + _first_irreversible_exposure(view, closed, base))
+	return worst
+
+
+func _exposure_cost(result: BattleResult) -> float:
+	var margin := _margin(result, 0)
+	return 150.0 + margin * 0.5 if margin > 0.0 else 0.0
+
+
+## Дополнительный риск первого ответа: ID руки не читаются. Максимальный ущерб
+## публично совместимой мгновенной карты взвешивается вероятностью её наличия.
+## Это локальный прогноз, а не гарантия безопасности или поиск цепочек ответов.
+func _first_irreversible_exposure(view: MatchState, before: BattleResult, base: float) -> float:
+	if _foe_plays_left(view, before, 1) <= 0:
+		return 0.0
+	var foe: int = view.creatures[before.attacker_uid].owner
+	var groups: Array = _public_card_pool(view, foe, CardDef.Kind.ABILITY)
+	var known: Dictionary = {}
+	for id in view.players[foe].abilities_used:
+		known[id] = true
+	var counts: Array[int] = _remove_known_cards(groups, known)
+	var threats: Dictionary = {}
+	var worst: float = base
+	for group in groups:
+		for id in group:
+			var card: CardDef = CardDB.card(id)
+			var danger: float = base
+			if CardEffects.is_effect(card, &"swap_fighter") and _forecast_legal(view, before, id, 0):
+				var swapped := _with_card(view, before, id, 0)
+				# Открытие разрешено лишь после замены. Подавление бонуса Подмены
+				# не возвращает прежнего бойца и не убирает прикрепления нового.
+				var after := _planned_gate_state(view, swapped)
+				if after != view:
+					swapped = PowerCalc.compute_seq(after, swapped.attacker_uid, swapped.defender_uid, swapped.slot, swapped.battle_plays)
+				danger = _exposure_cost(swapped)
+			elif CardEffects.is_effect(card, &"shift_gate") and _forecast_shift_fighter(view, before, 0, card):
+				danger = _first_shift_exposure(view, before, id)
+			if danger > base:
+				threats[id] = true
+				worst = maxf(worst, danger)
+	return (worst - base) * _hidden_card_odds(groups, counts, threats, view.players[foe].ability_hand.size()).any
+
+
+## Известная открытая цель считается как есть. Для закрытой цели подставляется
+## совместимый публичный каталог, а не её настоящий ID; это верхняя оценка ущерба
+## при наличии Сдвига, не утверждение о конкретной карте в конкретном слоте.
+func _first_shift_exposure(view: MatchState, before: BattleResult, id: StringName) -> float:
+	var foe: int = view.creatures[before.attacker_uid].owner
+	var worst: float = 0.0
+	if _forecast_legal(view, before, id, 0):
+		worst = _exposure_cost(_with_card(view, before, id, 0))
+	var possible: Array = []
+	for group in _public_card_pool(view, foe, CardDef.Kind.ARENA):
+		for gate_id in group:
+			if not CardEffects.is_gate_trap(CardDB.card(gate_id)):
+				possible.append(gate_id)
+	for j in range(view.slots.size()):
+		var target: SlotState = view.slots[j]
+		if j == before.slot or not target.has_card or target.card_owner != foe or target.occupant_uid >= 0 or target.revealed:
+			continue
+		for gate_id in possible:
+			var trial := view.duplicate_full()
+			trial.slots[j].card_id = gate_id
+			if _forecast_legal(trial, before, id, 0):
+				worst = maxf(worst, _exposure_cost(_with_card(trial, before, id, 0)))
 	return worst
 
 

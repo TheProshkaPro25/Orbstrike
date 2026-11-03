@@ -313,8 +313,10 @@ func _states(room: Dictionary) -> void:
 		var preview: BattleResult = ctrl.get_battle_preview()
 		if preview != null:
 			var passed := preview.passed.duplicate()
+			var counts := preview.ability_counts.duplicate()
 			preview = PowerCalc.compute_seq(view, preview.attacker_uid, preview.defender_uid, preview.slot, preview.battle_plays)
 			preview.passed.assign(passed)
+			preview.ability_counts.assign(counts)
 		_send(int(room.peers[player]), {"t": "state", "player": player, "view": Codec.encode_view(view),
 			"legal": {"setup_slots": ctrl.legal_setup_slots() if ctrl.get_phase() == MatchController.Phase.SETUP and ctrl.get_active_player() == player else [],
 				"creatures": ctrl.legal_creatures(player), "abilities": ctrl.legal_abilities(player),

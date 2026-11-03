@@ -1,0 +1,886 @@
+{
+  "version": "0.3.2",
+  "date": "2026-11-03",
+  "status": "validated release candidate; publication pending",
+  "engine": "Godot4.7.2.stable.arch_linux.ed1daf0bf",
+  "export": {
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "log": "build/release032/export-ready.log",
+    "file_version": "0.3.2.0",
+    "product_version": "0.3.2"
+  },
+  "source_models_before": {
+    "assets/creatures_hd/dragnar_fire.glb": "2d759d92cc19566c5228e0ba913a7663fff934131b63f9295c4a84d92f47c6aa",
+    "assets/creatures_hd/dragnar_gale.glb": "d02f3a67084a9e3464716897c2ef5b24f5a53c7ce596c10bf007049d2c97b830",
+    "assets/creatures_hd/dragnar_light.glb": "8a82bcf7f89287daefd65baa25e96a5b1e1c4503b73ea3fa8817c83fcdd81f96",
+    "assets/creatures_hd/dragnar_shadow.glb": "ec28cf12618f5a739fc7b9604d384cf560d23b5590f64491a1ec320de39b8470",
+    "assets/creatures_hd/dragnar_stone.glb": "1db9f2a935fc8731ad7bd274364c749e1622a965deacdfaf9c3e4285f5b2a72d",
+    "assets/creatures_hd/dragnar_tide.glb": "fc95ce7731cf5331c84bfee312f69d7e3e6019c33e04ba011b878fa8adea8b6b",
+    "assets/creatures_hd/gorgul_fire.glb": "128eb7948519337b63fb3349447194910d0cc82e44d2efe22fc0ca0d20a7f3b6",
+    "assets/creatures_hd/gorgul_gale.glb": "55d82a572aec50ffffcc3912b2fc448dec5db1176c819dd4e7b189d2611bd073",
+    "assets/creatures_hd/gorgul_light.glb": "799f7c1f34ee27382315e42ef71a7625c2491648e45a02d6be611cb712b86e5c",
+    "assets/creatures_hd/gorgul_shadow.glb": "d31399c990f0148444c0082bf2bcc5d362d43f0a5516e3e70285beeec9b6ed86",
+    "assets/creatures_hd/gorgul_stone.glb": "e1fd5c9a9c8fd8ff1b01cc670b7a004689f6051484443e7d0518c5fc788d9bca",
+    "assets/creatures_hd/gorgul_tide.glb": "10cde043d74620940f53baff371f27631cf50ecff07bb888ef46255baa017d8a",
+    "assets/creatures_hd/grifalon_fire.glb": "295aaa4752b85e3febeb01dc36570b9845c3f05eea37188cc4c5c453b40f5954",
+    "assets/creatures_hd/grifalon_gale.glb": "0329fff5f70f53e6c14fbfaaf293c93860ff86cf5be79ef0f1e85f1c7d02bd79",
+    "assets/creatures_hd/grifalon_light.glb": "0437c2014c5c0e87801a0acc7b25a4f957acf3a8028dbb699b5e6672d9574481",
+    "assets/creatures_hd/grifalon_shadow.glb": "15da6c635d6aa002e11049082ece86d2f0124570d0da5a71f41091b07765b0b3",
+    "assets/creatures_hd/grifalon_stone.glb": "376640d70ecbdc35c0da1f3dec334118f9037b1b10f80364d973992310b3f540",
+    "assets/creatures_hd/grifalon_tide.glb": "9695d09298d8daeddb55c8908e7181b7e3503c7a30c1d3b402bf730c87b22413",
+    "assets/creatures_hd/klykar_fire.glb": "73fcda1b1a9466e5cfc8860de7df4c5beb9f2b2440e4a34bb7a2a17b4622a160",
+    "assets/creatures_hd/klykar_gale.glb": "f16e61d615e7897ed513d3abb73aa941cb335827d7f43c07961fd8e277ab4c28",
+    "assets/creatures_hd/klykar_light.glb": "57c8b87a62361796eaf7dc647762950065d8bef84d41d5d824c96f0d554cd4e0",
+    "assets/creatures_hd/klykar_shadow.glb": "30d7873a5bb6e83f906a44be7fa4cf7706dc919a1ecdee7667763d875c87963b",
+    "assets/creatures_hd/klykar_stone.glb": "bafa3a230c96e8799a061e81c58a058f1a43363d2c114858239fa3c109508027",
+    "assets/creatures_hd/klykar_tide.glb": "f5e70149c8408ecbc5a00bb3e11238a2d43e75fea021a8001ce3098dee697b2e",
+    "assets/creatures_hd/kolossar_fire.glb": "30cae0eb02ec6073300d1e2ed34aa65a3f8d6e64941612f8fd1555294ba60657",
+    "assets/creatures_hd/kolossar_gale.glb": "dbbabf794f6a5acf4d64463d80a253757d51ce24990814759ec6bc587f7f54fd",
+    "assets/creatures_hd/kolossar_light.glb": "e103137b0e52c6ba2a9673dda69e519c0034ac8eccba4b5e32194d1b1c93ef71",
+    "assets/creatures_hd/kolossar_shadow.glb": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+    "assets/creatures_hd/kolossar_stone.glb": "efbfa17fa96fbc5cbdf6acb36666f6595c4cfb9b5551f23ffea8f1d9576d5070",
+    "assets/creatures_hd/kolossar_tide.glb": "c212690db15deaf3e63e4aa44f312c657ebb2c2b8441650094ba837d38e1de56",
+    "assets/creatures_hd/levian_fire.glb": "ded936ce93435d9651078a26276a025aff627f150454a08a0d830bd5d2280310",
+    "assets/creatures_hd/levian_gale.glb": "fe5c04377285353b7a95bdb723612464824aaaed05f9b499acb732e858db2ddc",
+    "assets/creatures_hd/levian_light.glb": "8e15e3d6bc72489f271d0d16f1c6270158fd7d2b113ec96a358ba3ebaba2669a",
+    "assets/creatures_hd/levian_shadow.glb": "c8f42fa47c27e6a0d06dfa6fa5d570031601de9e52cb0c7f184979ea78d8a90e",
+    "assets/creatures_hd/levian_stone.glb": "070f9616426759b58ebd39b7d64c312fafb7597ef7e333ad6baef8402e188dcf",
+    "assets/creatures_hd/levian_tide.glb": "7eade977ce428ce052690b7bbf235740a002a91140b0677e92e5b0d7a2bf63d8",
+    "assets/creatures_hd/likorez_shadow.glb": "5874835226b02bce3dba194313d07ed1631f7b0fabf5b6d65ef38dc1b97d7b09",
+    "assets/creatures_hd/ratnik_fire.glb": "7824f01282e239912f40c3eafbf26dfa2ffd0c8b551c325ac75f3725242a81dd",
+    "assets/creatures_hd/ratnik_gale.glb": "6e40647983c1e9fb8c0c5f79513a6e5e97fe496f2ac5562f34999cf5769a1103",
+    "assets/creatures_hd/ratnik_light.glb": "454e8442b83fe7fd618d0bc0338dfc8b51b1daabaa49b4a5237dcb669598f727",
+    "assets/creatures_hd/ratnik_shadow.glb": "5be558ea4208a92f4b1b2684847935fa5b0ad9ebc2cb4b1f35a8329f19f5789b",
+    "assets/creatures_hd/ratnik_stone.glb": "0c7909c072cca08b68536d94df80915358b3052e8979eff39614a94cee753db6",
+    "assets/creatures_hd/ratnik_tide.glb": "1092ec4c85963fe869274d5555a881921e46b51327809cbaee385c70f38e37ce",
+    "assets/creatures_hd/rogozhuk_fire.glb": "1ff332d623750f53cbefb3c557cbe4ec80fe1341394f033910aca90d5848c61e",
+    "assets/creatures_hd/rogozhuk_gale.glb": "025b3c5488c18b8dc978afb5851e76db4b24534736d7d48c4dd0eafe8984aae5",
+    "assets/creatures_hd/rogozhuk_light.glb": "8dcffa2a2981714c5255403fb7b9ac337b4c709913384b845874cafc006ce21f",
+    "assets/creatures_hd/rogozhuk_shadow.glb": "51af8c75076d54f083c502156fe8e9a8dba737d819b7fdf86aacf1c7c36bc62f",
+    "assets/creatures_hd/rogozhuk_stone.glb": "e5e198539f5d6ed892a9f0b553dc9d46892a66696b5d7b808acfafa2bd6f1a39",
+    "assets/creatures_hd/rogozhuk_tide.glb": "4ff3f18af1934d271c019e2301f8b914f33d14746da550eb9ddb885094eba2a9"
+  },
+  "independent_sol": {
+    "reviewer": "independent Sol high",
+    "timestamp_utc": "2026-11-03T20:46:07.893530+00:00",
+    "godot_game_launched": false,
+    "godot_headless_reference_export": true,
+    "windows_exe_launched": false,
+    "status": "PASS",
+    "client": {
+      "pck": {
+        "format": 4,
+        "engine": [
+          4,
+          7,
+          2
+        ],
+        "flags": 2,
+        "entries": 1303,
+        "all_entries_md5_pass": 1303,
+        "private_signature_findings": [],
+        "sha256": "63530850ded09858dd0e510302241672bad12ea970a6dcc19a28f54bd0f8569c"
+      },
+      "exe": {
+        "architecture": "AMD64 PE32+",
+        "file_version": [
+          0,
+          3,
+          2,
+          0
+        ],
+        "product_version": [
+          0,
+          3,
+          2,
+          0
+        ],
+        "sha256": "30ff3029eb3e84c53f140b280bc28613ebbcfbbb1bf6f530ecab3081810ee47f"
+      },
+      "packed_runtime_project_settings": {
+        "application_version": "0.3.2",
+        "main_scene": "res://scenes/loading/boot.tscn",
+        "parsed_entries": 13
+      },
+      "current_source_script_reference": {
+        "all_current_source_scripts_bytecode_equal": 132,
+        "reference_pck_sha256": "c9d5fdbfc2304f8c1cd7adb725ebb806961a3049dbcd7871ecce192d91472b02",
+        "source_snapshot_sha256": "5f2144240c2b129d635cd4b3af598b2877990361da6480b678322f5070efe92e",
+        "client_online_rules_tag": "online-rules-3",
+        "elemental_counter_cards_present": 6,
+        "files": {
+          "core/card_db.gd": {
+            "source_sha256": "c8d80b3b8277f65b8878178c7165b122c841b2ae5765efbafb387164c5766cf4",
+            "gdc_sha256": "8894d5d4e935be38975925d16e652bd5397f810f3986a145eb1f6a77cbbefc16"
+          },
+          "core/deck_def.gd": {
+            "source_sha256": "4cd81936ed3aa8180b97ac7c0fda146582e97a529a0f40fb540b343e52eb4730",
+            "gdc_sha256": "d1839372b010feddf111b32bedf5d9a745a51bf33a3abe69e06d36f7b0bbb7b6"
+          },
+          "core/creature_def.gd": {
+            "source_sha256": "881cedb40e94df7d8428736761b4072a0fb71bb0fda642ff29c932c29e2c0833",
+            "gdc_sha256": "6d724d74779ecd3ed89769e7955885202129662bf183cdb474d2d80ea1299d1d"
+          },
+          "core/slot_state.gd": {
+            "source_sha256": "acf5d2f92b55f6970abe71ae8c563b257066cb445139a83e24c6d4c322d5d040",
+            "gdc_sha256": "1ad258802a97fa8bff0565c52e25641a3d31321e7d1307a23b1400f5c72e1150"
+          },
+          "core/player_state.gd": {
+            "source_sha256": "f0cfb08fad2f2477260da93a8c40d52a29eba669e36094c3d6115b3a42e04df7",
+            "gdc_sha256": "ad130730e069a87700a833ca786f2d6ee0f8d1ecf400955798f49b1957994cf7"
+          },
+          "core/match_state.gd": {
+            "source_sha256": "c187310d53e3e1504b8ea9b84f090103cf63d863c1119b104608fbea1e3501b3",
+            "gdc_sha256": "8f124c7a56fcf3333d4db8397afc56d52efccb08778d7a451227f6deace43974"
+          },
+          "core/creature_state.gd": {
+            "source_sha256": "21dd85a928137df2d0f53c623e1f2074c5c610a227db2f1aac3bbc7e3909bbe1",
+            "gdc_sha256": "8f23b5de57c1a3a6b76e339747924977ccc64c8d401c27afb0e45d96be575a5a"
+          },
+          "core/attr.gd": {
+            "source_sha256": "e3b05b845b432195b5720f21354144dc8856593e4700690dc72904621ce6e62e",
+            "gdc_sha256": "04699846226ed98f008c1e469b7b5b67439b4143f6c61c90e170407f042e9345"
+          },
+          "core/card_def.gd": {
+            "source_sha256": "f1e9367aed1e980a43036a3816aa1f45155305fdb3befae5ea363332bda1707b",
+            "gdc_sha256": "a01c5fc9a93645fe7682b52d458b38c932915b1df0d156100f32806ec075d6cc"
+          },
+          "core/card_effects.gd": {
+            "source_sha256": "3f92b592dd5d4ca6286a007938408298c2793e4a2cbc85cdbf962fbdef9413d8",
+            "gdc_sha256": "3a4d24bfa6c7b041ca9b7ebe7dbcd4e26a4965283243e3fa2870f6004f51dca4"
+          },
+          "core/battle_result.gd": {
+            "source_sha256": "f4bebbe298ff0514562773c40b4f530791cd0e81540f8f90ff229dc79c386ab3",
+            "gdc_sha256": "6073c3158c75993f42d2eb8dff4cd82e9f0304f723e4fd89eafe0a2aab769bd0"
+          },
+          "core/power_calc.gd": {
+            "source_sha256": "afe4899313479b6cc99a5af3a0342e39bbd85241963a2549ff32ce94c238f39e",
+            "gdc_sha256": "d9f10668e4f37b24571a9fb762fc74c11def7e147dee0b54c6a7a8aff770a60e"
+          },
+          "core/match_controller.gd": {
+            "source_sha256": "870193fea7f8c6f8fcf26a48b724a3a22a3e808e5d4ca04766837855f27007d5",
+            "gdc_sha256": "9055ea5e87c972a78742c50e7f5cafdbcac3fca83e45a8cde34bebab2972c5b9"
+          },
+          "core/battle_participant.gd": {
+            "source_sha256": "b91ff4d7154942c4f8626c0823d91ac863c5731efd021028c8bdc80e5bb51c12",
+            "gdc_sha256": "6aee0a3b6be7cf0df866a9b27eede77fa790e4a07bccc9e33a8f67a1fa9fc7ee"
+          },
+          "core/battle_context.gd": {
+            "source_sha256": "fa0fe10f2fa2d8a4da9b836cf6a0e4c029ec8e9b83f9cb7acfd0a8104df125d7",
+            "gdc_sha256": "e1ffa417e801733e8a663b2a1bc8fe1917804a9b76f633f0c0970426f36e327a"
+          },
+          "core/match_rules.gd": {
+            "source_sha256": "201ebb4dbc41cf1833d24409726000d26df3364165e67507ae28b5cb10fee265",
+            "gdc_sha256": "2156653c23cf54bce3e9f836923cb4d63dbd7d0846487dcae3d05b271a12567c"
+          },
+          "core/ai_player.gd": {
+            "source_sha256": "f10fac9cf9f76d9aa3803cf181ec0a8916aa98f7971de0d1d47d139716afecf2",
+            "gdc_sha256": "d53afca440140a7e1eaeb3cf5cb09417f3fa5f8cbd558291d719512872bb1c2f"
+          },
+          "core/match_replay.gd": {
+            "source_sha256": "287481c38f2eb4c6370e6f9bf182e40b0daec867c88e1664b9c422433f444b1c",
+            "gdc_sha256": "3361e33b2cb25596b474e0f5a4bf486575233f1c1eff0de606239f287f630e7a"
+          },
+          "core/tournament_npc_simulator.gd": {
+            "source_sha256": "f28b233aa6b86d87c2d37015142c9f07d899dbc11853e685455112678abb05bf",
+            "gdc_sha256": "bfba64f50e8916dc92c6b90b339d492df612ce620dc89bd8ad184178aa88c5ae"
+          },
+          "core/tournament.gd": {
+            "source_sha256": "b966b7f6b8b202e044e6b344db6b9c32db4cdf88cf93eb9996a54973fe401b9d",
+            "gdc_sha256": "288557f9c3116eee915061369fb1aaa7a9b4cb2970eccf77c073baa952a2fa1c"
+          },
+          "core/campaign.gd": {
+            "source_sha256": "c0869df1de07300fe5604140aedbd391ff23569e647248bbbcd0d9a3b5cde6fe",
+            "gdc_sha256": "16382ad79f1cc383643d7d90dd412301b3efd70d0c740fadee807d35817c7455"
+          },
+          "data/game_data.gd": {
+            "source_sha256": "b0f33196596c15a4804334561c8ac5af136122e7efbacd7b300d18fa1b07cebf",
+            "gdc_sha256": "90a4a30521a3e3aa9f168a668f138e42e24fe928080c38a0ae22e41cf9ebf19f"
+          },
+          "data/arena_locations.gd": {
+            "source_sha256": "fcc27e3efa3c17b52e1071d8df5f7bf85dea51f10a8585e6e47a8405039a5d2f",
+            "gdc_sha256": "538457fa02427b52c2c4a600cd680a05bd54aef61c82bee6f9d221b0cade4b6a"
+          },
+          "data/player_profile.gd": {
+            "source_sha256": "e681425ccdbe2dfe11657a2740ce7b5842e380cb740fca5c39e044299988781e",
+            "gdc_sha256": "b5ba5016302ed7c49de325c6b031d3feade50c5270b79c8727294f272697e81e"
+          },
+          "data/tournament_session.gd": {
+            "source_sha256": "827615b9ba98c5d6cc5d04932d90c1dfedae3c1901df35937215bb580c178e76",
+            "gdc_sha256": "e47077eb5e1673286a93d764f86277efd87d540a60de566ca75818d7fce6e13b"
+          },
+          "network/online_protocol.gd": {
+            "source_sha256": "a9cd4e2ddd3620be2beabba93f4c770f0845a6ecc43f13d1c7ced278e6807017",
+            "gdc_sha256": "bc1aae0db32d44d8239edd4781f8d271253ac6932eddbafaf787eee9ffb4b7a4"
+          },
+          "network/state_codec.gd": {
+            "source_sha256": "d709b3ed6f674d0b13bbc256de354eaf36f8126869325e5f4ff91e8cfea17936",
+            "gdc_sha256": "9fadd43a970d41a77c6df2ea0f8da4657ea7039830b84b9f4e727eb9aeae311f"
+          },
+          "network/online_physics.gd": {
+            "source_sha256": "65ec199a44e243a7d2b18a799fa1aae3ccd8fbdce507376a1bc7f61c212433b8",
+            "gdc_sha256": "aff920f76c9b86512b2b41175cc1159b07894870e2d382efb4e73c7471488fc7"
+          },
+          "network/online_client.gd": {
+            "source_sha256": "35da5150551ec7309b671be1789d34fce339b2c425e2b8eb51fb0c995baa09a6",
+            "gdc_sha256": "e12482dd2f75b678de8be7f6cd1d95444d32dcda23fbe79f7a20592f5d8425e7"
+          },
+          "network/online_server.gd": {
+            "source_sha256": "4a865f3720b02a0eb79e201d4c5076114c9118d442136a149dd5944570d13402",
+            "gdc_sha256": "12fac596a37584e2538710089bf202ace28d271bae31592601b78a8a712ba6cf"
+          },
+          "network/server_main.gd": {
+            "source_sha256": "16e6c45491db4c56dfa320c8dfc08c303ff0e34f28487c131eca61f19e810920",
+            "gdc_sha256": "0f2852d803d09ef6496c85601ece1e6a3c9385de6e5272ceb1a59fa188d7e1a1"
+          },
+          "network/online_view.gd": {
+            "source_sha256": "30f18d0a4a8eef9ff9ced859bac731310a754b7c6b8687f561ff759a46e4478c",
+            "gdc_sha256": "2f31a5b0ca840e01acefde1016f9d30a43a87527a770e32191fe44f892c22791"
+          },
+          "scenes/visual_util.gd": {
+            "source_sha256": "3dfe2d51440e08700fda7b78667bf823de31d4c7dac6c95358d083d94ab766ee",
+            "gdc_sha256": "3e439aeb93d332da6bb2e9ca5b3b1c3d2b89885a4034bdb3861f78217eeb9314"
+          },
+          "scenes/event_player.gd": {
+            "source_sha256": "9c950abd8b6bfeb038bb5aa092b301d40c5146ddb76947746c1be51ded3e1e7e",
+            "gdc_sha256": "c1f0c17fd24bee847a7099ae5e3a9968ad875d7a000b3b1f7b28dfa56cdac5fe"
+          },
+          "scenes/throw_controller.gd": {
+            "source_sha256": "618881392b248db35dc06381bc06cd2c2a5911cf6db842de7a6d0f24ed637b14",
+            "gdc_sha256": "0fcfa692f423d53f14ae874cd9e72ecfe9cb2f33163e06103095b300f6f7d985"
+          },
+          "scenes/creature_anim.gd": {
+            "source_sha256": "e50a41f505f22f16df4809c2c8d6420c129a276e0c1b5b28ede58fbc30437d30",
+            "gdc_sha256": "6d0d66b0bcabcd76e98efe464436348c92fd63fc3941a4e76a357f85f9eba911"
+          },
+          "scenes/camera_rig.gd": {
+            "source_sha256": "9968665514ef174f8d2da907ad2b4e3cd205f102533bd4c38a004593397640d3",
+            "gdc_sha256": "5f50a28fd3b7a3ecfb9198ce8427fc165eab980d9d23932f669d816f80cd97c7"
+          },
+          "scenes/arena.gd": {
+            "source_sha256": "b4557b08faac1e196c2ba8fc965dab66609739091e69b3cf912b336019e04cf4",
+            "gdc_sha256": "7f6db8bdf4dd36fbfb7a63c4831c40ed13946b88d7a27b37f6bfacdc7ada7767"
+          },
+          "scenes/graphics_settings.gd": {
+            "source_sha256": "e44a986cf551eed0fc08ab26804fafa9456ca79ea1ecd3c6210bafa2c740697a",
+            "gdc_sha256": "8fa1dfbb0ccf4ad347f114075d69b93a1981028480d46c53ab64d08bf506bb42"
+          },
+          "scenes/arena_card_node.gd": {
+            "source_sha256": "9c8c4e6c24f955bbe28074e7583e4726aaff087c613a6a136529a7646ce2493c",
+            "gdc_sha256": "9fa292e054fa4ccd4c90a1b644582ce645dbc48643141a68ab61b8da0817a38d"
+          },
+          "scenes/element_icon.gd": {
+            "source_sha256": "3534f178abdd45aba6c25e31d22072d142513ff30fd9b030b82a3b24c87a07f7",
+            "gdc_sha256": "25b22db0a21150fbee1ce3e0086eedd60bada3952a14a2a64b65fa692343e413"
+          },
+          "scenes/attack_fx.gd": {
+            "source_sha256": "cd3afac6db16507ca924266e1c014a9d301c22e44888fc9b29b2160285601aff",
+            "gdc_sha256": "43ab97c4b3afda870ccd137dcdbc19fc26c31beae6466d19299f890b884abf31"
+          },
+          "scenes/main.gd": {
+            "source_sha256": "3a53b17f7f2d5ab97031e60d57e2fdccae595f4c9646507f1ef8433b14d16fcc",
+            "gdc_sha256": "f58191f64e4818ee780f2be00f381e679c723b80d250d22a3ee405fc404d7239"
+          },
+          "scenes/creature_ball.gd": {
+            "source_sha256": "ac0661d1171a38f26e27a7aeb13668d67e7e28ce8dfd4adced37573ed07f510c",
+            "gdc_sha256": "6819f5b17580bf74af759b4017cdda8c8c2a2e0f66329dfeeeaf74eb9a59e300"
+          },
+          "scenes/creature_support.gd": {
+            "source_sha256": "b1ca0046dfd01791aee89a8f68a7664146880aca185a9a3106db437f7944a953",
+            "gdc_sha256": "1c3b7cea298318c41b72b9a8553bbf82cb1cb7da2060237148916e630f6f772d"
+          },
+          "scenes/creature_models.gd": {
+            "source_sha256": "8f69e9d1ae107c10a63fc21d3654e65bd0ac8e26757ab53614a2f906d8f1e77b",
+            "gdc_sha256": "af7c5230c905bec9211820599f5a38fcee197260eee685728f26b685b0b43683"
+          },
+          "scenes/creature_cloth.gd": {
+            "source_sha256": "c01a5dde9a50f3679a90155640c9affd5d953d70997eb52de42f2ceb75612de7",
+            "gdc_sha256": "052fcf749bcdaa0b633d8bbf9c88066202597a70bf89fe44caaec5d63521a0f6"
+          },
+          "scenes/model_lifetime.gd": {
+            "source_sha256": "91fc942583a1099d35362161d5de956fa2ad288d0ff745c8d629d05eb82d0214",
+            "gdc_sha256": "459f750863318aa7ef75c440c440b0efe6bd6988a2e8cb4022d8d321b5f0abad"
+          },
+          "scenes/arena_landscape.gd": {
+            "source_sha256": "a1e0198e9388340cbfe75932daacccf6fdd57c15d9208fb9613298a0a7449094",
+            "gdc_sha256": "ed4b2a32b2400f712361d4a6dcefab8b7b3d2030bb1a4100b15522bbf25d3dc9"
+          },
+          "scenes/shot_physics.gd": {
+            "source_sha256": "854698205ae29103cccd58829ce84c76917e0e1bd06ba0383b12c921dcdbbfbe",
+            "gdc_sha256": "9ce55621ac5546529ae117611477bbf3475612e8de96817e12d05c12efe24c83"
+          },
+          "scenes/sanctuary_interior.gd": {
+            "source_sha256": "aa60dce0a04f1221c9a1d81bb62ea2824ab99e19f29e9d5918f21912ce3a9421",
+            "gdc_sha256": "f12dce2ad03731372b056d65783209e593421157e9e4f1f156d0e77a02d36f22"
+          },
+          "scenes/sanctuary_window_light.gd": {
+            "source_sha256": "f95ac95b0ebc076adf403d1f9ed498c5384b9c1676ed75c9f29560fb3f588eb3",
+            "gdc_sha256": "1d52760f43569bd78b2d5ab356870240dd8af81d0b59a255963971bae64e90ac"
+          },
+          "scenes/resident_cloth_solver.gd": {
+            "source_sha256": "8d9cc64e73dab67bf4146bb1d8f7f9a116841f8bb4388e58247b4ecc3fc0548a",
+            "gdc_sha256": "44c604c3338eb5a40e4b5715b1e22e4fbfb452f9651702a1d3fa3a6b596ff43e"
+          },
+          "scenes/dragnar_torso.gd": {
+            "source_sha256": "bb84d2cd7e838782d12049c171d9fcbece40a1bfd1e5d9112d6f234fec9530ed",
+            "gdc_sha256": "a6c4d89bb3fad406a561a500deae803f96d68e2b3de82e7ee5a589bb07c85f99"
+          },
+          "scenes/grifalon_flight.gd": {
+            "source_sha256": "bcc74db143ad1bc8ccb5bfca04070ab4cb3b3db5a854f713e18d3a51a77c7d99",
+            "gdc_sha256": "cc213a0c9f021df0bd67553872bdb2161206feb838a9288dfd98d8595cb6320a"
+          },
+          "scenes/grifalon_tail.gd": {
+            "source_sha256": "e5278a89597a1f6977b32be4a4721e9973a8248f48672007f93283f6181e611c",
+            "gdc_sha256": "d56c9ef76497cd4a9e7eb92545b9300b912c7b5f18e4caf216b40f5b2c652bc0"
+          },
+          "scenes/ui/battle_overlay.gd": {
+            "source_sha256": "df81c717b3afc00688737621b3a7c539fcf5ef8d394208cfa3a1ee6577bdab51",
+            "gdc_sha256": "97071746dd31f5a945d63e176972d5bd269532c8f5ac3bb1b364361473929d85"
+          },
+          "scenes/ui/help_overlay.gd": {
+            "source_sha256": "3db1ae93edbe8fe4a8977682622541c02c7d0c82b3cf09b9230f16882ef04fac",
+            "gdc_sha256": "02bac2654bfa40f22b551e85435cb1937a71a69d034ec59d5bf3dd9fcc2ce8ba"
+          },
+          "scenes/ui/orb_button.gd": {
+            "source_sha256": "65e1f4c79ecd3f3c9759ccde0a6f5b53ebab08891a19359b5fc4822078e8d60e",
+            "gdc_sha256": "2eb833a91aae76708000b672b84b98108160e7b9d1f8b7c93493d8ce251dbc2c"
+          },
+          "scenes/ui/fighter_plate.gd": {
+            "source_sha256": "ab768b92050914f4942988ca894883245c5437c97f37149d2cb8d9a2229c9627",
+            "gdc_sha256": "aa8171b6d21383a73da699bf72c251330540a878b409e39f17015928597f70a4"
+          },
+          "scenes/ui/ability_panel.gd": {
+            "source_sha256": "87f7084b5ea95d0988f189e25c64e23d6898327c96dbf15f675d8c84eae9e0b6",
+            "gdc_sha256": "c153dfd99498ba56417a7806d71762e9774f52a8d8fba270d4d18c99f1f9598a"
+          },
+          "scenes/ui/setup_panel.gd": {
+            "source_sha256": "48cef14a83c3e4b30bef9d14265121359def06b302dad7e04d0a8e23818bc405",
+            "gdc_sha256": "fa9cbaee8e22119907785f8db943d8041f9dca24ec6136127810fc1ad524ecf2"
+          },
+          "scenes/ui/game_over.gd": {
+            "source_sha256": "9a7d451e8845f88164e6300ace7d09e4e861fed5cecdbccccafe1c908006043c",
+            "gdc_sha256": "da3ee20b3e885078a00d4c6a445142acb541403b319512dcf17ee44dd5ff8470"
+          },
+          "scenes/ui/hover_tips.gd": {
+            "source_sha256": "d1e6d6314fee677853a8cbfcc0408038e60bafbea7331ab01076a4b177ec6b3b",
+            "gdc_sha256": "c37b90623ad05450ec9c3494b56ff3f0611aa33a1875c5931c970eaa544b3ce7"
+          },
+          "scenes/ui/card_view.gd": {
+            "source_sha256": "24864b6b0b30ed2b1dfee211a9596871b77b6065fedd15c7880674f5418d6c2a",
+            "gdc_sha256": "490606e71eafb96c5baf1ad4b435a7dbee3fe336c875f76f49f676bbddc0221f"
+          },
+          "scenes/ui/ui_theme.gd": {
+            "source_sha256": "65ae7a8c072d5d7f06720ed4cdc9fb59a24f57c4a19d988d68bbd51d22409037",
+            "gdc_sha256": "86a9ef4910d6b43dd7eafbf7b965ca3a68a8e7482f7efc10fa2ec43a3e80a6dc"
+          },
+          "scenes/ui/element_mark.gd": {
+            "source_sha256": "19e657de51879827188d4f92ae9cf144ad5cd5bc6b9ba983e902f640ae5e622c",
+            "gdc_sha256": "aca5d5a9fec2e60123cc6af7d11fe706c01c2646560dbaf4d4cbfc6f0730c6c1"
+          },
+          "scenes/ui/team_menu.gd": {
+            "source_sha256": "b361eda7c990e92f1bfb7f50800ddc5aa061b7120923cd37180e22e7d72aba3e",
+            "gdc_sha256": "ec62b44effa424a22a23f18ac7b86cdb8727f386bf08954f8ce5f13744f819a7"
+          },
+          "scenes/ui/creature_preview.gd": {
+            "source_sha256": "6a0faba045b36bc504504b7b4e194674d8c1cae6fc11ed7c773ebfd0cdd7b77b",
+            "gdc_sha256": "6bf043afd02ac650db7c5b29426d0f8d367df995ced6a36c35d1158aed1a019b"
+          },
+          "scenes/ui/battle_hud.gd": {
+            "source_sha256": "38bc0c714609d4611934ebaa2f5d9a387a87bc61bf7efddc38dd48207494d12e",
+            "gdc_sha256": "d0b0a7e6b59d3de062a32b21b19f3a533d8edc5eebcf680599ca502e0f1e4e8a"
+          },
+          "scenes/ui/hud.gd": {
+            "source_sha256": "5978962a1be94f3a3268fc7754d4a64b6fd49f5f1ed803939f706bef5aaad5f3",
+            "gdc_sha256": "ba0b7fa32b07607452126c7e9576b7ec870bbefa28199686126cbae446392686"
+          },
+          "scenes/ui/arena_picker.gd": {
+            "source_sha256": "573f2ea80c2f924a7b374dd97c7017307590b8392805fcfc35c3563ea436947d",
+            "gdc_sha256": "ad1028ee6aa73a8e9b36710236e8f6842f6e16742ccdd99d26f1586dc8a9a8af"
+          },
+          "scenes/ui/character_editor.gd": {
+            "source_sha256": "5868ab8a1766f66ae574159100738b908675c64464368f573f65dc1dbab8eb99",
+            "gdc_sha256": "7f52b1f89cb86ddad59b40e7514cb7b0ea18cd7d50dd85bee691e09fb1344c43"
+          },
+          "scenes/ui/vrm_preview.gd": {
+            "source_sha256": "6cdb35ac3a15c38c4ea603ddad2bd9c0f5acce270f6a82ea2c7f3fca09560f96",
+            "gdc_sha256": "9de24959f72cd22be056dda1cf876fd252bd16780f993fec88e0f9e698a2c247"
+          },
+          "scenes/ui/legacy_character_editor.gd": {
+            "source_sha256": "91c4287481c210c5742278bbd1df8dcd8e48bd685d853fcb8e99f4bf8464267a",
+            "gdc_sha256": "3027817fbe686e7af387f6659c0e4652626e75ab243d47b0e32e2124aa5751f4"
+          },
+          "scenes/ui/tournament_panel.gd": {
+            "source_sha256": "812478bd42d40be0d62b9a3d5c2a1ee51a7a35be326c80681da9e18f662d8cb4",
+            "gdc_sha256": "c068247d2e89808038b9f2c8ab814778abf66c16b7c1150d3a8394906d937d2f"
+          },
+          "scenes/audio/sound.gd": {
+            "source_sha256": "53852fd034e69d123235877fafe050ead7a144b003c4daf7e3779348167d078d",
+            "gdc_sha256": "ec369032a5058aec9cec6735222577475acf594d89850b0bb6c6491abe5f1770"
+          },
+          "scenes/menu/day_cycle.gd": {
+            "source_sha256": "14dde5bb22a36b0aa04044ae4783bd1a87d10e95c52f47302749e858637703e5",
+            "gdc_sha256": "bb029445741c74e7caaed1fbc1e22207fda7adce677884dea3fea60c08a524e7"
+          },
+          "scenes/menu/audio_settings.gd": {
+            "source_sha256": "637b63b9feae994934f76d259010e09a8d8b1c87c6648d88280313cd5beb2544",
+            "gdc_sha256": "d6abf12166dca723921a615debf12f2d7ee5a06cc5ffcfdb8b3eace56f53fca5"
+          },
+          "scenes/menu/main_menu.gd": {
+            "source_sha256": "5ae390c11d3d5e0b5d6d4dd845f3e389d0c80e4a6fa589689a2304ad2edde039",
+            "gdc_sha256": "3e167b265ced0e2b4577e40b17f41f402ae49f3ad63c9e41c6f3125cd6bf2808"
+          },
+          "scenes/menu/menu_settings.gd": {
+            "source_sha256": "9c34240a872f2a966041a5db7b9f9729e2331afe7b947281405ae074c82aa562",
+            "gdc_sha256": "2c67ce5b5104f67f5f8443aca425467b3963d9f83de3ea9a95405b557c68c215"
+          },
+          "scenes/menu/menu_traffic.gd": {
+            "source_sha256": "0c03d3856bbdb6ca105ec4793d559e66dc91371ed737d7d97ef3c63666fce55a",
+            "gdc_sha256": "998842476a9a88d5a0ef359532c2c6d35e3012610bfa483bf7ca048a4e7b8a16"
+          },
+          "scenes/menu/menu_orbs.gd": {
+            "source_sha256": "4d17778f21106408c3bcd741db1cb04f9cbe09b35419c725f4621ce1a2d18e67",
+            "gdc_sha256": "fac13bb8d6bd1f81dcd6a70b43b751ac0a2e86f6a7a1c191dfeeeb52de4b831f"
+          },
+          "scenes/menu/menu_city.gd": {
+            "source_sha256": "aee7c169ef3a6c332ae2aa94d1d0276705c9b93baa542a7894a179e136a4e628",
+            "gdc_sha256": "9c3cd071b025dd920e4856fc242a61406f443a553ef3249afcb03e913699c1e3"
+          },
+          "scenes/menu/menu_overlook.gd": {
+            "source_sha256": "2a270e35de555b036d83ae6e0af6d8f0193bc838f684f533daa33b90f92a41c7",
+            "gdc_sha256": "f6b2e6c915b7e3f4ac976bd911b5521e659c272db3e7909df2ea65fb70806867"
+          },
+          "scenes/fx/ball_shell.gd": {
+            "source_sha256": "726f270cf43b91749df2558c90d7ae0ec0d91f2056556b2eae41b3516ea1477c",
+            "gdc_sha256": "6d025796801433e10cd973f7b19636344ae0a263ec63f27804077236450d6a79"
+          },
+          "scenes/fx/ball_trail.gd": {
+            "source_sha256": "5ebbcb2fbad8b007fcad8c0ca0e3aab1657c01720557b814df7c98eb857082c0",
+            "gdc_sha256": "72054f1617a51b05ba027040b5d0c7dee8e7887b9eae5e718b57d5835442ac69"
+          },
+          "scenes/fx/ball_fx.gd": {
+            "source_sha256": "77e94997ba0b3b23a16592469564c4831a8a31ed127fc12fe97dc0371e02220b",
+            "gdc_sha256": "18623ebc6ecadf14e4d211556541ab276f06acff75ec81dda52af482fc489a3d"
+          },
+          "scenes/presentation/arena_director.gd": {
+            "source_sha256": "a6280e7190e32e455a5fe76bd6f2849c34214b270fb77a60999bd398cccb3d1e",
+            "gdc_sha256": "a3f7214c0bfb2f0ad7d786ae94b5385bcb4b4c315fe539708cf545b94a6661ad"
+          },
+          "scenes/presentation/battle_tempo.gd": {
+            "source_sha256": "a003b24e6952e4bca8a0a469d89440312206e9ac82aebd84b236b8bec87d889d",
+            "gdc_sha256": "2220be60c951e5c50dc0b4c73b6d191cf06a906b36f7270c09685696c234440c"
+          },
+          "scenes/loading/startup_catalog.gd": {
+            "source_sha256": "130955034151eec247f6d9e19b7f5b2b9c0dba7130be490f74969a589fac0f21",
+            "gdc_sha256": "be2393570f5b5920366c54dae8b46640cf9ec680b3df894cb764427218aeb526"
+          },
+          "scenes/loading/game_loading.gd": {
+            "source_sha256": "94036d8aeca0b7ba62a86d096fe436435bcd3dd6c169db49c86333bc9b488bef",
+            "gdc_sha256": "56a06f4682dcaa33ea87eff9b761c0484109bc73744aa01f840e81afd697e473"
+          },
+          "scenes/loading/boot.gd": {
+            "source_sha256": "f07dd9b5516030200a0955f8f375d20a08f6bf756f812d675ee351b2cc99c312",
+            "gdc_sha256": "16400afdf3a403574e2cf81ecc680ab4b144a12eed719417816bd79c0e176495"
+          },
+          "scenes/loading/preparation_store.gd": {
+            "source_sha256": "97c7fcb0cb94e8c149b63c9ac290ab203bb18e1c384d6b7db40a344921a19fe1",
+            "gdc_sha256": "f20b7f6044ef1dfb5e6d49df483fa059d1281ada9686949e358457626045ce93"
+          },
+          "scenes/avatar/fighter_avatar.gd": {
+            "source_sha256": "8ee63d80fc30d6cf1a7aa42143c2f8960c3522bb393d5f7b3b2c8f154e72cfb9",
+            "gdc_sha256": "37e70b03662890dfb39633366c78592dbf0fcc14c05b7ae3d02e922693b4a871"
+          },
+          "scenes/avatar/vrm_avatar.gd": {
+            "source_sha256": "6df68edb0d26b8c24e0922abc3c4349c182904098ec780104fb65f2635ba8d0c",
+            "gdc_sha256": "5c21b390085dd1fbd4d33a96c4a44738c178a2f487cb3722fa88aed024819239"
+          },
+          "scenes/avatar/vrm_palette_shaders.gd": {
+            "source_sha256": "838b4564f0237aeb06079e311b8aca38576456f5e0d8c597be4353add938fc87",
+            "gdc_sha256": "dd01af5f21866f9e9fa1a0e039055ef4101c2d869adc8c5d2506d7feba791ec4"
+          },
+          "scenes/avatar/vrm_parts.gd": {
+            "source_sha256": "25af9b18013e1f855fef65d3ef49eea1ef2109043b4272fb2c6baec6579a5472",
+            "gdc_sha256": "b3ccde63a8a6cc6925978128a3804c00c44aeaad2182493f438dc46cd18389ad"
+          },
+          "scenes/avatar/vrm_fighter.gd": {
+            "source_sha256": "69762d497dd43f62ca419a64c20ab1fd0dee22b8cbab15de6728a7365f3092aa",
+            "gdc_sha256": "0f0fd31d382eb05abab7979ee91fbfd8e418b0fabb7b4762820e0db8f4747779"
+          },
+          "scenes/avatar/fighter_portrait.gd": {
+            "source_sha256": "d5c01b20ae77a514280633a49f971d0ce472705f8ea58237ec970df121e05c7d",
+            "gdc_sha256": "895f5033f1b3d5d082c0c07b92e9de6bd53b3071cf22c838f0250b17048a4c45"
+          },
+          "scenes/avatar/ability_card_prop.gd": {
+            "source_sha256": "62e57acd842a9d10b230ce8d9985939d2f5a52aa3549d0ead0b4caf8bff2540d",
+            "gdc_sha256": "9c463c84a8bd97647430706a384f72a5962fef9ed517d6f75f5ccb46801fd8ab"
+          },
+          "scenes/avatar/denim_wardrobe.gd": {
+            "source_sha256": "d1cd801273041cc095f81769bb5df25e0e9808ef4c2d65231247b14c5383de18",
+            "gdc_sha256": "e7597a642d929ea5d27fea6c56c2d282de4350fd329e445fca9a1a65a3c91f80"
+          },
+          "scenes/online/online_game.gd": {
+            "source_sha256": "2833a610697755077c53884682dbc1900ccecdaf84d56d8efc0a5f45d79bfb0f",
+            "gdc_sha256": "38227f5352ba9bb74a9c05b6c80c00c6fbbdc8898ad0f0688dcbd8d97ffb8b48"
+          },
+          "addons/godot_gpu_cloth/plugin.gd": {
+            "source_sha256": "45bb8dc00c5b957e7433125859223b295eb3ad39c4db3889cf8b3f5d47aac98a",
+            "gdc_sha256": "3e3250bcab3b210e054ba4061b738c390a384704fd8330b9e3ee331a0217e4ed"
+          },
+          "addons/vrm/import_vrm.gd": {
+            "source_sha256": "877b876f02f77028a8ecb62021e6b54f44741716486fbac84058046e3246d79c",
+            "gdc_sha256": "13cb90b4d23722a08051e5be929e90e10aa1f36c21600416251ea12e052027d9"
+          },
+          "addons/vrm/importer_mesh_attributes.gd": {
+            "source_sha256": "b059894ed16849043b7cd1d0504881384d633f101593f3913a7fd3b19f57b1bb",
+            "gdc_sha256": "1e3e14e30bfafe8d80e74859c5f0149241ea2d8f35bc07d9329139ad13feffa8"
+          },
+          "addons/vrm/plugin.gd": {
+            "source_sha256": "813eaebcde77992b983191b7ad9ca6e950c00856e94b53ffcc55bafd882b58a7",
+            "gdc_sha256": "ab64a9090cd290d1ecb3b7324b01d8dd8d3cf9be99676509aef740049c30bb87"
+          },
+          "addons/vrm/vrm_collider.gd": {
+            "source_sha256": "bf6fd5f0ee81d84423080aea4fb915f1bd1588aebc2f325ca07ccd65b7451087",
+            "gdc_sha256": "c8c16546581023f26b50275c8a6e9c3d1456d7bfe0a05aab4b39692ff47e32f0"
+          },
+          "addons/vrm/vrm_collider_group.gd": {
+            "source_sha256": "c4b16cda0156416574de7fc4004b689ff6558b84ff309a4a6e2f788cd4118bec",
+            "gdc_sha256": "e19d1501559abc4849defd4d6e7c01fcd6861e936f2de6660faf799a94e5732b"
+          },
+          "addons/vrm/vrm_constants.gd": {
+            "source_sha256": "e65b98b8ae4a74111bf15e345ca62334ebc5fa04e9ee08feed8c916a61f9f9f1",
+            "gdc_sha256": "d816caedf31e1ed10aac9f0b3c47a844b6e1817f5c14ec6bdb13aa55214351a2"
+          },
+          "addons/vrm/vrm_extension.gd": {
+            "source_sha256": "0d0a4a72b1b89716143b2b45b00e898f90f8de08cb7b022a112240da55e3983b",
+            "gdc_sha256": "d00ae812f6420c5b5782c52c6e98edbaa6cfcb2a8d28012288bf53542d4b1760"
+          },
+          "addons/vrm/vrm_meta.gd": {
+            "source_sha256": "8ddafa2146be2d8c28f01ba9723b042619b480c0bce0ec597aee5cb7bdfe76a5",
+            "gdc_sha256": "86cbb1e08a0d928044969ab6381f69ff54cbd96d723e815e78d930b57d0e458f"
+          },
+          "addons/vrm/vrm_options_post_import_plugin.gd": {
+            "source_sha256": "2f105a47c9b525dfb207134ad260be9219d6d5ea29e7b1109df2b0f6e32e8673",
+            "gdc_sha256": "c8ac4e7f092f70f1f86b21582ac859a3c41a29db0548eda4c6c97c764987aeab"
+          },
+          "addons/vrm/vrm_secondary.gd": {
+            "source_sha256": "cc5b78de0523a372fa93f5f28685542aa3348caef35c8a43e838f6c2b367756e",
+            "gdc_sha256": "d955e2e2a2ffa6b4de70685acff7eee791f525d8e8948f902200df1596f64f10"
+          },
+          "addons/vrm/vrm_spring_bone.gd": {
+            "source_sha256": "f6200c07441b10a70269c3e1e51b664dedd56d5b2a0e279f66e9c03a38b24b8f",
+            "gdc_sha256": "a9c0d1c20f862880106a4c9ee62b55915c99a695069e01f96ef11d4f0c995ccf"
+          },
+          "addons/vrm/vrm_spring_bone_logic.gd": {
+            "source_sha256": "ae1a2b7e88c761139c6b78b1564830f378972f722b82f4b1378891671df7e392",
+            "gdc_sha256": "3c143b5178c48cf88c5d84cfada8de134a8ed63c939f27f258b128f7dac8268b"
+          },
+          "addons/vrm/vrm_toplevel.gd": {
+            "source_sha256": "f0670c0b797e0db6ab5082797d350cbc797f509333c2104e3bf7ec2e5dabc927",
+            "gdc_sha256": "a03b4bc8bd09ac1395e3e6ea27d124b25e43de198adc5ec9198ca1ed07b2d320"
+          },
+          "addons/vrm/vrm_utils.gd": {
+            "source_sha256": "0750c9411fb2857d85896c2285037d227005c4195bb7c8066b81d5ece4f6235c",
+            "gdc_sha256": "4887cb5ff898675fcd308dffae5138507325efe30e93d84c41e15cbf5ccf9562"
+          },
+          "addons/Godot-MToon-Shader/inspector_mtoon.gd": {
+            "source_sha256": "514ac79c15dbc2b748a1e4ca95c60274ebb8eec1eb99bdbd133adb8a5c1e14a5",
+            "gdc_sha256": "b2bec2197dfdb77a6d23f1a4aab1f05742b7cfd19b9cb08f6de7c368e0a7af96"
+          },
+          "addons/Godot-MToon-Shader/plugin.gd": {
+            "source_sha256": "b1a1f76fbdba0b391bdb9a181e7b66595aec745d77b73919872454a8c28131f8",
+            "gdc_sha256": "c8ca9267019d3b1f366c5190b06da17fb7910592a862a38e024a93a5619130ab"
+          },
+          "addons/vrm/1.0/VRMC_materials_hdr_emissiveMultiplier.gd": {
+            "source_sha256": "3e0882b31c6eb49e3702e32edaafc5c7dce85547ffe62c6eca10b3a686fee240",
+            "gdc_sha256": "fb11a10047c548f5952f97dcb8afe698678353d4de1b0dda453c2cdb71881cd0"
+          },
+          "addons/vrm/1.0/VRMC_materials_mtoon.gd": {
+            "source_sha256": "75527e71162e08022e1309ea344e2d020596349f70a752d1acee0d09ed929cf6",
+            "gdc_sha256": "2004ab4a7fd8edcc5e4179cbcf3cfb6a52ce3479c61b4f98c0e4d02a2cdec502"
+          },
+          "addons/vrm/1.0/VRMC_node_constraint.gd": {
+            "source_sha256": "c19424e89fae50046f6de82c629fb62d63f6ecc49ab14d0002d2de943175a017",
+            "gdc_sha256": "f0f2078a40dd2410bc89b588f0472c17c001a517725148b449442aa0f8d391e2"
+          },
+          "addons/vrm/1.0/VRMC_springBone.gd": {
+            "source_sha256": "38c14bb58bfcee902ef94f319abab672bb46db059c277e15b1e5852a61961539",
+            "gdc_sha256": "3fb2699c7c32f11a988dc5c85ae05c0ebabdcf69cb7f4eefee898669278bee89"
+          },
+          "addons/vrm/1.0/VRMC_vrm.gd": {
+            "source_sha256": "0b83917224828e286d2f0d23c8dc7b4ff40b0f9409845a46b6ba2e3610c233e0",
+            "gdc_sha256": "a0f782dc2f4ba1c2601cab64f83102098a293dad087d5a13fe04aa0ef25dfaa5"
+          },
+          "addons/vrm/1.0/VRMC_vrm_animation.gd": {
+            "source_sha256": "6def6f56c6c9329890c76fb66d1364aa641b5b9729cf269be8b4018504735d46",
+            "gdc_sha256": "d425e3ad41c562b984bf1703f25fb76f6ba2b3b6fb67af95831744880da1dfdf"
+          },
+          "addons/vrm/node_constraint/bone_node_constraint.gd": {
+            "source_sha256": "6850f86ac910b47c9f82a0fa983821c8c5e065fb0122cdee9ffcedf88aebdc08",
+            "gdc_sha256": "2ee3deed2a6cdbde99d4a44f61ff354aa3f3f9a3ad93a4719b4dd2a86450ca06"
+          },
+          "addons/vrm/node_constraint/bone_node_constraint_applier.gd": {
+            "source_sha256": "c81b69a229646567ba884b8446073fc34228636740bfdc1ca334a9590c75fc3f",
+            "gdc_sha256": "40869c0ec8bee2e17ee2afb479fd76dce7cfb4d38d173c25e27cb1395e06e488"
+          },
+          "addons/godot_gpu_cloth/src/gpu_cloth_collider.gd": {
+            "source_sha256": "819b9cea8cae6ab4a6ef41baebb3e8dc5e55636c56dc35b41fa468760b7625f2",
+            "gdc_sha256": "5534d2b84f710667a19c4bbf09588a68204577ba811578e1ad00411e93eab527"
+          },
+          "addons/godot_gpu_cloth/src/gpu_cloth_collider_gizmo.gd": {
+            "source_sha256": "5392d590bb6ce98757760dfc546db690d871749999f9ee98f37437b4898a56d8",
+            "gdc_sha256": "b265641a7a9601bd3fe5e99be2e20333025394d3282f698692b9e0eae46dc2b8"
+          },
+          "addons/godot_gpu_cloth/src/gpu_cloth_solver.gd": {
+            "source_sha256": "c788381a4b2e79a8ce0ec9b10c23e6fcff51746a559f1770d0b7d123369f5a5a",
+            "gdc_sha256": "1440ecfab8e680e1103bbbca41e4e15ac1400c816d9d5e7437b8f5966fa5423b"
+          },
+          "addons/godot_gpu_cloth/src/gpu_cloth_solver_gizmo.gd": {
+            "source_sha256": "fe8acc1fc3d3244d4e8145492a600814b9dfb004db2d5bbbc99cfcb472c6a200",
+            "gdc_sha256": "c7fd7a0a89e73c27f886cff424ce0ced6a910d71e22959b89a8665a7486e34bc"
+          }
+        },
+        "reference_export_only": true,
+        "reference_export_environment_diagnostics": "Editor TCP service unavailable in restricted environment; exit0, all GDC emitted; initial import also lacked writable personal editor/user directories, export used isolated XDG directories. No game launched."
+      },
+      "pck_audit_reused_after_unchanged_sha256": true,
+      "gate_wave": {
+        "approved_candidate_sha256": "485f1acf0f863a6d23b13c0be92c568743cdbd24c13f973bd5859f803800eb04",
+        "source_equals_candidate": true,
+        "wav": {
+          "channels": 2,
+          "sample_width_bytes": 3,
+          "sample_rate_hz": 48000,
+          "frames": 86400,
+          "compression": "NONE"
+        },
+        "imported_sample": ".godot/imported/gate_expand_wave.wav-b562da1ef352d69922072c22396a4ea2.sample",
+        "sample_sha256": "883c9625c8f127650c8d176b9f7b7e4073f1090ccdcc510a1262486956ac2bfa",
+        "sample_matches_last_workspace_import": true,
+        "import_stamp_matches_source_md5": true,
+        "license_in_pck_and_external_matches": true,
+        "preview_candidate_entries": []
+      },
+      "source_models_sha256_pass": 49,
+      "imported_models_workspace_pass": 49,
+      "prepared_pdat_sha256_pass": 68,
+      "prepared_manifest_sha256_pass": true,
+      "kevin_banks_sha256_pass": 2,
+      "editor_catalog_imports_sha256_pass": 2,
+      "required_runtime_resources": {
+        "project.binary": "project.binary",
+        "scenes/loading/boot.tscn": ".godot/exported/133200997/export-957917e049dbb644ce45c5cd4e97012e-boot.scn",
+        "scenes/main.tscn": ".godot/exported/133200997/export-3ad5c15c4f3250da0cc7c1af1770d85f-main.scn",
+        "scenes/main.gd": "scenes/main.gdc",
+        "scenes/loading/game_loading.gd": "scenes/loading/game_loading.gdc",
+        "scenes/loading/startup_catalog.gd": "scenes/loading/startup_catalog.gdc",
+        "scenes/ui/character_editor.gd": "scenes/ui/character_editor.gdc",
+        "core/campaign.gd": "core/campaign.gdc",
+        "core/tournament.gd": "core/tournament.gdc",
+        "data/tournament_session.gd": "data/tournament_session.gdc",
+        "scenes/online/online_game.gd": "scenes/online/online_game.gdc",
+        "network/online_client.gd": "network/online_client.gdc",
+        "network/online_protocol.gd": "network/online_protocol.gdc",
+        "network/online_physics.gd": "network/online_physics.gdc",
+        "network/state_codec.gd": "network/state_codec.gdc"
+      },
+      "forbidden_paths": [],
+      "kevin_runtime_only_paths": [
+        "assets/avatars/motions/kevin_local/fighter_0.res",
+        "assets/avatars/motions/kevin_local/fighter_1.res"
+      ],
+      "canonical_documents_licenses_sha256_pass": 10,
+      "zip_document_private_signature_findings": [],
+      "zip": {
+        "path": "build/Sfery_Stikhiy_v0.3.2_win64.zip",
+        "bytes": 1030494506,
+        "sha256": "a459ffe71cdf244ec781aae74c54fc7fe0bf6a3b82cc98e4d4375d964683da39",
+        "crc_all_pass": 13,
+        "exact_staging_files_sha256": {
+          "CHANGELOG.md": "e64ecf88b357e925175c567ec6b9e1cfbb1f8b7d8efe1cfcd2040249cc684290",
+          "CREDITS.md": "f52c3f931ca76f885fc19c265e515051014250e4cba37006501ce074a3a0753a",
+          "LICENSES/FIRA_SANS_OFL.txt": "e1b302b6eac8d0cdbc7786f84fb4fa953d8be4db37613789c1a06adb57d33222",
+          "LICENSES/GATE_WAVE_CC0.txt": "f34c3ccfea18b90f943bac6545b876ffaf73ea0530cceff2c5c416712c92f8dc",
+          "LICENSES/GODOT_VRM.txt": "d39666c721f8453445364e66a08d0edec6fbc5b8e30ee1d9d710e84a3094c101",
+          "LICENSES/GPU_CLOTH.txt": "3e53bd060020c64601b050a039d42a07f969eafd1085e16b4b93e0f97f7c7689",
+          "LICENSES/MTOON.txt": "fd0a82d7d32ad7e39948363114587a3290252ee9a57da0da1582f1e9f0e602f5",
+          "LICENSES/QUATERNIUS.txt": "6d01f55c6e4c49a2c9963e147e561945ae2c83958c8ca667d90a6bffdbfac061",
+          "ONLINE_SERVER.md": "29178ec75faa9fe5265bb03880d03f6e51a0fb68ad166e86022e90ce9e7da425",
+          "README.txt": "3c6268a524b4f853b356801d4b20073594df21a7bbf1ad06a6063cd1a82292e7",
+          "RULES.md": "56013aff1b9655354a01222319f972751d0c8eb56f807dd6bd47a9d864a3844f",
+          "Sfery_Stikhiy.exe": "30ff3029eb3e84c53f140b280bc28613ebbcfbbb1bf6f530ecab3081810ee47f",
+          "Sfery_Stikhiy.pck": "63530850ded09858dd0e510302241672bad12ea970a6dcc19a28f54bd0f8569c"
+        },
+        "sha256_sidecar_pass": true
+      }
+    },
+    "server": {
+      "archive": "build/Sfery_Stikhiy_v0.3.2_online-server.tar.gz",
+      "sha256": "4f4c50545b28f2188f8c0d4b515f5c0638e9d9fd38414b055397fbfd0cf6ddfc",
+      "files_manifest_sha256_pass": 57,
+      "gzip_crc_pass": true,
+      "explicit_allowlist_pass": 57,
+      "online_rules_tag": "online-rules-3",
+      "ownership_metadata_clean": true,
+      "paths_clean": true,
+      "private_signature_findings": [],
+      "bundle_reused_from": null,
+      "runtime_smoke_repeated_by_auditor": false,
+      "archived_validation": {
+        "fresh_import": true,
+        "parse": true,
+        "network_two_client_two_physical_throws": true,
+        "protocol_healthcheck": true,
+        "readonly_project": true
+      }
+    },
+    "server_audit_reused_after_unchanged_sha256": true
+  },
+  "client_archive": {
+    "archive": "build/Sfery_Stikhiy_v0.3.2_win64.zip",
+    "bytes": 1030494506,
+    "sha256": "a459ffe71cdf244ec781aae74c54fc7fe0bf6a3b82cc98e4d4375d964683da39",
+    "build_seconds": 32.94641554899863
+  },
+  "server_build": {
+    "archive": "/home/loq/Документы/game/sfery_stikhiy/build/online-server/20261103-234327/sfery-online-20261103-234327.tar.gz",
+    "bytes": 70088,
+    "sha256": "4f4c50545b28f2188f8c0d4b515f5c0638e9d9fd38414b055397fbfd0cf6ddfc",
+    "file_count": 57,
+    "validation": {
+      "fresh_import": true,
+      "parse": true,
+      "network_two_client_two_physical_throws": true,
+      "protocol_healthcheck": true,
+      "readonly_project": true
+    },
+    "engine_bundled": false
+  },
+  "server_compatibility": {
+    "asset": "build/Sfery_Stikhiy_v0.3.2_online-server.tar.gz",
+    "asset_version": "0.3.2",
+    "rebuilt": true,
+    "protocol_version": 1,
+    "rules": "online-rules-3",
+    "old030_031_server_incompatible": true,
+    "public_endpoint_provided": false
+  },
+  "test_policy": {
+    "max_fps": 60,
+    "graphical": "tools/test_window.gd minimized/unfocusable/offscreen",
+    "full_profile_repeated": false,
+    "reason": "Retained current rules/card/AI/UI audit results; fresh exported PCK gameplay/cards and rebuilt server are tested. No change to models."
+  },
+  "packed_runs": [
+    {
+      "name": "autoplay",
+      "exit_code": 0,
+      "ok": true,
+      "seconds": 123.397,
+      "error_markers": [],
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/release032/autoplay.log",
+      "command": [
+        "/usr/bin/godot",
+        "--max-fps",
+        "60",
+        "--path",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release032/pck-runtime",
+        "--main-pack",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release032/pck-runtime/Sfery_Stikhiy.pck",
+        "--windowed",
+        "--position",
+        "-20000,-20000",
+        "--log-file",
+        "/home/loq/Документы/game/sfery_stikhiy/build/checks/release032/autoplay-engine.log",
+        "-s",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release032/pck-runtime/fixtures/packed_autoplay.gd"
+      ],
+      "pck_sha256": "63530850ded09858dd0e510302241672bad12ea970a6dcc19a28f54bd0f8569c",
+      "source_project_overlay": false
+    },
+    {
+      "name": "cards",
+      "exit_code": 0,
+      "ok": true,
+      "seconds": 43.957,
+      "error_markers": [],
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/release032/cards.log",
+      "command": [
+        "/usr/bin/godot",
+        "--max-fps",
+        "60",
+        "--path",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release032/pck-runtime",
+        "--main-pack",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release032/pck-runtime/Sfery_Stikhiy.pck",
+        "--windowed",
+        "--position",
+        "-20000,-20000",
+        "--log-file",
+        "/home/loq/Документы/game/sfery_stikhiy/build/checks/release032/cards-engine.log",
+        "-s",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release032/pck-runtime/fixtures/packed_cards.gd",
+        "--",
+        "/home/loq/Документы/game/sfery_stikhiy/build/checks/release032/cards-ui"
+      ],
+      "pck_sha256": "63530850ded09858dd0e510302241672bad12ea970a6dcc19a28f54bd0f8569c",
+      "source_project_overlay": false
+    }
+  ],
+  "packed_results": {
+    "completed_matches": 2,
+    "turns": [
+      15,
+      18
+    ],
+    "players": [
+      {
+        "side": 0,
+        "throws": 9,
+        "landings": 9,
+        "misses": 0
+      },
+      {
+        "side": 1,
+        "throws": 9,
+        "landings": 9,
+        "misses": 0
+      }
+    ],
+    "battles": 9,
+    "resident_catalog_reused": true,
+    "no_source_overlay": true,
+    "cards_summary": "Godot Engine v4.7.2.stable.arch_linux.ed1daf0bf (2026-08-17 01:18:38 UTC) - https://godotengine.org\nVulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4070 Laptop GPU\n\nBackground GPU test: minimized, unfocusable, offscreen rendering\nRELEASE032_PACKED_VERSION 0.3.2\nЧитаемость карт: 2843 проверок, 0 ошибок\n",
+    "card_checks": 2843,
+    "card_failures": 0
+  },
+  "attempts": {
+    "initial_server_import": "isolated editor TCP denied; retried with required local socket access",
+    "initial_exports": "isolated XDG lacked installed templates; final export clean",
+    "initial_packed_autoplay": "both matches completed but PNG output directory missing in external fixture; ERROR preserved in build/checks/release032/attempt1-fixture-png; fixed only fixture output path and rerun on identical PCK"
+  },
+  "limitations": [
+    "No native Windows gameplay verification.",
+    "No subjective listening.",
+    "No public server/external WSS/TLS verification.",
+    "Full profiles, model geometry tests and previous 400-match balance series were not repeated."
+  ],
+  "visual_review": {
+    "reviewer": "Sol high",
+    "fresh_png_reviewed": 3,
+    "images": [
+      "counter-showcase-1280.png",
+      "hand-width-96.png",
+      "deck-details-960.png"
+    ],
+    "result": "Six reactions readable; compact96px labels bounded/truncated correctly; detail panel readable at960px. No new clipping beyond the deliberate scrolled detail text."
+  },
+  "retained_source_checks": {
+    "repeated_for_release": false,
+    "latest_current_card_audit": "docs/CARD_SYSTEM_AUDIT_2026-11-03.md",
+    "latest_ai_gates": "build/checks/gameplay/selected-ai-gates/",
+    "latest_ai_outcomes": "build/checks/gameplay/selected-ai-outcomes/",
+    "latest_card_audit_positions": "build/checks/gameplay/selected-card-audit-positions/",
+    "balance_series": "400 valid/200 pairs, not repeated for release; limitations retained in audit"
+  }
+}

@@ -257,18 +257,95 @@ static func card_elements(def: CardDef) -> Array:
 	return []
 
 
+## Короткая роль дополняет цвет стихии и форму рамки: что карта делает в бою.
+static func card_role(def: CardDef) -> String:
+	match String(def.effect_id):
+		"negate": return "Ответная отмена" if bool(def.params.get("reactive", false)) else "Отмена"
+		"boost", "fusion_boost", "owner_power", "attr_bonus": return "Усиление"
+		"boost_fix": return "Сила и метка"
+		"species_double": return "База ×2"
+		"drain", "siphon", "funnel", "radiance", "pact": return "Перекачка силы"
+		"scorch", "weaken_mark": return "Ослабление и метка"
+		"weaken", "weight": return "Ослабление"
+		"purge_gate", "eclipse", "nullify_gate", "aloft": return "Подавление ворот"
+		"silence", "mute": return "Подавление карт"
+		"strip": return "Снятие бонусов"
+		"cap_own_base", "reset_base": return "Сброс силы"
+		"copy": return "Копирование"
+		"gust", "ebb": return "Перелёт"
+		"swap_fighter": return "Замена бойца"
+		"shift_gate": return "Смена ворот"
+		"revive", "fallen_call", "recall": return "Возвращение"
+		"doom", "clash": return "Обоюдная гибель"
+		"limit": return "Порог поражения"
+		"mirror": return "Обмен силой"
+		"hold": return "Удержание"
+		"web": return "Сила за ворота"
+		"dusk_throne": return "Победа Тени"
+	return "Эффект"
+
+
+## На лице — действие и цена; исключения и последовательность раскрывает наведение.
+## Не уплотнять длинные правила до микротекста на карточке руки.
+static func card_face_text(def: CardDef) -> String:
+	if def.effect_id == &"negate" and bool(def.params.get("reactive", false)):
+		return "Отмени последнюю действующую основную карту соперника.\nБез прибавки силы."
+	match String(def.id):
+		"arena_mute": return "Гасит все карты соперника, даже неотменяемые.\nНовые карты запрещены."
+		"ability_gale_swap": return "Замена сильнейшим резервом.\n+200; против бьющей стихии +350.\nОбщий лимит: 3 карты."
+		"ability_stone_copy": return "+50. Повтори последнюю подходящую карту соперника или первую следующую."
+		"ability_kolossar_reset": return "Сила обоих — до базовой.\nПоздние карты действуют.\nБольше не играешь; без отмены."
+		"ability_rogozhuk_shell": return "Сила соперника — до твоей базовой. Поздние карты прибавляются сверху. Без отмены."
+		"ability_levian_coil": return "Сожги уже набранные бонусы соперника. Четверть — тебе. Больше не играешь."
+	return def.text
+
+
+## Самое важное условие видно без наведения. Полный набор остаётся в тексте.
+static func card_rule_tag(def: CardDef) -> String:
+	if def.kind == CardDef.Kind.ARENA:
+		return "После открытия"
+	var tags: PackedStringArray = []
+	match String(def.params.get("cond", "")):
+		"attack": tags.append("В атаке")
+		"defense": tags.append("В защите")
+		"own_gate": tags.append("Свои ворота")
+		"weaker": tags.append("Слабее по базе")
+		"underdog": tags.append("Слабее база / стихия")
+		"fallen": tags.append("Есть выбывшие")
+		"behind": tags.append("Меньше существ")
+		"last": tags.append("Последний боец")
+	if bool(def.params.get("lockout", false)):
+		tags.append("Больше не играть")
+	elif bool(def.params.get("sure", false)):
+		tags.append("Без отмены")
+	elif bool(def.params.get("returns", false)):
+		tags.append("Возврат")
+	elif CardEffects.is_fusion(def):
+		tags.append("Поверх своей карты")
+	elif str(def.params.get("moment", "")) == "battle":
+		tags.append("Только в бою")
+	return " · ".join(tags)
+
+
+static func card_role_color(def: CardDef) -> Color:
+	match String(def.effect_id):
+		"negate", "doom", "clash", "limit": return Color(1.0, 0.46, 0.38)
+		"purge_gate", "eclipse", "nullify_gate", "aloft", "silence", "mute": return Color(0.76, 0.61, 1.0)
+		"gust", "ebb", "swap_fighter", "shift_gate", "copy": return Color(0.4, 0.83, 1.0)
+		"revive", "fallen_call", "recall": return Color(0.49, 0.95, 0.69)
+	return GOLD
+
+
 # ---------------------------------------------------------------- подсказки для новичка
 
 const CLASS_HELP := {
 	&"gold": ["Ворота стихии", "Карта поля боя. Кладётся рубашкой вверх и открывается в бою. «Поле» даёт силу только существу своей стихии (у каждой стихии своё число), «Алтарь силы» — +300 защитнику-владельцу."],
 	&"silver": ["Ворота вида", "Существо этого вида на воротах удваивает базовую силу — у любой стороны, так что соперник тоже может ими воспользоваться."],
 	&"bronze": ["Командные ворота", "Меняют правила боя: перекачка силы, предел силы, удержание, возврат выбывших. Закрытые ворота не действуют. Ловушки включаются после открытия; бой продолжается до итога обмена."],
-	&"red": ["Стихийная способность", "Играет только существо своей стихии. У каждой стихии своя тема: Пламя жжёт, Буря переносит, Свет возрождает, Камень сдвигает, Тень губит, Прилив глушит."],
-	&"blue": ["Усиление", "Лесенка силы своей стихии: +30 нельзя отменить, +100 при условии, большие числа — для отстающих (такие карты возвращаются в руку)."],
+	&"red": ["Стихийная способность", "Играет только существо своей стихии. У каждой стихии есть особые эффекты и ответная отмена: без прибавки силы, только против уже сыгранной карты."],
+	&"blue": ["Усиление", "Прибавка силы своей стихии. Крупные усиления требуют условия; защита от отмены и возврат в руку указаны на самой карте."],
 	&"green": ["Видовая способность", "Играет только существо своего вида любой стихии: отмена, сброс силы, перекачка бонусов, «нельзя отменить»."],
 }
-const ABILITY_WHEN := "Играется в бою (пошаговый обмен, до 3 карт на бой; бой решается после двух пасов подряд), до броска или после приземления — тогда карта прикрепляется к существу. Сыгранная карта отдыхает 2 боя и возвращается в руку (у последнего существа — сразу, кроме «Отлива» и «Общей бездны»)."
-const FUSION_WHEN := "Слияние: кладётся поверх своей способности в том же бою и усиливает её."
 const GATE_WHEN := "В начале хода можно положить одну карту ворот: ближе к сопернику, рядом с другими картами. Можно сразу бросить на неё существо («Ворота + бросок»)."
 
 
@@ -278,7 +355,19 @@ static func card_help(def: CardDef) -> Array:
 	var info: Array = CLASS_HELP.get(cls, ["Карта", ""])
 	var when: String = GATE_WHEN
 	if def.kind == CardDef.Kind.ABILITY:
-		when = FUSION_WHEN if CardEffects.is_fusion(def) else ABILITY_WHEN
+		when = "В бою или прикреплением до броска / после приземления; до 3 карт на бой."
+		if CardEffects.is_fusion(def):
+			when = "В бою поверх своей способности; до 3 карт на бой."
+		elif CardEffects.moment(def) == &"battle":
+			when = "Только в бою, в свой ответ; до 3 карт на бой."
+		elif CardEffects.moment(def) == &"landing":
+			when = "Только после приземления."
+		if CardEffects.returns_to_hand(def):
+			when += " После боя сразу в руку."
+		elif def.id in [&"ability_tide_ebb", &"ability_shadow_doom", &"ability_light_revive", &"ability_stone_copy"]:
+			when += " Отдых 2 боя, даже у последнего существа."
+		else:
+			when += " Отдых 2 боя; у последнего существа — сразу в руку."
 	if def.effect_id == &"negate":
 		when += " Не отменяет слияния, мгновенные и неотменяемые карты."
 	elif def.effect_id == &"copy":
@@ -301,7 +390,8 @@ static func card_help(def: CardDef) -> Array:
 				parts.append("%s +%d" % [VisualUtil.attr_name(a), int(g[a])])
 		if not parts.is_empty():
 			extra = "Сила G по стихиям: " + ", ".join(parts)
-	return [def.display_name, kind, cc.get(cls, GOLD), info[1], def.full_text(), when, extra]
+	return [def.display_name, kind, cc.get(cls, GOLD), info[1], def.full_text(), when, extra,
+		{"role": card_role(def), "rule": card_rule_tag(def), "color": card_role_color(def)}]
 
 
 ## Подсказка для существа: имя, стихия, сила и совместимость карт.
@@ -314,11 +404,16 @@ static func creature_help(d: CreatureDef) -> Array:
 
 ## Панель подсказки (используется в CardView._make_custom_tooltip).
 static func help_panel(lines: Array) -> Control:
+	var small_screen := false
+	var tree := Engine.get_main_loop() as SceneTree
+	if tree != null:
+		small_screen = tree.root.size.y <= 600
+	var body_width := 400.0 if small_screen else 340.0
 	var p := PanelContainer.new()
 	p.add_theme_stylebox_override("panel", box(Color(0.05, 0.05, 0.08, 0.96), lines[2], 2, 10, 12))
 	var vb := VBoxContainer.new()
 	vb.add_theme_constant_override("separation", 4)
-	vb.custom_minimum_size = Vector2(340, 0)
+	vb.custom_minimum_size = Vector2(body_width, 0)
 	p.add_child(vb)
 	var t := VisualUtil.label(str(lines[0]), 20)
 	t.add_theme_color_override("font_color", Color(1.0, 0.88, 0.4))
@@ -339,14 +434,27 @@ static func help_panel(lines: Array) -> Control:
 		vb.add_child(t)
 	var k := VisualUtil.label(str(lines[1]).to_upper(), 12)
 	k.add_theme_color_override("font_color", lines[2])
+	k.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	k.custom_minimum_size.x = body_width
 	vb.add_child(k)
-	for i in [4, 6, 3, 5]:
+	if lines.size() > 7 and lines[7] is Dictionary:
+		var summary: Dictionary = lines[7]
+		var role := VisualUtil.label(str(summary["role"]).to_upper(), 14)
+		role.add_theme_color_override("font_color", summary["color"])
+		vb.add_child(role)
+		if not str(summary["rule"]).is_empty():
+			var rule := VisualUtil.label(str(summary["rule"]), 13)
+			rule.add_theme_color_override("font_color", GOLD)
+			vb.add_child(rule)
+	# Объяснение класса есть в выборе колоды. В наведении приоритет у эффекта и доступности.
+	var sections := [4, 6, 5] if lines.size() > 7 and lines[7] is Dictionary else [3, 4, 6, 5]
+	for i in sections:
 		var txt: String = str(lines[i])
 		if txt == "":
 			continue
 		var l := VisualUtil.label(txt, 15 if i == 4 else 13)
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		l.custom_minimum_size = Vector2(340, 0)
+		l.custom_minimum_size = Vector2(body_width, 0)
 		l.add_theme_color_override("font_color", TEXT if i == 4 else TEXT_DIM)
 		vb.add_child(l)
 	return p
