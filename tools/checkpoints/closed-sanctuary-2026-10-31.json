@@ -1,0 +1,302 @@
+{
+  "date": "2026-10-31",
+  "base_release": "0.2.9",
+  "status": "verified source changes, no Windows build",
+  "profiles": {
+    "presentation": [
+      {
+        "name": "import",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 6.09,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/import.log"
+      },
+      {
+        "name": "shot-physics",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 7.97,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/shot-physics.log"
+      },
+      {
+        "name": "sphere-pose",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 6.47,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/sphere-pose.log"
+      },
+      {
+        "name": "ability-input",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 3.62,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/ability-input.log"
+      },
+      {
+        "name": "experience",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 22.62,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/experience.log"
+      }
+    ],
+    "models": [
+      {
+        "name": "import",
+        "profile": "models",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 5.78,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/models/import.log"
+      },
+      {
+        "name": "animation",
+        "profile": "models",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 26.03,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/models/animation.log"
+      },
+      {
+        "name": "support",
+        "profile": "models",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 20.16,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/models/support.log"
+      },
+      {
+        "name": "flight",
+        "profile": "models",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 19.56,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/models/flight.log"
+      },
+      {
+        "name": "idle",
+        "profile": "models",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 6.0,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/models/idle.log"
+      },
+      {
+        "name": "stance",
+        "profile": "models",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 3.95,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/models/stance.log"
+      },
+      {
+        "name": "review-state",
+        "profile": "models",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 4.95,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/models/review-state.log"
+      },
+      {
+        "name": "preparation-cache",
+        "profile": "models",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 6.02,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/models/preparation-cache.log"
+      }
+    ],
+    "gameplay": [
+      {
+        "name": "import",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 4.32,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/import.log"
+      },
+      {
+        "name": "rules",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 13.56,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/rules.log"
+      },
+      {
+        "name": "rules-edges",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 1.02,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/rules-edges.log"
+      },
+      {
+        "name": "ai",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 0.45,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/ai.log"
+      },
+      {
+        "name": "shot-physics",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 7.75,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/shot-physics.log"
+      },
+      {
+        "name": "turn-pool",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 14.14,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/turn-pool.log"
+      },
+      {
+        "name": "autoplay",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 78.13,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/autoplay.log"
+      }
+    ]
+  },
+  "shell_pose": {
+    "physical_landings": 4,
+    "checks": 345,
+    "failures": 0,
+    "world_transform_preserved": true,
+    "upright_creature": true
+  },
+  "interior": {
+    "closed_walls": 24,
+    "vault_crown_y": 108,
+    "features": [
+      "stained glass",
+      "six relic shrines",
+      "vault ribs and rosettes",
+      "chandelier",
+      "moonlight key",
+      "diagonal glass rays",
+      "warm altar lights"
+    ],
+    "low_quality": "key light and lightweight ray geometry retained; no volumetric fog",
+    "camera_inside_verified": true
+  },
+  "preparation": {
+    "cache_regression_checks": 497,
+    "samples_and_poses_unchanged": true,
+    "bounded_cache_entries": 6,
+    "pool": {
+      "failures": 0,
+      "timings": [
+        {
+          "activate_ms": 12.214,
+          "prepare_ms": 153.794,
+          "repeat": 0,
+          "uid": 0
+        },
+        {
+          "activate_ms": 0.293,
+          "prepare_ms": 153.794,
+          "repeat": 1,
+          "uid": 0
+        },
+        {
+          "activate_ms": 0.251,
+          "prepare_ms": 2137.772,
+          "repeat": 0,
+          "uid": 1
+        },
+        {
+          "activate_ms": 0.202,
+          "prepare_ms": 2137.772,
+          "repeat": 1,
+          "uid": 1
+        },
+        {
+          "activate_ms": 0.181,
+          "prepare_ms": 8.953,
+          "repeat": 0,
+          "uid": 2
+        },
+        {
+          "activate_ms": 0.184,
+          "prepare_ms": 8.953,
+          "repeat": 1,
+          "uid": 2
+        },
+        {
+          "activate_ms": 0.172,
+          "prepare_ms": 551.189,
+          "repeat": 0,
+          "uid": 3
+        },
+        {
+          "activate_ms": 0.22,
+          "prepare_ms": 551.189,
+          "repeat": 1,
+          "uid": 3
+        },
+        {
+          "activate_ms": 0.165,
+          "prepare_ms": 345.715,
+          "repeat": 0,
+          "uid": 4
+        },
+        {
+          "activate_ms": 0.216,
+          "prepare_ms": 345.715,
+          "repeat": 1,
+          "uid": 4
+        },
+        {
+          "activate_ms": 0.174,
+          "prepare_ms": 9.422,
+          "repeat": 0,
+          "uid": 5
+        },
+        {
+          "activate_ms": 0.267,
+          "prepare_ms": 9.422,
+          "repeat": 1,
+          "uid": 5
+        }
+      ]
+    },
+    "measurement_scope": "CPU preparation/activation, not overall FPS"
+  },
+  "autoplay": [
+    "Матч 1: победитель 0, ход 12, захваты [2, 1]",
+    "Матч 2: победитель -1, ход 16, захваты [2, 2]",
+    "Крупных раскрытий перед боем: 6",
+    "боёв 11, возвраты { &\"won\": 7 }",
+    "Игрок 0: бросков 9, приземлений в слот 9 (100%), промахов 0",
+    "Игрок 1: бросков 9, приземлений в слот 9 (100%), промахов 0"
+  ],
+  "background_tests": {
+    "start_offscreen": true,
+    "immediately_minimized": true,
+    "unfocusable": true,
+    "force_render_to_texture": true,
+    "audio_master_muted": true
+  },
+  "glb_compared": 67,
+  "glb_unchanged": true,
+  "limits": [
+    "Linux/Vulkan, not Windows",
+    "No publication or commit",
+    "No subjective sound audition",
+    "Existing cloth topology warning may appear in numeric model suites"
+  ],
+  "initial_test_cleanup": "First background helper redundantly activated a viewport; removed. Dummy audio driver left Ogg decoder at exit; test audio now uses muted Master with normal driver and teardown drain."
+}

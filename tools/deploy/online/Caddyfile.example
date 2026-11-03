@@ -1,0 +1,6 @@
+# EXAMPLE ONLY: replace this with a domain whose DNS points at your server.
+# Public TCP80/443 go to Caddy; Godot TCP8910 remains on 127.0.0.1.
+example.com {
+	# Caddy forwards the WebSocket upgrade automatically.
+	reverse_proxy 127.0.0.1:8910
+}

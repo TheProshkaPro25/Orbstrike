@@ -371,12 +371,12 @@ func for_creature(def: CreatureDef, p_uid: int, note: String = "", size_px: Vect
 
 
 ## Карта неактивна (нельзя сыграть сейчас): серая, но остаётся на месте.
-func set_dimmed(on: bool) -> void:
+func set_dimmed(on: bool, readable: bool = false) -> void:
 	_dimmed = on
 	disabled = on
-	_mat.set_shader_parameter("dim", 0.75 if on else 0.0)
+	_mat.set_shader_parameter("dim", (0.38 if readable else 0.75) if on else 0.0)
 	for l in [_title, _kind, _text, _power]:
-		(l as Label).self_modulate = Color(0.55, 0.55, 0.55) if on else Color.WHITE
+		(l as Label).self_modulate = Color(0.76, 0.76, 0.76) if on and readable else (Color(0.55, 0.55, 0.55) if on else Color.WHITE)
 	if on:
 		_set_hover(0.0)
 		_lift(0.0)

@@ -21,5 +21,43 @@
     "pck": "Independent PCK4 parser checked MD5 for all917entries,20changed imports match workspace; no tools/tests/.codex",
     "source": "49GLB snapshot unchanged;8installed035 SHA256 and runtime SHA256 match model-repairs035",
     "licenses": "CREDITS.md,CHANGELOG.md,GPU_CLOTH_LICENSE.txt match staging"
+  },
+  "publication": {
+    "status": "published; all5remoteSHA256match",
+    "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.2.9",
+    "release_id": 429541828,
+    "tag": "v0.2.9",
+    "commit": "0196df1ffad06d6029dc53f926d89e8558dff74c",
+    "remote_refs": [
+      "0196df1ffad06d6029dc53f926d89e8558dff74c\trefs/heads/master",
+      "0196df1ffad06d6029dc53f926d89e8558dff74c\trefs/tags/v0.2.9"
+    ],
+    "assets": [
+      {
+        "name": "levian-repair035-preview.jpg",
+        "bytes": 318525,
+        "sha256": "sha256:b449038b9926c3e8628642546073f5fac277913babd054bd210741720b34adde"
+      },
+      {
+        "name": "light-repair035-preview.jpg",
+        "bytes": 256373,
+        "sha256": "sha256:6f953fd075da10a0a36870540b06e0b0af0f72e50fe1b31d75aabb64b288475a"
+      },
+      {
+        "name": "Sfery_Stikhiy_v0.2.9_win64.zip",
+        "bytes": 846836762,
+        "sha256": "sha256:79c4aac5cbea6b8f733c1ab9f19d45fee218d4f003cf644d9e5f3fb88f3fe67c"
+      },
+      {
+        "name": "Sfery_Stikhiy_v0.2.9_win64.zip.sha256",
+        "bytes": 97,
+        "sha256": "sha256:c5adcc77ad1b23c72ee90781c430cfe665975c3ef5e6b24c959182f59fc51293"
+      },
+      {
+        "name": "stone-repair035-preview.jpg",
+        "bytes": 271292,
+        "sha256": "sha256:aa99caca6eb57434d8d0a11b587ffddbf36324ca01c4743cd660ac0f83d115ea"
+      }
+    ]
   }
 }

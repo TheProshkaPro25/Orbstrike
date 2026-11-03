@@ -20,9 +20,12 @@ const HD_DIR := "res://assets/creatures_hd/%s.glb"
 const HD_YAW_DEG := 0.0
 
 
-## Загруженные модели матча (ключ "hd:<id>" или архетип). Держим только существ текущего матча:
-## preload_match() в начале, clear() при перезапуске/выходе — иначе видеопамять росла с каждым матчем.
+## Загрузчик перед меню закрепляет конечный каталог; изолированные стенды сохраняют
+## прежнее время жизни ресурсов одного матча.
+static var resident_catalog := false
 static var _scenes: Dictionary = {}
+## Производные неизменяемые данные текущего набора моделей; без узлов экземпляров.
+static var preparation_cache: Dictionary = {}
 
 ## Убирает запечённые фотографические блики из цветовой текстуры;
 ## широкие ступени света оставляют рисунок брони, но не имитируют полированный металл.
@@ -82,9 +85,27 @@ static func preload_match(defs: Array) -> void:
 			_scene(kp[0], kp[1])
 
 
-## Отпустить модели (перезапуск матча, выход): ресурсы освобождаются, когда исчезнут последние экземпляры.
+## Меню исключает особую встречу из выбора, но загрузчик обязан подготовить и её.
+static func catalog_defs() -> Array[CreatureDef]:
+	var defs := CardDB.all_creatures()
+	defs.append(CardDB.creature(CardDB.RARE_SHADOW_ID))
+	return defs
+
+
+static func preload_all_catalog() -> void:
+	preload_match(catalog_defs())
+
+
+static func preparation_cache_limit() -> int:
+	return 64 if resident_catalog else 6
+
+
+## Выход из матча не выгружает закреплённый каталог и канонические опоры.
 static func clear() -> void:
+	if resident_catalog:
+		return
 	_scenes.clear()
+	preparation_cache.clear()
 
 
 static func _scene(res_key: String, path: String) -> PackedScene:
@@ -128,6 +149,7 @@ static func build(d: CreatureDef) -> Node3D:
 	# основание на y=0, центр по XZ
 	model.position = Vector3(-(box.position.x + box.size.x * 0.5) * k, -box.position.y * k, -(box.position.z + box.size.z * 0.5) * k)
 	root.add_child(model)
+	root.set_meta("preparation_source", ps)
 	root.set_meta("height", box.size.y * k)
 	root.set_meta("extent", maxf(box.size.x, box.size.z) * k)  # наибольший размер по полу (для камеры)
 	if hd:

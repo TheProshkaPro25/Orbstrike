@@ -1,7 +1,7 @@
 class_name MainMenu
 extends Node
-## Главное меню (стартовая сцена): живой пейзаж города (MenuCity) и кнопки «Играть», «Как играть», «Настройки»,
-## «Выход». «Играть» — затемнение и переход в res://scenes/main.tscn (там, как раньше, меню команды); сцена меню
+## Главное меню после начальной загрузки: живой пейзаж города (MenuCity) и кнопки «Играть», «Мой персонаж», «Как играть», «Настройки»,
+## «Выход». «Играть» — затемнение и переход в подготовленную сцену выбора команды; сцена меню
 ## при этом освобождается целиком. Клавиатура/геймпад: фокус по кнопкам, Esc/«назад» закрывает окна.
 
 const GAME_SCENE := "res://scenes/main.tscn"
@@ -15,17 +15,21 @@ var _fade: ColorRect
 var _clock: Label
 var _settings: MenuSettings
 var _help: HelpOverlay
+var _character_editor: CharacterEditor
 var _leaving := false
 var _mouse_hover := false
 
 
 func _ready() -> void:
-	SoundFx.i().play_music(SoundFx.MUSIC_MENU)
+	if not GameLoading.i().preparing:
+		SoundFx.i().play_music(SoundFx.MUSIC_MENU)
 	AudioSettings.load_and_apply()
 	city = MenuCity.new()
 	city.name = "City"
 	add_child(city)
 	_build_ui()
+	get_viewport().size_changed.connect(_fit_column)
+	_fit_column()
 	_appear()
 
 
@@ -35,6 +39,8 @@ func _process(_d: float) -> void:
 
 
 func _unhandled_input(e: InputEvent) -> void:
+	if is_instance_valid(_character_editor):
+		return
 	if e.is_action_pressed("ui_cancel"):
 		if _help != null and is_instance_valid(_help):
 			_help.queue_free()
@@ -86,8 +92,8 @@ void fragment() {
 	_column.anchor_bottom = 0.5
 	_column.anchor_left = 0.0
 	_column.offset_left = 80
-	_column.offset_top = -270
-	_column.offset_bottom = 270
+	_column.offset_top = -310
+	_column.offset_bottom = 310
 	_column.offset_right = 80 + 520
 	_column.alignment = BoxContainer.ALIGNMENT_CENTER
 	_column.add_theme_constant_override("separation", 6)
@@ -106,7 +112,7 @@ void fragment() {
 	# шесть стихий — цветные точки под логотипом, подзаголовок — отдельной строкой ниже (в одном ряду с точками
 	# он налезал на них при другой ширине шрифта/окна)
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 10)
+	row.add_theme_constant_override("separation", 6)
 	var row_pad := MarginContainer.new()
 	row_pad.add_theme_constant_override("margin_left", 6)
 	row_pad.add_theme_constant_override("margin_top", 2)
@@ -131,7 +137,7 @@ void fragment() {
 	_column.add_child(sub_pad)
 
 	var gap := Control.new()
-	gap.custom_minimum_size = Vector2(0, 26)
+	gap.custom_minimum_size = Vector2(0, 10)
 	_column.add_child(gap)
 
 	var panel := PanelContainer.new()
@@ -142,13 +148,13 @@ void fragment() {
 	panel.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	_column.add_child(panel)
 	var vb := VBoxContainer.new()
-	vb.add_theme_constant_override("separation", 10)
+	vb.add_theme_constant_override("separation", 6)
 	panel.add_child(vb)
-	for spec in [["Играть", _on_play], ["Как играть", _on_help], ["Настройки", _on_settings], ["Выход", _on_quit]]:
+	for spec in [["Дуэль", _on_play], ["Игра через интернет", _on_online], ["Новая кампания", _on_new_campaign], ["Продолжить кампанию", _on_continue_campaign], ["Новый турнир", _on_new_tournament], ["Продолжить турнир", _on_continue_tournament], ["Мой персонаж", _on_character], ["Как играть", _on_help], ["Настройки", _on_settings], ["Выход", _on_quit]]:
 		var b := Button.new()
 		b.text = spec[0]
-		b.custom_minimum_size = Vector2(330, 56)
-		b.add_theme_font_size_override("font_size", 24)
+		b.custom_minimum_size = Vector2(330, 38)
+		b.add_theme_font_size_override("font_size", 22)
 		b.pressed.connect(spec[1])
 		b.mouse_entered.connect(b.grab_focus)
 		b.focus_entered.connect(_on_focus.bind(b))
@@ -193,7 +199,7 @@ void fragment() {
 	_settings = MenuSettings.new()
 	_settings.city = city
 	_settings.visible = false
-	_settings.closed.connect(func() -> void: _buttons[2].grab_focus())
+	_settings.closed.connect(func() -> void: _buttons[8].grab_focus())
 	ui.add_child(_settings)
 
 	_fade = ColorRect.new()
@@ -234,14 +240,32 @@ func _on_focus(b: Button) -> void:
 # ---------------------------------------------------------------- кнопки
 
 func _on_play() -> void:
+	_enter_game("")
+
+
+func _on_new_tournament() -> void:
+	_enter_game("new")
+
+
+func _on_continue_tournament() -> void:
+	_enter_game("continue")
+
+
+func _enter_game(mode: String) -> void:
 	if _leaving:
 		return
+	TournamentSession.entry_mode = mode
 	_leaving = true
 	for b in _buttons:
 		b.disabled = true
 	var tw := create_tween()
 	tw.tween_property(_fade, "color:a", 1.0, 0.45)
-	tw.tween_callback(func() -> void: get_tree().change_scene_to_file(GAME_SCENE))
+	tw.tween_callback(func() -> void:
+		if GameLoading.i().ready_to_play:
+			GameLoading.i().show_game()
+			get_tree().current_scene.enter_requested_mode()
+		else:
+			get_tree().change_scene_to_file(GAME_SCENE))
 
 
 func _on_help() -> void:
@@ -251,7 +275,7 @@ func _on_help() -> void:
 		break
 	_help.tree_exited.connect(func() -> void:
 		if is_inside_tree() and not _leaving:
-			_buttons[1].grab_focus())
+			_buttons[7].grab_focus())
 
 
 func _on_settings() -> void:
@@ -263,3 +287,38 @@ func _on_quit() -> void:
 	var tw := create_tween()
 	tw.tween_property(_fade, "color:a", 1.0, 0.3)
 	tw.tween_callback(get_tree().quit)
+
+
+func _on_character() -> void:
+	if is_instance_valid(_character_editor): return
+	_character_editor = CharacterEditor.new()
+	ui.add_child(_character_editor)
+	_column.hide()
+	_character_editor.closed.connect(func() -> void:
+		_column.show()
+		_buttons[6].grab_focus())
+
+
+func _on_new_campaign() -> void:
+	_enter_game("campaign_new")
+
+func _on_continue_campaign() -> void:
+	_enter_game("campaign_continue")
+
+
+func _fit_column() -> void:
+	if not is_instance_valid(_column): return
+	var viewport := get_viewport().get_visible_rect().size
+	var natural_height := maxf(620.0,_column.get_combined_minimum_size().y)
+	var factor := minf(1.0,(viewport.y-112.0)/natural_height)
+	_column.scale = Vector2.ONE * factor
+	_column.offset_top = -natural_height*factor*.5-12.0
+	_column.offset_bottom = _column.offset_top+natural_height
+
+
+func _on_online() -> void:
+	if _leaving: return
+	_leaving = true
+	for button in _buttons: button.disabled = true
+	if GameLoading.i().ready_to_play: GameLoading.i().show_online()
+	else: get_tree().change_scene_to_file("res://scenes/online/online_game.tscn")

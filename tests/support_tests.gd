@@ -1,4 +1,5 @@
 extends SceneTree
+const ModelTestCleanup := preload("res://scenes/model_lifetime.gd")
 ## Полнотелая опора: конечные позиции, подошвы, сохранение длин костей, конечные значения.
 var failures := 0
 var checks := 0
@@ -43,7 +44,7 @@ func run():
      check(absf(a.origin.distance_to(b.origin)-rest_a.origin.distance_to(rest_b.origin))<0.001,"бедро не растянуто: %s"%definition.id)
   if not support.limbs.is_empty():check(leg_motion>.03,"ноги участвуют в атаке: %s"%definition.id)
   if not actor._flyer:check(landing_error<actor.get_height()*.006,"после выпада подошвы возвращаются на пол: %s"%definition.id)
-  actor.reset();actor.free();CreatureModels.clear()
+  actor.reset();ModelTestCleanup.release(actor, self);CreatureModels.clear()
   await process_frame
  print("Полнотелая опора: 48 моделей, проверок %d, ошибок %d"%[checks,failures])
  quit(1 if failures else 0)

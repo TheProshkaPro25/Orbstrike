@@ -1,0 +1,142 @@
+{
+  "date": "2026-10-31",
+  "base_release": "0.2.9",
+  "status": "verified local changes; no Windows build",
+  "profiles": {
+    "presentation": [
+      {
+        "name": "import",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 7.59,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/import.log"
+      },
+      {
+        "name": "experience",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 14.03,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/experience.log"
+      }
+    ],
+    "gameplay": [
+      {
+        "name": "import",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 7.73,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/import.log"
+      },
+      {
+        "name": "rules",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 13.1,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/rules.log"
+      },
+      {
+        "name": "rules-edges",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 0.92,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/rules-edges.log"
+      },
+      {
+        "name": "ai",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 0.45,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/ai.log"
+      },
+      {
+        "name": "autoplay",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 64.7,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/autoplay.log"
+      }
+    ]
+  },
+  "card": {
+    "flight_scale": 0.08,
+    "flight_seconds": 0.95,
+    "growth_seconds": 0.68,
+    "growth_and_wave_after_floor_contact": true,
+    "human_and_opponent_camera_checked": true
+  },
+  "camera": {
+    "sphere_follow": true,
+    "empty_gate_reveal_orbit": true,
+    "battle_entry_reveal_orbit": true,
+    "battle_entry_orbits_observed": 2
+  },
+  "ui": {
+    "pass_panel": "bottom right",
+    "hand": "left",
+    "window_sizes": [
+      "1280x720",
+      "1366x768",
+      "960x540"
+    ],
+    "hand_cards": 19
+  },
+  "locations": [
+    "Святилище стихий",
+    "Янтарный каньон",
+    "Лунная гавань"
+  ],
+  "autoplay": {
+    "matches": 2,
+    "turns": [
+      18,
+      13
+    ],
+    "battles": 8,
+    "per_player_placements_hits_misses": [
+      [
+        8,
+        8,
+        0
+      ],
+      [
+        10,
+        10,
+        0
+      ]
+    ],
+    "locations": [
+      1,
+      2
+    ],
+    "engine_errors": 0
+  },
+  "sound": {
+    "gate_flight_wind": {
+      "peak_dbfs": -17.1,
+      "playback_db": -7
+    },
+    "gate_expand_wave": {
+      "peak_dbfs": -14.0,
+      "playback_db": -8
+    }
+  },
+  "skill": {
+    "name": "sfery-stikhiy-tests",
+    "path": "/home/loq/.codex/skills/sfery-stikhiy-tests/SKILL.md",
+    "validation": "passed"
+  },
+  "model_glb_unchanged": true,
+  "glb_compared": 67,
+  "limits": [
+    "No new model/geometry audit in this UI task; previous results remain historical.",
+    "Subjective loudness on user speakers was not asserted.",
+    "No Windows export, native Windows run or publication."
+  ]
+}

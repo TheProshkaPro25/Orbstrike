@@ -1,0 +1,58 @@
+{
+  "files": {
+    "assets/avatars/itch/Kai.vrm": "373219c44cd9bad9470de7fcb3f376b00a2adf4fa7a260c6b8cb4896ae5d451e",
+    "assets/avatars/itch/denim/Bright_Denim_Blue.png": "7a715dd9a0e455dcc3affd7caec0fb90cf79868ba1c404644746fac9b443a3a7",
+    "assets/avatars/itch/denim/Bright_Denim_Green.png": "1e05f8e29d39b68935c42b57edccfd6ee6c9f8a6e5bf92dd0a9d310e5864ab1a",
+    "assets/avatars/itch/denim/Bright_Denim_Pink.png": "3520e6329e51bd64120fd164c6c10139f35f44e3f30c25c1e7f85870ed13bf73",
+    "assets/avatars/itch/denim/Bright_Denim_Purple.png": "525acd118f25572db94261c3e9647f9e32cea58445b25710a0fd6bc21730508c",
+    "assets/avatars/itch/denim/Bright_Denim_Yellow.png": "7a77633015fad87f3eb7692b97795b8b4e1366fdc4597c201dd26ecac3ed5547",
+    "assets/avatars/itch/denim/Dark_Denim_Blue.png": "b31eda4f7834b50fed99938b58c69f4b7c319f048032ad1947ee23a2a7325041",
+    "assets/avatars/itch/denim/Dark_Denim_Gold.png": "072689cd0a32c1eda7b2ece3b2beb62c61047f4cc9e993985a2395e9e52446a7",
+    "assets/avatars/itch/denim/Dark_Denim_Green.png": "3194fe27a291ddfd53bd1d374a86716acd0484153289a170c458dfd65a5bcd59",
+    "assets/avatars/itch/denim/Dark_Denim_Purple.png": "da52c29def280c4911b61b8e5dea93b5125908e12bd5136f57ed32c8c132dc83",
+    "assets/avatars/itch/denim/Faded_Denim_Blue.png": "b6447d6b8ce33d634129be167e04dcd6f698c0aa372cc150d6be4b24132961a9",
+    "assets/avatars/itch/denim/Faded_Denim_Green.png": "35194c10f85879b1b9eb3270df0bdac7403679630e3054019162ca99d63ab5a6",
+    "assets/avatars/itch/denim/Faded_Denim_Pink.png": "7807149f71ddf2ed02ea7275fad65e3fd9f791fb7b203a3a7e8df4342b9929bb",
+    "assets/avatars/itch/denim/Faded_Denim_Purple.png": "075a8941e57c08e857fd47107a4c6d242dbe4e1b540952dced4fedbb1f062e40",
+    "assets/avatars/itch/denim/Faded_Denim_Yellow.png": "f248a7a1eb67749372739dfc341d01a61c0d8c8f3516fa2633657d64f51e7cfe",
+    "assets/avatars/itch/modular_bob.glb": "bce795b99af620ed806ab9e3f3329dfef2c8ed092b3239b449c6eed6472a020b",
+    "assets/avatars/itch/modular_bob_hairbobdifuse.png": "3d1ae47d286bf58994a879c9dc4116ed372c2ce95f1905c5c3a526434628b25d",
+    "assets/avatars/itch/modular_pony.glb": "92662621ef17eb72c8b8903edbfc4331b457d2f018390db64aba6e050d60caae",
+    "assets/avatars/itch/modular_pony_hairponytaildiffuse.png": "0a73eaaceab9afa7b26636aa9cdf09fb37333f56ba6bf78d0eb70a238d683927",
+    "assets/avatars/itch/modular_short.glb": "e4b493baf2471a3a2402ea92d7cd55430b0faa83f177a7c9cb0a83c528c5b59c",
+    "assets/avatars/itch/modular_short_hairshortdiffuse.png": "c53d2d70ef8eecf3cb4316dcbeb29eedec92307e955e73344da7fb51185222ca",
+    "assets/avatars/itch/modular_twins.glb": "e384ee67926c5eb8dd6ca22770f7faada228ee35ef885e1cdad376ecfe939094",
+    "assets/avatars/itch/modular_twins_hairlowtwindiffuse.png": "64de9aaeb779d5c191c53b2e80d02ed697ceab8f985bff61b86b354e024dc5b4",
+    "assets/avatars/itch/parts/body_0.res": "d9eca4b9efb88f3856c05760f0919b7f2321ae25f6de31af5281ca135ad4923b",
+    "assets/avatars/itch/parts/body_1.res": "c555cc71a9c73a8cc9a4be72a91f2acd73735514728a8f8cf8464d4a4d52d178",
+    "assets/avatars/itch/parts/hair_0.res": "03a0c8a4cbf888c330201923cbcbad6cb44033d9df80bfadf3c20afd87fe23b8",
+    "assets/avatars/itch/parts/hair_0_bob.res": "b653727684961fb50181ee09b954646deaee1c12d60850ab48ce49ce453adb5c",
+    "assets/avatars/itch/parts/hair_0_pony.res": "e6605563e20ddb66bfd4b7bf7d64da4226a49e202d1dd5b6f6cdefe2f771bd51",
+    "assets/avatars/itch/parts/hair_0_short.res": "3e47297a9a2cae65ead57c2de51a9e19dafde17d4f6d894e5db3b43c5b8ce06e",
+    "assets/avatars/itch/parts/hair_0_twins.res": "658847c20250d51906096ef4dd640f0f794c59b7116041b0e6897e252155ca3d",
+    "assets/avatars/itch/parts/hair_1.res": "121b65dcdeef3db94a42b3513fbc47028056a947ae17f64c88a6fdc6d118747e",
+    "assets/avatars/itch/parts/hair_1_bob.res": "7bd2ae99d21353b27081725060fb59389b7e513959842c5b1b2c31600b674d5d",
+    "assets/avatars/itch/parts/hair_1_pony.res": "58778b4f1357502ecea74cebdec5be10b742db66feb87d481a80b0f061006ae1",
+    "assets/avatars/itch/parts/hair_1_short.res": "7a27be4b59e92a26e53c27ef56d22edc105c2d731a70f548b1d0fde54907788e",
+    "assets/avatars/itch/parts/hair_1_twins.res": "313573a5e7ea909db0cadf0ff1ea11893d3b95054003473c25f6abfee88dedab"
+  },
+  "generators": {
+    "tools/avatars/prepare_itch_parts.gd": "679c633f611da98a84a0e9f17ebcfed41a11594b0a688a284f055141e8f69c0a",
+    "tools/avatars/export_modular_hair.py": "aa5331d3b295b0fae07cccafa46691bfb52dafdb5eb6def26c3b29f6087ff056",
+    "tools/avatars/prepare_denim.py": "d32237f13b37aaf8e346c6a0308509bd9f9b91569b871ae92035c1f5a8f51703",
+    "tools/avatars/itch_character_sources.json": "eef5f673e196c45494c897538aba8a233727e0f36ba5d073984b3d033417a54c"
+  },
+  "active": {
+    "hair_per_base": 9,
+    "costumes": [
+      5,
+      6
+    ],
+    "denim": 14
+  },
+  "library_only": [
+    "Boz short/pony/twins need better fit",
+    "Unrigged modular body/clothes in source archives"
+  ],
+  "licenses": "See README.md and CREDITS.md; not all content is CC0"
+}

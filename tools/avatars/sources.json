@@ -1,0 +1,8 @@
+[
+  {
+    "archive": "mpfb-v2.0.18.zip",
+    "url": "https://api.github.com/repos/makehumancommunity/mpfb2/zipball/v2.0.18",
+    "sha256": "a19a314f22b41bba9ceaa182edaf2ca50c0593e39e86f81497ec8434b657a930",
+    "extract_to": "mpfb"
+  }
+]

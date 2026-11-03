@@ -1,4 +1,5 @@
 extends SceneTree
+const ModelTestCleanup := preload("res://scenes/model_lifetime.gd")
 ## Review poses must not depend on preceding idle/action exports.
 ## Optional: -- source-dir=tools/_tmp/repair035-light/candidate-v1
 const ReviewState := preload("res://tools/model_review_state.gd")
@@ -45,7 +46,7 @@ func sample(id: StringName, history: String, action: String, frames: int) -> Dic
 	for bone in range(skeleton.get_bone_count()):
 		result.poses.append(skeleton.get_bone_global_pose(bone))
 		result.names.append(skeleton.get_bone_name(bone))
-	actor.free()
+	ModelTestCleanup.release(actor, self)
 	return result
 
 func transform_error(a: Transform3D, b: Transform3D) -> float:
@@ -82,7 +83,7 @@ func load_light_candidate(source_dir: String) -> bool:
 	if original == null: return false
 	var packed := PackedScene.new()
 	error = packed.pack(original)
-	original.free()
+	ModelTestCleanup.release(original, self)
 	check(error == OK, "Pack Light candidate")
 	if error != OK: return false
 	CreatureModels._scenes["hd:rogozhuk_light"] = packed

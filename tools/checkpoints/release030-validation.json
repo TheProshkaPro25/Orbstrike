@@ -1,0 +1,875 @@
+{
+  "version": "0.3.0",
+  "date": "2026-11-03",
+  "status": "validated release package ready for publication",
+  "engine": "Godot4.7.2.stable.arch_linux.ed1daf0bf",
+  "testing": {
+    "display": "minimized, unfocusable, offscreen tools/test_window.gd",
+    "max_fps": 60,
+    "full_profile_scenarios": 52,
+    "additional_online_scenarios": [
+      "online-disconnect",
+      "online-gate-result"
+    ],
+    "native_windows": false,
+    "public_online_wss": false
+  },
+  "source_models_before_release": {
+    "assets/creatures_hd/dragnar_fire.glb": "2d759d92cc19566c5228e0ba913a7663fff934131b63f9295c4a84d92f47c6aa",
+    "assets/creatures_hd/dragnar_gale.glb": "d02f3a67084a9e3464716897c2ef5b24f5a53c7ce596c10bf007049d2c97b830",
+    "assets/creatures_hd/dragnar_light.glb": "8a82bcf7f89287daefd65baa25e96a5b1e1c4503b73ea3fa8817c83fcdd81f96",
+    "assets/creatures_hd/dragnar_shadow.glb": "ec28cf12618f5a739fc7b9604d384cf560d23b5590f64491a1ec320de39b8470",
+    "assets/creatures_hd/dragnar_stone.glb": "1db9f2a935fc8731ad7bd274364c749e1622a965deacdfaf9c3e4285f5b2a72d",
+    "assets/creatures_hd/dragnar_tide.glb": "fc95ce7731cf5331c84bfee312f69d7e3e6019c33e04ba011b878fa8adea8b6b",
+    "assets/creatures_hd/gorgul_fire.glb": "128eb7948519337b63fb3349447194910d0cc82e44d2efe22fc0ca0d20a7f3b6",
+    "assets/creatures_hd/gorgul_gale.glb": "55d82a572aec50ffffcc3912b2fc448dec5db1176c819dd4e7b189d2611bd073",
+    "assets/creatures_hd/gorgul_light.glb": "799f7c1f34ee27382315e42ef71a7625c2491648e45a02d6be611cb712b86e5c",
+    "assets/creatures_hd/gorgul_shadow.glb": "d31399c990f0148444c0082bf2bcc5d362d43f0a5516e3e70285beeec9b6ed86",
+    "assets/creatures_hd/gorgul_stone.glb": "e1fd5c9a9c8fd8ff1b01cc670b7a004689f6051484443e7d0518c5fc788d9bca",
+    "assets/creatures_hd/gorgul_tide.glb": "10cde043d74620940f53baff371f27631cf50ecff07bb888ef46255baa017d8a",
+    "assets/creatures_hd/grifalon_fire.glb": "295aaa4752b85e3febeb01dc36570b9845c3f05eea37188cc4c5c453b40f5954",
+    "assets/creatures_hd/grifalon_gale.glb": "0329fff5f70f53e6c14fbfaaf293c93860ff86cf5be79ef0f1e85f1c7d02bd79",
+    "assets/creatures_hd/grifalon_light.glb": "0437c2014c5c0e87801a0acc7b25a4f957acf3a8028dbb699b5e6672d9574481",
+    "assets/creatures_hd/grifalon_shadow.glb": "15da6c635d6aa002e11049082ece86d2f0124570d0da5a71f41091b07765b0b3",
+    "assets/creatures_hd/grifalon_stone.glb": "376640d70ecbdc35c0da1f3dec334118f9037b1b10f80364d973992310b3f540",
+    "assets/creatures_hd/grifalon_tide.glb": "9695d09298d8daeddb55c8908e7181b7e3503c7a30c1d3b402bf730c87b22413",
+    "assets/creatures_hd/klykar_fire.glb": "73fcda1b1a9466e5cfc8860de7df4c5beb9f2b2440e4a34bb7a2a17b4622a160",
+    "assets/creatures_hd/klykar_gale.glb": "f16e61d615e7897ed513d3abb73aa941cb335827d7f43c07961fd8e277ab4c28",
+    "assets/creatures_hd/klykar_light.glb": "57c8b87a62361796eaf7dc647762950065d8bef84d41d5d824c96f0d554cd4e0",
+    "assets/creatures_hd/klykar_shadow.glb": "30d7873a5bb6e83f906a44be7fa4cf7706dc919a1ecdee7667763d875c87963b",
+    "assets/creatures_hd/klykar_stone.glb": "bafa3a230c96e8799a061e81c58a058f1a43363d2c114858239fa3c109508027",
+    "assets/creatures_hd/klykar_tide.glb": "f5e70149c8408ecbc5a00bb3e11238a2d43e75fea021a8001ce3098dee697b2e",
+    "assets/creatures_hd/kolossar_fire.glb": "30cae0eb02ec6073300d1e2ed34aa65a3f8d6e64941612f8fd1555294ba60657",
+    "assets/creatures_hd/kolossar_gale.glb": "dbbabf794f6a5acf4d64463d80a253757d51ce24990814759ec6bc587f7f54fd",
+    "assets/creatures_hd/kolossar_light.glb": "e103137b0e52c6ba2a9673dda69e519c0034ac8eccba4b5e32194d1b1c93ef71",
+    "assets/creatures_hd/kolossar_shadow.glb": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+    "assets/creatures_hd/kolossar_stone.glb": "efbfa17fa96fbc5cbdf6acb36666f6595c4cfb9b5551f23ffea8f1d9576d5070",
+    "assets/creatures_hd/kolossar_tide.glb": "c212690db15deaf3e63e4aa44f312c657ebb2c2b8441650094ba837d38e1de56",
+    "assets/creatures_hd/levian_fire.glb": "ded936ce93435d9651078a26276a025aff627f150454a08a0d830bd5d2280310",
+    "assets/creatures_hd/levian_gale.glb": "fe5c04377285353b7a95bdb723612464824aaaed05f9b499acb732e858db2ddc",
+    "assets/creatures_hd/levian_light.glb": "8e15e3d6bc72489f271d0d16f1c6270158fd7d2b113ec96a358ba3ebaba2669a",
+    "assets/creatures_hd/levian_shadow.glb": "c8f42fa47c27e6a0d06dfa6fa5d570031601de9e52cb0c7f184979ea78d8a90e",
+    "assets/creatures_hd/levian_stone.glb": "070f9616426759b58ebd39b7d64c312fafb7597ef7e333ad6baef8402e188dcf",
+    "assets/creatures_hd/levian_tide.glb": "7eade977ce428ce052690b7bbf235740a002a91140b0677e92e5b0d7a2bf63d8",
+    "assets/creatures_hd/ratnik_fire.glb": "7824f01282e239912f40c3eafbf26dfa2ffd0c8b551c325ac75f3725242a81dd",
+    "assets/creatures_hd/ratnik_gale.glb": "6e40647983c1e9fb8c0c5f79513a6e5e97fe496f2ac5562f34999cf5769a1103",
+    "assets/creatures_hd/ratnik_light.glb": "454e8442b83fe7fd618d0bc0338dfc8b51b1daabaa49b4a5237dcb669598f727",
+    "assets/creatures_hd/ratnik_shadow.glb": "5be558ea4208a92f4b1b2684847935fa5b0ad9ebc2cb4b1f35a8329f19f5789b",
+    "assets/creatures_hd/ratnik_stone.glb": "0c7909c072cca08b68536d94df80915358b3052e8979eff39614a94cee753db6",
+    "assets/creatures_hd/ratnik_tide.glb": "1092ec4c85963fe869274d5555a881921e46b51327809cbaee385c70f38e37ce",
+    "assets/creatures_hd/rogozhuk_fire.glb": "1ff332d623750f53cbefb3c557cbe4ec80fe1341394f033910aca90d5848c61e",
+    "assets/creatures_hd/rogozhuk_gale.glb": "025b3c5488c18b8dc978afb5851e76db4b24534736d7d48c4dd0eafe8984aae5",
+    "assets/creatures_hd/rogozhuk_light.glb": "8dcffa2a2981714c5255403fb7b9ac337b4c709913384b845874cafc006ce21f",
+    "assets/creatures_hd/rogozhuk_shadow.glb": "51af8c75076d54f083c502156fe8e9a8dba737d819b7fdf86aacf1c7c36bc62f",
+    "assets/creatures_hd/rogozhuk_stone.glb": "e5e198539f5d6ed892a9f0b553dc9d46892a66696b5d7b808acfafa2bd6f1a39",
+    "assets/creatures_hd/rogozhuk_tide.glb": "4ff3f18af1934d271c019e2301f8b914f33d14746da550eb9ddb885094eba2a9",
+    "assets/creatures_hd/likorez_shadow.glb": "5874835226b02bce3dba194313d07ed1631f7b0fabf5b6d65ef38dc1b97d7b09"
+  },
+  "cleanup": {
+    "files": [
+      {
+        "path": "tools/__pycache__/compare_loading_fps.cpython-314.pyc",
+        "bytes": 19067
+      },
+      {
+        "path": "tools/__pycache__/build_online_server.cpython-314.pyc",
+        "bytes": 13719
+      },
+      {
+        "path": "tools/__pycache__/online_roundtrip.cpython-314.pyc",
+        "bytes": 9973
+      },
+      {
+        "path": "tools/__pycache__/check.cpython-314.pyc",
+        "bytes": 16146
+      },
+      {
+        "path": "tools/avatars/__pycache__/anime_body.cpython-314.pyc",
+        "bytes": 23447
+      },
+      {
+        "path": "tools/avatars/__pycache__/anime_hair.cpython-314.pyc",
+        "bytes": 9922
+      },
+      {
+        "path": "tools/avatars/__pycache__/anime_head.cpython-314.pyc",
+        "bytes": 17586
+      },
+      {
+        "path": "tools/avatars/__pycache__/build_mpfb_fighter.cpython-314.pyc",
+        "bytes": 13523
+      },
+      {
+        "path": "tools/avatars/__pycache__/check_mpfb_asset.cpython-314.pyc",
+        "bytes": 7936
+      },
+      {
+        "path": "tools/avatars/__pycache__/fetch_sources.cpython-314.pyc",
+        "bytes": 3102
+      },
+      {
+        "path": "tools/avatars/__pycache__/build_palette_shaders.cpython-314.pyc",
+        "bytes": 2850
+      },
+      {
+        "path": "tools/avatars/__pycache__/fetch_vrm_sources.cpython-314.pyc",
+        "bytes": 4598
+      },
+      {
+        "path": "tools/avatars/__pycache__/fetch_quaternius.cpython-314.pyc",
+        "bytes": 3026
+      },
+      {
+        "path": "tools/avatars/__pycache__/fetch_kevin.cpython-314.pyc",
+        "bytes": 4987
+      },
+      {
+        "path": "tools/avatars/__pycache__/export_kevin_motion.cpython-314.pyc",
+        "bytes": 6018
+      },
+      {
+        "path": "tools/models/__pycache__/inspect_geometry.cpython-314.pyc",
+        "bytes": 5887
+      },
+      {
+        "path": "tools/models/__pycache__/creature_personality.cpython-314.pyc",
+        "bytes": 34445
+      },
+      {
+        "path": "tools/models/__pycache__/smooth_idle.cpython-314.pyc",
+        "bytes": 9851
+      },
+      {
+        "path": "tools/models/__pycache__/rigid_blades.cpython-314.pyc",
+        "bytes": 3675
+      },
+      {
+        "path": "tools/models/__pycache__/inspect_geometry.cpython-312.pyc",
+        "bytes": 5644
+      },
+      {
+        "path": "tools/models/__pycache__/repair_skin.cpython-314.pyc",
+        "bytes": 12274
+      },
+      {
+        "path": "tools/models/__pycache__/upgrade_rigs.cpython-314.pyc",
+        "bytes": 26923
+      },
+      {
+        "path": "tools/models/__pycache__/upgrade_rigs.cpython-312.pyc",
+        "bytes": 24840
+      },
+      {
+        "path": "tools/models/__pycache__/repair_skin.cpython-312.pyc",
+        "bytes": 10784
+      },
+      {
+        "path": "tools/models/__pycache__/repair_capes.cpython-312.pyc",
+        "bytes": 17306
+      },
+      {
+        "path": "tools/models/__pycache__/enhance_likorez.cpython-312.pyc",
+        "bytes": 19938
+      },
+      {
+        "path": "tools/models/__pycache__/inspect_geometry.cpython-311.pyc",
+        "bytes": 6600
+      },
+      {
+        "path": "tools/models/__pycache__/upgrade_rigs.cpython-311.pyc",
+        "bytes": 28876
+      },
+      {
+        "path": "tools/models/__pycache__/repair_beetles.cpython-312.pyc",
+        "bytes": 17102
+      },
+      {
+        "path": "tools/models/__pycache__/repair_water_beetle.cpython-312.pyc",
+        "bytes": 21037
+      },
+      {
+        "path": "tools/models/__pycache__/repair_stone_beetle.cpython-311.pyc",
+        "bytes": 18731
+      },
+      {
+        "path": "tools/models/__pycache__/compact_glb.cpython-312.pyc",
+        "bytes": 5591
+      },
+      {
+        "path": "tools/models/__pycache__/apply_baked_atlas.cpython-314.pyc",
+        "bytes": 5375
+      },
+      {
+        "path": "tools/models/__pycache__/fill_bake_misses.cpython-314.pyc",
+        "bytes": 8323
+      },
+      {
+        "path": "tools/models/__pycache__/split_gpu_capes.cpython-314.pyc",
+        "bytes": 11825
+      },
+      {
+        "path": "tools/models/__pycache__/smooth_repaired_beetle_weights.cpython-314.pyc",
+        "bytes": 3476
+      },
+      {
+        "path": "tools/models/__pycache__/repair_water_beetle.cpython-314.pyc",
+        "bytes": 29226
+      },
+      {
+        "path": "tools/models/__pycache__/compact_glb.cpython-314.pyc",
+        "bytes": 6070
+      },
+      {
+        "path": "tools/models/__pycache__/compact_glb.cpython-311.pyc",
+        "bytes": 7666
+      },
+      {
+        "path": "tools/models/__pycache__/repair_beetles.cpython-311.pyc",
+        "bytes": 20577
+      },
+      {
+        "path": "tools/models/__pycache__/repair_skin.cpython-311.pyc",
+        "bytes": 12886
+      },
+      {
+        "path": "tools/models/__pycache__/repair_water_beetle.cpython-311.pyc",
+        "bytes": 32668
+      },
+      {
+        "path": "tools/models/__pycache__/repair_capes.cpython-311.pyc",
+        "bytes": 20243
+      },
+      {
+        "path": "tools/models/__pycache__/repair_levian_tail.cpython-311.pyc",
+        "bytes": 10932
+      },
+      {
+        "path": "tools/models/__pycache__/repair_stone_crown.cpython-314.pyc",
+        "bytes": 16276
+      },
+      {
+        "path": "tools/models/__pycache__/repair_light_beetle.cpython-314.pyc",
+        "bytes": 20412
+      },
+      {
+        "path": "tools/models/__pycache__/repair_levian_tail.cpython-314.pyc",
+        "bytes": 9355
+      },
+      {
+        "path": "tools/models/__pycache__/repair_reported_limbs.cpython-314.pyc",
+        "bytes": 2797
+      },
+      {
+        "path": "tools/models/__pycache__/tail_clearance_audit.cpython-314.pyc",
+        "bytes": 4530
+      },
+      {
+        "path": "tools/models/__pycache__/repair_levian_binding.cpython-314.pyc",
+        "bytes": 25065
+      },
+      {
+        "path": "tools/models/__pycache__/leg_surface_distortion.cpython-311.pyc",
+        "bytes": 7396
+      },
+      {
+        "path": "tools/models/__pycache__/fair_stone_crown.cpython-314.pyc",
+        "bytes": 5918
+      },
+      {
+        "path": "tools/models/__pycache__/cut_stone_rear.cpython-314.pyc",
+        "bytes": 13117
+      },
+      {
+        "path": "tools/models/__pycache__/extract_stone_leg_donors.cpython-314.pyc",
+        "bytes": 17170
+      },
+      {
+        "path": "tools/models/__pycache__/repair_stone_rear.cpython-314.pyc",
+        "bytes": 19552
+      },
+      {
+        "path": "tools/models/__pycache__/leg_surface_distortion.cpython-314.pyc",
+        "bytes": 6533
+      },
+      {
+        "path": "tools/models/__pycache__/posed_surface_intersections.cpython-314.pyc",
+        "bytes": 9731
+      },
+      {
+        "path": "tools/models/__pycache__/levian_front_surface_audit.cpython-314.pyc",
+        "bytes": 8132
+      },
+      {
+        "path": "tools/models/__pycache__/levian_coil_sliver_audit.cpython-314.pyc",
+        "bytes": 7478
+      },
+      {
+        "path": "tools/models/__pycache__/repair_levian_front.cpython-311.pyc",
+        "bytes": 16771
+      },
+      {
+        "path": "tools/models/__pycache__/repair_levian_front.cpython-314.pyc",
+        "bytes": 15489
+      },
+      {
+        "path": "tools/models/__pycache__/repair_levian_hit.cpython-314.pyc",
+        "bytes": 9256
+      },
+      {
+        "path": "tools/models/__pycache__/repair_light035.cpython-311.pyc",
+        "bytes": 4445
+      },
+      {
+        "path": "tools/models/__pycache__/repair_light_sockets035.cpython-311.pyc",
+        "bytes": 21007
+      },
+      {
+        "path": "tools/models/__pycache__/restore_light_ankles035.cpython-311.pyc",
+        "bytes": 13954
+      },
+      {
+        "path": "tools/models/__pycache__/repair_light_motion035.cpython-311.pyc",
+        "bytes": 8019
+      },
+      {
+        "path": "tools/models/__pycache__/repair_light_surface035.cpython-311.pyc",
+        "bytes": 6861
+      },
+      {
+        "path": "tools/models/__pycache__/remove_grifalon_gale_wind.cpython-314.pyc",
+        "bytes": 22185
+      },
+      {
+        "path": "tools/models/__pycache__/repair_grifalon_gale_tail.cpython-314.pyc",
+        "bytes": 16468
+      },
+      {
+        "path": "tools/_tmp/repair035-review/__pycache__/light_retopo_pose_area.cpython-311.pyc",
+        "bytes": 12265
+      },
+      {
+        "path": "tools/ai_models/__pycache__/gen_concepts.cpython-314.pyc",
+        "bytes": 5735
+      },
+      {
+        "path": "tools/ai_models/__pycache__/gen_meshes.cpython-311.pyc",
+        "bytes": 10644
+      },
+      {
+        "path": "tools/ai_models/__pycache__/trellis2.cpython-311.pyc",
+        "bytes": 13069
+      },
+      {
+        "path": "tools/ai_models/__pycache__/fix_albedo.cpython-311.pyc",
+        "bytes": 6816
+      },
+      {
+        "path": "tools/ai_models/__pycache__/zimage_concepts.cpython-314.pyc",
+        "bytes": 7576
+      },
+      {
+        "path": "tools/ai_models/__pycache__/zimage_concepts.cpython-311.pyc",
+        "bytes": 7306
+      },
+      {
+        "path": "tools/ai_models/__pycache__/gen_concepts.cpython-311.pyc",
+        "bytes": 5915
+      },
+      {
+        "path": "tools/ai_models/__pycache__/gen_meshes.cpython-312.pyc",
+        "bytes": 9684
+      },
+      {
+        "path": "tools/ai_models/__pycache__/trellis2.cpython-312.pyc",
+        "bytes": 13917
+      },
+      {
+        "path": "tools/ai_models/__pycache__/zimage_concepts.cpython-312.pyc",
+        "bytes": 6695
+      },
+      {
+        "path": "tools/ai_models/__pycache__/gen_concepts.cpython-312.pyc",
+        "bytes": 5658
+      },
+      {
+        "path": "tools/audio/__pycache__/gen_sfx.cpython-314.pyc",
+        "bytes": 45288
+      },
+      {
+        "path": "tools/audio/__pycache__/sfxlib.cpython-314.pyc",
+        "bytes": 21534
+      },
+      {
+        "path": "tools/audio/__pycache__/build_feedback.cpython-314.pyc",
+        "bytes": 3555
+      },
+      {
+        "path": "tools/audio/__pycache__/build_gate_wind.cpython-314.pyc",
+        "bytes": 3268
+      },
+      {
+        "path": "tools/blender/__pycache__/rig_likorez.cpython-314.pyc",
+        "bytes": 13968
+      },
+      {
+        "path": "tools/blender/__pycache__/rig_species.cpython-314.pyc",
+        "bytes": 28019
+      },
+      {
+        "path": "tests/__pycache__/beetle_attachment.cpython-314.pyc",
+        "bytes": 9401
+      },
+      {
+        "path": "tests/__pycache__/cloth_integrity.cpython-314.pyc",
+        "bytes": 5513
+      },
+      {
+        "path": "tests/__pycache__/kolossar_integrity.cpython-314.pyc",
+        "bytes": 4829
+      },
+      {
+        "path": "tests/__pycache__/beetle_tunnels.cpython-314.pyc",
+        "bytes": 3860
+      },
+      {
+        "path": "tests/__pycache__/tail_integrity.cpython-314.pyc",
+        "bytes": 4562
+      },
+      {
+        "path": "tests/__pycache__/stone_crown_integrity.cpython-314.pyc",
+        "bytes": 5135
+      },
+      {
+        "path": "tests/__pycache__/stone_rear_integrity.cpython-314.pyc",
+        "bytes": 8994
+      },
+      {
+        "path": "tests/__pycache__/stone_rear_motion.cpython-314.pyc",
+        "bytes": 2990
+      },
+      {
+        "path": "tests/__pycache__/beetle_integrity.cpython-314.pyc",
+        "bytes": 10045
+      },
+      {
+        "path": "tests/__pycache__/levian_hit_integrity.cpython-311.pyc",
+        "bytes": 13757
+      },
+      {
+        "path": "tests/__pycache__/levian_tide_sliver.cpython-314.pyc",
+        "bytes": 3369
+      },
+      {
+        "path": "tests/__pycache__/levian_stone_sliver.cpython-314.pyc",
+        "bytes": 3260
+      },
+      {
+        "path": "tests/__pycache__/levian_binding_integrity.cpython-314.pyc",
+        "bytes": 10972
+      },
+      {
+        "path": "tests/__pycache__/levian_front_integrity.cpython-314.pyc",
+        "bytes": 14268
+      },
+      {
+        "path": "tests/__pycache__/levian_hit_integrity.cpython-314.pyc",
+        "bytes": 13660
+      },
+      {
+        "path": "tests/__pycache__/levian_normal_equivalence.cpython-314.pyc",
+        "bytes": 6523
+      },
+      {
+        "path": "tests/__pycache__/light_beetle_integrity.cpython-311.pyc",
+        "bytes": 28164
+      },
+      {
+        "path": "tests/__pycache__/grifalon_tail_integrity.cpython-314.pyc",
+        "bytes": 13780
+      }
+    ],
+    "count": 105,
+    "bytes": 1286582
+  },
+  "limitations": [
+    "A public online server is not provided; self-hosted Godot4.7.2 server and valid WSS/TLS are required.",
+    "Linux/Vulkan and Wine checks are distinct from testing on native Windows.",
+    "Model pose tests are sampled checks, not an exhaustive geometry audit."
+  ],
+  "publication": {
+    "status": "ready, not yet published",
+    "intended_tag": "v0.3.0",
+    "intended_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.3.0"
+  },
+  "source_full": {
+    "full_raw_result": {
+      "planned": 52,
+      "pass": 50,
+      "failed": [
+        "character-editor",
+        "tournament-ui"
+      ]
+    },
+    "fixture_corrections": [
+      {
+        "test": "character-editor",
+        "raw": "2288 of 2291 assertions passed; 3 expected old four-button menu indices. Full fixture printed final result then stalled during shutdown, main thread in futex_wait. After 234.84s addressed SIGTERM only to exact checked test PID50868. Raw exit -15 preserved.",
+        "fix": "Focus assertions compare semantic button labels, not stale indices.",
+        "narrow_retest": "Three real editor/settings/help close transitions in minimized unfocusable wrapper; actual focused labels match."
+      },
+      {
+        "test": "tournament-ui",
+        "raw": "57 of 59 assertions passed; old menu count7 and hard wait1.9s invalid for current10 actions.",
+        "fix": "Required tournament actions tested by label; appearance waits actual completed opacity with bounded5s deadline.",
+        "narrow_retest": "Required labels present; all menu appearance finished within deadline."
+      }
+    ],
+    "menu_focus_lifecycle_regression": {
+      "exit_code": 0,
+      "seconds": 7.853,
+      "ok": true,
+      "checks": 5,
+      "cleanup_exit_required": true
+    },
+    "modified_test_parsing": {
+      "character_editor_tests.gd": {
+        "exit_code": 0,
+        "errors": false
+      },
+      "tournament_ui_tests.gd": {
+        "exit_code": 0,
+        "errors": false
+      }
+    },
+    "source_autoplay": {
+      "completed_matches": 2,
+      "turns": [
+        9,
+        12
+      ],
+      "winners": [
+        0,
+        1
+      ],
+      "throws": [
+        9,
+        9
+      ],
+      "slot_landings": [
+        8,
+        9
+      ],
+      "misses": [
+        1,
+        0
+      ],
+      "log": "build/checks/release030/full/remaining/20261103-194000/autoplay.log"
+    },
+    "flow_results": {
+      "campaign": {
+        "checks": 46,
+        "elapsed_seconds": 55.861,
+        "failures": 0,
+        "fixture": {
+          "a": 5,
+          "attempt": 0,
+          "b": 0,
+          "first_player": 1,
+          "id": "B-R1-M1",
+          "round": 1,
+          "seed": 1568995156,
+          "stage": "group_B"
+        },
+        "preparation_counts": [
+          1,
+          98,
+          3,
+          151,
+          4
+        ]
+      },
+      "tournament": {
+        "checks": 46,
+        "elapsed_seconds": 93.03,
+        "failures": 0,
+        "fixture": {
+          "a": 5,
+          "attempt": 0,
+          "b": 0,
+          "first_player": 1,
+          "id": "B-R1-M1",
+          "round": 1,
+          "seed": 1568995156,
+          "stage": "group_B"
+        },
+        "preparation_counts": [
+          1,
+          98,
+          3,
+          151,
+          4
+        ]
+      }
+    },
+    "startup_counts_mapping": [
+      "preparation_count",
+      "actor_build_count",
+      "arena_build_count",
+      "SoundFx.catalog_load_count"
+    ],
+    "startup_counts": [
+      1,
+      98,
+      3,
+      151
+    ],
+    "source_startup_seconds": 12.831,
+    "window_policy": "tools/check.py graphical wrappers use tools/test_window.gd: minimized, unfocusable, offscreen; shim adds --max-fps60 to all Godot commands. Ordinary game FPS settings unchanged.",
+    "attempt_notes": [
+      "Restricted-environment import TCP socket diagnostics caused first importFAIL. Escalated importPASS. Six already-successful checks retained; interrupted card-matches rerun once to completion.",
+      "Entire full profile not rerun after two fixture corrections; only changed five contracts and normal menu cleanup retested.",
+      "GPUCloth warning about1non-manifold edge skipped for bending appears in animation/support/flight; no corresponding engineERROR.",
+      "Heavy multi-editor fixture shutdown hang was not explained by a debugger: OS ptrace restrictions denied attaching. Minimal real menu lifecycle exited normally."
+    ]
+  },
+  "source_full_report": "build/checks/release030/summary.json",
+  "visual_review": {
+    "report": "build/checks/release030/visual-review.json",
+    "fresh_png_reviewed": 15
+  },
+  "export": {
+    "command": "Godot4.7.2 --headless --max-fps60 --export-release Windows Desktop",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "output": "build/release030/client/Sfery_Stikhiy.exe",
+    "file_version": "0.3.0.0",
+    "product_version": "0.3.0"
+  },
+  "archive": {
+    "archive": "build/Sfery_Stikhiy_v0.3.0_win64.zip",
+    "bytes": 1030237049,
+    "sha256": "25644cb360fc5e9e034385d8ac8bba8856b57e8591967adadd828d6461ad7e41",
+    "file_count": 12,
+    "files": [
+      "CHANGELOG.md",
+      "CREDITS.md",
+      "LICENSES/FIRA_SANS_OFL.txt",
+      "LICENSES/GODOT_VRM.txt",
+      "LICENSES/GPU_CLOTH.txt",
+      "LICENSES/MTOON.txt",
+      "LICENSES/QUATERNIUS.txt",
+      "ONLINE_SERVER.md",
+      "README.txt",
+      "RULES.md",
+      "Sfery_Stikhiy.exe",
+      "Sfery_Stikhiy.pck"
+    ],
+    "build_seconds": 28.715
+  },
+  "server_archive": {
+    "archive": "/home/loq/Документы/game/sfery_stikhiy/build/online-server/20261103-195716/sfery-online-20261103-195716.tar.gz",
+    "bytes": 67261,
+    "sha256": "63637368a89b6fcef51a9a3f449bc612fc040a19abfb512585e186d2f3cfa896",
+    "file_count": 57,
+    "validation": {
+      "fresh_import": true,
+      "parse": true,
+      "network_two_client_two_physical_throws": true,
+      "protocol_healthcheck": true,
+      "readonly_project": true
+    },
+    "engine_bundled": false,
+    "release_asset": "build/Sfery_Stikhiy_v0.3.0_online-server.tar.gz"
+  },
+  "independent_sol": {
+    "reviewer": "independent Sol high",
+    "timestamp_utc": "2026-11-03T17:07:35.922685+00:00",
+    "godot_launched": false,
+    "status": "PASS",
+    "client": {
+      "pck": {
+        "format": 4,
+        "engine": [
+          4,
+          7,
+          2
+        ],
+        "flags": 2,
+        "entries": 1299,
+        "all_entries_md5_pass": 1299,
+        "private_signature_findings": [],
+        "sha256": "dbbd87a53e508cd26fb9c345eb4006f13ae0ad5b5ea92a63bf60e1175ce801b4"
+      },
+      "exe": {
+        "architecture": "AMD64 PE32+",
+        "file_version": [
+          0,
+          3,
+          0,
+          0
+        ],
+        "product_version": [
+          0,
+          3,
+          0,
+          0
+        ],
+        "sha256": "4134be90b97af2d3276f74590f6b58c4c97727d01ae2922c7e07a6af6a4a305c"
+      },
+      "source_models_sha256_pass": 49,
+      "imported_models_workspace_pass": 49,
+      "prepared_pdat_sha256_pass": 68,
+      "prepared_manifest_sha256_pass": true,
+      "kevin_banks_sha256_pass": 2,
+      "editor_catalog_imports_sha256_pass": 2,
+      "required_runtime_resources": {
+        "project.binary": "project.binary",
+        "scenes/loading/boot.tscn": ".godot/exported/133200997/export-957917e049dbb644ce45c5cd4e97012e-boot.scn",
+        "scenes/main.tscn": ".godot/exported/133200997/export-3ad5c15c4f3250da0cc7c1af1770d85f-main.scn",
+        "scenes/main.gd": "scenes/main.gdc",
+        "scenes/loading/game_loading.gd": "scenes/loading/game_loading.gdc",
+        "scenes/loading/startup_catalog.gd": "scenes/loading/startup_catalog.gdc",
+        "scenes/ui/character_editor.gd": "scenes/ui/character_editor.gdc",
+        "core/campaign.gd": "core/campaign.gdc",
+        "core/tournament.gd": "core/tournament.gdc",
+        "data/tournament_session.gd": "data/tournament_session.gdc",
+        "scenes/online/online_game.gd": "scenes/online/online_game.gdc",
+        "network/online_client.gd": "network/online_client.gdc",
+        "network/online_protocol.gd": "network/online_protocol.gdc",
+        "network/online_physics.gd": "network/online_physics.gdc",
+        "network/state_codec.gd": "network/state_codec.gdc"
+      },
+      "forbidden_paths": [],
+      "zip": {
+        "path": "build/Sfery_Stikhiy_v0.3.0_win64.zip",
+        "bytes": 1030237049,
+        "sha256": "25644cb360fc5e9e034385d8ac8bba8856b57e8591967adadd828d6461ad7e41",
+        "crc_all_pass": 12,
+        "exact_staging_files_sha256": {
+          "CHANGELOG.md": "ab2b5c7b09ab001f5c2d0f72f5f7d378815b21712c96c73db0cb0678613426f4",
+          "CREDITS.md": "7d8aec3056032ff395e30f8a578cf71fe482306b9fd93c6ce788994ec2f56a28",
+          "LICENSES/FIRA_SANS_OFL.txt": "e1b302b6eac8d0cdbc7786f84fb4fa953d8be4db37613789c1a06adb57d33222",
+          "LICENSES/GODOT_VRM.txt": "d39666c721f8453445364e66a08d0edec6fbc5b8e30ee1d9d710e84a3094c101",
+          "LICENSES/GPU_CLOTH.txt": "3e53bd060020c64601b050a039d42a07f969eafd1085e16b4b93e0f97f7c7689",
+          "LICENSES/MTOON.txt": "fd0a82d7d32ad7e39948363114587a3290252ee9a57da0da1582f1e9f0e602f5",
+          "LICENSES/QUATERNIUS.txt": "6d01f55c6e4c49a2c9963e147e561945ae2c83958c8ca667d90a6bffdbfac061",
+          "ONLINE_SERVER.md": "be7b9b171da0ebd5071f280398e48c8ff9a1d383d6ac8d2d9aaab8756c11356f",
+          "README.txt": "f1823a60a81f8752b458f9a097d46f08980273c2390681a97e083190effa3345",
+          "RULES.md": "585e6d84016e2e256e7a5a1c49f345de33e88fd8090118712f5895674595982f",
+          "Sfery_Stikhiy.exe": "4134be90b97af2d3276f74590f6b58c4c97727d01ae2922c7e07a6af6a4a305c",
+          "Sfery_Stikhiy.pck": "dbbd87a53e508cd26fb9c345eb4006f13ae0ad5b5ea92a63bf60e1175ce801b4"
+        },
+        "sha256_sidecar_pass": true
+      },
+      "zip_document_private_signature_findings": []
+    },
+    "client_audit_reused_after_unchanged_zip_sha256": true,
+    "server": {
+      "archive": "build/Sfery_Stikhiy_v0.3.0_online-server.tar.gz",
+      "sha256": "63637368a89b6fcef51a9a3f449bc612fc040a19abfb512585e186d2f3cfa896",
+      "files_manifest_sha256_pass": 57,
+      "ownership_metadata_clean": true,
+      "paths_clean": true,
+      "private_signature_findings": [],
+      "validation": {
+        "fresh_import": true,
+        "parse": true,
+        "network_two_client_two_physical_throws": true,
+        "protocol_healthcheck": true,
+        "readonly_project": true
+      }
+    }
+  },
+  "wine_attempt": {
+    "wine": "11.20",
+    "native_windows": false,
+    "path_override_probe": {
+      "exit_code": 1,
+      "reason": "Official release template rejects --main-pack/--script path overrides; game code not reached."
+    },
+    "normal_headless_entry": {
+      "exit_code": 0,
+      "quit_after_frames": 600,
+      "max_fps": 60,
+      "script_errors": 0,
+      "boot_resources_loaded": true,
+      "menu_resource_loaded": true,
+      "menu_ready_confirmed": false,
+      "clean_shutdown": false,
+      "diagnostics": "Dummy renderer RID/ObjectDB leaks and RenderingServer=null after engine shutdown. Not counted as a clean Windows gameplay check.",
+      "log": "build/release030/wine-native-entry.log"
+    }
+  },
+  "pck_gameplay_initial_attempt": {
+    "completed_matches": 1,
+    "turns": [
+      15
+    ],
+    "exit_code": 1,
+    "fixture_failure": "Autoplay compared actor IDs by side order. Two same-model resident actors returned by LIFO exchange sides, so the check falsely claimed recreation.",
+    "correction": "Compare sorted identities; retain player profile and pool count checks, add NPC profile, side transform and portrait bindings for both sides. No game or package files changed.",
+    "independent_review": "build/checks/release030/autoplay-pool-fixture-review.json",
+    "log": "build/release030/pck-autoplay.log"
+  },
+  "diff_review": {
+    "private_or_build_paths_staged": false,
+    "source_models_unchanged_during_release": 49,
+    "whitespace_notes": "Existing new vendor/CC0 license whitespace, generated palette whitespace and four old blank-at-EOF notices retained to preserve pinned/generated inputs. New release and test corrections reviewed."
+  },
+  "pck_gameplay_final": {
+    "exit_code": 0,
+    "engine": "Godot4.7.2 Linux Vulkan Forward+ / NVIDIA RTX4070 Laptop",
+    "version_reported": "0.3.0",
+    "isolated_pack_only_directory": "build/release030/pck-runtime",
+    "pck_sha256": "dbbd87a53e508cd26fb9c345eb4006f13ae0ad5b5ea92a63bf60e1175ce801b4",
+    "matches": [
+      {
+        "match": 1,
+        "winner": 0,
+        "turns": 10,
+        "captures": [
+          2,
+          1
+        ]
+      },
+      {
+        "match": 2,
+        "winner": 0,
+        "turns": 15,
+        "captures": [
+          3,
+          1
+        ]
+      }
+    ],
+    "throws": [
+      9,
+      8
+    ],
+    "landings": [
+      9,
+      8
+    ],
+    "misses": [
+      0,
+      0
+    ],
+    "battles": 8,
+    "battle_reveals": 4,
+    "startup_seconds": 32.42,
+    "preparation_after_menu_unchanged": true,
+    "same_actor_ids_permuted": [
+      266069871139,
+      259157659396
+    ],
+    "both_side_profile_transform_and_portrait_bindings_pass": true,
+    "max_fps": 60,
+    "background_wrapper": "tools/test_window.gd",
+    "script_errors": 0,
+    "engine_errors": 0,
+    "test_failures": 0,
+    "log": "build/release030/pck-autoplay-final.log",
+    "note": "Prepared cache with missing raw GLB uses intentional safe fallback. Source12.831s startup and pack32.42s are separate measurements, not FPS claims."
+  }
+}

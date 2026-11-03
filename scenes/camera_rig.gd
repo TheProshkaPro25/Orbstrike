@@ -27,11 +27,11 @@ const SHOTS := {
 	# бросок соперника: низко за его спиной (ракурс через плечо в сторону поля)
 	&"throw_low": {"pos": Vector3(4.0, 4.2, 15.0), "look": Vector3(0.0, 1.5, -20.0), "fov": 58.0, "hand": 0.25},
 	# погоня за шаром: позади по скорости, с запаздыванием и креном на поворотах
-	&"follow": {"back": 15.0, "up": 6.0, "lead": 7.0, "fov": 62.0, "smooth": 3.2, "hand": 0.3, "tilt": 0.0045, "tilt_max": 0.16},
+	&"follow": {"back": 3.2, "up": 1.1, "lead": 1.8, "fov": 52.0, "smooth": 7.0, "hand": 0.12, "tilt": 0.0045, "tilt_max": 0.10},
 	# приземление: короткий наезд на карту
 	&"land": {"dist": 25.0, "up": 10.0, "look_y": 1.5, "fov": 50.0, "smooth": 4.5, "hand": 0.2},
 	# раскрытие: облёт снизу вверх вокруг существа
-	&"reveal": {"radius": 1.75, "y0": 0.08, "y1": 0.95, "look0": 0.75, "look1": 0.45, "arc_deg": 80.0, "dur": 1.9, "fov": 56.0, "hand": 0.15},
+	&"reveal": {"radius": 1.75, "y0": 0.08, "y1": 0.95, "look0": 0.75, "look1": 0.45, "arc_deg": 80.0, "dur": 1.9, "enter": .5, "fov": 56.0, "hand": 0.15},
 	# бой: общий план двух существ лицом к лицу (сбоку, низко)
 	&"battle_wide": {"pos": Vector3(25.0, 3.2, 0.0), "look_h": 0.42, "fov": 54.0, "smooth": 3.5, "hand": 0.25},
 	# крупный план при рёве: 3/4 спереди, снизу (side — вбок, fwd — вперёд по взгляду существа)
@@ -61,6 +61,8 @@ var _roll := 0.0
 # слежение
 var _follow: Node3D = null
 var _follow_dir := Vector3(0, 0, -1)
+var _follow_last_pos := Vector3.ZERO
+var _follow_staged := false
 # облёт
 var _orb := {}
 var _orb_t := 0.0
@@ -72,6 +74,7 @@ var _dolly_dur := 0.3
 # бой: центр и высота существ для возврата к общему плану
 var _battle_center := Vector3.ZERO
 var _battle_h := 10.0
+var _battle_span := 0.0
 # тряска
 var _shake := 0.0
 var _shake_t := 0.0
@@ -214,6 +217,26 @@ func snap_overview() -> void:
 	cut()
 
 
+func fighter_view(fighter: Node3D, action: String = "throw") -> void:
+	var height: float = fighter.skeleton.get_bone_global_rest(fighter.skeleton.find_bone("Head")).origin.y* fighter.actor.scale.y
+	if action == "command":
+		# Reference opening: face first, pull back to read shoulders, arm and card.
+		var close := Vector3(0,height*.88,.10)
+		_set_static(fighter.to_global(close+Vector3(-.30,.04,1.45)),fighter.to_global(close),{"fov":38,"hand":.003})
+		_avoid = false
+		cut()
+		var waist := Vector3(0,height*.88,.15)
+		_set_static(fighter.to_global(waist+Vector3(-.60,.20,2.95)),fighter.to_global(waist),{"fov":38,"hand":.003,"smooth":3.4})
+		_avoid = false
+		return
+	var wide := action in ["throw","card_throw"]
+	var offset := Vector3(1.45 if wide else -.65,.20,3.8 if wide else 2.1)
+	var aim := Vector3(0,height*(.55 if wide else .75),.15)
+	_set_static(fighter.to_global(aim+offset),fighter.to_global(aim),{"fov":38,"hand":.003})
+	_avoid = false
+	cut()
+
+
 ## Общий план между ходами: медленный дрейф по дуге вокруг центра поля.
 func overview() -> void:
 	var s: Dictionary = SHOTS[&"overview"]
@@ -249,19 +272,24 @@ func throw_view(ball_pos: Vector3, side: float) -> void:
 
 
 ## Погоня за шаром: рывок вслед, позади по направлению скорости, с запаздыванием и креном.
-func follow(n: Node3D) -> void:
+func follow(n: Node3D, direction: Vector3 = Vector3.ZERO) -> void:
 	var s: Dictionary = SHOTS[&"follow"]
 	mode = Mode.FOLLOW
 	_follow = n
+	_follow_last_pos = n.global_position
+	_follow_staged = direction.length_squared() > .001
 	_drift = 0.0
 	_avoid = true
 	_goal_fov = float(s["fov"])
-	_smooth = float(s["smooth"])
+	_smooth = 8.0 if _follow_staged else float(s["smooth"])
 	_hand = float(s["hand"])
 	var fwd := -global_transform.basis.z
 	fwd.y = 0.0
-	if fwd.length() > 0.01:
+	if direction.length_squared() > .001:
+		_follow_dir = Vector3(direction.x, 0, direction.z).normalized()
+	elif fwd.length() > 0.01:
 		_follow_dir = fwd.normalized()
+	_update_follow(1.0 / 60.0)
 
 
 func _update_follow(delta: float) -> void:
@@ -272,6 +300,9 @@ func _update_follow(delta: float) -> void:
 	var v := Vector3.ZERO
 	if _follow is RigidBody3D:
 		v = (_follow as RigidBody3D).linear_velocity
+	if _follow_staged:
+		v = (p - _follow_last_pos) / maxf(delta, 0.001)
+	_follow_last_pos = p
 	var vf := Vector3(v.x, 0.0, v.z)
 	var lateral := 0.0
 	if vf.length() > 1.0:
@@ -279,8 +310,10 @@ func _update_follow(delta: float) -> void:
 		lateral = _follow_dir.cross(nd).y
 		_follow_dir = _follow_dir.slerp(nd, 1.0 - exp(-2.5 * delta)).normalized()
 	var speed := vf.length()
-	var lead := float(s["lead"]) * clampf(speed / 20.0, 0.2, 1.0)
-	_goal_pos = p - _follow_dir * float(s["back"]) + Vector3(0, float(s["up"]), 0)
+	var lead := (2.5 if _follow_staged else float(s["lead"])) * clampf(speed / 20.0, 0.2, 1.0)
+	var side := Vector3(-_follow_dir.z, 0, _follow_dir.x)
+	_goal_pos = p - _follow_dir * (11.0 if _follow_staged else float(s["back"])) + side * (0.0 if _follow_staged else 1.6) + Vector3(0, 4.8 if _follow_staged else float(s["up"]), 0)
+	_goal_fov = float(s["fov"]) + (0.0 if _follow_staged else clampf(speed / 50.0, 0.0, 1.0) * 4.0)
 	_goal_look = p + _follow_dir * lead + Vector3(0, 0.8, 0)
 	# крен в сторону поворота, сильнее на скорости
 	var want_roll := clampf(-lateral * speed * float(s["tilt"]) * 10.0, -float(s["tilt_max"]), float(s["tilt_max"]))
@@ -312,6 +345,8 @@ func _orbit(center: Vector3, h: float, s: Dictionary, start_az: float = NAN, siz
 	_orb["h"] = h
 	_orb["size"] = maxf(h, size)
 	_orb["az"] = az
+	_orb["entry_pos"] = _base
+	_orb["entry_look"] = _look
 	_orb_t = 0.0
 	_goal_fov = float(s["fov"])
 	_smooth = 6.0
@@ -329,15 +364,18 @@ func _orbit_goal(t: float) -> void:
 	var y: float = lerpf(float(_orb["y0"]), float(_orb["y1"]), e) * h
 	_goal_pos = c + Vector3(sin(a) * r, y, cos(a) * r)
 	_goal_look = c + Vector3(0, lerpf(float(_orb["look0"]), float(_orb["look1"]), e) * h, 0)
+	var enter := float(_orb.get("enter", 0.0))
+	if enter > 0:
+		var blend := smoothstep(0, enter, _orb_t)
+		_goal_pos = Vector3(_orb["entry_pos"]).lerp(_goal_pos, blend)
+		_goal_look = Vector3(_orb["entry_look"]).lerp(_goal_look, blend)
 
 
-## Раскрытие существа: камера снизу вверх облетает его на 60–90°. Начинает катом. Возвращает длительность.
+## Раскрытие существа: плавный вход с текущей позиции, затем единый облёт снизу вверх.
 func reveal_orbit(p: Vector3, h: float, toward: Vector3, size: float = 0.0) -> float:
 	# стартуем спереди-сбоку от существа (toward — куда оно смотрит)
 	var az := atan2(toward.x, toward.z) - deg_to_rad(70.0)
-	var dur := _orbit(p, h, SHOTS[&"reveal"], az, size)
-	cut()
-	return dur
+	return _orbit(p, h, SHOTS[&"reveal"], az, size)
 
 
 ## Победитель: медленный облёт. Возвращает длительность.
@@ -348,13 +386,18 @@ func winner_orbit(p: Vector3, h: float, size: float = 0.0) -> float:
 # ------------------------------------------------------------ бой
 
 ## Общий план боя: сбоку и низко (+X), существа лицом к лицу вдоль Z. h — рост существ.
-func battle_view(p: Vector3, h: float = 10.0, do_cut: bool = true) -> void:
+func battle_view(p: Vector3, h: float = 10.0, do_cut: bool = true, span: float = 0.0) -> void:
 	_battle_center = p
 	_battle_h = h
+	_battle_span = span
 	var s: Dictionary = SHOTS[&"battle_wide"]
 	var off: Vector3 = s["pos"]
 	# отъезд растёт с ростом существ, чтобы оба целиком помещались в кадр
-	off = Vector3(off.x * maxf(1.0, h / 11.0), off.y, off.z)
+	var aspect := get_viewport().get_visible_rect().size.aspect()
+	var vertical_half := tan(deg_to_rad(float(s["fov"]) * 0.5))
+	var fit_height := h * 0.75 / vertical_half
+	var fit_width := (Arena.FIG_H * 2.0 / 3.0 + span) * 0.64 / (vertical_half * maxf(aspect, 0.75))
+	off = Vector3(maxf(off.x * maxf(1.0, h / 11.0), maxf(fit_height, fit_width)), off.y, off.z)
 	_set_static(p + off, p + Vector3(0, float(s["look_h"]) * h, 0), s)
 	if do_cut:
 		cut()
@@ -362,7 +405,7 @@ func battle_view(p: Vector3, h: float = 10.0, do_cut: bool = true) -> void:
 
 ## Вернуться к общему плану текущего боя (плавно или катом).
 func battle_wide(do_cut: bool = false) -> void:
-	battle_view(_battle_center, _battle_h, do_cut)
+	battle_view(_battle_center, _battle_h, do_cut, _battle_span)
 
 
 ## Кадр существа: отступы вбок/вперёд — от размера size (наибольшее из роста, длины и размаха), высоты — от роста h.
@@ -413,3 +456,21 @@ func _dolly(to: Vector3, dur: float) -> void:
 	_dolly_to = Vector3(to.x, maxf(to.y, MIN_Y), to.z)
 	_dolly_t = 0.0
 	_dolly_dur = maxf(dur, 0.01)
+
+
+## Близкий пролёт показывает саму маленькую карту и движение земли за ней.
+func card_flight_view(point: Vector3, _first: bool = false, side: float = 1.0) -> void:
+	_set_static(point + Vector3(1.25*side,.50,.35*side),point,{"fov":42.0,"smooth":12.0,"hand":.002})
+	cut()
+
+
+func card_expansion_view(point: Vector3) -> void:
+	_set_static(point + Vector3(12.0, 28.0, 33.0), point, {"fov": 54.0, "smooth": 6.0, "hand": 0.05})
+
+
+func location_preview_view(interior: bool = false) -> void:
+	if interior:
+		_set_static(Vector3(68, 42, 64), Vector3(0, 24, -16), {"fov": 65.0, "smooth": 4.0, "hand": .06})
+	else:
+		_set_static(Vector3(82, 66, 88), Vector3(0, 6, -20), {"fov": 55.0, "smooth": 4.0, "hand": 0.08})
+	cut()

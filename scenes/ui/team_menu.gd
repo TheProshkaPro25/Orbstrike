@@ -8,6 +8,11 @@ extends Control
 ## в центре — карты шага (фильтр по классу), справа — предпросмотр: 3D-модель существа или крупная карта.
 ## Клавиши: 1–3 — шаг, ←/→ — назад/далее, Enter — в бой (или далее), R — случайная колода.
 
+signal location_previewed(index: int)
+signal location_preview_closed
+const Locations := preload("res://data/arena_locations.gd")
+const ArenaPickerT := preload("res://scenes/ui/arena_picker.gd")
+
 signal team_chosen(ids: Array[StringName])
 signal deck_chosen(creatures: Array[StringName], arena: Array[StringName], abilities: Array[StringName])
 
@@ -69,10 +74,24 @@ var _preview: PreviewT
 var _focus_id: StringName = &""    # что показывать в предпросмотре без наведения
 var _hover_id: StringName = &""
 var _hover_t := 0.0
+var _arena_picker: ArenaPickerT
+var _arena_btn: Button
+var _graphics_button: Button
+var _fps_button: Button
+var _hidden_for_arena: Array[Control] = []
 
 
 func _ready() -> void:
 	_build()
+
+
+## Меню заранее создаётся под экраном загрузки. Настройки главного меню
+## могли измениться с тех пор, поэтому подписи обновляются при входе в команду.
+func refresh_settings_labels() -> void:
+	if is_instance_valid(_graphics_button):
+		_graphics_button.text = "Графика: " + GraphicsSettings.level_name()
+	if is_instance_valid(_fps_button):
+		_fps_button.text = "FPS: " + GraphicsSettings.fps_name()
 
 
 func _build() -> void:
@@ -118,7 +137,8 @@ func _build() -> void:
 	head.add_child(sp)
 	# уровень графики: Низкие → Средние → Высокие, сохраняется в user://settings.cfg и применяется сразу
 	var gfx := _button("Графика: " + GraphicsSettings.level_name(), 160, 40, 15)
-	gfx.tooltip_text = "Низкие — без SSAO, тени проще, меньше искр.\nСредние — почти как Высокие, легче для GTX 1060.\nВысокие — 4 каскада теней, SSAO, сглаживание MSAA 2×."
+	_graphics_button = gfx
+	gfx.tooltip_text = "Низкие — простые тени и меньше частиц, минимальная нагрузка.\nСредние — баланс качества и скорости.\nВысокие — мягкие подробные тени, отражения, непрямой свет и сглаженные края. Требовательнее к видеокарте."
 	gfx.pressed.connect(func() -> void:
 		GraphicsSettings.set_level((GraphicsSettings.current() + 1) % 3)
 		gfx.text = "Графика: " + GraphicsSettings.level_name()
@@ -128,6 +148,7 @@ func _build() -> void:
 	head.add_child(gfx)
 	# ограничитель кадров: 60 / 90 / 120 / 144 / без лимита, применяется сразу
 	var fps := _button("FPS: " + GraphicsSettings.fps_name(), 104, 40, 15)
+	_fps_button = fps
 	fps.tooltip_text = "Предел кадров в секунду. Меньше — тише вентилятор и дольше батарея."
 	fps.pressed.connect(func() -> void:
 		GraphicsSettings.next_fps()
@@ -182,6 +203,13 @@ func _build() -> void:
 	_preview.custom_minimum_size = Vector2(RIGHT_W, 0)
 	body.add_child(_preview)
 
+	_arena_picker = ArenaPickerT.new()
+	add_child(_arena_picker)
+	_arena_picker.chosen.connect(func(index: int) -> void:
+		_arena_btn.text = "Арена: " + str(Locations.definition(index).name)
+		location_previewed.emit(index))
+	_arena_picker.closed.connect(_close_arena_picker)
+
 	get_viewport().size_changed.connect(func() -> void:
 		if visible:
 			_show_step(_step))
@@ -221,6 +249,10 @@ func _build_deck_panel() -> Control:
 	_error.custom_minimum_size = Vector2(0, 30)
 	_error.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	vb.add_child(_error)
+	_arena_btn = _button("Арена: " + str(Locations.definition(Locations.current()).name), 0, 42, 14)
+	_arena_btn.tooltip_text = "Выбрать локацию и посмотреть её перед боем"
+	_arena_btn.pressed.connect(_open_arena_picker)
+	vb.add_child(_arena_btn)
 	var dl := VisualUtil.label("Соперник", 13)
 	dl.add_theme_color_override("font_color", UiTheme.TEXT_DIM)
 	vb.add_child(dl)
@@ -777,7 +809,7 @@ func _slot(text: String, c: Color, right: String, element: int, step: int, id: S
 # ---------------------------------------------------------------- клавиатура
 
 func _unhandled_key_input(e: InputEvent) -> void:
-	if not visible or not (e is InputEventKey) or not e.pressed or e.echo:
+	if not visible or (_arena_picker != null and _arena_picker.visible) or not (e is InputEventKey) or not e.pressed or e.echo:
 		return
 	match (e as InputEventKey).keycode:
 		KEY_1, KEY_KP_1:
@@ -879,3 +911,22 @@ class PowerBar:
 		# отметка лимита
 		draw_line(Vector2(limit * k, r.position.y - 3), Vector2(limit * k, r.end.y + 3), Color(1, 1, 1, 0.8), 2.0)
 		draw_rect(r, Color(1, 1, 1, 0.25), false, 1.0)
+
+
+func _open_arena_picker() -> void:
+	_preview.release()
+	_hidden_for_arena.clear()
+	for child in get_children():
+		if child is Control and child != _arena_picker and child.visible:
+			_hidden_for_arena.append(child)
+			child.visible = false
+	_arena_picker.open(Locations.current())
+
+
+func _close_arena_picker() -> void:
+	_arena_picker.visible = false
+	for child in _hidden_for_arena:
+		if is_instance_valid(child): child.visible = true
+	_hidden_for_arena.clear()
+	_show_preview(_focus_id, false)
+	location_preview_closed.emit()

@@ -1,0 +1,221 @@
+{
+  "date": "2026-10-31",
+  "base_release": "0.2.9",
+  "status": "local changes verified; Windows export explicitly deferred by author",
+  "checks": [
+    {
+      "name": "import",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 6.52,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/import.log"
+    },
+    {
+      "name": "rules",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 14.66,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/rules.log"
+    },
+    {
+      "name": "rules-edges",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 0.91,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/rules-edges.log"
+    },
+    {
+      "name": "ai",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 0.45,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/ai.log"
+    },
+    {
+      "name": "animation",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 31.35,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/animation.log"
+    },
+    {
+      "name": "support",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 26.61,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/support.log"
+    },
+    {
+      "name": "flight",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 25.89,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/flight.log"
+    },
+    {
+      "name": "idle",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 7.06,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/idle.log"
+    },
+    {
+      "name": "stance",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 13.94,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/stance.log"
+    },
+    {
+      "name": "review-state",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 35.68,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/review-state.log"
+    },
+    {
+      "name": "gpu-core",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 16.83,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gpu-core.log"
+    },
+    {
+      "name": "experience",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 10.65,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/experience.log"
+    },
+    {
+      "name": "autoplay",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 58.81,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/autoplay.log"
+    }
+  ],
+  "counts": {
+    "rules": 1135,
+    "edge_and_card_contracts": 1202,
+    "gpu_core": 1180,
+    "animation": 435,
+    "support": 1893,
+    "flight": 45360,
+    "idle": 374,
+    "stance": 236,
+    "model_review_state": 100
+  },
+  "autoplay": {
+    "route": "main menu → team selection → match → result → restart → second match",
+    "matches": 2,
+    "turns": [
+      17,
+      10
+    ],
+    "battles": 11,
+    "placements": 18,
+    "hits": 18,
+    "misses": 0,
+    "engine_errors": 0
+  },
+  "simulation": {
+    "matches": 600,
+    "seed_start": 14001,
+    "accuracy": "exact",
+    "errors": 0,
+    "mean_turns": 13.3,
+    "median_turns": 13,
+    "p0_win_percent": 51.7,
+    "comeback_percent": 25.0,
+    "log": "/tmp/sfery-sim-exact-output.log"
+  },
+  "ui": {
+    "window_sizes": [
+      "1280x720",
+      "1366x768",
+      "960x540"
+    ],
+    "hand_cards": 19,
+    "reading_tempo_checks": [
+      0.75,
+      2.0
+    ],
+    "errors": 0,
+    "screenshots": "build/checks/experience"
+  },
+  "limits": [
+    "No Windows build, native Windows run or publication in this task.",
+    "No claim of a full auditory review or performance benchmark.",
+    "Previous model geometry repairs are preserved; these are animation regressions, not a new proof of all surface geometry."
+  ],
+  "model_glb_sha256": {
+    "assets/creatures/beetle.glb": "7b7767c0eaebfe0dbff54691feaab08e02b9e98a7433d3748b6490159a8af729",
+    "assets/creatures/bird.glb": "24789f9504ac89f324e36a01a7b122ff981f6a8f9d81379562d9f33ad1c67506",
+    "assets/creatures/centaur.glb": "890ebc50e1355c6c68d23c50b5ac437a9a80226c926d3641f02de4cdad528db3",
+    "assets/creatures/cyclops.glb": "24af50ffda6f452958610012356a245b4134419716b13a130fedb7fcaf786c96",
+    "assets/creatures/dragon.glb": "2564c28b64c9848ce46ffa4ac22f9d54b6c0cad40b625393f4e51b7b3ca2e945",
+    "assets/creatures/flying_eye.glb": "0b929e32ab6dea1614d37896a65e20e397319397ddb09ce9e5c7d6955d2156cf",
+    "assets/creatures/golem.glb": "930413195511f51c366bd4476ec6a6c8bc6ba307ac43fcf0e8f1a2a30acf5019",
+    "assets/creatures/knight.glb": "84bfd7d1cfb9afd77ce5947a993e13847c8b9d34a0bbf31d38d5ee2280de40ba",
+    "assets/creatures/serpent.glb": "97ee55cf3caa661d9d28234fa0e137bed5981eb77b9c96978feae31fc349937d",
+    "assets/creatures/wolf.glb": "2ccc229897315893ff1d071541e1137fd38b497807971ac3f06f60a0338d5f4a",
+    "assets/creatures_cmp/glubinnik-z.glb": "a8ee57d5270d7afccb62273833f37d49000289ad69693a9a0417843896926e4b",
+    "assets/creatures_cmp/sumrachnik-21.glb": "bdfd299999c0ad6064682fb27d8b7eb8f6006f23b7eac9bd88ce7c106a6f3517",
+    "assets/creatures_cmp/sumrachnik-z.glb": "d77508ebdb9d7e75b4d2282bed8d1c5689a3e98514c327c8fef390c8ccc351bd",
+    "assets/creatures_cmp/vihrekryl-21.glb": "eac3b546f2f142b95d12bff4d98f09a75e1347e6e6340e41c05145fe625a26ba",
+    "assets/creatures_cmp/vihrekryl-21full.glb": "d12e6bf2034d50e2c5e6c53f1ca421462a7138f6633a6c53616e978a71939eb8",
+    "assets/creatures_cmp/vihrekryl-tr2.glb": "348598c3ed52605e1dc5ea990a0062b2aec19858807f74633013b52d62caea4f",
+    "assets/creatures_cmp/zharovik-21.glb": "1f056aa0c2e6b6d055929e0bac1b10c17e37671ed96767e3458267a7603d12d7",
+    "assets/creatures_cmp/zharovik-z.glb": "7f368efeae46a84767d07c9b69f38ce4b4c4baa6969fc62330a700091df08f72",
+    "assets/creatures_hd/dragnar_fire.glb": "2d759d92cc19566c5228e0ba913a7663fff934131b63f9295c4a84d92f47c6aa",
+    "assets/creatures_hd/dragnar_gale.glb": "d02f3a67084a9e3464716897c2ef5b24f5a53c7ce596c10bf007049d2c97b830",
+    "assets/creatures_hd/dragnar_light.glb": "8a82bcf7f89287daefd65baa25e96a5b1e1c4503b73ea3fa8817c83fcdd81f96",
+    "assets/creatures_hd/dragnar_shadow.glb": "ec28cf12618f5a739fc7b9604d384cf560d23b5590f64491a1ec320de39b8470",
+    "assets/creatures_hd/dragnar_stone.glb": "1db9f2a935fc8731ad7bd274364c749e1622a965deacdfaf9c3e4285f5b2a72d",
+    "assets/creatures_hd/dragnar_tide.glb": "fc95ce7731cf5331c84bfee312f69d7e3e6019c33e04ba011b878fa8adea8b6b",
+    "assets/creatures_hd/gorgul_fire.glb": "128eb7948519337b63fb3349447194910d0cc82e44d2efe22fc0ca0d20a7f3b6",
+    "assets/creatures_hd/gorgul_gale.glb": "55d82a572aec50ffffcc3912b2fc448dec5db1176c819dd4e7b189d2611bd073",
+    "assets/creatures_hd/gorgul_light.glb": "799f7c1f34ee27382315e42ef71a7625c2491648e45a02d6be611cb712b86e5c",
+    "assets/creatures_hd/gorgul_shadow.glb": "d31399c990f0148444c0082bf2bcc5d362d43f0a5516e3e70285beeec9b6ed86",
+    "assets/creatures_hd/gorgul_stone.glb": "e1fd5c9a9c8fd8ff1b01cc670b7a004689f6051484443e7d0518c5fc788d9bca",
+    "assets/creatures_hd/gorgul_tide.glb": "10cde043d74620940f53baff371f27631cf50ecff07bb888ef46255baa017d8a",
+    "assets/creatures_hd/grifalon_fire.glb": "295aaa4752b85e3febeb01dc36570b9845c3f05eea37188cc4c5c453b40f5954",
+    "assets/creatures_hd/grifalon_gale.glb": "221a9ff78f24f9c908b41b29caeff077677b5649cab35906813c5a57ac3e98b1",
+    "assets/creatures_hd/grifalon_light.glb": "0437c2014c5c0e87801a0acc7b25a4f957acf3a8028dbb699b5e6672d9574481",
+    "assets/creatures_hd/grifalon_shadow.glb": "15da6c635d6aa002e11049082ece86d2f0124570d0da5a71f41091b07765b0b3",
+    "assets/creatures_hd/grifalon_stone.glb": "376640d70ecbdc35c0da1f3dec334118f9037b1b10f80364d973992310b3f540",
+    "assets/creatures_hd/grifalon_tide.glb": "9695d09298d8daeddb55c8908e7181b7e3503c7a30c1d3b402bf730c87b22413",
+    "assets/creatures_hd/klykar_fire.glb": "73fcda1b1a9466e5cfc8860de7df4c5beb9f2b2440e4a34bb7a2a17b4622a160",
+    "assets/creatures_hd/klykar_gale.glb": "f16e61d615e7897ed513d3abb73aa941cb335827d7f43c07961fd8e277ab4c28",
+    "assets/creatures_hd/klykar_light.glb": "57c8b87a62361796eaf7dc647762950065d8bef84d41d5d824c96f0d554cd4e0",
+    "assets/creatures_hd/klykar_shadow.glb": "30d7873a5bb6e83f906a44be7fa4cf7706dc919a1ecdee7667763d875c87963b",
+    "assets/creatures_hd/klykar_stone.glb": "bafa3a230c96e8799a061e81c58a058f1a43363d2c114858239fa3c109508027",
+    "assets/creatures_hd/klykar_tide.glb": "f5e70149c8408ecbc5a00bb3e11238a2d43e75fea021a8001ce3098dee697b2e",
+    "assets/creatures_hd/kolossar_fire.glb": "30cae0eb02ec6073300d1e2ed34aa65a3f8d6e64941612f8fd1555294ba60657",
+    "assets/creatures_hd/kolossar_gale.glb": "dbbabf794f6a5acf4d64463d80a253757d51ce24990814759ec6bc587f7f54fd",
+    "assets/creatures_hd/kolossar_light.glb": "e103137b0e52c6ba2a9673dda69e519c0034ac8eccba4b5e32194d1b1c93ef71",
+    "assets/creatures_hd/kolossar_shadow.glb": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+    "assets/creatures_hd/kolossar_stone.glb": "efbfa17fa96fbc5cbdf6acb36666f6595c4cfb9b5551f23ffea8f1d9576d5070",
+    "assets/creatures_hd/kolossar_tide.glb": "c212690db15deaf3e63e4aa44f312c657ebb2c2b8441650094ba837d38e1de56",
+    "assets/creatures_hd/levian_fire.glb": "ded936ce93435d9651078a26276a025aff627f150454a08a0d830bd5d2280310",
+    "assets/creatures_hd/levian_gale.glb": "fe5c04377285353b7a95bdb723612464824aaaed05f9b499acb732e858db2ddc",
+    "assets/creatures_hd/levian_light.glb": "8e15e3d6bc72489f271d0d16f1c6270158fd7d2b113ec96a358ba3ebaba2669a",
+    "assets/creatures_hd/levian_shadow.glb": "c8f42fa47c27e6a0d06dfa6fa5d570031601de9e52cb0c7f184979ea78d8a90e",
+    "assets/creatures_hd/levian_stone.glb": "070f9616426759b58ebd39b7d64c312fafb7597ef7e333ad6baef8402e188dcf",
+    "assets/creatures_hd/levian_tide.glb": "7eade977ce428ce052690b7bbf235740a002a91140b0677e92e5b0d7a2bf63d8",
+    "assets/creatures_hd/likorez_shadow.glb": "5874835226b02bce3dba194313d07ed1631f7b0fabf5b6d65ef38dc1b97d7b09",
+    "assets/creatures_hd/ratnik_fire.glb": "7824f01282e239912f40c3eafbf26dfa2ffd0c8b551c325ac75f3725242a81dd",
+    "assets/creatures_hd/ratnik_gale.glb": "6e40647983c1e9fb8c0c5f79513a6e5e97fe496f2ac5562f34999cf5769a1103",
+    "assets/creatures_hd/ratnik_light.glb": "454e8442b83fe7fd618d0bc0338dfc8b51b1daabaa49b4a5237dcb669598f727",
+    "assets/creatures_hd/ratnik_shadow.glb": "5be558ea4208a92f4b1b2684847935fa5b0ad9ebc2cb4b1f35a8329f19f5789b",
+    "assets/creatures_hd/ratnik_stone.glb": "0c7909c072cca08b68536d94df80915358b3052e8979eff39614a94cee753db6",
+    "assets/creatures_hd/ratnik_tide.glb": "1092ec4c85963fe869274d5555a881921e46b51327809cbaee385c70f38e37ce",
+    "assets/creatures_hd/rogozhuk_fire.glb": "1ff332d623750f53cbefb3c557cbe4ec80fe1341394f033910aca90d5848c61e",
+    "assets/creatures_hd/rogozhuk_gale.glb": "025b3c5488c18b8dc978afb5851e76db4b24534736d7d48c4dd0eafe8984aae5",
+    "assets/creatures_hd/rogozhuk_light.glb": "8dcffa2a2981714c5255403fb7b9ac337b4c709913384b845874cafc006ce21f",
+    "assets/creatures_hd/rogozhuk_shadow.glb": "51af8c75076d54f083c502156fe8e9a8dba737d819b7fdf86aacf1c7c36bc62f",
+    "assets/creatures_hd/rogozhuk_stone.glb": "e5e198539f5d6ed892a9f0b553dc9d46892a66696b5d7b808acfafa2bd6f1a39",
+    "assets/creatures_hd/rogozhuk_tide.glb": "4ff3f18af1934d271c019e2301f8b914f33d14746da550eb9ddb885094eba2a9"
+  }
+}

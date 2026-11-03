@@ -744,7 +744,7 @@ func _initialize() -> void:
 		push_error("[GPUCloth] target_mesh has no Mesh surfaces.")
 		return
 
-	var extracted := GPUClothSolver.extract_mesh_data(arr_mesh)
+	var extracted := _prepare_mesh_data(arr_mesh)
 	var raw_vertices: PackedVector3Array = extracted.vertices
 	var raw_uvs:      PackedVector2Array = extracted.uvs
 	var raw_colors:   PackedColorArray   = extracted.colors
@@ -868,7 +868,7 @@ func _initialize() -> void:
 	# ── Welding ──
 	# Spatial-hash welder collapses coincident verts so the simulation runs on
 	# unique particles while the render mesh keeps its original slots (and UVs).
-	var welded := GPUClothSolver.weld_vertices(_src_vertices, weld_epsilon)
+	var welded := _prepare_weld(_src_vertices, weld_epsilon)
 	_welded_positions   = welded.welded_positions
 	_original_to_welded = welded.original_to_welded
 	_particle_count = _welded_positions.size()
@@ -2045,6 +2045,15 @@ static func _has_substrate_contract(shader: Shader) -> bool:
 		if not names.has(required):
 			return false
 	return true
+
+
+## Override points for immutable CPU preparation; default algorithms unchanged.
+func _prepare_mesh_data(mesh: Mesh) -> Dictionary:
+	return GPUClothSolver.extract_mesh_data(mesh)
+
+
+func _prepare_weld(vertices: PackedVector3Array, epsilon: float) -> Dictionary:
+	return GPUClothSolver.weld_vertices(vertices, epsilon)
 
 
 static func extract_mesh_data(mesh: Mesh) -> Dictionary:

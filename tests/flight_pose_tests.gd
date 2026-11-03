@@ -1,4 +1,5 @@
 extends SceneTree
+const ModelTestCleanup := preload("res://scenes/model_lifetime.gd")
 ## Flight support adds motion without destroying the sampled clip or turning claws.
 var checks:=0
 var failures:=0
@@ -7,7 +8,7 @@ func run():
  for d in CardDB.all_creatures():
   var a:=CreatureAnim.new();root.add_child(a);a.set_process(false)
   a.set_model(CreatureModels.build(d),d)
-  if not a._flyer:a.free();CreatureModels.clear();continue
+  if not a._flyer:ModelTestCleanup.release(a, self);CreatureModels.clear();continue
   var support=a._support
   a._support=null
   for action in ['idle','appear','roar','attack','hit','brace','ability']:
@@ -72,6 +73,6 @@ func run():
    var attack_min:=.10 if a._species==&'gorgul' else .2
    if not support.limbs.is_empty() and ((action=='idle' and max_change<.025) or (action=='attack' and max_change<attack_min)):
     failures+=1;push_error('%s %s: insufficient flight leg motion (%f)'%[d.id,action,max_change])
-  support.reset();a.free();CreatureModels.clear();await process_frame
+  support.reset();ModelTestCleanup.release(a, self);CreatureModels.clear();await process_frame
  print('Flight foot orientation: %d checks, %d failures'%[checks,failures])
  quit(1 if failures else 0)

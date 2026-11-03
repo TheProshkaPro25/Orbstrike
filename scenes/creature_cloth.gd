@@ -50,8 +50,10 @@ static func attach(model: Node3D) -> Node3D:
  material.shader = _shader
  for parameter in ['tint', 'has_texture', 'shadow_palette', 'color_map']:
   material.set_shader_parameter(parameter, source.get_shader_parameter(parameter))
- var solver = load('res://addons/godot_gpu_cloth/src/gpu_cloth_solver.gd').new()
+ var solver_path := 'res://scenes/resident_cloth_solver.gd' if CreatureModels.resident_catalog else 'res://addons/godot_gpu_cloth/src/gpu_cloth_solver.gd'
+ var solver = load(solver_path).new()
  solver.name = 'CapePhysics'
+ solver.set_meta('preparation_source', model.get_meta('preparation_source', null))
  # Paths are relative to the future solver child of the model root.
  solver.target_mesh = NodePath('../' + String(model.get_path_to(cape)))
  solver.skeleton = NodePath('../' + String(model.get_path_to(skeleton)))

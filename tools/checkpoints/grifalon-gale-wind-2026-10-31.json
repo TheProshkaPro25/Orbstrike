@@ -1,0 +1,53 @@
+{
+  "source_sha256": "221a9ff78f24f9c908b41b29caeff077677b5649cab35906813c5a57ac3e98b1",
+  "output_sha256": "959044bf764bea0c509c5c438e14ed2c9e2f45d133a693107a292333f6912d03",
+  "source_triangles": 149998,
+  "removed_wind_triangles": 22312,
+  "retained_original_triangles": 127686,
+  "cap_triangles": 128,
+  "source_vertices": 113393,
+  "output_vertices": 97837,
+  "attachment_loops": 16,
+  "boundary_edges": 0,
+  "date": "2026-10-31",
+  "asset": "assets/creatures_hd/grifalon_gale.glb",
+  "installed_sha256": "959044bf764bea0c509c5c438e14ed2c9e2f45d133a693107a292333f6912d03",
+  "integrity_command": "python3 tests/grifalon_wind_integrity.py build/checks/grifalon-wind/base/grifalon_gale.glb assets/creatures_hd/grifalon_gale.glb build/checks/grifalon-wind/candidate/grifalon_gale.removal.json",
+  "numeric_result": {
+    "failures": 0,
+    "all_retained_attributes_exact": true,
+    "cap_skin_weights_exact": true,
+    "skeleton_binds_clips_images_exact": true,
+    "animated_seam_error": 0,
+    "closed_components": 1
+  },
+  "gpu": {
+    "log": "/tmp/sfery-grifalon-wind-gpu.log",
+    "exit_code": 0,
+    "frames": "build/checks/grifalon-wind/gpu",
+    "sources": 2,
+    "poses": [
+      "rest",
+      "idle",
+      "attack"
+    ],
+    "angles": 2,
+    "errors": 0,
+    "leak_warnings": 0,
+    "viewed": [
+      "before-idle-0.png",
+      "after-idle-0.png",
+      "after-attack-1.png"
+    ]
+  },
+  "import": {
+    "log": "build/checks/grifalon-wind/import.log",
+    "exit_code": 0,
+    "errors": 0
+  },
+  "limits": [
+    "Only baked wind removal, not a full anatomical audit of Grifalon",
+    "Source body vertices remain exact; automatic game AABB normalization changes when ribbons no longer enlarge bounds",
+    "Other models were not edited by this repair"
+  ]
+}

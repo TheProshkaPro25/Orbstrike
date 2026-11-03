@@ -18,7 +18,7 @@ const MUSIC_DB := -9.0
 const SFX_DB := -2.0
 ## Все короткие эффекты (имена файлов без расширения) — для прогрева кэша и стенда tools/audio/play_all.gd.
 const SFX_NAMES: Array[String] = [
-	"ui_hover", "ui_click", "card_select", "card_place", "card_flip", "card_capture", "turn_start",
+	"ui_hover", "ui_click", "ui_denied", "turn_yours", "turn_opponent", "card_swoosh", "gate_flight_wind", "gate_expand_wave", "card_select", "card_place", "card_flip", "card_capture", "turn_start",
 	"ball_throw", "ball_bounce_1", "ball_bounce_2", "ball_bounce_3", "ball_roll_loop", "ball_land", "capsule_open",
 	"battle_start", "clash", "power_up", "power_down", "miss", "eliminated", "vanish",
 	"battle_win", "battle_lose", "victory", "defeat", "gate_trap",
@@ -28,7 +28,13 @@ const SFX_NAMES: Array[String] = [
 ## Суффиксы стихий по Attr.A (как GameData.ATTR_KEYS): имя способности и файлов криков.
 const ATTR_KEYS: Array[String] = ["fire", "gale", "light", "stone", "shadow", "tide"]
 
+const VARIANTS := ["card_select", "card_place", "ball_throw", "clash"]
+var _last_variant: Dictionary = {}
 var _cache: Dictionary = {}
+var catalog_ready := false
+## Число обращений к новым путям (включая отсутствующий необязательный крик).
+## После начальной загрузки обычная игра должна использовать только кэш.
+var catalog_load_count := 0
 var _pool: Array[AudioStreamPlayer] = []
 var _next := 0
 var _roll: AudioStreamPlayer
@@ -76,8 +82,30 @@ func _init() -> void:
 
 ## Прогрев кэша коротких эффектов: первый звук броска/удара не ждёт загрузки с диска.
 func _ready() -> void:
+	_preload_effects()
+
+
+func _preload_effects() -> void:
 	for n in SFX_NAMES:
 		_load(SFX_DIR + n)
+	for n in VARIANTS:
+		for v in [2, 3]:
+			_load(SFX_DIR + n + "_v%d" % v)
+
+
+## Только ресурсы: без запуска воспроизведения/декодеров. Держим музыку, все
+## варианты и крики в одном живущем между сценами кэше до закрытия приложения.
+func preload_catalog() -> void:
+	if catalog_ready:
+		return
+	_preload_effects()
+	for d in CreatureModels.catalog_defs():
+		var short := String(d.id).trim_prefix("creature_")
+		for kind in ["appear", "attack"]:
+			_load(CREATURE_DIR + "%s_%s" % [short, kind])
+	for path in [MUSIC_MENU, MUSIC_TEAM, MUSIC_BATTLE, MUSIC_CLASH]:
+		_load(path.get_basename())
+	catalog_ready = true
 
 
 ## Выход из игры: останавливаем плееры и отпускаем звуки, иначе при закрытии остаются
@@ -87,6 +115,7 @@ func _exit_tree() -> void:
 		p.stop()
 		p.stream = null
 	_cache.clear()
+	catalog_ready = false
 
 
 func _ensure_bus(bus_name: String, db: float) -> void:
@@ -103,6 +132,7 @@ func _ensure_bus(bus_name: String, db: float) -> void:
 func _load(path: String) -> AudioStream:
 	if _cache.has(path):
 		return _cache[path]
+	catalog_load_count += 1
 	var s: AudioStream = null
 	for ext in [".ogg", ".wav"]:
 		if ResourceLoader.exists(path + ext):
@@ -138,7 +168,21 @@ func play(sfx_name: String, db: float = 0.0, jitter: float = 0.04, pitch: float 
 	if now - int(_last_play.get(sfx_name, -1000)) < 40:
 		return
 	_last_play[sfx_name] = now
-	_play_stream(_load(SFX_DIR + sfx_name), db, pitch * (1.0 + randf_range(-jitter, jitter)))
+	var file_name := sfx_name
+	if VARIANTS.has(sfx_name):
+		var previous := int(_last_variant.get(sfx_name, -1))
+		var variant := (previous + randi_range(1, 2)) % 3 if previous >= 0 else randi_range(0, 2)
+		_last_variant[sfx_name] = variant
+		file_name = sfx_name if variant == 0 else sfx_name + "_v%d" % (variant + 1)
+	_play_stream(_load(SFX_DIR + file_name), db, pitch * (1.0 + randf_range(-jitter, jitter)))
+
+
+## Остановить хвост уже загруженного эффекта, не загружая новых ресурсов.
+func stop_sfx(sfx_name: String) -> void:
+	var stream: AudioStream = _cache.get(SFX_DIR + sfx_name)
+	if stream == null: return
+	for player in _pool:
+		if player.stream == stream: player.stop()
 
 
 ## Отложенный эффект (не блокирует вызывающего).
@@ -171,6 +215,13 @@ static func ability_sfx(card: CardDef, cancelled: bool = false) -> String:
 		if card.params.get("fusion", false):
 			return "ability_fusion"
 	return "ability_play"
+
+
+## Actor's card ignition: universal cards inherit the target creature's element.
+static func activation_sfx(card: CardDef, element: int) -> String:
+	if card != null and card.params.get("fusion", false): return "ability_fusion"
+	if element >= 0 and element < ATTR_KEYS.size(): return "ability_"+ATTR_KEYS[element]
+	return ability_sfx(card)
 
 
 ## Удар шара о борт/стол; strength - скорость удара (м/с).
@@ -296,7 +347,9 @@ func _on_node_added(n: Node) -> void:
 		var cv := n as CardView
 		if not cv.mouse_entered.is_connected(_ui_hover):
 			cv.mouse_entered.connect(_ui_hover.bind(cv))
-			cv.pressed.connect(func() -> void: play("card_select", -3.0))
+			cv.pressed.connect(func() -> void:
+				if not cv.get_meta("silent_select", false):
+					play("card_select", -3.0))
 	elif n is BaseButton:
 		var b := n as BaseButton
 		if not b.pressed.is_connected(_ui_click):

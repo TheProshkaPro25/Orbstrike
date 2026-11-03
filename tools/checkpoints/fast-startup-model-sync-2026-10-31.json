@@ -1,0 +1,1614 @@
+{
+  "date": "2026-10-31",
+  "base_release": "0.2.9",
+  "startup_before": {
+    "actor_cpu_ms": {
+      "animations": 673.727,
+      "cloth": 15997.622,
+      "support": 6631.337,
+      "total": 23320.321
+    },
+    "arenas": 3,
+    "cache": {
+      "hits": 0,
+      "misses": 0,
+      "resident_entries": 0,
+      "source_hash_ms": 0.0,
+      "writes": 0
+    },
+    "limits": "minimized offscreen; not FPS; fresh process, OS caches retained",
+    "model_cpu_ms": {
+      "creature_dragnar_fire": [
+        {
+          "animations": 28.68,
+          "cloth": 0.001,
+          "support": 0.351,
+          "total": 29.307
+        },
+        {
+          "animations": 11.899,
+          "cloth": 0.001,
+          "support": 0.326,
+          "total": 12.368
+        }
+      ],
+      "creature_dragnar_gale": [
+        {
+          "animations": 11.976,
+          "cloth": 0.001,
+          "support": 0.215,
+          "total": 12.317
+        },
+        {
+          "animations": 11.408,
+          "cloth": 0.0,
+          "support": 0.201,
+          "total": 11.718
+        }
+      ],
+      "creature_dragnar_light": [
+        {
+          "animations": 11.342,
+          "cloth": 0.001,
+          "support": 0.193,
+          "total": 11.661
+        },
+        {
+          "animations": 11.444,
+          "cloth": 0.0,
+          "support": 0.194,
+          "total": 11.754
+        }
+      ],
+      "creature_dragnar_shadow": [
+        {
+          "animations": 11.98,
+          "cloth": 0.0,
+          "support": 0.23,
+          "total": 12.324
+        },
+        {
+          "animations": 11.53,
+          "cloth": 0.001,
+          "support": 0.2,
+          "total": 11.845
+        }
+      ],
+      "creature_dragnar_stone": [
+        {
+          "animations": 11.378,
+          "cloth": 0.001,
+          "support": 0.22,
+          "total": 11.711
+        },
+        {
+          "animations": 11.995,
+          "cloth": 0.0,
+          "support": 0.186,
+          "total": 12.289
+        }
+      ],
+      "creature_dragnar_tide": [
+        {
+          "animations": 11.501,
+          "cloth": 0.001,
+          "support": 0.211,
+          "total": 11.866
+        },
+        {
+          "animations": 12.197,
+          "cloth": 0.001,
+          "support": 0.227,
+          "total": 12.539
+        }
+      ],
+      "creature_gorgul_fire": [
+        {
+          "animations": 5.593,
+          "cloth": 0.0,
+          "support": 0.173,
+          "total": 5.862
+        },
+        {
+          "animations": 5.541,
+          "cloth": 0.0,
+          "support": 0.147,
+          "total": 5.781
+        }
+      ],
+      "creature_gorgul_gale": [
+        {
+          "animations": 5.711,
+          "cloth": 0.001,
+          "support": 0.226,
+          "total": 6.035
+        },
+        {
+          "animations": 5.538,
+          "cloth": 0.0,
+          "support": 0.173,
+          "total": 5.806
+        }
+      ],
+      "creature_gorgul_light": [
+        {
+          "animations": 6.915,
+          "cloth": 0.0,
+          "support": 0.176,
+          "total": 7.215
+        },
+        {
+          "animations": 5.761,
+          "cloth": 0.0,
+          "support": 0.17,
+          "total": 6.031
+        }
+      ],
+      "creature_gorgul_shadow": [
+        {
+          "animations": 6.395,
+          "cloth": 0.0,
+          "support": 0.195,
+          "total": 6.684
+        },
+        {
+          "animations": 6.195,
+          "cloth": 0.0,
+          "support": 0.164,
+          "total": 6.478
+        }
+      ],
+      "creature_gorgul_stone": [
+        {
+          "animations": 5.608,
+          "cloth": 0.001,
+          "support": 0.168,
+          "total": 5.916
+        },
+        {
+          "animations": 5.558,
+          "cloth": 0.0,
+          "support": 0.162,
+          "total": 5.82
+        }
+      ],
+      "creature_gorgul_tide": [
+        {
+          "animations": 5.547,
+          "cloth": 0.0,
+          "support": 0.163,
+          "total": 5.805
+        },
+        {
+          "animations": 5.714,
+          "cloth": 0.001,
+          "support": 0.195,
+          "total": 6.015
+        }
+      ],
+      "creature_grifalon_fire": [
+        {
+          "animations": 5.601,
+          "cloth": 0.0,
+          "support": 0.166,
+          "total": 5.861
+        },
+        {
+          "animations": 5.942,
+          "cloth": 0.001,
+          "support": 0.158,
+          "total": 12.584
+        }
+      ],
+      "creature_grifalon_gale": [
+        {
+          "animations": 5.504,
+          "cloth": 0.0,
+          "support": 0.167,
+          "total": 5.793
+        },
+        {
+          "animations": 5.466,
+          "cloth": 0.001,
+          "support": 0.153,
+          "total": 5.759
+        }
+      ],
+      "creature_grifalon_light": [
+        {
+          "animations": 5.917,
+          "cloth": 0.0,
+          "support": 0.198,
+          "total": 6.285
+        },
+        {
+          "animations": 5.713,
+          "cloth": 0.001,
+          "support": 0.207,
+          "total": 6.043
+        }
+      ],
+      "creature_grifalon_shadow": [
+        {
+          "animations": 5.488,
+          "cloth": 0.0,
+          "support": 0.167,
+          "total": 5.759
+        },
+        {
+          "animations": 5.579,
+          "cloth": 0.001,
+          "support": 0.173,
+          "total": 5.917
+        }
+      ],
+      "creature_grifalon_stone": [
+        {
+          "animations": 6.055,
+          "cloth": 0.001,
+          "support": 0.177,
+          "total": 6.368
+        },
+        {
+          "animations": 5.606,
+          "cloth": 0.001,
+          "support": 0.187,
+          "total": 5.898
+        }
+      ],
+      "creature_grifalon_tide": [
+        {
+          "animations": 5.648,
+          "cloth": 0.0,
+          "support": 0.182,
+          "total": 5.932
+        },
+        {
+          "animations": 5.767,
+          "cloth": 0.0,
+          "support": 0.163,
+          "total": 6.051
+        }
+      ],
+      "creature_klykar_fire": [
+        {
+          "animations": 5.551,
+          "cloth": 0.002,
+          "support": 329.013,
+          "total": 334.734
+        },
+        {
+          "animations": 5.495,
+          "cloth": 0.001,
+          "support": 0.32,
+          "total": 5.922
+        }
+      ],
+      "creature_klykar_gale": [
+        {
+          "animations": 5.825,
+          "cloth": 0.001,
+          "support": 252.965,
+          "total": 258.908
+        },
+        {
+          "animations": 5.872,
+          "cloth": 0.0,
+          "support": 0.342,
+          "total": 6.336
+        }
+      ],
+      "creature_klykar_light": [
+        {
+          "animations": 5.912,
+          "cloth": 0.001,
+          "support": 266.215,
+          "total": 272.243
+        },
+        {
+          "animations": 5.408,
+          "cloth": 0.0,
+          "support": 0.363,
+          "total": 5.875
+        }
+      ],
+      "creature_klykar_shadow": [
+        {
+          "animations": 4.944,
+          "cloth": 0.002,
+          "support": 225.9,
+          "total": 230.956
+        },
+        {
+          "animations": 4.673,
+          "cloth": 0.0,
+          "support": 0.305,
+          "total": 5.089
+        }
+      ],
+      "creature_klykar_stone": [
+        {
+          "animations": 5.331,
+          "cloth": 0.002,
+          "support": 254.507,
+          "total": 259.973
+        },
+        {
+          "animations": 5.149,
+          "cloth": 0.001,
+          "support": 0.358,
+          "total": 5.612
+        }
+      ],
+      "creature_klykar_tide": [
+        {
+          "animations": 4.637,
+          "cloth": 0.002,
+          "support": 224.996,
+          "total": 229.742
+        },
+        {
+          "animations": 4.519,
+          "cloth": 0.0,
+          "support": 0.283,
+          "total": 4.897
+        }
+      ],
+      "creature_kolossar_fire": [
+        {
+          "animations": 4.022,
+          "cloth": 0.002,
+          "support": 208.529,
+          "total": 212.654
+        },
+        {
+          "animations": 3.984,
+          "cloth": 0.001,
+          "support": 0.249,
+          "total": 4.325
+        }
+      ],
+      "creature_kolossar_gale": [
+        {
+          "animations": 4.053,
+          "cloth": 0.002,
+          "support": 146.904,
+          "total": 151.063
+        },
+        {
+          "animations": 4.333,
+          "cloth": 0.001,
+          "support": 0.253,
+          "total": 4.681
+        }
+      ],
+      "creature_kolossar_light": [
+        {
+          "animations": 4.028,
+          "cloth": 0.001,
+          "support": 192.429,
+          "total": 196.558
+        },
+        {
+          "animations": 4.083,
+          "cloth": 0.001,
+          "support": 0.253,
+          "total": 4.438
+        }
+      ],
+      "creature_kolossar_shadow": [
+        {
+          "animations": 4.027,
+          "cloth": 0.001,
+          "support": 190.83,
+          "total": 194.959
+        },
+        {
+          "animations": 4.091,
+          "cloth": 0.001,
+          "support": 0.232,
+          "total": 4.411
+        }
+      ],
+      "creature_kolossar_stone": [
+        {
+          "animations": 3.97,
+          "cloth": 0.002,
+          "support": 170.825,
+          "total": 174.891
+        },
+        {
+          "animations": 4.451,
+          "cloth": 0.0,
+          "support": 0.264,
+          "total": 4.812
+        }
+      ],
+      "creature_kolossar_tide": [
+        {
+          "animations": 3.968,
+          "cloth": 0.002,
+          "support": 195.938,
+          "total": 200.012
+        },
+        {
+          "animations": 3.95,
+          "cloth": 0.0,
+          "support": 0.251,
+          "total": 4.287
+        }
+      ],
+      "creature_levian_fire": [
+        {
+          "animations": 6.485,
+          "cloth": 0.0,
+          "support": 0.14,
+          "total": 6.718
+        },
+        {
+          "animations": 6.764,
+          "cloth": 0.0,
+          "support": 0.132,
+          "total": 7.04
+        }
+      ],
+      "creature_levian_gale": [
+        {
+          "animations": 6.56,
+          "cloth": 0.0,
+          "support": 0.156,
+          "total": 6.82
+        },
+        {
+          "animations": 6.554,
+          "cloth": 0.0,
+          "support": 0.129,
+          "total": 6.786
+        }
+      ],
+      "creature_levian_light": [
+        {
+          "animations": 6.798,
+          "cloth": 0.0,
+          "support": 0.179,
+          "total": 7.093
+        },
+        {
+          "animations": 6.757,
+          "cloth": 0.001,
+          "support": 0.181,
+          "total": 7.04
+        }
+      ],
+      "creature_levian_shadow": [
+        {
+          "animations": 6.447,
+          "cloth": 0.0,
+          "support": 0.123,
+          "total": 6.665
+        },
+        {
+          "animations": 6.758,
+          "cloth": 0.0,
+          "support": 0.139,
+          "total": 6.99
+        }
+      ],
+      "creature_levian_stone": [
+        {
+          "animations": 6.562,
+          "cloth": 0.001,
+          "support": 0.142,
+          "total": 6.803
+        },
+        {
+          "animations": 6.575,
+          "cloth": 0.001,
+          "support": 0.138,
+          "total": 6.816
+        }
+      ],
+      "creature_levian_tide": [
+        {
+          "animations": 6.676,
+          "cloth": 0.0,
+          "support": 0.14,
+          "total": 6.957
+        },
+        {
+          "animations": 6.56,
+          "cloth": 0.001,
+          "support": 0.128,
+          "total": 6.786
+        }
+      ],
+      "creature_likorez_shadow": [
+        {
+          "animations": 10.748,
+          "cloth": 0.001,
+          "support": 0.12,
+          "total": 10.974
+        },
+        {
+          "animations": 12.24,
+          "cloth": 0.001,
+          "support": 0.108,
+          "total": 12.453
+        }
+      ],
+      "creature_ratnik_fire": [
+        {
+          "animations": 9.802,
+          "cloth": 1204.133,
+          "support": 149.866,
+          "total": 1363.914
+        },
+        {
+          "animations": 11.477,
+          "cloth": 1087.196,
+          "support": 0.284,
+          "total": 1099.071
+        }
+      ],
+      "creature_ratnik_gale": [
+        {
+          "animations": 11.376,
+          "cloth": 1448.494,
+          "support": 151.662,
+          "total": 1611.65
+        },
+        {
+          "animations": 10.156,
+          "cloth": 1452.932,
+          "support": 0.31,
+          "total": 1463.532
+        }
+      ],
+      "creature_ratnik_light": [
+        {
+          "animations": 11.229,
+          "cloth": 1334.27,
+          "support": 143.826,
+          "total": 1489.435
+        },
+        {
+          "animations": 11.516,
+          "cloth": 1350.894,
+          "support": 0.28,
+          "total": 1362.837
+        }
+      ],
+      "creature_ratnik_shadow": [
+        {
+          "animations": 10.228,
+          "cloth": 1335.944,
+          "support": 150.974,
+          "total": 1497.255
+        },
+        {
+          "animations": 11.396,
+          "cloth": 1305.296,
+          "support": 0.286,
+          "total": 1317.092
+        }
+      ],
+      "creature_ratnik_stone": [
+        {
+          "animations": 9.923,
+          "cloth": 1527.842,
+          "support": 157.543,
+          "total": 1695.415
+        },
+        {
+          "animations": 10.561,
+          "cloth": 1621.058,
+          "support": 0.281,
+          "total": 1632.014
+        }
+      ],
+      "creature_ratnik_tide": [
+        {
+          "animations": 11.28,
+          "cloth": 1158.569,
+          "support": 199.358,
+          "total": 1369.311
+        },
+        {
+          "animations": 9.885,
+          "cloth": 1170.928,
+          "support": 0.302,
+          "total": 1181.227
+        }
+      ],
+      "creature_rogozhuk_fire": [
+        {
+          "animations": 2.964,
+          "cloth": 0.002,
+          "support": 377.695,
+          "total": 380.781
+        },
+        {
+          "animations": 2.888,
+          "cloth": 0.0,
+          "support": 0.31,
+          "total": 3.296
+        }
+      ],
+      "creature_rogozhuk_gale": [
+        {
+          "animations": 2.95,
+          "cloth": 0.002,
+          "support": 543.919,
+          "total": 547.015
+        },
+        {
+          "animations": 2.937,
+          "cloth": 0.0,
+          "support": 0.307,
+          "total": 3.352
+        }
+      ],
+      "creature_rogozhuk_light": [
+        {
+          "animations": 2.478,
+          "cloth": 0.001,
+          "support": 529.928,
+          "total": 532.547
+        },
+        {
+          "animations": 2.474,
+          "cloth": 0.0,
+          "support": 0.27,
+          "total": 2.851
+        }
+      ],
+      "creature_rogozhuk_shadow": [
+        {
+          "animations": 3.133,
+          "cloth": 0.008,
+          "support": 434.157,
+          "total": 437.399
+        },
+        {
+          "animations": 2.94,
+          "cloth": 0.001,
+          "support": 0.366,
+          "total": 3.416
+        }
+      ],
+      "creature_rogozhuk_stone": [
+        {
+          "animations": 2.963,
+          "cloth": 0.001,
+          "support": 557.439,
+          "total": 560.531
+        },
+        {
+          "animations": 2.831,
+          "cloth": 0.001,
+          "support": 0.325,
+          "total": 3.265
+        }
+      ],
+      "creature_rogozhuk_tide": [
+        {
+          "animations": 2.932,
+          "cloth": 0.001,
+          "support": 559.844,
+          "total": 562.911
+        },
+        {
+          "animations": 2.956,
+          "cloth": 0.0,
+          "support": 0.362,
+          "total": 3.488
+        }
+      ]
+    },
+    "prepared_actors": 98,
+    "quality": "HIGH",
+    "resolution": [
+      1280,
+      720
+    ],
+    "seconds_to_menu": 34.680169,
+    "stage_wall_ms": {
+      "Готово": 15.316,
+      "Загрузка ресурсов": 4337.478,
+      "Подготовка арен": 3306.745,
+      "Подготовка освещения": 689.461,
+      "Подготовка существ": 25992.971,
+      "Подготовка эффектов…": 96.122,
+      "Подготовка…": 104.782
+    },
+    "variant": "before"
+  },
+  "startup_after": {
+    "actor_cpu_ms": {
+      "animations": 685.539,
+      "cloth": 1882.102,
+      "support": 3661.316,
+      "total": 6247.415
+    },
+    "arenas": 3,
+    "cache": {
+      "hits": 68,
+      "misses": 0,
+      "resident_entries": 68,
+      "source_hash_ms": 3627.982,
+      "writes": 0
+    },
+    "cached_match_and_restart_ok": true,
+    "limits": "minimized offscreen; not FPS; fresh process, OS caches retained",
+    "model_cpu_ms": {
+      "creature_dragnar_fire": [
+        {
+          "animations": 15.124,
+          "cloth": 0.001,
+          "support": 0.305,
+          "total": 15.696
+        },
+        {
+          "animations": 9.04,
+          "cloth": 0.0,
+          "support": 0.212,
+          "total": 9.369
+        }
+      ],
+      "creature_dragnar_gale": [
+        {
+          "animations": 9.198,
+          "cloth": 0.0,
+          "support": 0.215,
+          "total": 9.55
+        },
+        {
+          "animations": 8.705,
+          "cloth": 0.001,
+          "support": 0.18,
+          "total": 8.999
+        }
+      ],
+      "creature_dragnar_light": [
+        {
+          "animations": 8.601,
+          "cloth": 0.0,
+          "support": 0.153,
+          "total": 8.87
+        },
+        {
+          "animations": 8.749,
+          "cloth": 0.001,
+          "support": 0.181,
+          "total": 9.045
+        }
+      ],
+      "creature_dragnar_shadow": [
+        {
+          "animations": 10.728,
+          "cloth": 0.0,
+          "support": 0.265,
+          "total": 11.111
+        },
+        {
+          "animations": 8.727,
+          "cloth": 0.0,
+          "support": 0.143,
+          "total": 8.982
+        }
+      ],
+      "creature_dragnar_stone": [
+        {
+          "animations": 8.71,
+          "cloth": 0.0,
+          "support": 0.156,
+          "total": 8.97
+        },
+        {
+          "animations": 14.284,
+          "cloth": 0.0,
+          "support": 0.279,
+          "total": 14.749
+        }
+      ],
+      "creature_dragnar_tide": [
+        {
+          "animations": 10.122,
+          "cloth": 0.0,
+          "support": 0.168,
+          "total": 10.447
+        },
+        {
+          "animations": 9.245,
+          "cloth": 0.0,
+          "support": 0.194,
+          "total": 9.545
+        }
+      ],
+      "creature_gorgul_fire": [
+        {
+          "animations": 5.975,
+          "cloth": 0.001,
+          "support": 0.166,
+          "total": 6.306
+        },
+        {
+          "animations": 5.503,
+          "cloth": 0.001,
+          "support": 0.137,
+          "total": 5.728
+        }
+      ],
+      "creature_gorgul_gale": [
+        {
+          "animations": 5.674,
+          "cloth": 0.0,
+          "support": 0.168,
+          "total": 5.921
+        },
+        {
+          "animations": 5.583,
+          "cloth": 0.0,
+          "support": 0.129,
+          "total": 5.792
+        }
+      ],
+      "creature_gorgul_light": [
+        {
+          "animations": 5.577,
+          "cloth": 0.0,
+          "support": 0.145,
+          "total": 5.801
+        },
+        {
+          "animations": 5.58,
+          "cloth": 0.0,
+          "support": 0.155,
+          "total": 5.818
+        }
+      ],
+      "creature_gorgul_shadow": [
+        {
+          "animations": 5.546,
+          "cloth": 0.001,
+          "support": 0.127,
+          "total": 5.75
+        },
+        {
+          "animations": 5.526,
+          "cloth": 0.001,
+          "support": 0.113,
+          "total": 5.714
+        }
+      ],
+      "creature_gorgul_stone": [
+        {
+          "animations": 5.576,
+          "cloth": 0.0,
+          "support": 0.135,
+          "total": 5.806
+        },
+        {
+          "animations": 5.614,
+          "cloth": 0.0,
+          "support": 0.12,
+          "total": 5.807
+        }
+      ],
+      "creature_gorgul_tide": [
+        {
+          "animations": 5.771,
+          "cloth": 0.0,
+          "support": 0.16,
+          "total": 6.017
+        },
+        {
+          "animations": 5.599,
+          "cloth": 0.001,
+          "support": 0.117,
+          "total": 5.802
+        }
+      ],
+      "creature_grifalon_fire": [
+        {
+          "animations": 7.266,
+          "cloth": 0.001,
+          "support": 0.187,
+          "total": 7.561
+        },
+        {
+          "animations": 7.306,
+          "cloth": 0.0,
+          "support": 0.185,
+          "total": 7.627
+        }
+      ],
+      "creature_grifalon_gale": [
+        {
+          "animations": 7.309,
+          "cloth": 0.0,
+          "support": 0.205,
+          "total": 14.521
+        },
+        {
+          "animations": 7.306,
+          "cloth": 0.001,
+          "support": 0.184,
+          "total": 7.599
+        }
+      ],
+      "creature_grifalon_light": [
+        {
+          "animations": 7.191,
+          "cloth": 0.0,
+          "support": 0.22,
+          "total": 7.527
+        },
+        {
+          "animations": 7.089,
+          "cloth": 0.0,
+          "support": 0.182,
+          "total": 7.422
+        }
+      ],
+      "creature_grifalon_shadow": [
+        {
+          "animations": 7.165,
+          "cloth": 0.001,
+          "support": 0.191,
+          "total": 7.479
+        },
+        {
+          "animations": 7.216,
+          "cloth": 0.001,
+          "support": 0.22,
+          "total": 7.593
+        }
+      ],
+      "creature_grifalon_stone": [
+        {
+          "animations": 7.056,
+          "cloth": 0.001,
+          "support": 0.236,
+          "total": 7.416
+        },
+        {
+          "animations": 7.375,
+          "cloth": 0.001,
+          "support": 0.189,
+          "total": 7.696
+        }
+      ],
+      "creature_grifalon_tide": [
+        {
+          "animations": 7.02,
+          "cloth": 0.0,
+          "support": 0.197,
+          "total": 7.342
+        },
+        {
+          "animations": 7.181,
+          "cloth": 0.0,
+          "support": 0.199,
+          "total": 7.494
+        }
+      ],
+      "creature_klykar_fire": [
+        {
+          "animations": 8.693,
+          "cloth": 0.001,
+          "support": 231.127,
+          "total": 239.926
+        },
+        {
+          "animations": 5.627,
+          "cloth": 0.001,
+          "support": 0.313,
+          "total": 6.058
+        }
+      ],
+      "creature_klykar_gale": [
+        {
+          "animations": 6.251,
+          "cloth": 0.001,
+          "support": 275.141,
+          "total": 281.502
+        },
+        {
+          "animations": 5.576,
+          "cloth": 0.001,
+          "support": 0.327,
+          "total": 6.019
+        }
+      ],
+      "creature_klykar_light": [
+        {
+          "animations": 5.557,
+          "cloth": 0.002,
+          "support": 267.415,
+          "total": 273.082
+        },
+        {
+          "animations": 9.814,
+          "cloth": 0.001,
+          "support": 0.559,
+          "total": 10.554
+        }
+      ],
+      "creature_klykar_shadow": [
+        {
+          "animations": 5.883,
+          "cloth": 0.001,
+          "support": 169.456,
+          "total": 175.48
+        },
+        {
+          "animations": 5.805,
+          "cloth": 0.0,
+          "support": 0.329,
+          "total": 6.253
+        }
+      ],
+      "creature_klykar_stone": [
+        {
+          "animations": 9.894,
+          "cloth": 0.001,
+          "support": 216.088,
+          "total": 226.171
+        },
+        {
+          "animations": 5.745,
+          "cloth": 0.0,
+          "support": 0.407,
+          "total": 6.284
+        }
+      ],
+      "creature_klykar_tide": [
+        {
+          "animations": 6.076,
+          "cloth": 0.001,
+          "support": 167.455,
+          "total": 173.649
+        },
+        {
+          "animations": 5.795,
+          "cloth": 0.001,
+          "support": 0.367,
+          "total": 6.284
+        }
+      ],
+      "creature_kolossar_fire": [
+        {
+          "animations": 5.305,
+          "cloth": 0.002,
+          "support": 210.146,
+          "total": 215.576
+        },
+        {
+          "animations": 7.802,
+          "cloth": 0.001,
+          "support": 0.361,
+          "total": 8.31
+        }
+      ],
+      "creature_kolossar_gale": [
+        {
+          "animations": 5.182,
+          "cloth": 0.001,
+          "support": 159.062,
+          "total": 164.369
+        },
+        {
+          "animations": 5.589,
+          "cloth": 0.001,
+          "support": 0.264,
+          "total": 5.976
+        }
+      ],
+      "creature_kolossar_light": [
+        {
+          "animations": 5.492,
+          "cloth": 0.001,
+          "support": 172.238,
+          "total": 177.839
+        },
+        {
+          "animations": 5.453,
+          "cloth": 0.0,
+          "support": 0.262,
+          "total": 5.831
+        }
+      ],
+      "creature_kolossar_shadow": [
+        {
+          "animations": 5.552,
+          "cloth": 0.001,
+          "support": 162.933,
+          "total": 168.595
+        },
+        {
+          "animations": 5.636,
+          "cloth": 0.001,
+          "support": 0.26,
+          "total": 6.006
+        }
+      ],
+      "creature_kolossar_stone": [
+        {
+          "animations": 5.366,
+          "cloth": 0.001,
+          "support": 156.483,
+          "total": 161.977
+        },
+        {
+          "animations": 5.634,
+          "cloth": 0.0,
+          "support": 0.273,
+          "total": 6.016
+        }
+      ],
+      "creature_kolossar_tide": [
+        {
+          "animations": 5.591,
+          "cloth": 0.001,
+          "support": 148.577,
+          "total": 154.276
+        },
+        {
+          "animations": 5.413,
+          "cloth": 0.0,
+          "support": 0.23,
+          "total": 5.741
+        }
+      ],
+      "creature_levian_fire": [
+        {
+          "animations": 6.627,
+          "cloth": 0.001,
+          "support": 0.076,
+          "total": 6.788
+        },
+        {
+          "animations": 6.637,
+          "cloth": 0.0,
+          "support": 0.105,
+          "total": 6.892
+        }
+      ],
+      "creature_levian_gale": [
+        {
+          "animations": 6.701,
+          "cloth": 0.0,
+          "support": 0.086,
+          "total": 6.87
+        },
+        {
+          "animations": 7.083,
+          "cloth": 0.0,
+          "support": 0.103,
+          "total": 7.293
+        }
+      ],
+      "creature_levian_light": [
+        {
+          "animations": 7.116,
+          "cloth": 0.0,
+          "support": 0.098,
+          "total": 7.303
+        },
+        {
+          "animations": 6.719,
+          "cloth": 0.001,
+          "support": 0.135,
+          "total": 6.944
+        }
+      ],
+      "creature_levian_shadow": [
+        {
+          "animations": 6.605,
+          "cloth": 0.001,
+          "support": 0.093,
+          "total": 6.797
+        },
+        {
+          "animations": 6.578,
+          "cloth": 0.0,
+          "support": 0.097,
+          "total": 6.751
+        }
+      ],
+      "creature_levian_stone": [
+        {
+          "animations": 6.714,
+          "cloth": 0.0,
+          "support": 0.094,
+          "total": 6.937
+        },
+        {
+          "animations": 6.73,
+          "cloth": 0.0,
+          "support": 0.13,
+          "total": 6.956
+        }
+      ],
+      "creature_levian_tide": [
+        {
+          "animations": 6.724,
+          "cloth": 0.0,
+          "support": 0.124,
+          "total": 6.945
+        },
+        {
+          "animations": 6.663,
+          "cloth": 0.0,
+          "support": 0.082,
+          "total": 6.838
+        }
+      ],
+      "creature_likorez_shadow": [
+        {
+          "animations": 10.876,
+          "cloth": 0.0,
+          "support": 0.103,
+          "total": 11.07
+        },
+        {
+          "animations": 10.609,
+          "cloth": 0.0,
+          "support": 0.099,
+          "total": 10.8
+        }
+      ],
+      "creature_ratnik_fire": [
+        {
+          "animations": 9.994,
+          "cloth": 289.61,
+          "support": 92.231,
+          "total": 391.939
+        },
+        {
+          "animations": 10.48,
+          "cloth": 76.692,
+          "support": 0.294,
+          "total": 87.568
+        }
+      ],
+      "creature_ratnik_gale": [
+        {
+          "animations": 10.362,
+          "cloth": 204.608,
+          "support": 95.486,
+          "total": 310.588
+        },
+        {
+          "animations": 10.424,
+          "cloth": 116.109,
+          "support": 0.302,
+          "total": 126.983
+        }
+      ],
+      "creature_ratnik_light": [
+        {
+          "animations": 9.775,
+          "cloth": 197.28,
+          "support": 94.385,
+          "total": 301.538
+        },
+        {
+          "animations": 9.909,
+          "cloth": 104.426,
+          "support": 0.24,
+          "total": 114.669
+        }
+      ],
+      "creature_ratnik_shadow": [
+        {
+          "animations": 9.936,
+          "cloth": 190.843,
+          "support": 97.268,
+          "total": 298.164
+        },
+        {
+          "animations": 10.185,
+          "cloth": 106.343,
+          "support": 0.274,
+          "total": 116.909
+        }
+      ],
+      "creature_ratnik_stone": [
+        {
+          "animations": 9.935,
+          "cloth": 215.208,
+          "support": 90.539,
+          "total": 315.87
+        },
+        {
+          "animations": 10.572,
+          "cloth": 134.493,
+          "support": 0.27,
+          "total": 145.47
+        }
+      ],
+      "creature_ratnik_tide": [
+        {
+          "animations": 9.738,
+          "cloth": 165.505,
+          "support": 95.982,
+          "total": 271.405
+        },
+        {
+          "animations": 10.268,
+          "cloth": 80.939,
+          "support": 0.282,
+          "total": 91.636
+        }
+      ],
+      "creature_rogozhuk_fire": [
+        {
+          "animations": 3.615,
+          "cloth": 0.0,
+          "support": 158.993,
+          "total": 162.726
+        },
+        {
+          "animations": 3.596,
+          "cloth": 0.001,
+          "support": 0.36,
+          "total": 4.082
+        }
+      ],
+      "creature_rogozhuk_gale": [
+        {
+          "animations": 3.682,
+          "cloth": 0.001,
+          "support": 159.104,
+          "total": 162.903
+        },
+        {
+          "animations": 3.185,
+          "cloth": 0.0,
+          "support": 0.33,
+          "total": 3.646
+        }
+      ],
+      "creature_rogozhuk_light": [
+        {
+          "animations": 3.041,
+          "cloth": 0.001,
+          "support": 115.118,
+          "total": 118.304
+        },
+        {
+          "animations": 2.745,
+          "cloth": 0.0,
+          "support": 0.367,
+          "total": 3.245
+        }
+      ],
+      "creature_rogozhuk_shadow": [
+        {
+          "animations": 2.847,
+          "cloth": 0.001,
+          "support": 132.044,
+          "total": 134.982
+        },
+        {
+          "animations": 2.931,
+          "cloth": 0.001,
+          "support": 0.338,
+          "total": 3.366
+        }
+      ],
+      "creature_rogozhuk_stone": [
+        {
+          "animations": 2.914,
+          "cloth": 0.0,
+          "support": 77.314,
+          "total": 80.419
+        },
+        {
+          "animations": 3.282,
+          "cloth": 0.001,
+          "support": 0.32,
+          "total": 3.715
+        }
+      ],
+      "creature_rogozhuk_tide": [
+        {
+          "animations": 2.875,
+          "cloth": 0.001,
+          "support": 101.159,
+          "total": 104.143
+        },
+        {
+          "animations": 2.898,
+          "cloth": 0.001,
+          "support": 0.3,
+          "total": 3.315
+        }
+      ]
+    },
+    "prepared_actors": 98,
+    "quality": "HIGH",
+    "resolution": [
+      1280,
+      720
+    ],
+    "seconds_to_menu": 13.31957,
+    "stage_wall_ms": {
+      "Готово": 10.621,
+      "Загрузка ресурсов": 4356.497,
+      "Подготовка арен": 1002.769,
+      "Подготовка освещения": 575.702,
+      "Подготовка существ": 7043.499,
+      "Подготовка эффектов…": 98.24,
+      "Подготовка…": 104.352
+    },
+    "variant": "after"
+  },
+  "speedup": 2.6037003446807967,
+  "cache_files": {
+    "soles-7e99937f7f28564c2bf9eb3461b0f344b76e74dbbb1770e9d9983ecfc997258d.pdat": "0f6be0acb090008cdec7d5e288c8933218daf70fb4cf952eb52ca9b67e2c44de",
+    "soles-953936b51b6cc850b4c6448c7d37e480e608aed6accf1ed4d2e830949e284e25.pdat": "4eeeff1d1f203e9226c22ab6d82f7865baca60839a5dacc6e9d4a704bc12b77d",
+    "soles-ff5eeef993620067e7086493cb71f74a45bb36fef7e1191ee0f00516efdc7ae0.pdat": "83638ef2bf7e9600795f9e7bb9270f99885a1d14cfd6621096383b1793400fab",
+    "soles-cdeee7756545cc9721a93bfa7bc162bd59964ad53b71b30d097a1f418596962c.pdat": "e8844aecc88c28a1247b0f18596ad734f3d543035812f1f3d95991386fb857e5",
+    "soles-aaefe5a544178e38ce16892e1f7921d2b2790ea60a2e484899eed98969a12542.pdat": "d66db919383c0dcc22b3a384f2b38da444dcca50e86b94dd8b80640724e3e226",
+    "soles-c3110660d836ea4f6f4b06620fd02dd1021aa8f2949081f5466b28008374ecdc.pdat": "7000946936340e84ec262c1161320a7719c180b434dad4ef7bf4f2d8b6d82bcb",
+    "soles-d87e0151e8df90a0504ab2381bf419b66e33ea00e6eae6ec4d0cd33ce373cde1.pdat": "65ceafe933a46a0adaf0438adeb1af21e04cee49cd4b6e833073c7b5c27255f5",
+    "soles-aea9da7335383d35879ed991bfaf331497d3172a75c067a226ede5329470adc5.pdat": "5bd6340649491b1d96169895a72bf6bd2bbfb0ef604ecd192a54cf8de3753b91",
+    "soles-46c3e416753439134fe2d8ca8d8118138b3503a1949fee8dcf0b40b8fdb5a793.pdat": "414ee20cf34d13fe1924425b1e7db96e2a11234ce9bd08f202932842b89b1ff5",
+    "soles-f5bd3fe49b765a9348ccd005d47361416a66df7803ca97500b39cdbed98c5ed8.pdat": "f5c629da41c02645fc95b1ab4189f50d6b8001627b9fa8cebbe3d3d68888213f",
+    "soles-786efd3d80964a1f1d0f5a6450ec7ebb998baed227743d013ef725198470b8c5.pdat": "6105b92678c564cf082c154c9e584d21693a67dbfd7e496617a0fbc0faa41864",
+    "soles-cba05941e6fc30d1346c1a2f67a59b23ccb9c83f3f36ffedb2055ee855e6f9cb.pdat": "a2bad5a3ac558a0d07d8437182a702f636901efc8129f72eb34ef1d83c6a9f23",
+    "soles-bf2e4df26a48c19223e752c6715f6b14440c3cb213b163c7ce0f1b5e945077f8.pdat": "0737a0ef5a609445236892f063b4ed436ee37110fdb2192b1c2118c50adfe22a",
+    "soles-30ef0e8a856b7ed35f4f655cd909b11d8648a6548d454033ac2b0ad391c8ae4a.pdat": "085c1cddb4863b5fd980ea49661d1ada8ebefaae51b6ba6190c53a788155acf4",
+    "soles-4ae6dff175ab98d47ef3bdb803e606fe7cf516965385a8717c09e05e2910f986.pdat": "22bad96c6e6ae95fcf53eca566386e64a3ef18fd9cd2f42bb94b08636617a6af",
+    "soles-f7eb02d4dc35cd2293c3f95daa80fa48f232c3a249ec6acc1f263fc4415a283d.pdat": "fd9a0d3feb4be68d1ad7c8e2fe0c03f20fe625e640f7d08d0a64dcd8a3e91809",
+    "soles-5f5fd32d9affd57ba1c893bae5743346c98ae1769538ba192e0891d55f5c1fcb.pdat": "56709ed86d6a3ed8c8cb116ce2bd76bd2f92f8e94738a4c8abf6c2a9395af58c",
+    "soles-dc18fe9ab9d1debb52f22c2b9464ba53ecad15880b533eb69158a8dc3d5e2b24.pdat": "bb886e12e00b6299f051e97ed771f96c3e5c67ef7951f697561c0f12e9de3470",
+    "soles-bc2513fa43a3a47a96dfdf6d369e9a6d8c2bbe1925f9af4a5dd6c966c8a64834.pdat": "c84c7d1e0616e5dc8c400e9e4c2f99cea79d2f77a2e0f11966c202844e03dedf",
+    "cloth-extract-209a2258810623b4bc9fe1bef9c87761c1f82e2ea7719ef68b0a920f0efb7e43.pdat": "6aac9f48ee4fc1c642c5f9009c829f7363e21088ad9474db42ce2aad384ea018",
+    "cloth-weld-d97595f154021c09eb87c2bc27f869417d331d939e4bfb5c3cfffac2c4079efb.pdat": "62ccf0592fc43d3b44868a49602001b0fa1f60bba6b5aa06b25fd7e1bbe06278",
+    "cloth-constraints-2d99b5662857279d6dae60490b804b469f937f4365cffb65e02ea2f2469b8c35.pdat": "fc49be338a84e938b3649cfc89c5f4022f12f2be51ca02d5dc84e3ae9cd8b1fa",
+    "cloth-collider-213b5bb1e0f4bfa9186497ee0e4fe930ddf74c647888df5ccd8db4355a67e7e8.pdat": "e44bcfef689d49b55db35bcae84928afad47c3b2ee75d98b12e9a257aa9d9bf5",
+    "cloth-adjacency-f582dffe3c8dcc7a1f6913404f8a6b03a37cf2de80c3af9235a92bd695fd5cb9.pdat": "432464c109de9781e3a90dc64c4f5f1998a80e2193ab309c22915adfa7e5b95b",
+    "cloth-peer-proxy-6a76d700173dee02a8aa784f6326a3afad366efe649dc2f87ae3af1ad8418653.pdat": "b5f2242ab2e6ab9d57b80eb6d0a4178ea8c5a2fb48b2142da3a9f1181fc54532",
+    "soles-53b0f0cd392f6aa2541a952382d4a297c46944042f8448c3f49f8e29a452943a.pdat": "dd5a9083ed3a632a9f882f9bb8b8bd58a8cf4d99269d3a7ec3bddff7b05b7f9f",
+    "cloth-extract-902b4446302c0c80f624f09362496834de5e41514b562b4ee99bed1d8be4e5f5.pdat": "e5af7275026e65abfaebb866178073b46e3f90598f89babeead72f70937638df",
+    "cloth-weld-2262dde427a37b88f130bc94a2433a558c4af0d923acd61e95e81d5381ae0785.pdat": "3d67d19bab6f9c3dcbfbe3d7641fb637c897349c63f19adc3a8723e6ef6561cc",
+    "cloth-constraints-941e5c387decee1cca0471ada4feadb98fcd0876eaa77bcf86ebf9efa2eee4b1.pdat": "4bfe822906952c7f4165a59661d14a2556af6b5f41650b524371a6b4aa3c88db",
+    "cloth-collider-a918cdd2767e6712cac4be0730b891acdc799579e1aa60e77f58609312dac77d.pdat": "d2f8d994e7707c770913f070da50ad52b20e928a358596b0c8650a65c12bb3bd",
+    "cloth-adjacency-8907ce15895ac2c383cb126067da05795355a6b61fe86a12efc350365a0c38df.pdat": "bfacdf261d3efed9301be80687ffc44218802f402fc0d3a3f216cdb203bf71c0",
+    "cloth-peer-proxy-9c8f233c1bd9012d2f2a0ee82e15b2735af795a448b082bb7c147b04af243ff0.pdat": "7e4b4be5afb9727e3aee32182b29a93d53b73c76a21e6301044dd1f295c74a6c",
+    "soles-8ef5e9387ee0b1266615e3d96bcb1cde148e28671839df66ca9cfb1a9d9f9dfb.pdat": "75b4528de71b4fd75c18fccec3adf62c64b2b8164911a7639fd6cb703a7d3940",
+    "cloth-extract-8d3441c653e51da93e82ae3250b05809868461d2d60a738f4d086ce41606645a.pdat": "c718a0eec6bb255c94939991de343d9b0d8dc196a9c1659a0231f47df97d13d9",
+    "cloth-weld-8dc6d6672d6f7578217eac239e03034bff40aa2cb8c903686192b8dc9f776c13.pdat": "671a755c1995782fc551e120a72195bef7942c2aabb150cb017a8e73f7ecfded",
+    "cloth-constraints-55d66b83f68da2aa1bc0e6c9eebbc07c75d4272ac3815e948e0cc48781c785b3.pdat": "11f161f9907acf298a2cbfe349cc78479b2602dbcada260371f602592ef6b05a",
+    "cloth-collider-67ab4bb39f18a4c0d4f13e2cbcb24e5552319a9d962f178d1fcdf98a7a6a303e.pdat": "3522366f591bfbffe2da9f4e43df11cbac6bb694c5cb191c00e616d85a2f6cea",
+    "cloth-adjacency-ec17a59a46c2b93defe492921dfe3d46e5e30f775b77f4d13135f057aca84485.pdat": "f03f670b90d84c36cb05ad146d7c39383257c2097a1bf7ede751d6398d714121",
+    "cloth-peer-proxy-b9de191e2a2609989b173cfd054c309eab205be8b58b32dd10bd821eaf37648f.pdat": "45abb576ffe8470c1ef6e7674eff34fb5f3146cf7a01f6d4860d9c7439caa915",
+    "soles-20797f1d541a0fa8670008319b8b4b692f78d1414c1894fc0d0194164125a3ab.pdat": "3f85d94d86382acbf08aa90ad06684c6c13bda2bec017ca1d29746d8969be7f2",
+    "cloth-extract-7df0d457b4f8a265bb9304ab943f58eff4cc75939dc080f4dd563636b84d5ceb.pdat": "f8cedf77b69daafd995eced2966983f3610daae4a547deac6eab4411080de688",
+    "cloth-weld-be527278b908695ff0edf072f1b4e7772b79dccbcf0c20dd8261f73ae0b75458.pdat": "b69906f5fd17725e12eaac4ac7c7f5c0230472d382ce251124e9c8f6d1b82a0f",
+    "cloth-constraints-cd300ec3afd268a240f1acf12325e996afeb304917786c6ea35c45400b5775a1.pdat": "72e5626f0a03055c0b7c3ddcaf6d1eef8c63954cac71c62985364ad6f30e4b1f",
+    "cloth-collider-9af67a6dcc632f172c13dbd3e4f65eab9f12204216b235116342d5f9b4ca5321.pdat": "17b606c5c1676b88a95ea0271a4702c5c1079f2e4c7692686e66321542d7a5c8",
+    "cloth-adjacency-1e3ffc2a2e260f63421462d74a46467fba066baf3901e82c3d46e246aba2f22c.pdat": "0a7c5797c834e13d4a80d3cb0592c741185919ae7aeefcd5109f96ee49b58571",
+    "cloth-peer-proxy-6faee259a2e80abf06b186238e1ed0eb13182b02c8b322f17877695961847029.pdat": "87aa676621f7e7ec6ad5432cbba7e5e2c795dbc04b007b642fe50e5a3206f78d",
+    "soles-ea0f65d59dbe4b41b0f45e7c6a47bccef3b39c2de6888506e6c036c8e366b222.pdat": "c72be55e7611537031bf37cdce4b3b56aa47c72df6912330c65f0c36da5d955f",
+    "cloth-extract-326461e5b8a57b67de7131a065998024b90655db1460b3cc6d826fabc4b4a3e3.pdat": "f0da5055200455ee9a5250fe0416c3348370c1b91f81979baf3ac64390f8f2c1",
+    "cloth-weld-0611c501026e7ee85efca0ffe2c8cfe8e92b12cd7b8afa6249fa8ea410047f01.pdat": "64414b970c67b0f83ef292ebda4e9936dc06ae1f1cd0f9d895a14be184dd05ff",
+    "cloth-constraints-627deaa658f2360e9fb98ce654d044bb1e75838fc0c8fb923c62c8806ffc0bee.pdat": "cbc71db8fa77c357f56aaf79d60abfab8997c6a04923c7e5083efcbc8d54e69e",
+    "cloth-collider-f45a19c4c727c25591b5ed675f396b6cd87c3d823a3b54b699c251580b791535.pdat": "aabc86800d41ae09b625405bb1dcd5a217a3d6f1f79fed57804a5979a0c868bc",
+    "cloth-adjacency-5d47eeab43dce49f0549dda8889c4b9258683bd0c35cb084e58c3d69c482f0a7.pdat": "a564ca82898cec333fd7b1be94e46fe5ee95546d48485f998c14c3add7990ca4",
+    "cloth-peer-proxy-47d9c740e086e49a1f4a1a43461b8885086302e43949014c4be68eeb9c861062.pdat": "88da374ce30c7bbeae566f63604c25d89218601997cbd81337c7fb7de68db50c",
+    "soles-a72b8030c2cba79e0ce07b552e291a1adb1b748f8ab34b0a6dddceb3bcabe13a.pdat": "2648c8441191e67cde45ab0272273cf15d7819205f8c5942d5f4a6081fca4f29",
+    "cloth-extract-5557953c8585c1d27d663cd50a4e1e08425236b5a0a4a51d41ec46c749de4f07.pdat": "d1f2ba64144dd9415a76dfebc4b14fcd6655c26d0c4ae9a1b95806c85151330c",
+    "cloth-weld-4e0e818dae306e7a7ac62710eac91364c6925d2e9878f6cbebf213de3a6c10ea.pdat": "31c1d1bdb5c3222296c0018eb3aea8309afefae99b4d970e4bbfddac3220255b",
+    "cloth-constraints-8bdbd9d8514eadc6fe4bf2422a128db8e04306faa743eaec8ef9135063658eb4.pdat": "0f138e6b705966739dc0c96021d91e3e2e7fe88eb47cf58516be21125f0a564c",
+    "cloth-collider-6733fe7a6604c85f6b970e6599779e255d73141d4f849c96b3d3826625f98e81.pdat": "ba0ca5aad0ecb8c0fca32657469bc2164d61acd7a50b089d95a325e0a6bbf97a",
+    "cloth-adjacency-11d71d7f56bafbf05b7dedd3eb310006dba61f74b69c3350b09903a628226156.pdat": "3709612504e1bbe9e6ce76c99779472c4ba2bd2e3cb35e657a1307e1b6c04daa",
+    "cloth-peer-proxy-553eb675b4d99b13d88a447196d47ee1ee8a95121a3da9e30ec2ed825562a35f.pdat": "90cea641faf86b7b0693d1b76efb8268e2e95fd02f2c3898427f11983caa2ab4",
+    "window-pattern-a6be903713e780aa91e3e38c15c813fbe52daba0ed081bc29bed84b1fa11c070.pdat": "48efda1205b40eb2b5f66be1e50e693c79559337695deb5bac1a3bbb24f96764",
+    "window-pattern-232eeb4892949af0fb4921b70da85d27a6e040403a6c3948e2678f9e7bf89167.pdat": "dfd30a91a8572add02e05e4a74c9f8a5a95ac138b3cac7fc5ef925ed84a08e86",
+    "window-pattern-4ef2856b1987c3bb3bb74ab7750c6d1706f167ed490e6c1063e06231317a5d56.pdat": "c19335a8e56b13c261629272c46084f727c960c4e3259ee537fed5c65ea776e3",
+    "window-pattern-e486f6da1f59bcd4e642a2324faef32f2bd60902f95107b624389c9c420977ea.pdat": "d77c4720d5cecbb081cc0592e461b832be512341be60a1bc3c146a9ae403ca49",
+    "window-pattern-1ea84de5a75648a51ca42689062dc2539a2365df92a4afb9eab086b7fe27666e.pdat": "3efdba240ff83867c8e5d5ea465754266d02bb3283ec475428a1838666541088",
+    "window-pattern-97d396688a13ff34808bd1198e790e43386b7d8e13d4f2b61f3cf8a09a369213.pdat": "b1b4a53a32906d60b34f7ab86257db970283f986747ef7929627c6c2e1201948",
+    "window-pattern-9ce56c72869e2dc1a2a2497a46c9ed6152fc029a1246ec1a24b34ce87c07238e.pdat": "c8c056b0bb13145e71ae2baa1559e9087e2dc98da82e350e97155d7563da5cd5",
+    "window-pattern-1bc23eb81b3cb6c51fc3fafdc1f3725023057206952d803e951a73f9ecc72a22.pdat": "5824956f9aa44297409cee649706a1caf3050896f7e6ee7df10771c5bc38dbce"
+  },
+  "cache_mib": 14.996676445007324,
+  "targeted_tests": {
+    "cloth_cache": "40/0",
+    "persistent_soles": "501/0",
+    "dragnar": "1578/0 and targeted surface/GPU",
+    "grifalon": "installed integrity/GPU pass"
+  },
+  "model_glb_sha256": {
+    "assets/creatures/knight.glb": "84bfd7d1cfb9afd77ce5947a993e13847c8b9d34a0bbf31d38d5ee2280de40ba",
+    "assets/creatures/centaur.glb": "890ebc50e1355c6c68d23c50b5ac437a9a80226c926d3641f02de4cdad528db3",
+    "assets/creatures/cyclops.glb": "24af50ffda6f452958610012356a245b4134419716b13a130fedb7fcaf786c96",
+    "assets/creatures/flying_eye.glb": "0b929e32ab6dea1614d37896a65e20e397319397ddb09ce9e5c7d6955d2156cf",
+    "assets/creatures/dragon.glb": "2564c28b64c9848ce46ffa4ac22f9d54b6c0cad40b625393f4e51b7b3ca2e945",
+    "assets/creatures/golem.glb": "930413195511f51c366bd4476ec6a6c8bc6ba307ac43fcf0e8f1a2a30acf5019",
+    "assets/creatures/serpent.glb": "97ee55cf3caa661d9d28234fa0e137bed5981eb77b9c96978feae31fc349937d",
+    "assets/creatures/bird.glb": "24789f9504ac89f324e36a01a7b122ff981f6a8f9d81379562d9f33ad1c67506",
+    "assets/creatures/wolf.glb": "2ccc229897315893ff1d071541e1137fd38b497807971ac3f06f60a0338d5f4a",
+    "assets/creatures/beetle.glb": "7b7767c0eaebfe0dbff54691feaab08e02b9e98a7433d3748b6490159a8af729",
+    "assets/creatures_hd/dragnar_fire.glb": "2d759d92cc19566c5228e0ba913a7663fff934131b63f9295c4a84d92f47c6aa",
+    "assets/creatures_hd/dragnar_gale.glb": "d02f3a67084a9e3464716897c2ef5b24f5a53c7ce596c10bf007049d2c97b830",
+    "assets/creatures_hd/dragnar_light.glb": "8a82bcf7f89287daefd65baa25e96a5b1e1c4503b73ea3fa8817c83fcdd81f96",
+    "assets/creatures_hd/dragnar_shadow.glb": "ec28cf12618f5a739fc7b9604d384cf560d23b5590f64491a1ec320de39b8470",
+    "assets/creatures_hd/dragnar_stone.glb": "1db9f2a935fc8731ad7bd274364c749e1622a965deacdfaf9c3e4285f5b2a72d",
+    "assets/creatures_hd/dragnar_tide.glb": "fc95ce7731cf5331c84bfee312f69d7e3e6019c33e04ba011b878fa8adea8b6b",
+    "assets/creatures_hd/gorgul_fire.glb": "128eb7948519337b63fb3349447194910d0cc82e44d2efe22fc0ca0d20a7f3b6",
+    "assets/creatures_hd/gorgul_gale.glb": "55d82a572aec50ffffcc3912b2fc448dec5db1176c819dd4e7b189d2611bd073",
+    "assets/creatures_hd/gorgul_light.glb": "799f7c1f34ee27382315e42ef71a7625c2491648e45a02d6be611cb712b86e5c",
+    "assets/creatures_hd/gorgul_shadow.glb": "d31399c990f0148444c0082bf2bcc5d362d43f0a5516e3e70285beeec9b6ed86",
+    "assets/creatures_hd/gorgul_stone.glb": "e1fd5c9a9c8fd8ff1b01cc670b7a004689f6051484443e7d0518c5fc788d9bca",
+    "assets/creatures_hd/gorgul_tide.glb": "10cde043d74620940f53baff371f27631cf50ecff07bb888ef46255baa017d8a",
+    "assets/creatures_hd/grifalon_fire.glb": "295aaa4752b85e3febeb01dc36570b9845c3f05eea37188cc4c5c453b40f5954",
+    "assets/creatures_hd/grifalon_gale.glb": "959044bf764bea0c509c5c438e14ed2c9e2f45d133a693107a292333f6912d03",
+    "assets/creatures_hd/grifalon_light.glb": "0437c2014c5c0e87801a0acc7b25a4f957acf3a8028dbb699b5e6672d9574481",
+    "assets/creatures_hd/grifalon_shadow.glb": "15da6c635d6aa002e11049082ece86d2f0124570d0da5a71f41091b07765b0b3",
+    "assets/creatures_hd/grifalon_stone.glb": "376640d70ecbdc35c0da1f3dec334118f9037b1b10f80364d973992310b3f540",
+    "assets/creatures_hd/grifalon_tide.glb": "9695d09298d8daeddb55c8908e7181b7e3503c7a30c1d3b402bf730c87b22413",
+    "assets/creatures_hd/klykar_fire.glb": "73fcda1b1a9466e5cfc8860de7df4c5beb9f2b2440e4a34bb7a2a17b4622a160",
+    "assets/creatures_hd/klykar_gale.glb": "f16e61d615e7897ed513d3abb73aa941cb335827d7f43c07961fd8e277ab4c28",
+    "assets/creatures_hd/klykar_light.glb": "57c8b87a62361796eaf7dc647762950065d8bef84d41d5d824c96f0d554cd4e0",
+    "assets/creatures_hd/klykar_shadow.glb": "30d7873a5bb6e83f906a44be7fa4cf7706dc919a1ecdee7667763d875c87963b",
+    "assets/creatures_hd/klykar_stone.glb": "bafa3a230c96e8799a061e81c58a058f1a43363d2c114858239fa3c109508027",
+    "assets/creatures_hd/klykar_tide.glb": "f5e70149c8408ecbc5a00bb3e11238a2d43e75fea021a8001ce3098dee697b2e",
+    "assets/creatures_hd/kolossar_fire.glb": "30cae0eb02ec6073300d1e2ed34aa65a3f8d6e64941612f8fd1555294ba60657",
+    "assets/creatures_hd/kolossar_gale.glb": "dbbabf794f6a5acf4d64463d80a253757d51ce24990814759ec6bc587f7f54fd",
+    "assets/creatures_hd/kolossar_light.glb": "e103137b0e52c6ba2a9673dda69e519c0034ac8eccba4b5e32194d1b1c93ef71",
+    "assets/creatures_hd/kolossar_shadow.glb": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+    "assets/creatures_hd/kolossar_stone.glb": "efbfa17fa96fbc5cbdf6acb36666f6595c4cfb9b5551f23ffea8f1d9576d5070",
+    "assets/creatures_hd/kolossar_tide.glb": "c212690db15deaf3e63e4aa44f312c657ebb2c2b8441650094ba837d38e1de56",
+    "assets/creatures_hd/levian_fire.glb": "ded936ce93435d9651078a26276a025aff627f150454a08a0d830bd5d2280310",
+    "assets/creatures_hd/levian_gale.glb": "fe5c04377285353b7a95bdb723612464824aaaed05f9b499acb732e858db2ddc",
+    "assets/creatures_hd/levian_light.glb": "8e15e3d6bc72489f271d0d16f1c6270158fd7d2b113ec96a358ba3ebaba2669a",
+    "assets/creatures_hd/levian_shadow.glb": "c8f42fa47c27e6a0d06dfa6fa5d570031601de9e52cb0c7f184979ea78d8a90e",
+    "assets/creatures_hd/levian_stone.glb": "070f9616426759b58ebd39b7d64c312fafb7597ef7e333ad6baef8402e188dcf",
+    "assets/creatures_hd/levian_tide.glb": "7eade977ce428ce052690b7bbf235740a002a91140b0677e92e5b0d7a2bf63d8",
+    "assets/creatures_hd/ratnik_fire.glb": "7824f01282e239912f40c3eafbf26dfa2ffd0c8b551c325ac75f3725242a81dd",
+    "assets/creatures_hd/ratnik_gale.glb": "6e40647983c1e9fb8c0c5f79513a6e5e97fe496f2ac5562f34999cf5769a1103",
+    "assets/creatures_hd/ratnik_light.glb": "454e8442b83fe7fd618d0bc0338dfc8b51b1daabaa49b4a5237dcb669598f727",
+    "assets/creatures_hd/ratnik_shadow.glb": "5be558ea4208a92f4b1b2684847935fa5b0ad9ebc2cb4b1f35a8329f19f5789b",
+    "assets/creatures_hd/ratnik_stone.glb": "0c7909c072cca08b68536d94df80915358b3052e8979eff39614a94cee753db6",
+    "assets/creatures_hd/ratnik_tide.glb": "1092ec4c85963fe869274d5555a881921e46b51327809cbaee385c70f38e37ce",
+    "assets/creatures_hd/rogozhuk_fire.glb": "1ff332d623750f53cbefb3c557cbe4ec80fe1341394f033910aca90d5848c61e",
+    "assets/creatures_hd/rogozhuk_gale.glb": "025b3c5488c18b8dc978afb5851e76db4b24534736d7d48c4dd0eafe8984aae5",
+    "assets/creatures_hd/rogozhuk_light.glb": "8dcffa2a2981714c5255403fb7b9ac337b4c709913384b845874cafc006ce21f",
+    "assets/creatures_hd/rogozhuk_shadow.glb": "51af8c75076d54f083c502156fe8e9a8dba737d819b7fdf86aacf1c7c36bc62f",
+    "assets/creatures_hd/rogozhuk_stone.glb": "e5e198539f5d6ed892a9f0b553dc9d46892a66696b5d7b808acfafa2bd6f1a39",
+    "assets/creatures_hd/rogozhuk_tide.glb": "4ff3f18af1934d271c019e2301f8b914f33d14746da550eb9ddb885094eba2a9",
+    "assets/creatures_hd/likorez_shadow.glb": "5874835226b02bce3dba194313d07ed1631f7b0fabf5b6d65ef38dc1b97d7b09",
+    "assets/creatures_cmp/glubinnik-z.glb": "a8ee57d5270d7afccb62273833f37d49000289ad69693a9a0417843896926e4b",
+    "assets/creatures_cmp/sumrachnik-z.glb": "d77508ebdb9d7e75b4d2282bed8d1c5689a3e98514c327c8fef390c8ccc351bd",
+    "assets/creatures_cmp/zharovik-z.glb": "7f368efeae46a84767d07c9b69f38ce4b4c4baa6969fc62330a700091df08f72",
+    "assets/creatures_cmp/zharovik-21.glb": "1f056aa0c2e6b6d055929e0bac1b10c17e37671ed96767e3458267a7603d12d7",
+    "assets/creatures_cmp/vihrekryl-21.glb": "eac3b546f2f142b95d12bff4d98f09a75e1347e6e6340e41c05145fe625a26ba",
+    "assets/creatures_cmp/sumrachnik-21.glb": "bdfd299999c0ad6064682fb27d8b7eb8f6006f23b7eac9bd88ce7c106a6f3517",
+    "assets/creatures_cmp/vihrekryl-21full.glb": "d12e6bf2034d50e2c5e6c53f1ca421462a7138f6633a6c53616e978a71939eb8",
+    "assets/creatures_cmp/vihrekryl-tr2.glb": "348598c3ed52605e1dc5ea990a0062b2aec19858807f74633013b52d62caea4f"
+  },
+  "changed_glb": [
+    "assets/creatures_hd/grifalon_gale.glb"
+  ],
+  "model_manifests": [
+    "tools/checkpoints/grifalon-gale-wind-2026-10-31.json",
+    "tools/checkpoints/dragnar-torso-sync-2026-10-31.json"
+  ],
+  "player_launch": {
+    "log": "/tmp/sfery-player-fast-startup.log",
+    "session_id": 66770,
+    "initial_mode": 1
+  },
+  "limits": [
+    "Not FPS benchmark",
+    "No whole geometry claim",
+    "No full profiles repeated",
+    "No Windows build or publication"
+  ]
+}

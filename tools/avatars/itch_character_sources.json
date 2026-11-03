@@ -1,0 +1,44 @@
+{
+  "checked_on": "2026-11-01",
+  "files": [
+    {
+      "pack": "kai",
+      "page": "https://fox-jump.itch.io/kai-vroid-model",
+      "upload_id": "3472818",
+      "filename": "VRoid_Kai.zip",
+      "sha256": "ba55158b45c1839db89d2905e8a3df5b79d9f04b9c691d681efaf33d4f0b8719",
+      "size": 31405751
+    },
+    {
+      "pack": "modular",
+      "page": "https://hiamboz.itch.io/stylized-female-base-mesh-blend",
+      "upload_id": "18947477",
+      "filename": "character_modular_mesh_ftype.blend",
+      "sha256": "3b9954af94f4fa2eb232734fd1e12eb2e4808be772267e4464c66a637d194a19",
+      "size": 25315133
+    },
+    {
+      "pack": "modular",
+      "page": "https://hiamboz.itch.io/stylized-female-base-mesh-blend",
+      "upload_id": "18947480",
+      "filename": "presets.zip",
+      "sha256": "5eedadc25566259adea9f68e316688f18ce120b6d602c85b4359260c31c06ad2",
+      "size": 30749861
+    },
+    {
+      "pack": "denim",
+      "page": "https://scaerietale.itch.io/vroid-denim-jeans",
+      "upload_id": "9311152",
+      "filename": "Denim_ALL.zip",
+      "sha256": "1352acdbfe9dfa60c5efbd9650b310dcb7d55f31fcadb65e44395accc8ec0504",
+      "size": 31533276
+    }
+  ],
+  "excluded": [
+    {
+      "pack": "mari",
+      "page": "https://styloo.itch.io/mari",
+      "reason": "Live checkout requires purchase; cached description had been free. No payment or download."
+    }
+  ]
+}

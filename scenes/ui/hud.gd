@@ -14,6 +14,7 @@ var _turn_clip: Control
 var _turn_label: Label
 var _turn_key := ""
 var _final_tag: Label
+var _phase_label: Label
 var _plates: Array[FighterPlate] = []
 var _log_box: VBoxContainer
 var _log_lines: Array[Label] = []
@@ -23,6 +24,8 @@ var _creature_title: Label
 var _creature_box: HBoxContainer
 var _cancel_btn: Button
 var _help_btn: Button
+var _tempo: OptionButton
+var _hint_tw: Tween
 var _battle := false
 var _built := false
 var _reading := 0
@@ -53,9 +56,9 @@ func _build() -> void:
 	_turn_clip = Control.new()
 	_turn_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_turn_clip.clip_contents = true
-	_turn_clip.custom_minimum_size = Vector2(340, 40)
-	_turn_clip.size = Vector2(340, 40)
-	VisualUtil.place(_turn_clip, 0.5, 0.0, -170.0, 10.0)
+	_turn_clip.custom_minimum_size = Vector2(280, 40)
+	_turn_clip.size = Vector2(280, 40)
+	VisualUtil.place(_turn_clip, 0.5, 0.0, -140.0, 10.0)
 	_turn_clip.grow_horizontal = Control.GROW_DIRECTION_END
 	var tbg := Panel.new()
 	tbg.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -66,12 +69,17 @@ func _build() -> void:
 	tbg.add_theme_stylebox_override("panel", tsb)
 	_turn_clip.add_child(tbg)
 	_turn_label = VisualUtil.label("", 22)
-	_turn_label.size = Vector2(340, 40)
+	_turn_label.size = Vector2(280, 40)
 	_turn_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_turn_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	_turn_clip.add_child(_turn_label)
 	_turn_clip.visible = false
 	add_child(_turn_clip)
+	_phase_label = VisualUtil.label("", 14)
+	_phase_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_phase_label.add_theme_color_override("font_color", Color(0.60, 0.85, 0.95))
+	VisualUtil.place(_phase_label, 0.5, 0.0, 0.0, 52.0)
+	add_child(_phase_label)
 	_final_tag = VisualUtil.label("ФИНАЛЬНЫЙ БОЙ", 13)
 	_final_tag.add_theme_color_override("font_color", Color(1.0, 0.45, 0.35))
 	_final_tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -121,6 +129,15 @@ func _build() -> void:
 	_help_btn.pressed.connect(func() -> void: HelpOverlay.open_on(get_parent()))
 	add_child(_help_btn)
 
+	_tempo = OptionButton.new()
+	for n in BattleTempo.NAMES:
+		_tempo.add_item(n)
+	_tempo.select(BattleTempo.selected)
+	_tempo.tooltip_text = "Темп постановки. Сообщения можно читать в своём темпе; Enter — дальше."
+	VisualUtil.place(_tempo, 1.0, 0.0, -16.0, 114.0)
+	_tempo.item_selected.connect(BattleTempo.set_tempo)
+	add_child(_tempo)
+
 	_creature_panel = PanelContainer.new()
 	_creature_panel.visible = false
 	VisualUtil.place(_creature_panel, 0.5, 1.0, 0.0, -92.0)  # над опущенной рукой способностей
@@ -157,6 +174,11 @@ func set_names(n0: String, n1: String) -> void:
 	_build()
 	_plates[0].set_title(n0)
 	_plates[1].set_title(n1)
+
+
+func set_portrait(side: int,texture: Texture2D) -> void:
+	_build()
+	_plates[side].set_portrait(texture)
 
 
 func kill_creature(player: int, idx: int) -> void:
@@ -206,7 +228,19 @@ func set_status(turn: int, active: int, _alive0: int, _alive1: int) -> void:
 func set_hint(text: String) -> void:
 	_build()
 	_hint.text = text
+	_hint.custom_minimum_size.x = minf(680.0, get_viewport_rect().size.x * 0.60)
+	_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_hint_plate.visible = text != ""
+
+
+func reject_action(reason: String) -> void:
+	SoundFx.i().play("ui_denied", -4.0, 0.0)
+	set_hint(reason)
+	if _hint_tw != null and _hint_tw.is_valid():
+		_hint_tw.kill()
+	_hint.modulate = Color(1.0, 0.57, 0.42)
+	_hint_tw = create_tween()
+	_hint_tw.tween_property(_hint, "modulate", Color.WHITE, 0.7)
 
 
 func flash(text: String) -> void:
@@ -233,10 +267,9 @@ func wait_read(sec: float) -> void:
 	var show_hint := sec >= 0.8
 	if show_hint:
 		_skip_hint.visible = true
-	var t := 0.0
-	while t < sec and not _skip_flag and is_inside_tree():
+	var started := Time.get_ticks_usec()
+	while (Time.get_ticks_usec() - started) / 1000000.0 < sec and not _skip_flag and is_inside_tree():
 		await get_tree().process_frame
-		t += get_process_delta_time()
 	_reading -= 1
 	if _reading <= 0:
 		_reading = 0
@@ -389,7 +422,7 @@ func set_battle_mode(on: bool) -> void:
 ## Короткая вспышка всего экрана (удар).
 func screen_flash(c: Color) -> void:
 	var r := ColorRect.new()
-	r.color = c
+	r.color = Color(c, minf(c.a, 0.22))
 	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	r.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(r)
@@ -476,3 +509,31 @@ func _show_next_coach() -> void:
 			_close_coach())
 	vb.add_child(b)
 	add_child(_coach)
+
+
+func set_phase(phase: int) -> void:
+	_build()
+	var titles := {MatchController.Phase.SETUP: "01 · КАРТА ВОРОТ", MatchController.Phase.AWAIT_THROW: "02 · ВЫБОР СУЩЕСТВА",
+		MatchController.Phase.AWAIT_LANDING: "03 · ВЫБОР ЦЕЛИ", MatchController.Phase.AFTER_LANDING: "04 · ПРИКРЕПЛЕНИЕ",
+		MatchController.Phase.ABILITY_WINDOW: "05 · ОБМЕН СПОСОБНОСТЯМИ", MatchController.Phase.RESOLVING: "06 · ИТОГ БОЯ"}
+	_phase_label.text = titles.get(phase, "")
+
+
+## Добор отличается от усиления и отмены: небольшая плашка, без перекрытия бойцов.
+func draw_notice(text: String) -> void:
+	var panel := PanelContainer.new()
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_theme_stylebox_override("panel", UiTheme.box(Color(0.035, 0.10, 0.14, 0.94), Color(0.4, 0.85, 1.0), 1, 8, 10))
+	var label := VisualUtil.label("＋ ДОБОР · " + text, 17)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.custom_minimum_size.x = 280
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	panel.add_child(label)
+	VisualUtil.place(panel, 0.5, 0.0, 0, 155)
+	add_child(panel)
+	panel.modulate.a = 0.0
+	var tw := panel.create_tween()
+	tw.tween_property(panel, "modulate:a", 1.0, 0.18)
+	tw.tween_interval(1.3)
+	tw.tween_property(panel, "modulate:a", 0.0, 0.3)
+	tw.tween_callback(panel.queue_free)

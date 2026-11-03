@@ -1,0 +1,470 @@
+{
+  "date": "2026-10-31",
+  "task": "CARD-10",
+  "status": "completed: bounded usefulness analysis; no global balance certification",
+  "release": "0.2.9 unchanged",
+  "checks": [
+    {
+      "name": "card-matches",
+      "profile": "gameplay",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 22.63,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/selected-card-matches/card-matches.log"
+    },
+    {
+      "name": "card-scenarios",
+      "profile": "gameplay",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 0.66,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/selected-card-scenarios/card-scenarios.log"
+    },
+    {
+      "name": "card-choices",
+      "profile": "gameplay",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 2.24,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/selected-card-choices/card-choices.log"
+    }
+  ],
+  "match_count": 104,
+  "paired_comparisons": 52,
+  "decisions_audited": 848,
+  "controlled_battles": 9,
+  "controlled_assertions": 79,
+  "groups": [
+    {
+      "group": "field_altar",
+      "paired_comparisons": 12,
+      "changed_match_outcome": 0,
+      "variants": [
+        {
+          "n": 12,
+          "wins": 5,
+          "draws": 2,
+          "losses": 5,
+          "battles": 63,
+          "active_battles": 6,
+          "hand_windows": 0,
+          "legal_windows": 0,
+          "plays": 0,
+          "attached": 0,
+          "placed": 12,
+          "opened": 6,
+          "open_opportunities": 6,
+          "local_outcome_changes": 5,
+          "returned_target": 0,
+          "returned_other": 0,
+          "reused": 0,
+          "opponent_cards_muted": 0,
+          "early_returns": 0
+        },
+        {
+          "n": 12,
+          "wins": 5,
+          "draws": 2,
+          "losses": 5,
+          "battles": 63,
+          "active_battles": 6,
+          "hand_windows": 0,
+          "legal_windows": 0,
+          "plays": 0,
+          "attached": 0,
+          "placed": 12,
+          "opened": 6,
+          "open_opportunities": 6,
+          "local_outcome_changes": 6,
+          "returned_target": 0,
+          "returned_other": 0,
+          "reused": 0,
+          "opponent_cards_muted": 0,
+          "early_returns": 0
+        }
+      ]
+    },
+    {
+      "group": "species_gate",
+      "paired_comparisons": 4,
+      "changed_match_outcome": 0,
+      "variants": [
+        {
+          "n": 4,
+          "wins": 3,
+          "draws": 0,
+          "losses": 1,
+          "battles": 19,
+          "active_battles": 1,
+          "hand_windows": 0,
+          "legal_windows": 0,
+          "plays": 0,
+          "attached": 0,
+          "placed": 4,
+          "opened": 1,
+          "open_opportunities": 6,
+          "local_outcome_changes": 0,
+          "returned_target": 0,
+          "returned_other": 0,
+          "reused": 0,
+          "opponent_cards_muted": 0,
+          "early_returns": 0
+        },
+        {
+          "n": 4,
+          "wins": 3,
+          "draws": 0,
+          "losses": 1,
+          "battles": 19,
+          "active_battles": 1,
+          "hand_windows": 0,
+          "legal_windows": 0,
+          "plays": 0,
+          "attached": 0,
+          "placed": 1,
+          "opened": 1,
+          "open_opportunities": 1,
+          "local_outcome_changes": 1,
+          "returned_target": 0,
+          "returned_other": 0,
+          "reused": 0,
+          "opponent_cards_muted": 0,
+          "early_returns": 0
+        }
+      ]
+    },
+    {
+      "group": "boost_return",
+      "paired_comparisons": 12,
+      "changed_match_outcome": 0,
+      "variants": [
+        {
+          "n": 12,
+          "wins": 6,
+          "draws": 1,
+          "losses": 5,
+          "battles": 53,
+          "active_battles": 7,
+          "hand_windows": 120,
+          "legal_windows": 116,
+          "plays": 7,
+          "attached": 0,
+          "placed": 0,
+          "opened": 0,
+          "open_opportunities": 0,
+          "local_outcome_changes": 1,
+          "returned_target": 0,
+          "returned_other": 0,
+          "reused": 0,
+          "opponent_cards_muted": 0,
+          "early_returns": 0
+        },
+        {
+          "n": 12,
+          "wins": 6,
+          "draws": 1,
+          "losses": 5,
+          "battles": 53,
+          "active_battles": 8,
+          "hand_windows": 112,
+          "legal_windows": 57,
+          "plays": 8,
+          "attached": 0,
+          "placed": 0,
+          "opened": 0,
+          "open_opportunities": 0,
+          "local_outcome_changes": 4,
+          "returned_target": 8,
+          "returned_other": 0,
+          "reused": 3,
+          "opponent_cards_muted": 0,
+          "early_returns": 0
+        }
+      ]
+    },
+    {
+      "group": "throne",
+      "paired_comparisons": 8,
+      "changed_match_outcome": 0,
+      "variants": [
+        {
+          "n": 8,
+          "wins": 3,
+          "draws": 0,
+          "losses": 5,
+          "battles": 37,
+          "active_battles": 5,
+          "hand_windows": 0,
+          "legal_windows": 0,
+          "plays": 0,
+          "attached": 0,
+          "placed": 7,
+          "opened": 5,
+          "open_opportunities": 5,
+          "local_outcome_changes": 4,
+          "returned_target": 0,
+          "returned_other": 0,
+          "reused": 0,
+          "opponent_cards_muted": 0,
+          "early_returns": 0
+        },
+        {
+          "n": 8,
+          "wins": 3,
+          "draws": 0,
+          "losses": 5,
+          "battles": 35,
+          "active_battles": 0,
+          "hand_windows": 0,
+          "legal_windows": 0,
+          "plays": 0,
+          "attached": 0,
+          "placed": 7,
+          "opened": 0,
+          "open_opportunities": 9,
+          "local_outcome_changes": 0,
+          "returned_target": 0,
+          "returned_other": 0,
+          "reused": 0,
+          "opponent_cards_muted": 0,
+          "early_returns": 0
+        }
+      ]
+    },
+    {
+      "group": "mute",
+      "paired_comparisons": 8,
+      "changed_match_outcome": 0,
+      "variants": [
+        {
+          "n": 8,
+          "wins": 3,
+          "draws": 0,
+          "losses": 5,
+          "battles": 37,
+          "active_battles": 3,
+          "hand_windows": 0,
+          "legal_windows": 0,
+          "plays": 0,
+          "attached": 0,
+          "placed": 8,
+          "opened": 3,
+          "open_opportunities": 3,
+          "local_outcome_changes": 3,
+          "returned_target": 0,
+          "returned_other": 0,
+          "reused": 0,
+          "opponent_cards_muted": 0,
+          "early_returns": 0
+        },
+        {
+          "n": 8,
+          "wins": 3,
+          "draws": 0,
+          "losses": 5,
+          "battles": 36,
+          "active_battles": 5,
+          "hand_windows": 0,
+          "legal_windows": 0,
+          "plays": 0,
+          "attached": 0,
+          "placed": 7,
+          "opened": 5,
+          "open_opportunities": 5,
+          "local_outcome_changes": 5,
+          "returned_target": 0,
+          "returned_other": 0,
+          "reused": 0,
+          "opponent_cards_muted": 5,
+          "early_returns": 0
+        }
+      ]
+    },
+    {
+      "group": "recall",
+      "paired_comparisons": 8,
+      "changed_match_outcome": 0,
+      "variants": [
+        {
+          "n": 8,
+          "wins": 3,
+          "draws": 0,
+          "losses": 5,
+          "battles": 31,
+          "active_battles": 1,
+          "hand_windows": 94,
+          "legal_windows": 30,
+          "plays": 1,
+          "attached": 0,
+          "placed": 0,
+          "opened": 0,
+          "open_opportunities": 0,
+          "local_outcome_changes": 0,
+          "returned_target": 0,
+          "returned_other": 0,
+          "reused": 0,
+          "opponent_cards_muted": 0,
+          "early_returns": 0
+        },
+        {
+          "n": 8,
+          "wins": 3,
+          "draws": 0,
+          "losses": 5,
+          "battles": 31,
+          "active_battles": 0,
+          "hand_windows": 95,
+          "legal_windows": 29,
+          "plays": 0,
+          "attached": 0,
+          "placed": 0,
+          "opened": 0,
+          "open_opportunities": 0,
+          "local_outcome_changes": 0,
+          "returned_target": 0,
+          "returned_other": 0,
+          "reused": 0,
+          "opponent_cards_muted": 0,
+          "early_returns": 0
+        }
+      ]
+    }
+  ],
+  "joint_choices": {
+    "ability_fire_assault/ability_fire_drain": {
+      "a_immediate_win": 6,
+      "b_immediate_win": 6,
+      "both_legal": 6,
+      "chosen_a": 0,
+      "chosen_b": 6,
+      "pass_or_other": 0
+    },
+    "ability_fire_spark/ability_fire_drain": {
+      "a_immediate_win": 45,
+      "b_immediate_win": 65,
+      "both_legal": 75,
+      "chosen_a": 2,
+      "chosen_b": 45,
+      "pass_or_other": 28
+    },
+    "ability_light_glint/ability_light_crown": {
+      "a_immediate_win": 34,
+      "b_immediate_win": 37,
+      "both_legal": 50,
+      "chosen_a": 9,
+      "chosen_b": 15,
+      "pass_or_other": 26
+    },
+    "ability_stone_firm/ability_stone_copy": {
+      "a_immediate_win": 17,
+      "b_immediate_win": 16,
+      "both_legal": 23,
+      "chosen_a": 6,
+      "chosen_b": 12,
+      "pass_or_other": 5
+    }
+  },
+  "observations": [
+    {
+      "case": "recall_two_battles",
+      "green": "ability_ratnik_oath",
+      "returned_before_last_creature": false,
+      "second_powers": [
+        410,
+        460
+      ],
+      "second_winner": 3
+    },
+    {
+      "case": "recall_two_battles",
+      "green": "ability_ratnik_rearm",
+      "returned_before_last_creature": true,
+      "second_powers": [
+        480,
+        360
+      ],
+      "second_winner": 1
+    },
+    {
+      "after_powers": [
+        370,
+        380
+      ],
+      "before_powers": [
+        370,
+        380
+      ],
+      "cancelled": [],
+      "case": "mute_timing",
+      "late": false,
+      "opponent_kept_glint": true
+    },
+    {
+      "after_powers": [
+        370,
+        380
+      ],
+      "before_powers": [
+        420,
+        380
+      ],
+      "cancelled": [
+        [
+          0,
+          "ability_light_glint"
+        ]
+      ],
+      "case": "mute_timing",
+      "late": true,
+      "opponent_kept_glint": false
+    },
+    {
+      "case": "throne_counter",
+      "counter": false,
+      "gate_cancelled": false,
+      "powers": [
+        370,
+        320
+      ],
+      "winner": 2
+    },
+    {
+      "case": "throne_counter",
+      "counter": true,
+      "gate_cancelled": true,
+      "powers": [
+        420,
+        350
+      ],
+      "winner": 3
+    },
+    {
+      "card": "ability_stone_wrath",
+      "case": "early_conditional_return",
+      "condition_still_met": false,
+      "foe_alive": 2,
+      "own_alive": 2,
+      "returned": true
+    }
+  ],
+  "data_sources": [
+    "build/checks/gameplay/selected-card-matches/card-balance-matches.json",
+    "build/checks/gameplay/selected-card-choices/card-choice-audit.json",
+    "build/checks/gameplay/selected-card-scenarios/card-balance-scenarios.json"
+  ],
+  "recommendation": "Keep all numerical params. Next: examine weak gold gate niche, late mute counterplay, and AI valuation of recall/conditional gates before any balancing change.",
+  "limitations": [
+    "104 targeted matches use exact landing, HARD/HARD and canonical teams only; no physical autoplay or rare creature",
+    "Pair draw pools exclude both replacement alternatives only for the subject; full stock-game frequency is not measured",
+    "52 paired match outcomes unchanged is not proof of equivalence; target exposure is small",
+    "Decision windows are correlated; local outcome recomputation holds the play sequence fixed",
+    "Controlled positions are scripted placements, not additional complete matches",
+    "No core/data/UI/model changes, Windows build, commit or release"
+  ],
+  "sha256": {
+    "tools/card_balance_matches.gd": "203e09abbc95afe8a629a152f143401409b19fbfdf055e4efc0db3aedc6ee488",
+    "tools/card_choice_audit.gd": "83ed77d3b04b022620cf66bf6ae9a0da094d223429072e189e0f4730b1cc93d0",
+    "tests/card_balance_scenarios.gd": "bd88285da73628e5f7dcffd3285fb255c758f26bad03992dd7eedeea0c2cdf31",
+    "tools/check.py": "b8a9766e356b2059377a8376f587396c700ae6aae62e132bf2a5572824358e83"
+  }
+}

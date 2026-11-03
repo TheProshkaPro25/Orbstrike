@@ -12,6 +12,7 @@ var _pips: _Pips
 var _flames: _Flames
 var _accent := Color(0.5, 0.7, 1.0)
 var _active := false
+var _portrait: TextureRect
 
 
 func _init(side: int = 0, title: String = "") -> void:
@@ -20,10 +21,24 @@ func _init(side: int = 0, title: String = "") -> void:
 	tooltip_text = ("Ваша плашка. " if side == 0 else "Плашка соперника. ") + "Шарики — три существа (выбывшие перечёркнуты). Ворота — захваченные карты."
 	_accent = Color(0.5, 0.75, 1.0) if side == 0 else Color(1.0, 0.55, 0.5)
 	_apply_style(false)
+	var content := HBoxContainer.new()
+	content.add_theme_constant_override("separation",8)
+	add_child(content)
+	_portrait = TextureRect.new()
+	_portrait.custom_minimum_size = Vector2(64,72)
+	_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_portrait.visible = false
 	var vb := VBoxContainer.new()
 	vb.add_theme_constant_override("separation", 2)
-	add_child(vb)
+	if side == 0: content.add_child(_portrait)
+	content.add_child(vb)
+	if side == 1: content.add_child(_portrait)
 	_name = VisualUtil.label(title, 20)
+	_name.custom_minimum_size.x = 140
+	_name.clip_text = true
+	_name.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	_name.add_theme_color_override("font_color", _accent.lightened(0.3))
 	_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT if side == 0 else HORIZONTAL_ALIGNMENT_RIGHT
 	vb.add_child(_name)
@@ -79,6 +94,12 @@ func set_team(colors: Array, elems: Array = []) -> void:
 
 func set_title(t: String) -> void:
 	_name.text = t
+	_name.tooltip_text = t
+
+
+func set_portrait(texture: Texture2D) -> void:
+	_portrait.texture = texture
+	_portrait.visible = texture != null
 
 
 ## Существо с индексом idx выбыло: шарик гаснет с вспышкой.

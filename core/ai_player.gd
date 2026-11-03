@@ -48,6 +48,15 @@ var _aim_error: float = 0.42
 ## Свои карты ворот на начало матча (чтобы отличать раскрытые карты соперника среди захваченных).
 var _my_gates: Dictionary = {}
 var _gates_known: bool = false
+## Ограниченные предпочтения NPC: меняют оценку решений, не правила/силу/точность.
+var personality: Dictionary = {"attack_bias": 0.0, "trap_bias": 0.0, "safe_margin": 0.0, "card_cost_bias": 0.0}
+
+func configure_personality(preferences: Dictionary) -> void:
+	for key in personality:
+		var limit: float = 0.04 if key == "card_cost_bias" else (25.0 if key == "safe_margin" else 60.0)
+		var value: Variant = preferences.get(key, 0.0)
+		personality[key] = clampf(float(value), -limit, limit) if (value is float or value is int) and is_finite(float(value)) else 0.0
+
 
 
 ## aim_error < 0 — разброс по уровню сложности (AIM_ERROR).
@@ -105,7 +114,7 @@ func choose_setup(view: MatchState, legal = null, can_skip: bool = false) -> Dic
 					value += 100.0 if _fits(card, CardDB.creature(view.creatures[uid].def_id)) else 0.0
 					value -= _exposure(trial, uid, int(target))
 					if CardEffects.is_gate_trap(card):
-						value += _trap_bait_score(view, uid, card) - 650.0
+						value += _trap_bait_score(view, uid, card) - 650.0 + float(personality.trap_bias)
 				if value > best_value:
 					best_value = value
 					best = id
@@ -151,6 +160,9 @@ func choose_throw(view: MatchState) -> Dictionary:
 			var score: float = _score(view, uid, slot)
 			if score <= -500.0:
 				continue
+			var occupant: int = view.slots[slot].occupant_uid
+			if occupant >= 0 and view.creatures[occupant].owner != player:
+				score += float(personality.attack_bias)
 			score += _rng.randf() * noise
 			if score > best_score:
 				best_score = score
@@ -170,6 +182,19 @@ func choose_throw(view: MatchState) -> Dictionary:
 ## legal: карты, разрешённые контроллером сейчас; null — вся рука, пустой список — пас.
 ## Обмен способностями: проигрываю — самая дешёвая карта, после которой выигрываю (HARD ищет и пару карт);
 ## выигрываю — пас, если соперник уже не может ответить или запас перевеса достаточен, иначе карта «про запас».
+func should_open_gate(view: MatchState, preview: BattleResult) -> bool:
+	if preview == null or preview.slot < 0:
+		return false
+	var gate: SlotState = view.slots[preview.slot]
+	if gate.revealed or gate.card_owner != player:
+		return false
+	var opened := view.duplicate_full()
+	opened.slots[preview.slot].revealed = true
+	var after := PowerCalc.compute_seq(opened, preview.attacker_uid, preview.defender_uid, preview.slot, preview.battle_plays)
+	var side := 0 if view.creatures[preview.attacker_uid].owner == player else 1
+	return _margin(after, side) > _margin(preview, side) or (CardEffects.is_effect(CardDB.card(gate.card_id), &"fallen_call") and view.dead_count(player) > 0)
+
+
 func choose_ability(view: MatchState, preview: BattleResult, legal = null) -> StringName:
 	if preview == null:
 		return &""
@@ -199,11 +224,11 @@ func choose_ability(view: MatchState, preview: BattleResult, legal = null) -> St
 	# запас перевеса, при котором можно спокойно пасовать: соперник ещё может ответить картами
 	var safe: float = 0.0
 	if foe_can > 0:
-		safe = 80.0 if difficulty == Difficulty.NORMAL else 60.0 + 40.0 * foe_can
+		safe = (80.0 if difficulty == Difficulty.NORMAL else 60.0 + 40.0 * foe_can) + float(personality.safe_margin)
 	# запас после своей карты: на неё соперник ответит, даже если до этого пасовал
 	var safe_play: float = 0.0
 	if foe_reply > 0:
-		safe_play = 80.0 if difficulty == Difficulty.NORMAL else 60.0 + 40.0 * foe_reply
+		safe_play = (80.0 if difficulty == Difficulty.NORMAL else 60.0 + 40.0 * foe_reply) + float(personality.safe_margin)
 	if margin > 0.0:
 		if margin >= safe:
 			return &""
@@ -498,7 +523,7 @@ func _choose_hard(view: MatchState, preview: BattleResult, cards: Array[StringNa
 		if _margin(r, side) <= 0.0:
 			continue
 		r.passed = [false, false]  # на карту соперник может ответить, даже если пасовал
-		var cost: float = CARD_COST_RETURNS if CardEffects.returns_to_hand(CardDB.card(id)) else CARD_COST
+		var cost: float = CARD_COST_RETURNS if CardEffects.returns_to_hand(CardDB.card(id)) else CARD_COST + float(personality.card_cost_bias)
 		var v: float = 1.0 - _flip_prob(view, r, side) - cost
 		if v > best_v + 0.001:
 			best_v = v
@@ -564,7 +589,7 @@ func _attack_win_prob(view: MatchState, uid: int, occ: int, slot: int, gate_id: 
 		var r2: BattleResult = _with_card(view, r, id, 0)
 		if _margin(r2, 0) <= 0.0:
 			continue
-		var cost: float = CARD_COST_RETURNS if CardEffects.returns_to_hand(c) else CARD_COST
+		var cost: float = CARD_COST_RETURNS if CardEffects.returns_to_hand(c) else CARD_COST + float(personality.card_cost_bias)
 		best = maxf(best, 1.0 - _flip_prob(view, r2, 0) - cost)
 	return best
 

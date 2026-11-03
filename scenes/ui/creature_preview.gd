@@ -2,8 +2,8 @@ class_name CreaturePreview
 extends PanelContainer
 ## Панель предпросмотра в сборке колоды: существо — живая 3D-модель на подставке со знаком стихии
 ## (своя SubViewport, своё 3D-окружение), карта ворот/способности — крупная карта с описанием.
-## Модели тяжёлые (~28 МБ текстур): в памяти только показываемая и модели команды (keep_only),
-## загрузка фоном (ResourceLoader.load_threaded_request), не больше одной одновременно.
+## После стартового прогрева берёт готовую сферу из GameLoading: модель, опора и cloth
+## не создаются при наведении. Отдельные стенды без прогрева сохраняют прежний фоновой путь.
 ## Модель можно крутить мышью; в покое она медленно поворачивается сама.
 
 ## Короткая характеристика вида (по GameData.SPECIES).
@@ -29,6 +29,8 @@ var _vp: SubViewport
 var _turn: Node3D
 var _norm: Node3D
 var _anim: CreatureAnim
+var _borrowed_ball: CreatureBall
+var _ball_pool: GameLoading
 var _sigil: MeshInstance3D
 var _rim_light: OmniLight3D
 var _card_box: CenterContainer
@@ -40,6 +42,7 @@ var _icon: IconT
 var _sub: Label
 var _power: Label
 var _lines: VBoxContainer
+var _explanation: ScrollContainer
 var _status: Label
 
 var _shown_id: StringName = &""      ## существо, чья модель сейчас на сцене
@@ -129,7 +132,14 @@ func _init() -> void:
 
 	_lines = VBoxContainer.new()
 	_lines.add_theme_constant_override("separation", 3)
-	vb.add_child(_lines)
+	# Подробные условия карты доступны и в сборке колоды, где всплывающие подсказки отключены.
+	_explanation = ScrollContainer.new()
+	_explanation.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_explanation.custom_minimum_size.y = 130
+	_explanation.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	vb.add_child(_explanation)
+	_lines.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_explanation.add_child(_lines)
 	_status = VisualUtil.label("", 14)
 	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -210,6 +220,7 @@ func show_creature(d: CreatureDef, pose: bool = false, in_team: bool = false, no
 	_sub.text = "%s · вид %s" % [VisualUtil.attr_name(d.attribute), CardDB.species_name(d.species)]
 	_power.text = "%d G" % d.base_power
 	VisualUtil.clear_children(_lines)
+	_explanation.scroll_vertical = 0
 	_line(String(SPECIES_INFO.get(d.species, "")), UiTheme.TEXT, 14)
 	_line("Стихия определяет совместимые способности и силу от ворот.", UiTheme.TEXT_DIM, 13)
 	var own: PackedStringArray = []
@@ -234,6 +245,7 @@ func show_card(def: CardDef, picked: bool = false, note: String = "") -> void:
 	if def == null:
 		return
 	_want = null
+	_drop_model()
 	_vpc.visible = false
 	_drag_hint.visible = false
 	_loading.visible = false
@@ -256,7 +268,8 @@ func show_card(def: CardDef, picked: bool = false, note: String = "") -> void:
 	_sub.text = String(help[1])
 	_power.text = UiTheme.card_badge(def)
 	VisualUtil.clear_children(_lines)
-	_line(def.text, UiTheme.TEXT, 14)
+	_explanation.scroll_vertical = 0
+	_line(def.full_text(), UiTheme.TEXT, 14)
 	if String(help[6]) != "":
 		_line(String(help[6]), Color(1.0, 0.85, 0.5), 13)
 	_line(String(help[3]), UiTheme.TEXT_DIM, 12)
@@ -266,6 +279,7 @@ func show_card(def: CardDef, picked: bool = false, note: String = "") -> void:
 ## Пустая панель с подсказкой.
 func show_hint(text: String) -> void:
 	_want = null
+	_drop_model()
 	_vpc.visible = false
 	_drag_hint.visible = false
 	_loading.visible = false
@@ -276,6 +290,7 @@ func show_hint(text: String) -> void:
 	_sub.text = ""
 	_power.text = ""
 	VisualUtil.clear_children(_lines)
+	_explanation.scroll_vertical = 0
 	_set_status(false, text)
 
 
@@ -306,7 +321,7 @@ func _set_status(on: bool, note: String) -> void:
 
 # ---------------------------------------------------------------- модели
 
-## Держать в памяти только модели этих существ (команда) и показываемую; остальные отпустить.
+## Совместимость со стендами без прогрева: ограничить их локальный кэш выбранной командой.
 func keep_only(ids: Array[StringName]) -> void:
 	_keep = ids.duplicate()
 	_prune()
@@ -341,6 +356,38 @@ func _prune() -> void:
 
 
 func _request(d: CreatureDef) -> void:
+	var pool := GameLoading.i()
+	if pool.ready_to_play:
+		_drop_model()
+		_loading.visible = false
+		# В обычной игре подготовка закончена до меню. Нехватка экземпляра не
+		# должна незаметно запускать новый build/set_model и тормозить наведение.
+		var ball: CreatureBall = pool.take_ball(d.id, -1, Vector3(0, CreatureBall.RADIUS, 0))
+		if ball == null:
+			_loading.text = "Предпросмотр временно недоступен"
+			_loading.visible = true
+			return
+		_ball_pool = pool
+		_borrowed_ball = ball
+		ball.reparent(_norm, false)
+		ball.transform = Transform3D(Basis(), Vector3(0, CreatureBall.RADIUS, 0))
+		ball.process_mode = Node.PROCESS_MODE_INHERIT
+		ball.set_process(false) # CreatureBall._process otherwise overrides idle_on.
+		ball.set_physics_process(false)
+		ball._shape.disabled = true
+		ball.visible = true
+		ball._figure.visible = true
+		ball._shell.visible = false
+		ball._label.visible = false
+		ball._foot_ring.visible = false
+		_anim = ball._anim
+		_anim.visible = true
+		_anim.set_process(true)
+		_anim.idle_on = true
+		CreatureBall._set_rim(_anim, null)
+		_finish_spawn(d)
+		return
+	_loading.text = "Загрузка модели…"
 	var path := _path_of(d)
 	if _cache.has(path):
 		_spawn(d, _cache[path])
@@ -391,13 +438,15 @@ func _spawn(d: CreatureDef, ps: PackedScene) -> void:
 		CreatureModels._scenes.erase(kp[0])
 	if model == null:
 		return
-	var hgt: float = float(model.get_meta("height", 1.0))
-	var ext: float = float(model.get_meta("extent", hgt))
-	_norm.scale = Vector3.ONE / maxf(maxf(hgt, ext * 0.85), 0.01)
 	_anim = CreatureAnim.new()
 	_norm.add_child(_anim)
 	_anim.set_model(model, d)
 	_anim.idle_on = true
+	_finish_spawn(d)
+
+
+func _finish_spawn(d: CreatureDef) -> void:
+	_norm.scale = Vector3.ONE / maxf(maxf(_anim.get_height(), _anim.get_extent() * 0.85), 0.01)
 	_shown_id = d.id
 	_turn.rotation.y = 0.0
 	_idle_t = 0.0
@@ -406,10 +455,26 @@ func _spawn(d: CreatureDef, ps: PackedScene) -> void:
 
 
 func _drop_model() -> void:
-	if _anim != null:
+	if is_instance_valid(_borrowed_ball):
+		if is_instance_valid(_ball_pool):
+			_ball_pool.return_ball(_borrowed_ball)
+		else:
+			_borrowed_ball.queue_free()
+		_borrowed_ball = null
+	elif _anim != null:
 		_anim.queue_free()
-		_anim = null
+	_anim = null
+	_ball_pool = null
 	_shown_id = &""
+
+
+func _exit_tree() -> void:
+	# Подготовленная сцена меню переносится целиком из загрузчика в корень.
+	# Её viewport и actor живут дальше; это ещё не закрытие предпросмотра.
+	if is_instance_valid(GameLoading._inst) and GameLoading._inst.moving_scene:
+		return
+	# Возвращаем всю сферу до удаления viewport вместе с меню.
+	_drop_model()
 
 
 func _on_stage_input(e: InputEvent) -> void:

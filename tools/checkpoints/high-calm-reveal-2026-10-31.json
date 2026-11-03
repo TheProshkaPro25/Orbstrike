@@ -1,0 +1,232 @@
+{
+  "date": "2026-10-31",
+  "base_release": "0.2.9",
+  "status": "verified local changes; no Windows export",
+  "profiles": {
+    "presentation": [
+      {
+        "name": "import",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 5.4,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/import.log"
+      },
+      {
+        "name": "shot-physics",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 5.69,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/shot-physics.log"
+      },
+      {
+        "name": "sphere-pose",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 5.27,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/sphere-pose.log"
+      },
+      {
+        "name": "reveal-camera",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 0.79,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/reveal-camera.log"
+      },
+      {
+        "name": "ability-input",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 3.92,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/ability-input.log"
+      },
+      {
+        "name": "window-lighting",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 5.27,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/window-lighting.log"
+      },
+      {
+        "name": "high-graphics",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 11.6,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/high-graphics.log"
+      },
+      {
+        "name": "experience",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 27.04,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/experience.log"
+      }
+    ],
+    "gameplay": [
+      {
+        "name": "import",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 4.42,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/import.log"
+      },
+      {
+        "name": "rules",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 13.56,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/rules.log"
+      },
+      {
+        "name": "rules-edges",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 0.92,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/rules-edges.log"
+      },
+      {
+        "name": "ai",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 0.45,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/ai.log"
+      },
+      {
+        "name": "shot-physics",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 5.69,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/shot-physics.log"
+      },
+      {
+        "name": "turn-pool",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 14.41,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/turn-pool.log"
+      },
+      {
+        "name": "autoplay",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 85.54,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/autoplay.log"
+      }
+    ]
+  },
+  "camera": {
+    "rapid_cuts_removed": true,
+    "one_reveal_orbit": true,
+    "entry_seconds": 0.5,
+    "checks": 690,
+    "failures": 0,
+    "physics_and_final_shell_pose_preserved": true
+  },
+  "high_quality": {
+    "failures": 0,
+    "limits": [
+      "not an FPS benchmark",
+      "NVIDIA/Vulkan only",
+      "test window minimized"
+    ],
+    "quality": [
+      {
+        "atlas": 1024,
+        "level": "Низкие",
+        "msaa": 0,
+        "projector_pixels": [
+          128,
+          128,
+          128,
+          128
+        ],
+        "ssil": false,
+        "ssr": false
+      },
+      {
+        "atlas": 1024,
+        "level": "Средние",
+        "msaa": 0,
+        "projector_pixels": [
+          128,
+          128,
+          128,
+          128
+        ],
+        "ssil": false,
+        "ssr": false
+      },
+      {
+        "atlas": 8192,
+        "level": "Высокие",
+        "msaa": 2,
+        "projector_pixels": [
+          512,
+          512,
+          512,
+          512
+        ],
+        "ssil": true,
+        "ssr": true
+      },
+      {
+        "atlas": 1024,
+        "level": "Средние",
+        "msaa": 0,
+        "projector_pixels": [
+          128,
+          128,
+          128,
+          128
+        ],
+        "ssil": false,
+        "ssr": false
+      }
+    ]
+  },
+  "lighting_features": [
+    "8192 directional and positional shadow atlases",
+    "larger spotlight atlas slots",
+    "32-bit positional depth",
+    "soft PCF/area light penumbra",
+    "4x MSAA",
+    "full resolution AO",
+    "SSIL",
+    "SSR",
+    "512px soft stained-glass projectors",
+    "HIGH sanctuary ambient .40 and fill .70"
+  ],
+  "comparison": "build/checks/presentation/high-graphics/",
+  "autoplay": [
+    "Матч 1: победитель 1, ход 14, захваты [2, 3]",
+    "Матч 2: победитель 0, ход 21, захваты [5, 3]",
+    "Крупных раскрытий перед боем: 9",
+    "боёв 13, возвраты { &\"won\": 13 }",
+    "Игрок 0: бросков 14, приземлений в слот 14 (100%), промахов 0",
+    "Игрок 1: бросков 13, приземлений в слот 13 (100%), промахов 0"
+  ],
+  "glb_compared": 67,
+  "glb_unchanged": true,
+  "limits": [
+    "No global FPS benchmark",
+    "LOW/MED retain previous cost and effects",
+    "Models not re-audited; GLB hashes unchanged",
+    "ReflectionProbe excluded after isolated Godot4.7 native texture leak; SSIL and SSR are clean",
+    "Linux/NVIDIA/Vulkan only",
+    "Tests minimized/unfocusable/muted; no Windows export/commit/publication"
+  ]
+}

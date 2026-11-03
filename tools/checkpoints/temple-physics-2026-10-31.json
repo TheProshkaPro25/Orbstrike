@@ -1,0 +1,141 @@
+{
+  "date": "2026-10-31",
+  "base_release": "0.2.9",
+  "status": "verified local changes; no Windows build",
+  "profiles": {
+    "gameplay": [
+      {
+        "name": "import",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 7.29,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/import.log"
+      },
+      {
+        "name": "rules",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 13.28,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/rules.log"
+      },
+      {
+        "name": "rules-edges",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 1.01,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/rules-edges.log"
+      },
+      {
+        "name": "ai",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 0.45,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/ai.log"
+      },
+      {
+        "name": "shot-physics",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 8.02,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/shot-physics.log"
+      },
+      {
+        "name": "autoplay",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 78.5,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/autoplay.log"
+      }
+    ],
+    "presentation": [
+      {
+        "name": "import",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 7.26,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/import.log"
+      },
+      {
+        "name": "shot-physics",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 8.04,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/shot-physics.log"
+      },
+      {
+        "name": "ability-input",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 4.0,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/ability-input.log"
+      },
+      {
+        "name": "experience",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 18.36,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/experience.log"
+      }
+    ]
+  },
+  "physical_shot": {
+    "bodies": "RigidBody3D",
+    "launch": "precomputed initial velocity only",
+    "settlement": "actual position, no recentering",
+    "regressions": 36,
+    "tempo": [
+      1,
+      2,
+      4
+    ],
+    "bounces_per_shot": 3
+  },
+  "manual_gate": {
+    "owner_only": true,
+    "battle_only": true,
+    "own_response": true,
+    "closed_effects_disabled": true,
+    "ability_cost": 0,
+    "replayed_openings": 3
+  },
+  "abilities": [
+    "cancelled lockout no longer blocks",
+    "fusion requires active base",
+    "conditional battle boosts require condition",
+    "shift evaluates opened candidate gates",
+    "3-card cap unchanged"
+  ],
+  "input_regressions": 19,
+  "rules_checks": 1135,
+  "edge_checks": 1223,
+  "autoplay": [
+    "Матч 1: победитель 1, ход 18, захваты [2, 3]",
+    "Матч 2: победитель 0, ход 12, захваты [2, 1]",
+    "Крупных раскрытий перед боем: 3",
+    "боёв 9, возвраты { &\"won\": 8 }",
+    "Игрок 0: бросков 9, приземлений в слот 9 (100%), промахов 0",
+    "Игрок 1: бросков 9, приземлений в слот 9 (100%), промахов 0"
+  ],
+  "location": "sanctuary temple, colonnade, stairs, six altars, elemental crests",
+  "model_glb_unchanged": true,
+  "glb_compared": 67,
+  "initial_failure": "Physics fixture quit before effect timers released resources; fixture now drains effects, successful reruns.",
+  "limits": [
+    "Linux/Vulkan only",
+    "No Windows export, commit or publication",
+    "Models unchanged; model profile not rerun",
+    "No subjective sound audition claim"
+  ],
+  "warnings": [],
+  "replay": "build/checks/gameplay/temple-physics-last-match.json"
+}

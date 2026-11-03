@@ -13,9 +13,9 @@ extends RefCounted
 ##    «Отпечаток в камне» повторяет последнюю действующую карту соперника (иначе — первую следующую).
 ## 1. БС. 3. Ворота: «Каменный взгляд» (любые, кроме ворот вида), «Очищающий луч» / «Затмение врат» (ворота соперника)
 ##    отменяют ворота; «Взор с высоты» не даёт воротам усилить соперника.
-## 5. Преимущество стихии +60 (финальный раунд ×2). 6. Плоские карты и слияния. 6а. «Натиск». 7. Метки на этот бой.
-## 8. «Кольца глубин» (сжечь бонусы соперника, доля params.share — себе). 9. «Пучина», «Хитиновый панцирь», «Великий сброс».
-## 9а. Плоские карты, сыгранные после первого из «потолков» 8–9 (CardEffects.CEILING_EFFECTS), — поверх них.
+## 5. Преимущество стихии +60 (финальный раунд ×2), «Натиск» и метки на этот бой.
+## 6–9. Действующие карты, слияния и копии — по времени розыгрыша. Каждый срез видит все прибавки до себя;
+## поздние карты идут поверх него, но могут попасть под следующий срез.
 ## 10. «Гнёт». 11. Фиксированная сила из метки («Драконий напор»). 12. max(0, …). 13. «Зеркало».
 ## 14. Исход: по силе (ничья — защитнику) → «Трон сумрака» → «Предел» → «Обоюдный удар» → «Общая бездна» → «Отлив».
 ## Пустой/неизвестный id карты ворот (замаскированная в виде ИИ) = нейтральные ворота.
@@ -74,7 +74,8 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 	# Ворота боя и сторона их владельца
 	var arena_id: StringName = &""
 	if slot >= 0 and slot < state.slots.size():
-		arena_id = state.slots[slot].card_id
+		if not state.manual_gates or state.slots[slot].revealed:
+			arena_id = state.slots[slot].card_id
 	r.arena_card_id = arena_id
 	var arena: CardDef = CardDB.card(arena_id)
 	var own_side: int = _gate_owner_side(state, slot, owners)
@@ -167,14 +168,6 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 			mains[sides[k]].append({"c": cards[t], "src": cards[k].id, "k": k})
 			r.copies.append([sides[k], cards[k].id, cards[t].id])
 	_fill_compat(r, plays, cards, cancelled)
-	# «Потолки» (Великий сброс, Хитиновый панцирь, Кольца глубин, Пучина) действуют на силу, набранную до них:
-	# плоские карты, сыгранные после первой такой карты (любой стороной), прибавляются уже после шагов 8–9.
-	var ceil_k: int = n
-	for i in range(2):
-		for m in mains[i]:
-			if CardEffects.CEILING_EFFECTS.has(String((m["c"] as CardDef).effect_id)):
-				ceil_k = mini(ceil_k, int(m["k"]))
-	var late: Array = []  # [сторона, источник, прибавка] карт после потолка
 
 	# 1. Базовая сила
 	var base: Array[int] = [defs[0].base_power, defs[1].base_power]
@@ -219,37 +212,6 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 			p[i] += bonus
 			r.add(i, "advantage", bonus)
 
-	# 6. Плоские модификаторы способностей и слияний
-	for i in range(2):
-		var ctx: Dictionary = {"attack": i == 0, "own_gate": own_side == i, "my_base": base[i], "foe_base": base[1 - i],
-			"foe_beats": Attr.beats(attr[1 - i], attr[i]),
-			"dead_own": state.dead_count(owners[i]), "alive_own": state.alive_count(owners[i]),
-			"alive_foe": state.alive_count(owners[1 - i])}
-		for m in mains[i]:
-			var v: Vector2i = CardEffects.ability_delta(m["c"], ctx)
-			var src: String = "ability:" + String(m["src"])
-			if int(m["k"]) > ceil_k:
-				late.append([i, src, v.x])
-				if v.y != 0:
-					late.append([1 - i, src, v.y])
-				continue
-			if v.x != 0:
-				p[i] += v.x
-				r.add(i, src, v.x)
-			if v.y != 0:
-				p[1 - i] += v.y
-				r.add(1 - i, src, v.y)
-			if v == Vector2i.ZERO:
-				r.add(i, src, 0)
-		for f in fusions[i]:
-			var fc: CardDef = f["c"]
-			var fx: int = int(fc.params.get("amount", 0))
-			if int(f["k"]) > ceil_k:
-				late.append([i, "ability:" + String(fc.id), fx])
-				continue
-			p[i] += fx
-			r.add(i, "ability:" + String(fc.id), fx)
-
 	# 6а. «Натиск»: бонус за серию побед владельца бойца
 	for i in range(2):
 		var mo: int = clampi(state.players[owners[i]].momentum, 0, MOMENTUM_MAX) * MOMENTUM_STEP if MatchRules.author_bonuses(state.ruleset) else 0
@@ -268,45 +230,48 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 				p[i] += int(mk["delta"])
 				r.add(i, "mark:" + String(mk.get("src", "")), int(mk["delta"]))
 
-	# 8. «Кольца глубин»: все бонусы соперника сверх его БС переходят к тебе
-	for i in range(2):
-		if _has(mains[i], &"siphon"):
-			var extra: int = maxi(0, p[1 - i] - base[1 - i])
-			if extra > 0:
-				var src2: String = "ability:" + String(_src(mains[i], &"siphon"))
-				# params.share — какая доля (%) забранного переходит к тебе (у копии — как у оригинала)
-				var share: int = 100
-				for m in mains[i]:
-					if (m["c"] as CardDef).effect_id == &"siphon":
-						share = int((m["c"] as CardDef).params.get("share", 100))
-						break
-				var gain: int = extra * share / 100
+	# Карты и слияния разрешаются по времени, включая каждый срез и каждую копию.
+	# Прикрепления уже стоят перед картами обмена. У копии свой +amount, затем скопированный эффект.
+	var ordered: Array = []
+	for k in range(n):
+		var i: int = sides[k]
+		for m in mains[i]:
+			if int(m["k"]) == k:
+				ordered.append([i, m["c"], m["src"]])
+		for f in fusions[i]:
+			if int(f["k"]) == k:
+				ordered.append([i, f["c"], (f["c"] as CardDef).id])
+	for entry in ordered:
+		var i: int = int(entry[0])
+		var c: CardDef = entry[1]
+		var src: String = "ability:" + String(entry[2])
+		var ctx: Dictionary = {"attack": i == 0, "own_gate": own_side == i, "my_base": base[i], "foe_base": base[1 - i],
+			"foe_beats": Attr.beats(attr[1 - i], attr[i]), "dead_own": state.dead_count(owners[i]),
+			"alive_own": state.alive_count(owners[i]), "alive_foe": state.alive_count(owners[1 - i])}
+		var v: Vector2i = Vector2i(int(c.params.get("amount", 0)), 0) if CardEffects.is_fusion(c) else CardEffects.ability_delta(c, ctx)
+		if v.x != 0 or v == Vector2i.ZERO:
+			r.add(i, src, v.x)
+		p[i] += v.x
+		if v.y != 0:
+			p[1 - i] += v.y
+			r.add(1 - i, src, v.y)
+		match String(c.effect_id):
+			"siphon":
+				var extra: int = maxi(0, p[1 - i] - base[1 - i])
+				var gain: int = extra * int(c.params.get("share", 100)) / 100
 				p[1 - i] -= extra
 				p[i] += gain
-				r.add(1 - i, src2, -extra)
-				r.add(i, src2, gain)
-
-	# 9. Потолки силы: «Пучина» (не выше своей БС), «Хитиновый панцирь» (не выше БС владельца), «Великий сброс»
-	for i in range(2):
-		if _has(mains[i], &"strip") and p[1 - i] > base[1 - i]:
-			r.add(1 - i, "ability:" + String(_src(mains[i], &"strip")), base[1 - i] - p[1 - i])
-			p[1 - i] = base[1 - i]
-		if _has(mains[i], &"cap_own_base") and p[1 - i] > base[i]:
-			r.add(1 - i, "ability:" + String(_src(mains[i], &"cap_own_base")), base[i] - p[1 - i])
-			p[1 - i] = base[i]
-	for i in range(2):
-		if _has(mains[i], &"reset_base"):
-			var rs: String = "ability:" + String(_src(mains[i], &"reset_base"))
-			for j in range(2):
-				if p[j] != base[j]:
-					r.add(j, rs, base[j] - p[j])
+				r.add(1 - i, src, -extra)
+				r.add(i, src, gain)
+			"strip", "cap_own_base":
+				var cap: int = base[i] if c.effect_id == &"cap_own_base" else base[1 - i]
+				var delta: int = mini(0, cap - p[1 - i])
+				p[1 - i] += delta
+				r.add(1 - i, src, delta)
+			"reset_base":
+				for j in range(2):
+					r.add(j, src, base[j] - p[j])
 					p[j] = base[j]
-			break
-
-	# 9а. Карты, сыгранные после потолка
-	for lt in late:
-		p[int(lt[0])] += int(lt[2])
-		r.add(int(lt[0]), lt[1], int(lt[2]))
 
 	# 10. «Гнёт»: −amount каждому с силой от порога
 	if arena != null and arena.effect_id == &"weight":
@@ -559,6 +524,9 @@ static func best_gate_swap(state: MatchState, atk_uid: int, def_uid: int, slot: 
 	var player: int = state.creatures[atk_uid if side == 0 else def_uid].owner
 	var best: int = -1
 	var best_m: int = -(1 << 30)
+	var best_outcome: int = -1
+	var with_shift: Array = plays.duplicate(true)
+	with_shift.append([side, &"ability_stone_shift"])
 	for j in range(state.slots.size()):
 		var s: SlotState = state.slots[j]
 		if j == slot or not s.has_card or s.occupant_uid >= 0 or s.card_owner != player:
@@ -567,12 +535,18 @@ static func best_gate_swap(state: MatchState, atk_uid: int, def_uid: int, slot: 
 		if c == null or CardEffects.is_gate_trap(c):
 			continue
 		_swap_cards(state, slot, j)
-		var r: BattleResult = compute_seq(state, atk_uid, def_uid, slot, plays)
+		# Сдвиг сам открывает новые ворота: сравнивать их действующие бонусы.
+		var was_revealed: bool = state.slots[slot].revealed
+		state.slots[slot].revealed = true
+		var r: BattleResult = compute_seq(state, atk_uid, def_uid, slot, with_shift)
+		state.slots[slot].revealed = was_revealed
 		_swap_cards(state, slot, j)
 		var m: int = r.powers[side] - r.powers[1 - side]
-		if r.both_lose:
-			m -= 1000
-		if m > best_m:
+		var own_uid: int = atk_uid if side == 0 else def_uid
+		# Исход важнее числового перевеса; при равном исходе — больший перевес, затем первый слот.
+		var outcome: int = 3 if r.winner_uid == own_uid else (2 if r.interrupted else (1 if r.both_lose else 0))
+		if outcome > best_outcome or (outcome == best_outcome and m > best_m):
+			best_outcome = outcome
 			best_m = m
 			best = j
 	return best

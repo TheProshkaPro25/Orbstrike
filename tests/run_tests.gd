@@ -63,7 +63,8 @@ func _initialize() -> void:
 	_add_test_creatures()
 	_test_battle_foundation()
 	_test_turn_draw()
-	_test_model_material_isolation()
+	if not OS.get_cmdline_user_args().has("rules-only"):
+		_test_model_material_isolation()
 	_test_card_db()
 	_test_deck_builder()
 	_test_attribute_table()
@@ -101,8 +102,9 @@ func _initialize() -> void:
 	_test_turn_limit()
 	_test_determinism()
 	_test_simulation()
-	await _test_attack_fx()
-	await _test_ball_owner_marks()
+	if not OS.get_cmdline_user_args().has("rules-only"):
+		await _test_attack_fx()
+		await _test_ball_owner_marks()
 	print("")
 	print("Проверок: %d, ошибок: %d" % [_checks, _failures])
 	quit(1 if _failures > 0 else 0)
@@ -1355,6 +1357,9 @@ func _run_match(seed_value: int, ruleset: int = MatchRules.Ruleset.ANIME_INSPIRE
 					out["error"] = "report_landing не сменил фазу"
 					return out
 			MatchController.Phase.ABILITY_WINDOW:
+				if ctrl.can_reveal_gate(p) and ais[p].should_open_gate(ctrl.get_view(p), ctrl.get_battle_preview()):
+					ctrl.reveal_gate(p)
+					continue
 				var pre: BattleResult = ctrl.get_battle_preview()
 				var pick: StringName = ais[p].choose_ability(ctrl.get_view(p), pre, ctrl.legal_abilities(p))
 				if pick == &"":

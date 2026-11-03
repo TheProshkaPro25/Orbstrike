@@ -1,0 +1,80 @@
+{
+  "date": "2026-10-31",
+  "scope": "Gale lower tail fan weights-only repair; other five Grifalon GLBs unchanged",
+  "source": "build/checks/grifalon-flight/base/grifalon_gale.glb",
+  "source_sha256": "959044bf764bea0c509c5c438e14ed2c9e2f45d133a693107a292333f6912d03",
+  "source_provenance": "Accepted wind-removed intermediate; prior geometry chain tools/checkpoints/grifalon-gale-wind-2026-10-31.json",
+  "installed": "assets/creatures_hd/grifalon_gale.glb",
+  "installed_sha256": "0329fff5f70f53e6c14fbfaaf293c93860ff86cf5be79ef0f1e85f1c7d02bd79",
+  "problem": "Lower tail fan surface is dominated by wingtip.R/wingfan.R, causing wing flap to turn half the tail fan vertical. Tail-dominant masks miss most of this surface.",
+  "region_proof": [
+    "build/checks/grifalon-flight/diagnostic/full-bones-rest.png",
+    "build/checks/grifalon-flight/diagnostic/candidate-bones-rest.png"
+  ],
+  "repair": "Welded-surface geodesic smooth transition between tail/wrong-fan seeds and protected genuine-wing/body/leg seeds; transfer right-wing contribution into neighboring authored tail1..4 masses. Eight-slot budget preserves every unrelated authored mass. No geometry rebuilt.",
+  "reproduce": "python3 tools/models/repair_grifalon_gale_tail.py --source build/checks/grifalon-flight/base/grifalon_gale.glb --output build/checks/grifalon-flight/candidate/grifalon_gale.glb",
+  "contract": "python3 tests/grifalon_tail_integrity.py build/checks/grifalon-flight/base/grifalon_gale.glb build/checks/grifalon-flight/candidate/grifalon_gale.glb build/checks/grifalon-flight/candidate/grifalon_gale.tail-repair.json",
+  "numeric": {
+    "failures": 0,
+    "triangles": 127814,
+    "wind_caps_preserved": 128,
+    "vertices": 97837,
+    "changed_vertices": 37323,
+    "protected_vertices": 55775,
+    "non_skin_bytes_exact": true,
+    "GLB_document_exact": true,
+    "all_geometry_uv_normals_indices_skeleton_binds_clips_images_exact": true,
+    "max_normalization_error": 1.1920928955078125e-07,
+    "max_weld_mass_error": 0.0,
+    "wrong_core_vertices": 12349,
+    "wrong_core_max_right_wing_mass": 0.0,
+    "full_rigid_core_vertices": 9218,
+    "rigid_tail1_skin_error": 1.0846457898849414e-06,
+    "core_motion_min_max": [
+      0.06729971654267129,
+      0.21932409930706034
+    ],
+    "core_posed_bbox": [
+      [
+        -0.2833036373905275,
+        -0.2976747675324019,
+        -0.36953265080999786
+      ],
+      [
+        -0.11899391974661866,
+        -0.05916965416257636,
+        -0.12397809337710282
+      ]
+    ],
+    "core_rest_bbox": [
+      [
+        -0.16571329534053802,
+        -0.307674765586853,
+        -0.46151265501976013
+      ],
+      [
+        -0.0293879397213459,
+        -0.06916965544223785,
+        -0.17341642081737518
+      ]
+    ],
+    "scope": "Synthetic rigid-tail surface equivalence; source numeric contract, not real runtime GPU check"
+  },
+  "raw_byte_diff": "Changes are confined to JOINTS_0/1 and WEIGHTS_0/1 accessor byte ranges. Every GLB JSON/header/other binary byte is identical, including skeleton, bind matrices, clips, all geometry/indices/UV/normals/materials/images and 128 wind caps.",
+  "reproducibility": "Second generation after vectorizing diffusion produced exactly the same complete GLB bytes/SHA.",
+  "import": {
+    "exit": 0,
+    "log": "build/checks/grifalon-flight/import.log",
+    "errors": 0,
+    "warnings": 0,
+    "mode": "headless editor, isolated XDG directories, no desktop window"
+  },
+  "gpu": "Parent owns final actual-import minimized GPU review; see consolidated parent report. Not claimed by this numeric checkpoint.",
+  "runtime_dependency": "Runtime Grifalon tail helper holds tail2..4 at rest-equivalent pose, retaining tail1 and hips animation. Source GLB clips remain unmodified.",
+  "cache": "Gale is a flyer without sole preparation and has no cloth; there is no Gale .pdat to regenerate.",
+  "limitations": [
+    "Synthetic rigid-tail skin equivalence proves broad fan follows a common tail matrix; it is not a full runtime or entire-body geometry audit.",
+    "Protected core streams are exact; narrow attachment transition intentionally retains a smooth mixture of original right-wing and new tail contributions.",
+    "No other model, Windows build, commit or publication performed."
+  ]
+}

@@ -14,3 +14,16 @@ __pycache__/
 build/
 tools/_tmp/*
 !tools/_tmp/.gdignore
+
+.claude/
+
+.codex/
+
+# Kevin Iglesias animations: licensed local installation, no raw redistribution.
+assets/avatars/motions/kevin_local/
+
+# Prepared itch.io textures used by the character editor (licensed game assets).
+!assets/avatars/itch/**/*.png
+
+# Character editor runtime catalog textures.
+!assets/avatars/editor/catalog_*.png

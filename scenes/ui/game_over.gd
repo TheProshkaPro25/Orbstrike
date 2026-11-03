@@ -11,6 +11,8 @@ var _sub: Label
 var _table: GridContainer
 var _battles: VBoxContainer
 var _built := false
+var _restart_button: Button
+var _battle_title: Label
 
 
 func _ready() -> void:
@@ -55,6 +57,7 @@ func _build() -> void:
 	_table.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	vb.add_child(_table)
 	var bh := VisualUtil.label("Бои матча", 15)
+	_battle_title = bh
 	bh.add_theme_color_override("font_color", UiTheme.TEXT_DIM)
 	vb.add_child(bh)
 	_battles = VBoxContainer.new()
@@ -66,6 +69,7 @@ func _build() -> void:
 	vb.add_child(row)
 	var b := Button.new()
 	b.text = "Ещё раз"
+	_restart_button = b
 	b.custom_minimum_size = Vector2(200, 50)
 	b.pressed.connect(func() -> void: restart_requested.emit())
 	row.add_child(b)
@@ -90,6 +94,8 @@ func show_result(winner: int, reason: String, stats: Dictionary = {}) -> void:
 	_sub.text = reason
 	VisualUtil.clear_children(_table)
 	VisualUtil.clear_children(_battles)
+	var summary_only := bool(stats.get("summary_only",false))
+	_battle_title.visible = not summary_only
 	if not stats.is_empty():
 		_row("", "Вы", "Соперник", true)
 		var a: Array = stats.get("alive", [0, 0])
@@ -97,9 +103,9 @@ func show_result(winner: int, reason: String, stats: Dictionary = {}) -> void:
 		var w: Array = stats.get("wins", [0, 0])
 		var ab: Array = stats.get("abilities", [0, 0])
 		_row("Существ осталось", str(a[0]), str(a[1]))
-		_row("Боёв выиграно", str(w[0]), str(w[1]))
+		if not summary_only: _row("Боёв выиграно", str(w[0]), str(w[1]))
 		_row("Ворот захвачено", str(c[0]), str(c[1]))
-		_row("Карт способностей", str(ab[0]), str(ab[1]))
+		if not summary_only: _row("Карт способностей", str(ab[0]), str(ab[1]))
 		_row("Ходов в матче", str(int(stats.get("turns", 0))), "")
 		var traps: int = int(stats.get("traps", 0))
 		if traps > 0:
@@ -115,11 +121,19 @@ func show_result(winner: int, reason: String, stats: Dictionary = {}) -> void:
 	_panel.visible = true
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_panel.call_deferred("reset_size")
-	await get_tree().process_frame
-	await get_tree().process_frame
+	var tree := get_tree()
+	await tree.process_frame
+	await tree.process_frame
+	if not is_instance_valid(self) or not is_inside_tree():
+		return  # «Ещё раз» может закрыть результат до завершения его появления.
 	_panel.pivot_offset = _panel.size * 0.5
 	_panel.scale = Vector2(0.8, 0.8)
 	_panel.create_tween().tween_property(_panel, "scale", Vector2.ONE, 0.5).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+
+
+func set_restart_text(text: String) -> void:
+	_build()
+	_restart_button.text = text
 
 
 func _row(name: String, a: String, b: String, head: bool = false) -> void:

@@ -1,4 +1,5 @@
 extends SceneTree
+const ModelTestCleanup := preload("res://scenes/model_lifetime.gd")
 ## Проверки контакта, прерываний, возврата в стойку и независимости от частоты кадров.
 var failures := 0
 var checks := 0
@@ -52,7 +53,7 @@ func run() -> void:
 		actor._process(0.03)
 		check(actor.fx_pos == before and actor._elapsed == age, "%s: остановка контакта не сдвигает позу" % definition.id)
 		actor.reset()
-		actor.free()
+		ModelTestCleanup.release(actor, self)
 		CreatureModels.clear()
 		await process_frame
 	var ball := load("res://scenes/creature_ball.tscn").instantiate() as CreatureBall

@@ -2,11 +2,14 @@ class_name CreatureBall
 extends RigidBody3D
 ## Шар-существо. До раскрытия виден шар, после open_up() - фигурка (капсула + рог).
 ## Оболочка — сложенный механизм (BallShell): лакированные пластины-лепестки со швами, эмблема стихии на полюсах,
-## светящаяся сердцевина, кольцо цвета владельца на экваторе. Видимый шар крупнее физического (VIS_SCALE):
-## физика и точность бросков прежние, а шар читается с камеры погони. Эффекты — BallFx / BallTrail.
+## светящаяся сердцевина, кольцо цвета владельца на экваторе. Оболочка диаметром9см
+## помещается в ладони; прежний контактный объём сохраняет проверенную физику бросков. Эффекты — BallFx / BallTrail.
 
 signal settled(ball: CreatureBall, world_pos: Vector3)
+signal surface_bounced(world_pos: Vector3, speed: float)
 
+const ShotMotion := preload("res://scenes/shot_physics.gd")
+const ModelLifetime := preload("res://scenes/model_lifetime.gd")
 const ElementIcon := preload("res://scenes/element_icon.gd")
 
 const RADIUS := 0.35  # ~1/17 масштаба существ Arena.FIG_H
@@ -15,7 +18,9 @@ const SLOW_ANG := 1.0
 const SLOW_TIME := 0.15
 const TIMEOUT := 9.0
 ## Видимый радиус оболочки = RADIUS × VIS_SCALE (низ оболочки стоит на полу, как у физического шара).
-const VIS_SCALE := 2.2
+const VIS_SCALE := 0.045 / RADIUS
+## Дополнительный канал мягкого света фигур: не осветляет стены и пол святилища.
+const FIGURE_LIGHT_LAYER := 1 << 1
 ## Цвет кольца владельца: игрок (бросает от +Z), соперник.
 const OWNER_GLOW := [Color(0.35, 0.62, 1.0), Color(1.0, 0.32, 0.28)]
 ## Ободок раскрытого существа по владельцу (next_pass материалов модели): свои — мягкий синий, чужие — красный.
@@ -92,6 +97,14 @@ var _ribbon: BallTrail        ## лента следа
 var _el := -1
 var _home := Vector3.ZERO     ## откуда бросали (туда сфера улетает при возврате)
 var _home_set := false
+var physical_shot := false
+var bounce_count := 0
+var _shot_previous_vy := 0.0
+var _shot_on_surface := false
+var _shot_impacts: Array = []
+## Оболочка раскрывается из последней мировой позы физического броска; фигура стоит вертикально.
+var _landing_shell_held := false
+var _landing_shell_center := Vector3.ZERO
 var _drive := false           ## визуал ведёт анимация (возврат к владельцу), а не дуга
 
 
@@ -208,9 +221,18 @@ func setup(d: CreatureDef, u: int) -> void:
 	for c in _figure.get_children():
 		if c != _foot_ring:  # кольцо владельца живёт с шаром, меняется только модель
 			_figure.remove_child(c)
-			c.queue_free()
+			if is_inside_tree():
+				ModelLifetime.release(c, get_tree())
+			else:
+				c.free()
 	var model := CreatureModels.build(d)
 	if model != null:
+		var meshes: Array[Node] = [model]
+		while not meshes.is_empty():
+			var node: Node = meshes.pop_back()
+			meshes.append_array(node.get_children())
+			if node is MeshInstance3D:
+				node.layers |= FIGURE_LIGHT_LAYER
 		# аниматор стоит в основании модели (пол), фигура вращается/масштабируется вокруг центра шара
 		_anim = CreatureAnim.new()
 		_figure.add_child(_anim)
@@ -351,7 +373,7 @@ func _start_trail() -> void:
 		_ribbon = BallTrail.new()
 		_ribbon.target = _shell
 		_ribbon.color = _ecol()
-		_ribbon.width = _shell_r() * 1.5
+		_ribbon.width = maxf(.08,_shell_r() * 1.5)
 		add_child(_ribbon)
 	_trail.emitting = true
 	_ribbon.emitting = true
@@ -455,6 +477,9 @@ func figure_size() -> float:
 
 
 func launch(impulse: Vector3) -> void:
+	_release_landing_shell()
+	physical_shot = false
+	custom_integrator = false
 	_start_trail()
 	var arc := arc_for_speed(impulse.length())
 	_air_dur = arc.x
@@ -471,6 +496,78 @@ func launch(impulse: Vector3) -> void:
 	_t = 0.0
 	_slow = 0.0
 	_throw_fx(impulse)
+
+
+func launch_towards(destination: Vector3) -> void:
+	_release_landing_shell()
+	physical_shot = true
+	bounce_count = 0
+	_shot_impacts.clear()
+	_shot_previous_vy = 0.0
+	_shot_on_surface = false
+	custom_integrator = true
+	max_contacts_reported = 8
+	physics_material_override.friction = 0.0
+	physics_material_override.bounce = ShotMotion.RESTITUTION
+	collision_layer = 1
+	collision_mask = 1
+	freeze = false
+	sleeping = false
+	_drive = false
+	_air_t = -1.0
+	_has_pending = false
+	_launched = true
+	_done = false
+	_t = 0.0
+	_slow = 0.0
+	linear_velocity = ShotMotion.velocity_to(global_position, destination, RADIUS)
+	angular_velocity = Vector3(-linear_velocity.z, 0, linear_velocity.x) / _shell_r() * .38
+	_start_trail()
+	_throw_fx(linear_velocity)
+
+
+func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
+	if not physical_shot or not _launched:
+		return
+	var velocity := state.linear_velocity
+	# Rolling on a card uses its raised top, rather than the arena floor at zero.
+	var floor_contact := state.transform.origin.y < RADIUS + _surface_height_at(state.transform.origin) + .04
+	_shot_on_surface = floor_contact
+	if _shot_previous_vy < -ShotMotion.REST_VERTICAL and velocity.y > .5:
+		bounce_count += 1
+		_shot_impacts.append([state.transform.origin, absf(_shot_previous_vy)])
+	var rolling := floor_contact and absf(velocity.y) < ShotMotion.REST_VERTICAL
+	velocity = ShotMotion.step_velocity(velocity, floor_contact, state.step)
+	_shot_previous_vy = velocity.y
+	state.linear_velocity = velocity
+	state.angular_velocity = ShotMotion.spin_velocity(velocity, rolling, _shell_r())
+
+
+func _physical_shot_effects(delta: float) -> void:
+	_sync_shell_center()
+	_t += delta
+	for impact in _shot_impacts:
+		SoundFx.i().bounce(float(impact[1]))
+		_touchdown_fx()
+		surface_bounced.emit(impact[0], float(impact[1]))
+	_shot_impacts.clear()
+	var velocity := linear_velocity
+	var speed := Vector2(velocity.x, velocity.z).length()
+	var on_floor := (_shot_on_surface or global_position.y < RADIUS + .10) and absf(velocity.y) < ShotMotion.REST_VERTICAL
+	SoundFx.i().set_roll(speed if on_floor else 0.0)
+	if _trail != null: _trail.emitting = not on_floor
+	if _ribbon != null: _ribbon.emitting = not on_floor or speed > 5.0
+	if _sparks != null:
+		_sparks.global_position = Vector3(global_position.x, .05, global_position.z)
+		_streak.global_position = Vector3(global_position.x, .035, global_position.z)
+		_sparks.emitting = on_floor and speed > 4
+		_streak.emitting = on_floor and speed > 1.5
+	if on_floor and speed < .17:
+		_slow += delta
+	else:
+		_slow = 0.0
+	if _slow >= .15 or _t >= TIMEOUT or global_position.y < -2:
+		_finish()
 
 
 ## Бросок: вспышка, кольцо ускорения поперёк полёта, сердцевина вспыхивает и успокаивается.
@@ -603,6 +700,7 @@ func _show_closed() -> void:
 
 
 func close_up() -> void:
+	_release_landing_shell()
 	_open = false
 	_kill_open_tween()
 	_ball_mesh.visible = true
@@ -624,6 +722,9 @@ func close_up() -> void:
 ## Фиксирует тело в точке (без вращения); используется и для удержания шара перед броском.
 ## Замороженный шар не сталкивается с катящимися: иначе в слот с существом нельзя попасть (отскок).
 func freeze_at(pos: Vector3, reset_pose: bool = true) -> void:
+	_release_landing_shell()
+	physical_shot = false
+	custom_integrator = false
 	if _anim != null and reset_pose:
 		_anim.reset()
 	if not _home_set:
@@ -648,6 +749,24 @@ func freeze_at(pos: Vector3, reset_pose: bool = true) -> void:
 		global_transform = Transform3D(Basis(), pos)
 	else:
 		transform = Transform3D(Basis(), pos)
+
+
+## Остановить физический шар для раскрытия без рывка его оболочки.
+## Тело становится вертикальным основанием существа, а видимая оболочка и её
+## пластины сохраняют собственный полный мировой transform последнего кадра.
+func hold_landing_pose() -> void:
+	if _landing_shell_held:
+		return
+	var final_shell := _shell.global_transform
+	freeze_at(global_position, false)
+	_shell.global_transform = final_shell
+	_landing_shell_center = final_shell.origin
+	_landing_shell_held = true
+
+
+func _release_landing_shell() -> void:
+	_landing_shell_held = false
+	_shell.rotation = Vector3.ZERO
 
 
 ## Выход на боевую позицию без телепорта и мгновенного разворота уже стоящего бойца.
@@ -731,9 +850,8 @@ func _process(delta: float) -> void:
 			_trail.emitting = _launched and y > 0.3
 	elif not _drive and _visual.position != Vector3.ZERO:
 		_visual.position = Vector3.ZERO
-	# оболочка крупнее физического шара: её низ стоит на полу (центр поднят по мировой вертикали)
-	if _shell.visible:
-		_shell.global_position = _visual.global_position + Vector3(0.0, _shell.scale.x - RADIUS, 0.0)
+	# Центр оболочки следует телу с поправкой размера; низ остаётся над полом.
+	_sync_shell_center()
 	# подпись прячется, когда камера почти вплотную к ней (облёт сверху), иначе закрывает кадр
 	if _label.visible or _label_near_hidden:
 		var cam := get_viewport().get_camera_3d()
@@ -749,9 +867,28 @@ func _process(delta: float) -> void:
 		_anim.idle_on = _open and _figure.visible and (_open_tween == null or not _open_tween.is_running())
 
 
+func _surface_height_at(point: Vector3) -> float:
+	var height := 0.0
+	for card: ArenaCardNode in get_tree().get_nodes_in_group("gate_surfaces"):
+		height = maxf(height,card.surface_height_at(point))
+	return height
+
+
+func _sync_shell_center() -> void:
+	if not _shell.visible: return
+	if _landing_shell_held:
+		_shell.global_position = _landing_shell_center
+	else:
+		var center := _visual.global_position+Vector3.UP*(_shell.scale.x-RADIUS)
+		var surface_y := _surface_height_at(center)
+		# Jolt's contact slop must not bury the small visible shell in the card face.
+		center.y = maxf(surface_y+_shell.scale.x,center.y)
+		_shell.global_position = center
+
 ## Уход с поля. Раскрытое существо втягивается в свет, пластины захлопываются; затем шар улетает
 ## к владельцу (knockout = false) или трескается и гаснет (knockout = true — нокаут, выбывание).
 func vanish(knockout: bool = false) -> Signal:
+	_landing_shell_held = false
 	_launched = false
 	_shape.disabled = true
 	freeze = true
@@ -867,6 +1004,9 @@ func _stop_fx() -> void:
 func _physics_process(delta: float) -> void:
 	if not _launched or _done:
 		return
+	if physical_shot:
+		_physical_shot_effects(delta)
+		return
 	if _has_pending:
 		_has_pending = false
 		apply_central_impulse(_pending_impulse)
@@ -910,3 +1050,6 @@ func _finish() -> void:
 		linear_velocity = Vector3.ZERO
 		angular_velocity = Vector3.ZERO
 	settled.emit(self, global_position)
+	# Если получатель отложит раскрытие, Jolt уже не поправит остановленную позу.
+	if physical_shot:
+		hold_landing_pose()

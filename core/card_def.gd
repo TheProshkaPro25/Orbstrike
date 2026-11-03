@@ -10,6 +10,12 @@ enum Kind { ARENA, ABILITY }
 @export var effect_id: StringName = &""
 @export var params: Dictionary = {}
 @export var text: String = ""
+## Полное объяснение эффекта для подсказки; text остаётся кратким текстом карты (до 120 символов).
+@export var details: String = ""
+
+
+func full_text() -> String:
+	return details if not details.is_empty() else text
 
 
 static func make(p_id: StringName, p_name: String, p_kind: int, p_effect: StringName, p_params: Dictionary, p_text: String) -> CardDef:

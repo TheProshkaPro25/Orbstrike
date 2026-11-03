@@ -31,6 +31,7 @@ static func load_all() -> void:
 	_creatures[String(rare.id)] = rare
 	for row in GameData.CARDS:
 		var c: CardDef = CardDef.make(StringName(row["id"]), String(row["name"]), int(row["kind"]), StringName(row["effect"]), (row["params"] as Dictionary).duplicate(), String(row["text"]))
+		c.details = String(row.get("details", ""))
 		if c.kind == CardDef.Kind.ARENA and not c.params.has("g"):
 			c.params["g"] = _gate_table(c)
 		_cards[String(c.id)] = c

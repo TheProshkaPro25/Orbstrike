@@ -6,7 +6,7 @@ extends RefCounted
 ## Эффекты, которые «Отпечаток в камне» не повторяет (отмена, тишина, сама копия, перемещения).
 const NO_COPY_EFFECTS: Array[String] = ["negate", "silence", "copy", "ebb", "swap_fighter", "shift_gate"]
 
-## «Потолки»: действуют на силу, набранную до них; карты, сыгранные после, прибавляются сверху (PowerCalc, шаг 9а).
+## Срезы действуют каждый в свой момент: между ними учитываются все действующие карты по времени.
 const CEILING_EFFECTS: Array[String] = ["reset_base", "cap_own_base", "siphon", "strip"]
 
 

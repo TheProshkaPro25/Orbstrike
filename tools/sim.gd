@@ -21,12 +21,15 @@ const COMEBACK_MAX: float = 0.35
 const FX_KEYS: Array[String] = ["revived", "interrupted", "both_lose", "stays", "marked", "swapped", "shifted", "gust", "recalled", "discarded"]
 
 
+var _legacy_accuracy := false
+
 func _initialize() -> void:
-	var args: Dictionary = {"n": "600", "seed": "1", "d0": "1", "d1": "1", "levels": "1", "check": "0"}
+	var args: Dictionary = {"accuracy": "exact", "n": "600", "seed": "1", "d0": "1", "d1": "1", "levels": "1", "check": "0"}
 	for a in OS.get_cmdline_user_args():
 		var kv: PackedStringArray = a.split("=")
 		if kv.size() == 2:
 			args[kv[0]] = kv[1]
+	_legacy_accuracy = args["accuracy"] == "legacy"
 	CardDB.load_all()
 	var n: int = int(args["n"])
 	var seed0: int = int(args["seed"])
@@ -116,6 +119,7 @@ func run_match(seed_value: int, d0: int, d1: int, st: Dictionary) -> void:
 		steps += 1
 		if steps > STEP_CAP:
 			st["bad"] += 1
+			ctrl.save_debug_trace("user://replays/sim_failure.json")
 			print("ЗАВИСАНИЕ: seed=%d" % seed_value)
 			return
 		var p: int = ctrl.get_active_player()
@@ -142,10 +146,13 @@ func run_match(seed_value: int, d0: int, d1: int, st: Dictionary) -> void:
 				err = ctrl.select_creature(p, pending_uid)
 			MatchController.Phase.AWAIT_LANDING:
 				var landing: int = pending_target
-				if rng.randf() >= HIT_CHANCE[diff[p]]:
+				if _legacy_accuracy and rng.randf() >= HIT_CHANCE[diff[p]]:
 					landing = _near_miss(pending_target, rng)
 				ctrl.report_landing(pending_uid, landing)
 			MatchController.Phase.ABILITY_WINDOW:
+				if ctrl.can_reveal_gate(p) and ais[p].should_open_gate(ctrl.get_view(p), ctrl.get_battle_preview()):
+					ctrl.reveal_gate(p)
+					continue
 				var pick: StringName = ais[p].choose_ability(ctrl.get_view(p), ctrl.get_battle_preview(), ctrl.legal_abilities(p))
 				err = ctrl.pass_ability(p) if pick == &"" else ctrl.play_ability(p, pick)
 		# Метрика камбэка не зависит от бонуса финального раунда LEGACY.

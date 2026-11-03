@@ -1,0 +1,86 @@
+{
+  "date": "2026-10-31",
+  "release": "0.2.9 unchanged; local changes only",
+  "completed": [
+    "CARD-01",
+    "CARD-02",
+    "CARD-03",
+    "CARD-04",
+    "CARD-05",
+    "CARD-06",
+    "CARD-07",
+    "CARD-08",
+    "CARD-09"
+  ],
+  "open": [
+    "CARD-10: limited catalog analysis completed, match usefulness remains unproven"
+  ],
+  "checks": [
+    {
+      "name": "rules-edges",
+      "profile": "gameplay",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 1.26,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/selected-rules-edges-cards-ai/rules-edges.log"
+    },
+    {
+      "name": "ai",
+      "profile": "gameplay",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 0.48,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/selected-rules-edges-cards-ai/ai.log"
+    },
+    {
+      "name": "cards",
+      "profile": "gameplay",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 1.08,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/selected-cards/cards.log"
+    },
+    {
+      "name": "card-balance",
+      "profile": "gameplay",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 0.47,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/selected-cards-card-balance/card-balance.log"
+    },
+    {
+      "name": "cards-ui",
+      "profile": "presentation",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 5.79,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/selected-cards-ui/cards-ui.log"
+    }
+  ],
+  "counts": {
+    "cards": 408,
+    "rules_edges": 1223,
+    "cards_ui": 329,
+    "gate_probe_contexts": 432,
+    "ability_probe_contexts": 9
+  },
+  "balance_report": "build/checks/gameplay/selected-cards-card-balance/card-balance.json",
+  "screenshots": "build/checks/presentation/selected-cards-ui/cards-ui",
+  "limits": [
+    "No card numerical params changed",
+    "No full profiles or new mass simulation",
+    "No model changes, physics autoplay, audio audition, Windows run or release"
+  ],
+  "sha256": {
+    "core/power_calc.gd": "1d81e34c74f13b8ef5a17e799fa5cffc3eff35595c4348b3653e79cefa32d3ff",
+    "core/card_def.gd": "f1e9367aed1e980a43036a3816aa1f45155305fdb3befae5ea363332bda1707b",
+    "core/card_db.gd": "c8d80b3b8277f65b8878178c7165b122c841b2ae5765efbafb387164c5766cf4",
+    "data/game_data.gd": "2504cde9c44508d279ba01cd8f055ef14232af1f92e89e0322d732a1b5eb0eb0",
+    "scenes/ui/ui_theme.gd": "2d28e4b0107f3e198f5035ff9f1e9ff6455785aa9b596d6053e80a0cee18542f",
+    "scenes/ui/creature_preview.gd": "6a0faba045b36bc504504b7b4e194674d8c1cae6fc11ed7c773ebfd0cdd7b77b",
+    "tests/card_revision_tests.gd": "f7deb05bd7c9b40800b80d5cb2a79f6f47e710a6816dfcb98ed62953e8ac0159",
+    "tests/card_readability_tests.gd": "841e0997ab4c1d38b89bbdbd9f7299ab2e122e923f785305007a085dc2514752",
+    "tools/check.py": "4d5f03901e6076624f5b390445f83311f4b59343b91c5a34e248ad836827ff3f",
+    "tools/card_balance_probe.gd": "688d0ef3e1b9ae5d52da566f1cc9a1ea2861f5a96d684015976bd761911766c6"
+  }
+}

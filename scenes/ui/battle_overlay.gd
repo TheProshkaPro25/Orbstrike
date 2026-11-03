@@ -1,6 +1,6 @@
 class_name BattleOverlay
 extends Control
-## Итог боя: силы, разбивка модификаторов, победитель. Закрывается кнопкой или по таймеру.
+## Итог боя: силы, разбивка модификаторов, победитель. Закрывается только подтверждением: время на чтение не ограничено.
 
 signal closed
 
@@ -112,10 +112,7 @@ func show_result(r: BattleResult, names: Dictionary = {}) -> Signal:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_open = true
 	_seq += 1
-	var my_seq := _seq
-	get_tree().create_timer(AUTO_CLOSE_SEC + 0.6 * float(_vbox.get_child_count())).timeout.connect(func() -> void:
-		if _open and _seq == my_seq:
-			_close())
+
 	return closed
 
 

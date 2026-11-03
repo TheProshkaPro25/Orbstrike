@@ -5,6 +5,7 @@ extends Node3D
 ## Открытая: рамка по типу ворот, символ в окне, крупное название и медальон силы (читаются с камеры сверху-под углом).
 
 const SIZE := Vector3(Arena.CARD_W, 0.05, Arena.CARD_H)
+const SURFACE_Y := SIZE.y + 0.002
 const OWNER_COLORS = [Color(0.18, 0.30, 0.55), Color(0.55, 0.20, 0.20)]
 ## Лоток захваченных карт — справа за полем (карты уменьшаются до TRAY_SCALE).
 const TRAY_X := Arena.STEP_X + Arena.CARD_W * 0.75 + Arena.GAP
@@ -29,6 +30,32 @@ var _title: Label3D
 var _power: Label3D
 var _lay: Dictionary
 var _built := false
+var _field_body: StaticBody3D
+
+
+## Only a placed gate is a physical surface; hand props and flying cards are not.
+func set_field_surface(active: bool) -> void:
+	if active and _field_body == null:
+		_field_body = StaticBody3D.new()
+		_field_body.name = "GateSurface"
+		_field_body.collision_mask = 0
+		var shape := CollisionShape3D.new()
+		var box := BoxShape3D.new()
+		box.size = Vector3(SIZE.x,SURFACE_Y,SIZE.z)
+		shape.shape = box
+		shape.position.y = SURFACE_Y*.5
+		_field_body.add_child(shape)
+		add_child(_field_body)
+	if _field_body != null: _field_body.collision_layer = 1 if active else 0
+	if active and not is_in_group("gate_surfaces"): add_to_group("gate_surfaces")
+	elif not active and is_in_group("gate_surfaces"): remove_from_group("gate_surfaces")
+
+
+func surface_height_at(point: Vector3) -> float:
+	if not is_in_group("gate_surfaces") or global_basis.y.normalized().dot(Vector3.UP) < .999: return -INF
+	var local := to_local(point)
+	if absf(local.x) > SIZE.x*.5 or absf(local.z) > SIZE.z*.5: return -INF
+	return to_global(Vector3(local.x,SURFACE_Y,local.z)).y
 
 
 func _init() -> void:
@@ -62,7 +89,7 @@ func _ensure_built() -> void:
 	var pm := PlaneMesh.new()
 	pm.size = Vector2(SIZE.x, SIZE.z)
 	_face.mesh = pm
-	_face.position = Vector3(0, SIZE.y + 0.002, 0)
+	_face.position = Vector3(0, SURFACE_Y, 0)
 	_face.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_mat = ShaderMaterial.new()
 	_mat.shader = SHADER
@@ -168,6 +195,8 @@ func reveal(def: CardDef) -> void:
 	_ensure_built()
 	if def == null:
 		return
+	var was_surface := is_in_group("gate_surfaces")
+	set_field_surface(false)
 	var flash_col: Color = (UiTheme.card_colors(def)[1] as Color).lightened(0.2)
 	_title.visible = false
 	_power.visible = false
@@ -184,6 +213,7 @@ func reveal(def: CardDef) -> void:
 	tw.parallel().tween_property(self, "position:y", position.y, 0.25)
 	tw.tween_callback(func():
 		_mat.set_shader_parameter("flash_col", flash_col)
+		if was_surface: set_field_surface(true)
 		if _flash_tw != null:
 			_flash_tw.kill()
 		_flash_tw = create_tween()
@@ -192,6 +222,7 @@ func reveal(def: CardDef) -> void:
 
 ## Движение в "лоток" захваченных карт игрока; возвращает сигнал завершения твина.
 func play_capture(to_player: int) -> Signal:
+	set_field_surface(false)
 	var z := Arena.CARD_H * 0.4 if to_player == 0 else -Arena.CARD_H * 0.4
 	z += (-tray_offset if to_player == 0 else tray_offset)
 	var target := Vector3(TRAY_X, 0.15, z)

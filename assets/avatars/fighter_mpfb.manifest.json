@@ -1,0 +1,40 @@
+{
+  "generator": "MPFB 2.0.18",
+  "macro": {
+    "gender": 1.0,
+    "age": 0.4,
+    "muscle": 0.3,
+    "weight": 0.38,
+    "proportions": 0.52,
+    "height": 0.5,
+    "cupsize": 0.5,
+    "firmness": 0.5,
+    "race": {
+      "asian": 0.65,
+      "caucasian": 0.35,
+      "african": 0.0
+    }
+  },
+  "sources": [
+    {
+      "name": "Hands and humanoid rig",
+      "source": "MPFB 2.0.18 base mesh / default_no_toes",
+      "license": "CC0-1.0"
+    },
+    {
+      "name": "Anime head, hair, body and costume",
+      "source": "tools/avatars/anime_head.py + anime_hair.py + anime_body.py",
+      "author": "Original project geometry"
+    }
+  ],
+  "sha256": "89d74e4eecbaa0fa41b51af49bb313625093c1822f3254443df85c40abc4197a",
+  "mesh_objects": 17,
+  "vertices": 23084,
+  "bones": 137,
+  "source_urls": [
+    "https://github.com/makehumancommunity/mpfb2/tree/v2.0.18"
+  ],
+  "source_asset_license": "CC0-1.0 (MakeHuman hands and rig)",
+  "original_artwork": "Project-authored anime head, hair, body, garments, shoes; see CREDITS.md",
+  "style": "anime-fighter-full-redesign"
+}

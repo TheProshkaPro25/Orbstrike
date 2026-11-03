@@ -11,6 +11,7 @@ var stance_extra := 0.0
 var last_parent := Vector3.ZERO
 var travel_phase := 0.0
 var last_ground_errors: Array[float] = []
+static var _sole_code_stamp := ""
 
 func configure(owner: Node3D, model: Node3D) -> void:
 	actor = owner
@@ -256,6 +257,37 @@ func _solve(limb: Dictionary, world_target: Vector3, world_pole: Vector3) -> voi
 
 
 func _collect_soles(model: Node) -> void:
+	# Источник включает сам PackedScene: подмена кандидата с тем же id не использует чужой кэш.
+	var source: PackedScene = model.get_meta("preparation_source", null)
+	var cache_key: Array = ["soles", source.get_instance_id() if source != null else 0, actor.get_height()]
+	var persisted_key := ""
+	if source != null and not CreatureModels.preparation_cache.has(cache_key):
+		var fingerprint := PreparationStore.source_key(source)
+		if not fingerprint.is_empty():
+			if _sole_code_stamp.is_empty() and FileAccess.file_exists("res://scenes/creature_support.gd"):
+				_sole_code_stamp = FileAccess.get_sha256("res://scenes/creature_support.gd")
+			var signature: Array = []
+			for limb in limbs: signature.append([limb.a,limb.b,limb.c,limb.rear])
+			persisted_key = str([1,_sole_code_stamp,fingerprint,actor.get_height(),signature]).sha256_text()
+			var prepared: Variant = PreparationStore.read_cache("soles",persisted_key)
+			if prepared is Array and prepared.size() == limbs.size():
+				while CreatureModels.preparation_cache.size() >= CreatureModels.preparation_cache_limit():
+					CreatureModels.preparation_cache.erase(CreatureModels.preparation_cache.keys()[0])
+				CreatureModels.preparation_cache[cache_key] = prepared
+	if source != null and CreatureModels.preparation_cache.has(cache_key):
+		var cached: Array = CreatureModels.preparation_cache[cache_key]
+		for l in range(limbs.size()):
+			var samples: Array = []
+			for stored: Dictionary in cached[l]:
+				var sample := stored.duplicate()
+				var mesh_node: Node = model
+				for child_index in sample.mesh_indices: mesh_node = mesh_node.get_child(child_index)
+				sample["mesh"] = mesh_node
+				sample.erase("mesh_indices")
+				samples.append(sample)
+			limbs[l]["sole"] = samples
+			if not samples.is_empty(): limbs[l]["anchor"].y -= samples[0].rest.y
+		return
 	var stack: Array[Node] = [model]
 	var candidate_lists: Array = []
 	for limb in limbs: candidate_lists.append([])
@@ -271,6 +303,19 @@ func _collect_soles(model: Node) -> void:
 			var index := skin.get_bind_bone(bind)
 			if index < 0: index = skeleton.find_bone(skin.get_bind_name(bind))
 			mapping.append(index)
+		# Принадлежность привязки к ноге постоянна: не обходить цепочку родителей для каждой вершины.
+		var membership: Array[PackedByteArray] = []
+		for limb in limbs:
+			var under_limb := PackedByteArray()
+			under_limb.resize(mapping.size())
+			for slot in range(mapping.size()):
+				var bone: int = mapping[slot]
+				while bone >= 0:
+					if bone == limb.a:
+						under_limb[slot] = 1
+						break
+					bone = skeleton.get_bone_parent(bone)
+			membership.append(under_limb)
 		var transform: Transform3D = actor.global_transform.affine_inverse()*mesh_node.global_transform
 		for surface in range(mesh_node.mesh.get_surface_count()):
 			var arrays := mesh_node.mesh.surface_get_arrays(surface)
@@ -278,21 +323,17 @@ func _collect_soles(model: Node) -> void:
 			var binds: PackedInt32Array = arrays[Mesh.ARRAY_BONES]
 			var weights: PackedFloat32Array = arrays[Mesh.ARRAY_WEIGHTS]
 			if vertices.is_empty() or binds.is_empty(): continue
-			var stride := weights.size()/vertices.size()
+			var stride := int(weights.size()/vertices.size())
 			for v in range(vertices.size()):
 				var point: Vector3 = transform*vertices[v]
+				if point.y > actor.get_height() * 0.4: continue
 				for l in range(limbs.size()):
 					if point.y > actor.get_height()*(0.4 if limbs[l].rear else 0.18): continue
 					var influence := 0.0
 					for k in range(stride):
 						var slot := binds[v*stride+k]
 						if slot < 0 or slot >= mapping.size(): continue
-						var bone: int = mapping[slot]
-						while bone >= 0:
-							if bone == limbs[l].a:
-								influence += weights[v*stride+k]
-								break
-							bone = skeleton.get_bone_parent(bone)
+						if membership[l][slot]: influence += weights[v*stride+k]
 					if influence < 0.65: continue
 					var bones: Array[int] = []
 					var poses: Array[Transform3D] = []
@@ -316,6 +357,27 @@ func _collect_soles(model: Node) -> void:
 		limbs[l]["sole"] = samples
 		if not samples.is_empty():
 			limbs[l]["anchor"].y -= samples[0].rest.y
+
+
+	if source != null:
+		var stored_limbs: Array = []
+		for limb in limbs:
+			var stored_samples: Array = []
+			for sample: Dictionary in limb.sole:
+				var stored := sample.duplicate()
+				var mesh_indices: Array[int] = []
+				var mesh_node: Node = sample.mesh
+				while mesh_node != model:
+					mesh_indices.push_front(mesh_node.get_index())
+					mesh_node = mesh_node.get_parent()
+				stored["mesh_indices"] = mesh_indices
+				stored.erase("mesh")
+				stored_samples.append(stored)
+			stored_limbs.append(stored_samples)
+		while CreatureModels.preparation_cache.size() >= CreatureModels.preparation_cache_limit():
+			CreatureModels.preparation_cache.erase(CreatureModels.preparation_cache.keys()[0])
+		CreatureModels.preparation_cache[cache_key] = stored_limbs
+		PreparationStore.write_cache("soles",persisted_key,stored_limbs)
 
 
 func _sole_height(limb: Dictionary) -> float:

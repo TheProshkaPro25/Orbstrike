@@ -1,0 +1,398 @@
+{
+  "date": "2026-10-31",
+  "status": "verified local source, no Windows build",
+  "base_release": "0.2.9",
+  "profiles": {
+    "presentation": [
+      {
+        "name": "import",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 6.15,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/import.log"
+      },
+      {
+        "name": "shot-physics",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 5.91,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/shot-physics.log"
+      },
+      {
+        "name": "sphere-pose",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 5.06,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/sphere-pose.log"
+      },
+      {
+        "name": "ability-input",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 3.86,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/ability-input.log"
+      },
+      {
+        "name": "window-lighting",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 6.15,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/window-lighting.log"
+      },
+      {
+        "name": "experience",
+        "profile": "presentation",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 18.34,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/experience.log"
+      }
+    ],
+    "gameplay": [
+      {
+        "name": "import",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 6.96,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/import.log"
+      },
+      {
+        "name": "rules",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 13.58,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/rules.log"
+      },
+      {
+        "name": "rules-edges",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 1.01,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/rules-edges.log"
+      },
+      {
+        "name": "ai",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 0.45,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/ai.log"
+      },
+      {
+        "name": "shot-physics",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 5.69,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/shot-physics.log"
+      },
+      {
+        "name": "turn-pool",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 14.16,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/turn-pool.log"
+      },
+      {
+        "name": "autoplay",
+        "profile": "gameplay",
+        "ok": true,
+        "exit_code": 0,
+        "seconds": 69.14,
+        "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/autoplay.log"
+      }
+    ]
+  },
+  "window_lighting": {
+    "projected_windows": 4,
+    "low_quality_windows": 2,
+    "pattern": "arched stained-glass and mullions projected onto real geometry",
+    "visible_difference_samples": 74658,
+    "comparison_frames": "build/checks/presentation/window-lighting/",
+    "renderer": "NVIDIA/Vulkan Forward+",
+    "no_volumetric_fog": true
+  },
+  "dynamic_throw": {
+    "scope": "real RigidBody3D flight until settled, simulated seconds, 12 directions/slots; not FPS",
+    "before": {
+      "min_seconds": 2.79999999999999,
+      "mean_seconds": 3.3861111111111035,
+      "max_seconds": 3.79999999999999,
+      "samples": [
+        {
+          "bounces": 3,
+          "error": 0.924537420272827,
+          "seconds": 2.79999999999999,
+          "side": -1.0,
+          "slot": 1,
+          "speed": 19.1450214385986
+        },
+        {
+          "bounces": 3,
+          "error": 0.93028599023819,
+          "seconds": 2.86666666666666,
+          "side": 1.0,
+          "slot": 4,
+          "speed": 19.8659648895264
+        },
+        {
+          "bounces": 3,
+          "error": 1.29284763336182,
+          "seconds": 3.11666666666666,
+          "side": -1.0,
+          "slot": 0,
+          "speed": 22.6889133453369
+        },
+        {
+          "bounces": 3,
+          "error": 1.34813129901886,
+          "seconds": 3.16666666666666,
+          "side": 1.0,
+          "slot": 3,
+          "speed": 23.2125244140625
+        },
+        {
+          "bounces": 3,
+          "error": 1.37299191951752,
+          "seconds": 3.18333333333333,
+          "side": -1.0,
+          "slot": 2,
+          "speed": 23.4544849395752
+        },
+        {
+          "bounces": 3,
+          "error": 1.42204654216766,
+          "seconds": 3.21666666666666,
+          "side": 1.0,
+          "slot": 5,
+          "speed": 23.9475288391113
+        },
+        {
+          "bounces": 3,
+          "error": 1.85444664955139,
+          "seconds": 3.59999999999999,
+          "side": -1.0,
+          "slot": 4,
+          "speed": 29.2986736297607
+        },
+        {
+          "bounces": 3,
+          "error": 1.91757071018219,
+          "seconds": 3.66666666666666,
+          "side": 1.0,
+          "slot": 1,
+          "speed": 30.2545108795166
+        },
+        {
+          "bounces": 3,
+          "error": 1.96988475322723,
+          "seconds": 3.71666666666666,
+          "side": -1.0,
+          "slot": 3,
+          "speed": 31.0897369384766
+        },
+        {
+          "bounces": 3,
+          "error": 1.99626588821411,
+          "seconds": 3.73333333333332,
+          "side": -1.0,
+          "slot": 5,
+          "speed": 31.5264453887939
+        },
+        {
+          "bounces": 3,
+          "error": 2.02141833305359,
+          "seconds": 3.76666666666666,
+          "side": 1.0,
+          "slot": 0,
+          "speed": 31.9508609771729
+        },
+        {
+          "bounces": 3,
+          "error": 2.04499530792236,
+          "seconds": 3.79999999999999,
+          "side": 1.0,
+          "slot": 2,
+          "speed": 32.3666114807129
+        }
+      ]
+    },
+    "after": {
+      "min_seconds": 1.7,
+      "mean_seconds": 2.084722222222219,
+      "max_seconds": 2.35,
+      "samples": [
+        {
+          "bounces": 3,
+          "error": 0.602988302707672,
+          "seconds": 1.7,
+          "side": -1.0,
+          "slot": 1,
+          "speed": 20.0694942474365
+        },
+        {
+          "bounces": 3,
+          "error": 0.697081685066223,
+          "seconds": 1.75,
+          "side": 1.0,
+          "slot": 4,
+          "speed": 21.5799312591553
+        },
+        {
+          "bounces": 3,
+          "error": 0.988670468330383,
+          "seconds": 1.91666666666666,
+          "side": -1.0,
+          "slot": 0,
+          "speed": 27.0160827636719
+        },
+        {
+          "bounces": 3,
+          "error": 1.03475522994995,
+          "seconds": 1.93333333333333,
+          "side": 1.0,
+          "slot": 3,
+          "speed": 27.9656925201416
+        },
+        {
+          "bounces": 3,
+          "error": 1.05497062206268,
+          "seconds": 1.95,
+          "side": -1.0,
+          "slot": 2,
+          "speed": 28.3997707366943
+        },
+        {
+          "bounces": 3,
+          "error": 1.09740746021271,
+          "seconds": 1.98333333333333,
+          "side": 1.0,
+          "slot": 5,
+          "speed": 29.2759132385254
+        },
+        {
+          "bounces": 3,
+          "error": 1.48884284496307,
+          "seconds": 2.21666666666666,
+          "side": -1.0,
+          "slot": 4,
+          "speed": 38.263111114502
+        },
+        {
+          "bounces": 3,
+          "error": 1.55219459533691,
+          "seconds": 2.26666666666666,
+          "side": 1.0,
+          "slot": 1,
+          "speed": 39.7969856262207
+        },
+        {
+          "bounces": 3,
+          "error": 1.60528409481049,
+          "seconds": 2.3,
+          "side": -1.0,
+          "slot": 3,
+          "speed": 41.1248245239258
+        },
+        {
+          "bounces": 3,
+          "error": 1.63263618946075,
+          "seconds": 2.31666666666666,
+          "side": -1.0,
+          "slot": 5,
+          "speed": 41.814826965332
+        },
+        {
+          "bounces": 3,
+          "error": 1.65891122817993,
+          "seconds": 2.33333333333333,
+          "side": 1.0,
+          "slot": 0,
+          "speed": 42.4827461242676
+        },
+        {
+          "bounces": 3,
+          "error": 1.68427073955536,
+          "seconds": 2.35,
+          "side": 1.0,
+          "slot": 2,
+          "speed": 43.1345596313477
+        }
+      ]
+    },
+    "mean_reduction_percent": 38.43314191960619,
+    "physics_tests": {
+      "throws": 36,
+      "failures": 0,
+      "settings": [
+        "60Hz tempo1",
+        "60Hz tempo2 stress",
+        "240Hz tempo4"
+      ]
+    },
+    "pose_tests": {
+      "checks": 345,
+      "failures": 0,
+      "rotated_landings": 4
+    },
+    "camera": "lower/closer trailing camera, speed FOV +4deg maximum, three closed-shell landing cuts before reveal",
+    "landing_montage": {
+      "durations": [
+        0.11,
+        0.12,
+        0.14
+      ],
+      "meta": [
+        "landing_montage_done",
+        "landing_montage_views",
+        "landing_montage_angles"
+      ]
+    },
+    "logs": {
+      "physics": "/tmp/sfery-dynamic-physics-final2-output.log",
+      "pose": "/tmp/sfery-dynamic-pose-final-output.log",
+      "timing_before": "/tmp/sfery-dynamic-before-output.log",
+      "timing_after": "/tmp/sfery-dynamic-timing-final-output.log"
+    }
+  },
+  "landing_montage": {
+    "cuts_observed": [
+      1,
+      2,
+      3
+    ],
+    "durations_seconds": [
+      0.11,
+      0.12,
+      0.14
+    ],
+    "physics_pose_unchanged": true,
+    "reveal_orbit_preserved": true,
+    "misses_skip_montage": true
+  },
+  "autoplay": [
+    "Матч 1: победитель -1, ход 14, захваты [2, 2]",
+    "Матч 2: победитель 0, ход 16, захваты [3, 2]",
+    "Крупных раскрытий перед боем: 4",
+    "боёв 10, возвраты { &\"won\": 9 }",
+    "Игрок 0: бросков 10, приземлений в слот 10 (100%), промахов 0",
+    "Игрок 1: бросков 10, приземлений в слот 10 (100%), промахов 0"
+  ],
+  "glb_unchanged": true,
+  "glb_compared": 67,
+  "limits": [
+    "CPU/physics timing is not overall FPS",
+    "Previous model profile is historical; unchanged geometry was not re-audited",
+    "Tests minimized, unfocusable, Master muted",
+    "No Windows export, commit or publication"
+  ]
+}

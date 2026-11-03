@@ -112,12 +112,43 @@ var _draw_pools: Array = []
 var _stall: int = 0  # подряд ходов, где бросать было некого
 
 
+var match_seed: int
+var action_trace: Array = []
+var _debug_decks: Array = []
+
+
+func _trace(action: String, args: Array = []) -> void:
+	action_trace.append([action, args.duplicate()])
+
+
+func debug_snapshot() -> Dictionary:
+	return {"version": 1, "seed": match_seed, "ruleset": state.ruleset, "landing_window": landing_window, "manual_gates": state.manual_gates,
+		"decks": _debug_decks, "actions": action_trace.duplicate(true), "turn": state.turn, "phase": state.phase}
+
+
+func save_debug_trace(path: String = "user://replays/last_match.json") -> Error:
+	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		return FileAccess.get_open_error()
+	file.store_string(JSON.stringify(debug_snapshot(), "  "))
+	return OK
+
+
 func _init(deck0: DeckDef, deck1: DeckDef, rng_seed: int, ruleset: int = MatchRules.Ruleset.ANIME_INSPIRED) -> void:
 	_rng.seed = rng_seed
 	state = MatchState.new()
 	state.ruleset = ruleset
+	state.manual_gates = ruleset == MatchRules.Ruleset.ANIME_INSPIRED
 	state.phase = Phase.SETUP
 	var decks: Array[DeckDef] = [deck0, deck1]
+	match_seed = rng_seed
+	for deck in [deck0, deck1]:
+		var ids: Array = [[], [], []]
+		for pair in [[deck.creatures, 0], [deck.arena, 1], [deck.abilities, 2]]:
+			for def in pair[0]:
+				ids[pair[1]].append(String(def.id))
+		_debug_decks.append(ids)
 	var next_uid: int = 0
 	for p in range(2):
 		var ps: PlayerState = state.players[p]
@@ -276,7 +307,7 @@ func legal_abilities(player: int) -> Array[StringName]:
 				return out  # «Глухие врата» / «Глубинная тишь»: способности этой стороне запрещены
 			uid = _b_atk if side == 0 else _b_def
 			for pl in PowerCalc.attached_plays(state, _b_atk, _b_def) + _b_plays:
-				if int(pl[0]) == side:
+				if int(pl[0]) == side and not pre.cancelled_plays.has(pl):
 					own.append(pl[1])
 					if CardEffects.is_lockout(CardDB.card(StringName(pl[1]))):
 						return out  # «Кольца глубин»: после неё своя сторона не играет
@@ -305,31 +336,88 @@ func legal_abilities(player: int) -> Array[StringName]:
 ## стихийный и видовой замки; слияние — только поверх своей основной карты без слияния; момент карты (params.moment);
 ## мгновенные — только если есть цель. own — уже сыгранные этой стороной карты боя (или прикреплённые к существу).
 func _ability_legal(uid: int, id: StringName, own: Array, mom: StringName = &"battle") -> bool:
+	return _ability_requirement_reason(uid, id, own, mom).is_empty()
+
+
+## Один источник проверок для доступности и её объяснения в интерфейсе.
+func _ability_requirement_reason(uid: int, id: StringName, own: Array, mom: StringName) -> String:
 	var c: CardDef = CardDB.card(id)
 	if c == null:
-		return false
+		return "Неизвестная карта"
 	var cm: StringName = CardEffects.moment(c)
 	if cm == &"landing" and mom != &"landing":
-		return false
+		return "Только после приземления на свободные ворота"
 	if cm == &"battle" and mom != &"battle":
-		return false
+		return "Только во время боя"
 	if CardEffects.is_fusion(c):
-		if own.is_empty() or CardEffects.is_fusion(CardDB.card(StringName(own[own.size() - 1]))):
-			return false
+		if own.is_empty() or CardEffects.is_fusion(CardDB.card(StringName(own.back()))):
+			return "Сначала сыграйте свою основную способность без слияния"
 	var cdef: CreatureDef = CardDB.creature(state.creatures[uid].def_id)
 	var lock: int = CardEffects.lock_attr(c)
 	if lock >= 0 and cdef.attribute != lock:
-		return false
+		return "Карта другой стихии: нужна %s" % Attr.display_name(lock)
 	var sp: StringName = CardEffects.species_lock(c)
 	if sp != &"" and cdef.species != sp:
-		return false
+		return "Карта предназначена для другого вида существ"
 	var owner: int = state.creatures[uid].owner
+	if mom == &"battle" and c.effect_id == &"boost" and c.params.get("cond", "") != "":
+		var foe: int = _b_def if uid == _b_atk else _b_atk
+		var fdef: CreatureDef = CardDB.creature(state.creatures[foe].def_id)
+		var ctx := {"attack": uid == _b_atk, "own_gate": state.slots[_b_slot].card_owner == owner,
+			"my_base": cdef.base_power, "foe_base": fdef.base_power, "foe_beats": Attr.beats(fdef.attribute, cdef.attribute),
+			"alive_own": state.alive_count(owner), "alive_foe": state.alive_count(1 - owner), "dead_own": state.dead_count(owner)}
+		if not CardEffects.boost_cond_ok(c, ctx):
+			var reasons := {"attack": "Только для атакующего", "defense": "Только для защитника", "own_gate": "Нужны ваши ворота",
+				"weaker": "Базовая сила соперника должна быть выше", "underdog": "Нужен более сильный соперник или невыгодная стихия",
+				"fallen": "У вас пока нет выбывших существ", "last": "Только для последнего живого существа", "behind": "Нужно отставать по числу живых существ"}
+			return reasons.get(String(c.params.cond), "Условие усиления сейчас не выполнено")
 	match String(c.effect_id):
 		"swap_fighter":
-			return PowerCalc.swap_candidate(state, owner, [_b_atk, _b_def]) >= 0
+			if PowerCalc.swap_candidate(state, owner, [_b_atk, _b_def]) < 0:
+				return "Нет другого живого существа для замены"
 		"shift_gate":
-			return PowerCalc.best_gate_swap(state, _b_atk, _b_def, _b_slot, _b_plays, _b_turn) >= 0
-	return true
+			if PowerCalc.best_gate_swap(state, _b_atk, _b_def, _b_slot, _b_plays, _b_turn) < 0:
+				return "Нет подходящих свободных ворот для обмена"
+	return ""
+
+
+func ability_unavailable_reason(player: int, id: StringName) -> String:
+	if player not in [0, 1]:
+		return "Неизвестный игрок"
+	if not state.players[player].ability_hand.has(id):
+		return "Карта отсутствует в руке или ещё перезаряжается"
+	if player != state.active_player:
+		return "Сейчас действует соперник"
+	var uid := -1
+	var own: Array = []
+	var mom := get_ability_moment()
+	if state.phase == Phase.ABILITY_WINDOW:
+		var side := _b_turn
+		if _battle_player(side) != player or _b_passed[side]:
+			return "Дождитесь своего ответа в обмене способностями"
+		var pre := get_battle_preview()
+		if pre.silenced[side]:
+			return "Способности запрещены действием ворот или карты соперника"
+		uid = _b_atk if side == 0 else _b_def
+		for pl in PowerCalc.attached_plays(state, _b_atk, _b_def) + _b_plays:
+			if int(pl[0]) == side and not pre.cancelled_plays.has(pl):
+				own.append(pl[1])
+				if CardEffects.is_lockout(CardDB.card(StringName(pl[1]))):
+					return "Ваша последняя карта запрещает дальнейшие способности в этом бою"
+		if _b_count[side] >= MAX_BATTLE_ABILITIES:
+			return "Лимит: не больше трёх способностей на бой"
+	elif state.phase in [Phase.AWAIT_LANDING, Phase.AFTER_LANDING]:
+		uid = _pending_uid if state.phase == Phase.AWAIT_LANDING else _landed_uid
+		if uid < 0:
+			return "Сначала выберите существо"
+		for pl in state.creatures[uid].attached:
+			own.append(pl[1])
+		if own.size() >= MAX_BATTLE_ABILITIES:
+			return "К существу уже прикреплены три способности"
+		mom = &"pre_throw" if state.phase == Phase.AWAIT_LANDING else &"landing"
+	else:
+		return "Сейчас выберите ворота или существо; способности доступны перед размещением и в бою"
+	return _ability_requirement_reason(uid, id, own, mom)
 
 
 ## Предпросмотр боя в окне способностей (уже сыгранные способности учтены, будущие — нет). Иначе null.
@@ -389,15 +477,19 @@ func is_final_round() -> bool:
 	return state.final_round
 # ---------------------------------------------------------------- действия
 
-func start() -> void:
+func start(first_player: int = 0) -> void:
+	if first_player < 0 or first_player >= state.players.size():
+		return
+	_trace("start", [first_player])
 	if _started:
 		return
 	_started = true
-	_begin_turn(0)
+	_begin_turn(first_player)
 	_flush()
 
 
 func place_arena_card(player: int, card_id: StringName, slot: int) -> Error:
+	_trace("place_arena_card", [player, card_id, slot])
 	if state.phase != Phase.SETUP or player != state.active_player:
 		return ERR_UNAUTHORIZED
 	if not _gate_slots(player).has(slot):
@@ -419,6 +511,7 @@ func place_arena_card(player: int, card_id: StringName, slot: int) -> Error:
 
 ## Не класть карту ворот в этот ход (если на поле уже есть ворота).
 func skip_gate(player: int) -> Error:
+	_trace("skip_gate", [player])
 	if state.phase != Phase.SETUP or player != state.active_player:
 		return ERR_UNAUTHORIZED
 	if not can_skip_gate():
@@ -431,6 +524,7 @@ func skip_gate(player: int) -> Error:
 ## «Ворота + бросок»: в фазе выкладки положить карту ворот и сразу бросить на неё существо uid (один ход).
 ## Цель броска — слот slot; приземление обрабатывается как обычно (report_landing, промах возможен).
 func throw_with_gate(player: int, card_id: StringName, slot: int, uid: int) -> Error:
+	_trace("throw_with_gate", [player, card_id, slot, uid])
 	if state.phase != Phase.SETUP or player != state.active_player:
 		return ERR_UNAUTHORIZED
 	if not _gate_slots(player).has(slot):
@@ -459,6 +553,7 @@ func throw_with_gate(player: int, card_id: StringName, slot: int, uid: int) -> E
 
 
 func select_creature(player: int, uid: int) -> Error:
+	_trace("select_creature", [player, uid])
 	if state.phase != Phase.AWAIT_THROW or player != state.active_player:
 		return ERR_UNAUTHORIZED
 	if not legal_creatures(player).has(uid):
@@ -474,6 +569,7 @@ func select_creature(player: int, uid: int) -> Error:
 
 ## Единственный вход из физики. slot -1 = промах/вылет.
 func report_landing(uid: int, slot: int) -> void:
+	_trace("report_landing", [uid, slot])
 	if state.phase != Phase.AWAIT_LANDING or uid != _pending_uid:
 		return
 	var player: int = _turn_player
@@ -559,6 +655,7 @@ func _to_used(uid: int, reason: StringName) -> void:
 
 ## Сыграть способность: в бою — в свой черёд обмена; до броска и после приземления — прикрепить к своему существу.
 func play_ability(player: int, card_id: StringName) -> Error:
+	_trace("play_ability", [player, card_id])
 	var ph: int = state.phase
 	if (ph != Phase.ABILITY_WINDOW and ph != Phase.AWAIT_LANDING and ph != Phase.AFTER_LANDING) or player != state.active_player:
 		return ERR_UNAUTHORIZED
@@ -660,6 +757,7 @@ func _swap_fighter(side: int) -> void:
 ## Пас: в бою — пропуск хода обмена (если соперник сыграет, можно ответить снова; спасовали оба подряд — бой
 ## решается); после приземления — конец хода.
 func pass_ability(player: int) -> Error:
+	_trace("pass_ability", [player])
 	if player != state.active_player:
 		return ERR_UNAUTHORIZED
 	if state.phase == Phase.AFTER_LANDING:
@@ -797,21 +895,41 @@ func _start_battle(atk_uid: int, def_uid: int, slot: int) -> void:
 	_b_turn = 0  # обмен начинает игрок, чей ход (он атакует)
 	state.phase = Phase.ABILITY_WINDOW
 	_ev(&"battle_started", [slot, atk_uid, def_uid])
-	# ворота открываются в начале боя, ловушка срабатывает сразу
-	var gs: SlotState = state.slots[slot]
+	if not state.manual_gates:
+		_reveal_battle_gate()
+	_open_window()
+	_flush()
+
+
+## Ворота открывает их владелец в свой ответ, только пока идёт бой.
+func can_reveal_gate(player: int) -> bool:
+	return state.phase == Phase.ABILITY_WINDOW and _b_slot >= 0 and state.active_player == player and state.slots[_b_slot].card_owner == player and not state.slots[_b_slot].revealed
+
+
+func reveal_gate(player: int) -> Error:
+	_trace("reveal_gate", [player])
+	if not can_reveal_gate(player):
+		return ERR_UNAUTHORIZED
+	_reveal_battle_gate()
+	_b_passed = [false, false]
+	_open_window()
+	_flush()
+	return OK
+
+
+func _reveal_battle_gate() -> void:
+	var gs: SlotState = state.slots[_b_slot]
 	gs.revealed = true
-	_ev(&"card_revealed", [slot, gs.card_id])
+	_ev(&"card_revealed", [_b_slot, gs.card_id])
 	var gc: CardDef = CardDB.card(gs.card_id)
 	if CardEffects.is_gate_trap(gc):
-		_ev(&"gate_trap_triggered", [slot, gc.id, gc.effect_id])
+		_ev(&"gate_trap_triggered", [_b_slot, gc.id, gc.effect_id])
 	if CardEffects.is_effect(gc, &"fallen_call"):
 		# «Зов павших»: все выбывшие обеих сторон возвращаются в игру (в зону использованных)
 		for p in range(2):
 			for u in state.players[p].creature_uids:
 				if not state.creatures[u].alive:
 					_revive(u)
-	_open_window()
-	_flush()
 
 
 ## Игрок стороны боя (0 — атакующий, 1 — защитник).
@@ -829,7 +947,7 @@ func _open_window() -> void:
 		state.active_player = player
 		state.phase = Phase.ABILITY_WINDOW
 		var options: Array = [] if _b_passed[side] else legal_abilities(player)
-		if options.is_empty():
+		if options.is_empty() and (_b_passed[side] or not can_reveal_gate(player)):
 			_b_passed[side] = true
 			if _b_passed[1 - side]:
 				break
@@ -919,8 +1037,9 @@ func _resolve() -> void:
 		if r.recall[side] != &"":
 			var ps: PlayerState = state.players[owners[side]]
 			var back: Array = []
-			for id in ps.abilities_used:
-				if id != r.recall[side]:
+			for play in r.plays:
+				var id := StringName(play[1])
+				if int(play[0]) == side and id != r.recall[side] and ps.abilities_used.has(id) and not back.has(id):
 					back.append(id)
 			if not back.is_empty():
 				for id in back:

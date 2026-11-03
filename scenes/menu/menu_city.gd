@@ -79,6 +79,7 @@ func _ready() -> void:
 	orbs.name = "Orbs"
 	add_child(orbs)
 	cam = Camera3D.new()
+	cam.environment = env
 	cam.fov = 50.0
 	cam.near = 1.0
 	cam.far = 9000.0

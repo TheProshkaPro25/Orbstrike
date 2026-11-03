@@ -1,5 +1,9 @@
 class_name Arena
 extends Node3D
+const Locations := preload("res://data/arena_locations.gd")
+const Landscape := preload("res://scenes/arena_landscape.gd")
+@export_range(0, 2) var location_id := 0
+const ElementIcon := preload("res://scenes/element_icon.gd")
 ## Арена: бескрайнее поле боя (пол уходит за горизонт), 6 слотов ворот (сетка 2x3) в освещённом центре,
 ## дальние ориентиры для масштаба. Слоты 0..2 дальний ряд (z<0), 3..5 ближний.
 ## Карты крупные и портретные (как карты ворот): в бою на одной карте помещаются два существа
@@ -34,15 +38,20 @@ const GROUND_SIZE := 5000.0
 const PHYS_HALF := 130.0
 const WALL_HEIGHT := 6.0
 
+var _floor_mat: ShaderMaterial
+var _wave_tw: Tween
 var _decor: Node3D
 ## Парящие осколки: [узел, базовая высота, фаза, скорость вращения].
 var _floaters: Array = []
 
 var _motes: GPUParticles3D
 var _crystal_lights: Array[OmniLight3D] = []
+var _sanctuary_lights: Array[Light3D] = []
+var _sanctuary_shafts: Array[MeshInstance3D] = []
 var _floaters_on := true
 
 signal slot_clicked(slot: int)
+signal invalid_pick
 
 var markers: Array[Marker3D] = []
 ## Силуэты мест под ворота (по слоту), видны только при выборе места.
@@ -66,6 +75,26 @@ func apply_quality() -> void:
 		_motes.amount = n
 	for l in _crystal_lights:
 		l.visible = bool(GraphicsSettings.param("lights"))
+	var low := GraphicsSettings.current() == GraphicsSettings.Level.LOW
+	var high := GraphicsSettings.current() == GraphicsSettings.Level.HIGH
+	_floor_mat.set_shader_parameter("max_quality", 1.0 if high else 0.0)
+	for l in _sanctuary_lights:
+		l.visible = l is SpotLight3D or bool(GraphicsSettings.param("lights"))
+		if l is SpotLight3D:
+			if l.has_meta("window_projector"):
+				l.visible = not low or int(l.get_meta("window_projector")) < 2
+				l.shadow_enabled = true # Матрица проектора требует карту теней.
+				l.shadow_caster_mask = 0 if low else 1
+				l.shadow_bias = .018 if high else .03
+				l.shadow_normal_bias = .18 if high else .35
+				l.shadow_blur = 1.2 if high else .8
+				l.light_size = .6 if high else 0.0
+				preload("res://scenes/sanctuary_window_light.gd").apply_quality(l, high)
+			else:
+				l.shadow_enabled = bool(l.get_meta("moon_shadow", false)) and not low
+				l.light_size = 1.2 if high else 0.0
+	for shaft in _sanctuary_shafts:
+		shaft.visible = not low or int(shaft.get_meta("window_projector", 0)) < 2
 	_floaters_on = bool(GraphicsSettings.param("floaters"))
 	set_process(_floaters_on and not _floaters.is_empty())
 
@@ -90,7 +119,7 @@ func _build() -> void:
 
 	var mat := PhysicsMaterial.new()
 	mat.friction = 0.6
-	mat.bounce = 0.15
+	mat.bounce = 0.0
 
 	# Физический пол (верх на y = 0) и невидимые стены за горизонтом слотов
 	var floor_body := StaticBody3D.new()
@@ -125,6 +154,12 @@ func _build() -> void:
 	fsm.shader = Shader.new()
 	fsm.shader.code = FLOOR_SHADER
 	fsm.set_shader_parameter("world", FIELD)
+	var location := Locations.definition(location_id)
+	fsm.set_shader_parameter("stone_color", Color(location.stone).linear_to_srgb())
+	fsm.set_shader_parameter("far_color", Color(location.far).linear_to_srgb())
+	fsm.set_shader_parameter("trim_color", Color(location.trim).linear_to_srgb())
+	fsm.set_shader_parameter("location_style", location_id)
+	_floor_mat = fsm
 	fmesh.material_override = fsm
 	fmesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(fmesh)
@@ -138,9 +173,21 @@ func _build() -> void:
 		add_child(m)
 		markers.append(m)
 		_highlights.append(_make_ghost(i, m.position))
-	_build_decor()
-	_build_sanctuary()
+	Landscape.build(self, location_id)
+	_build_element_seals()
 	_build_motes()
+
+
+## Волна идёт по самой поверхности; карты, существа и интерфейс остаются читаемыми.
+func element_wave(origin: Vector3, color: Color, strength: float = 1.0) -> void:
+	if _wave_tw != null and _wave_tw.is_valid():
+		_wave_tw.kill()
+	_floor_mat.set_shader_parameter("wave_origin", Vector2(origin.x, origin.z))
+	_floor_mat.set_shader_parameter("wave_color", color)
+	_wave_tw = create_tween()
+	_wave_tw.tween_method(func(t: float) -> void:
+		_floor_mat.set_shader_parameter("wave_radius", t * 155.0)
+		_floor_mat.set_shader_parameter("wave_strength", (1.0 - t) * strength), 0.0, 1.0, 1.8)
 
 
 func _local_slot_pos(i: int) -> Vector3:
@@ -249,6 +296,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			if _lit.has(s):
 				get_viewport().set_input_as_handled()
 				slot_clicked.emit(s)
+			else:
+				invalid_pick.emit()
 
 
 ## Подсвеченный слот под точкой экрана (луч камеры до пола), -1 — мимо.
@@ -318,86 +367,74 @@ static func _stone(tint: Color, rough: float = 0.8, scale: float = 0.6, bump: fl
 ## в цвет горизонта — края плоскости не видно (остальное прячет туман окружения).
 const FLOOR_SHADER := """
 shader_type spatial;
-uniform float world = 3.5;
-uniform vec4 line_col : source_color = vec4(0.35, 0.75, 1.0, 1.0);
-uniform vec4 line_col2 : source_color = vec4(0.75, 0.45, 1.0, 1.0);
-uniform vec4 far_col : source_color = vec4(0.035, 0.03, 0.06, 1.0);
+uniform float world = 7.875;
+uniform vec4 stone_color : source_color = vec4(0.042, 0.064, 0.082, 1.0);
+uniform vec4 far_color : source_color = vec4(0.023, 0.035, 0.052, 1.0);
+uniform vec4 trim_color : source_color = vec4(0.45, 0.36, 0.21, 1.0);
+uniform int location_style = 0;
+uniform float max_quality = 0.0;
+uniform vec2 wave_origin = vec2(0.0);
+uniform vec4 wave_color : source_color = vec4(0.4, 0.8, 1.0, 1.0);
+uniform float wave_radius = -20.0;
+uniform float wave_strength = 0.0;
 varying vec3 wp;
-
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
-float vnoise(vec2 p) {
-	vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f);
-	return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y);
+float line(float d, float w) { return 1.0 - smoothstep(w, w + max(fwidth(d), 0.001), abs(d)); }
+vec3 element(float i) {
+	if (i < 0.5) return vec3(0.95, 0.28, 0.10);
+	if (i < 1.5) return vec3(0.20, 0.80, 0.65);
+	if (i < 2.5) return vec3(1.0, 0.83, 0.38);
+	if (i < 3.5) return vec3(0.72, 0.48, 0.24);
+	if (i < 4.5) return vec3(0.64, 0.36, 0.85);
+	return vec3(0.16, 0.57, 0.95);
 }
-// линия по расстоянию d с шириной w (в единицах поля) и сглаживанием по экранной производной
-float aline(float d, float w) {
-	float fw = fwidth(d) * 1.2;
-	return 1.0 - smoothstep(w, w + fw, abs(d));
-}
-float line_seg(vec2 p, vec2 a, vec2 b, float w) {
-	vec2 pa = p - a, ba = b - a;
-	float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
-	return aline(length(pa - ba * h), w);
-}
-float ring(float r, float rad, float w) { return aline(r - rad, w); }
-
 void vertex() { wp = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz; }
-
 void fragment() {
 	vec2 p = wp.xz / world;
 	float r = length(p);
-	float ang = atan(p.y, p.x);
-	float near = smoothstep(9.0, 5.5, r);          // освещённая зона ворот
-	float detail = smoothstep(60.0, 12.0, r);      // мелкие детали гаснут вдали (без ряби)
-	// камень: крупные пятна + плиты 2x2 в центре
-	float big = vnoise(p * 0.08) * 0.6 + vnoise(p * 0.31) * 0.4;
-	vec2 tile = floor(p / 2.0);
-	vec2 tf = fract(p / 2.0);
-	float seam = (1.0 - smoothstep(0.0, 0.015 + fwidth(p.x) * 0.5, min(min(tf.x, 1.0 - tf.x), min(tf.y, 1.0 - tf.y)))) * near;
-	float tone = mix(0.75 + 0.5 * big, 0.85 + 0.3 * hash(tile), near);
-	vec3 base = mix(vec3(0.03, 0.03, 0.042), vec3(0.055, 0.058, 0.07), near) * tone;
-	base *= 1.0 - seam * 0.6;
-	// трещины-жилы в дальнем камне
-	float vein = aline(vnoise(p * 0.12) - 0.5, 0.012) * (1.0 - near) * detail;
-	// круг призыва (как раньше: кольца, руны, гексаграмма) — считается только внутри круга (r < 6.3):
-	// снаружи всё это нули, а пол занимает большую часть кадра
-	float g = 0.0;
-	if (r < 6.3) {
-		float circ = ring(r, 2.3, 0.03) + ring(r, 3.5, 0.045) + ring(r, 3.75, 0.02) + ring(r, 5.6, 0.035) + ring(r, 5.85, 0.015);
-		float runes = step(0.55, fract(ang * 24.0 / 6.28318)) * step(3.55, r) * step(r, 3.7);
-		runes += step(0.7, fract(ang * 48.0 / 6.28318 + 0.5)) * step(5.63, r) * step(r, 5.8) * 0.8;
-		float hexa = 0.0;
-		for (int i = 0; i < 6; i++) {
-			float a0 = float(i) * 1.0472 + 0.5236;
-			float a2 = a0 + 2.0944;
-			hexa += line_seg(p, vec2(cos(a0), sin(a0)) * 5.6, vec2(cos(a2), sin(a2)) * 5.6, 0.03);
-		}
-		float spokes = aline(sin(ang * 6.0) * r, 0.006) * step(2.3, r) * step(r, 3.5);
-		g = clamp(circ + runes + hexa * 0.7 + spokes * 0.6, 0.0, 1.0);
+	float angle = atan(p.y, p.x);
+	float center = 1.0 - smoothstep(6.2, 8.8, r);
+	vec2 tile = floor((p + 0.3) / 1.4);
+	vec2 uv = abs(fract((p + 0.3) / 1.4) - 0.5);
+	float seam = line(max(uv.x, uv.y) - 0.5, 0.005) * center;
+	float grain = hash(tile) * 0.014;
+	vec3 stone = mix(far_color.rgb, stone_color.rgb + grain * 0.4, center);
+	stone *= 1.0 - seam * 0.30;
+	float ring = line(r - 6.5, 0.025) + line(r - 6.68, 0.012) + line(r - 7.5, 0.025);
+	float ticks = line(sin(angle * 48.0) * r, 0.026) * step(6.85, r) * step(r, 7.08);
+	float sector = floor((angle + 3.141593) / 1.047198);
+	vec3 accent = element(sector);
+	float arcs = line(r - 7.2, 0.065) * smoothstep(0.1, 0.2, fract((angle + 3.141593) / 1.047198))
+		* (1.0 - smoothstep(0.80, 0.90, fract((angle + 3.141593) / 1.047198)));
+	// Небольшая центральная печать, свободная от карт.
+	float seal = (line(r - 0.95, 0.016) + line(r - 1.15, 0.012)) * 0.35;
+	float far = (line(r - 12.0, 0.018) + line(r - 18.0, 0.018)) * 0.10;
+	vec3 brass = trim_color.rgb;
+	float water = 0.0;
+	float ripple = 0.0;
+	if (location_style == 0) {
+		float veins = pow(.5 + .5 * sin(wp.x * .19 + wp.z * .14 + sin(wp.z * .075) * 2.8), 16.0);
+		stone = mix(far_color.rgb, stone_color.rgb * (.94 + hash(tile) * .10), center * .7 + .3);
+		stone *= 1.0 - seam * .17 - veins * .045;
+		float compass = line(length(wp.xz) - (10.0 + 2.4 * cos(angle * 8.0)), .07);
+		compass += line(length(wp.xz) - 14.3, .08) + line(length(wp.xz) - 14.7, .035);
+		stone = mix(stone, brass * .8, clamp(compass,0.0,1.0) * .8);
 	}
-	// линии силы: 24 луча от центра и кольца каждые 6 единиц за пределами круга
-	float sector = ang * 24.0 / 6.28318;
-	float sid = floor(sector + 0.5);
-	float ray = aline((fract(sector + 0.5) - 0.5) * 6.28318 / 24.0 * r, 0.025 + 0.0015 * r);
-	float main_ray = step(0.5, fract(sid / 3.0 + 0.1)) ;  // каждый третий луч ярче
-	float rings = aline((fract(r / 6.0 + 0.5) - 0.5) * 6.0, 0.02 + 0.0008 * r) * detail;
-	float outside = smoothstep(5.9, 6.6, r);
-	float far_fade = smoothstep(220.0, 15.0, r);
-	// волны свечения бегут по лучам наружу, у каждого луча своя фаза
-	float pulse = pow(0.5 + 0.5 * sin(r * 0.22 - TIME * 1.4 + hash(vec2(sid, 1.0)) * 6.28), 10.0);
-	float force = (ray * (0.25 + 0.5 * main_ray) * (0.35 + 1.6 * pulse) + rings * 0.25) * outside * far_fade;
-	// волна в круге призыва
-	float wave = 0.35 + 0.65 * pow(0.5 + 0.5 * sin(r * 1.6 - TIME * 1.3), 4.0);
-	vec3 lc = mix(line_col.rgb, line_col2.rgb, 0.5 + 0.5 * sin(ang * 3.0 + TIME * 0.2));
-	vec3 alb = mix(base, lc * 0.35, g * 0.5);
-	alb += vec3(0.04, 0.06, 0.09) * vein;
-	// к горизонту — ровный цвет дали
-	float horizon = smoothstep(40.0, 400.0, r);
-	ALBEDO = mix(alb, far_col.rgb, horizon);
-	EMISSION = lc * g * (0.6 + 1.6 * wave) + lc * force * 0.45 + lc * vein * 0.08
-		+ vec3(1.0, 0.82, 0.55) * 0.05 * smoothstep(9.5, 0.0, r);
-	METALLIC = mix(0.08, 0.6, near);
-	ROUGHNESS = mix(0.9, 0.35 + 0.3 * hash(tile + 3.1) - seam * 0.1, near);
+	if (location_style == 2) {
+		water = smoothstep(7.5, 8.1, r);
+		ripple = pow(0.5 + 0.5 * sin(p.y * 2.4 + sin(p.x * 0.8 + TIME * 0.15) * 0.85 - TIME * 0.4), 18.0)
+			* (0.3 + 0.7 * pow(0.5 + 0.5 * sin(p.x * 0.45 + p.y * .2), 2.0));
+		ripple *= 1.0 - smoothstep(14.0, 55.0, r);
+		stone = mix(stone, far_color.rgb + vec3(0.015, 0.035, 0.050) * ripple, water);
+	}
+	float d = length(wp.xz - wave_origin);
+	float front = exp(-pow((d - wave_radius) / 2.6, 2.0)) * wave_strength;
+	float wake = (1.0 - smoothstep(wave_radius - 9.0, wave_radius, d)) * exp(-abs(d - wave_radius) / 12.0) * wave_strength * 0.12;
+	ALBEDO = stone + brass * (ring * 0.22 + seal + ticks * 0.15) + wave_color.rgb * (front * 0.18 + wake);
+	EMISSION = brass * (ring * 0.25 + seal * 0.2 + ticks * 0.22 + far)
+		+ accent * arcs * (0.95 + sin(TIME * 0.45) * 0.07) + wave_color.rgb * (front * 0.85 + wake) + vec3(0.018, 0.048, 0.065) * ripple * water;
+	METALLIC = 0.25;
+	ROUGHNESS = mix(mix(0.72, location_style == 0 ? 0.46 : 0.72, max_quality), mix(0.50, 0.28, max_quality), water);
 }
 """
 
@@ -457,7 +494,7 @@ void fragment() {
 	vec3 c = mix(col.rgb, hover_col.rgb, hover);
 	float a = line * (0.75 + 0.25 * hover) * breathe + line * run * 0.6 + glow * (0.5 + 0.6 * hover) + brk * (0.6 + 0.4 * hover)
 		+ inside * (0.07 + 0.13 * hover + inner * (0.22 + 0.25 * hover) + wline * (0.14 + 0.2 * hover));
-	ALBEDO = c * (1.2 + 1.3 * hover) + vec3(run * line * 0.6);
+	ALBEDO = c * (0.72 + 0.6 * hover) + vec3(run * line * 0.6);
 	ALPHA = clamp(a * vis, 0.0, 1.0);
 }
 """
@@ -517,7 +554,7 @@ func _mi(mesh: Mesh, mat: Material, pos: Vector3, parent: Node = null) -> MeshIn
 	mi.mesh = mesh
 	mi.material_override = mat
 	mi.position = pos
-	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if location_id == 0 else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	(parent if parent != null else (_decor if _decor != null else self)).add_child(mi)
 	return mi
 
@@ -546,7 +583,7 @@ func _flush_static() -> void:
 		var mmi := MultiMeshInstance3D.new()
 		mmi.multimesh = mm
 		mmi.material_override = key[1]
-		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if location_id == 0 else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		_decor.add_child(mmi)
 	_static_sets.clear()
 
@@ -627,169 +664,15 @@ func _build_motes() -> void:
 	_motes = p
 
 
-## Дальние ориентиры (в мировых единицах): кольцо кристаллов стихий вокруг ворот, руины,
-## парящие острова и осколки, столбы света, силуэты гор у горизонта. Всё без теней и коллизий.
-func _build_decor() -> void:
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 4242
-	var stone := _stone(Color(0.30, 0.30, 0.34), 0.8, 0.12, 0.6)
-	var dark := _stone(Color(0.12, 0.12, 0.15), 0.9, 0.08, 0.8)
-
-	# Свет над зоной ворот: центр — освещённая «сцена», даль тонет в полутьме
-	var spot := SpotLight3D.new()
-	spot.position = Vector3(0, 95.0, 6.0)
-	spot.rotation_degrees = Vector3(-90.0, 0.0, 0.0)
-	spot.spot_range = 150.0
-	spot.spot_angle = 32.0
-	spot.spot_angle_attenuation = 1.6
-	spot.light_energy = 1.4
-	spot.light_color = Color(1.0, 0.9, 0.78)
-	_decor.add_child(spot)
-
-	# Кристаллы стихий — средний план вокруг ворот (дают масштаб существам и шару)
-	for k in range(6):
-		var a: float = TAU * (k + 0.5) / 6.0
-		var r: float = 72.0 + 6.0 * (k % 2)
-		_crystal(Vector3(cos(a) * r, 0.0, sin(a) * r), VisualUtil.attr_color(k).lightened(0.1), 1.8 + 0.3 * (k % 3), 100 + k, true)
-
-	# Руины: обломки колонн и арок группами на дальнем плане
-	var col_mesh := CylinderMesh.new()
-	col_mesh.top_radius = 1.0
-	col_mesh.bottom_radius = 1.15
-	col_mesh.height = 1.0
-	col_mesh.radial_segments = 10
-	col_mesh.rings = 1
-	var block := BoxMesh.new()
-	for g in range(7):
-		var ga: float = TAU * g / 7.0 + rng.randf_range(-0.2, 0.2)
-		var gr: float = rng.randf_range(125.0, 200.0)
-		var gc := Vector3(cos(ga) * gr, 0.0, sin(ga) * gr)
-		var s: float = rng.randf_range(2.2, 3.4)
-		for c in range(rng.randi_range(3, 5)):
-			var off := Vector3(rng.randf_range(-14, 14), 0, rng.randf_range(-14, 14))
-			var h: float = rng.randf_range(6.0, 26.0) * (1.0 if c > 0 else 1.4)
-			_static(col_mesh, stone, gc + off + Vector3(0, h * 0.5 - 0.5, 0), Vector3(s, h, s),
-				Vector3(rng.randf_range(-0.12, 0.12), rng.randf() * TAU, rng.randf_range(-0.12, 0.12)))
-		# перекладина-арка на двух колоннах
-		if g % 2 == 0:
-			var span: float = rng.randf_range(14.0, 20.0)
-			var yaw: float = rng.randf() * TAU
-			var axis := Vector3(cos(yaw), 0, sin(yaw))
-			for side in [-1.0, 1.0]:
-				_static(col_mesh, stone, gc + axis * span * 0.5 * side + Vector3(0, 11.0, 0), Vector3(s, 23.0, s), Vector3.ZERO)
-			_static(block, dark, gc + Vector3(0, 23.5, 0), Vector3(span + s * 3.0, 3.0, s * 2.4), Vector3(0.0, -yaw, rng.randf_range(-0.08, 0.08)))
-		# обвалившиеся блоки
-		for b in range(4):
-			var bp := gc + Vector3(rng.randf_range(-18, 18), 1.0, rng.randf_range(-18, 18))
-			var bs := Vector3(rng.randf_range(3, 8), rng.randf_range(2, 4), rng.randf_range(3, 7))
-			_static(block, dark, bp, bs, Vector3(rng.randf_range(-0.3, 0.3), rng.randf() * TAU, rng.randf_range(-0.3, 0.3)))
-
-	# Парящие острова (скала-перевёрнутый конус с кристаллом сверху) и осколки
-	var cone := CylinderMesh.new()
-	cone.top_radius = 1.0
-	cone.bottom_radius = 0.05
-	cone.height = 1.0
-	cone.radial_segments = 7
-	cone.rings = 2
-	var shard := CylinderMesh.new()
-	shard.top_radius = 0.0
-	shard.bottom_radius = 0.5
-	shard.height = 1.0
-	shard.radial_segments = 5
-	shard.rings = 1
-	for k in range(9):
-		var a: float = rng.randf() * TAU
-		var r: float = rng.randf_range(150.0, 340.0)
-		var y: float = rng.randf_range(25.0, 75.0) * (r / 200.0)
-		var isl := Node3D.new()
-		isl.position = Vector3(cos(a) * r, y, sin(a) * r)
-		_decor.add_child(isl)
-		var w: float = rng.randf_range(10.0, 26.0)
-		var rock := _mi(cone, stone, Vector3(0, -w * 0.5, 0), isl)
-		rock.scale = Vector3(w, w * rng.randf_range(0.9, 1.5), w * rng.randf_range(0.7, 1.0))
-		var cc: Color = VisualUtil.attr_color(k % 6)
-		var cm := _glow_mat(cc, 2.4)
-		for q in range(3):
-			var sh := _mi(shard, cm, Vector3(rng.randf_range(-w, w) * 0.35, 0.0, rng.randf_range(-w, w) * 0.3), isl)
-			var sh_h: float = w * rng.randf_range(0.4, 0.9)
-			sh.scale = Vector3(w * 0.12, sh_h, w * 0.12)
-			sh.position.y = sh_h * 0.5
-			sh.rotation = Vector3(rng.randf_range(-0.3, 0.3), rng.randf() * TAU, rng.randf_range(-0.3, 0.3))
-		_floaters.append([isl, y, rng.randf() * TAU, rng.randf_range(-0.03, 0.03)])
-
-	# Столбы света стихий вдали
-	var beam_sh := Shader.new()
-	beam_sh.code = BEAM_SHADER
-	var beam := CylinderMesh.new()
-	beam.top_radius = 1.0
-	beam.bottom_radius = 1.0
-	beam.height = 1.0
-	beam.cap_top = false
-	beam.cap_bottom = false
-	beam.radial_segments = 16
-	for k in range(6):
-		var a: float = TAU * k / 6.0 + 0.35 + rng.randf_range(-0.15, 0.15)
-		var r: float = rng.randf_range(260.0, 420.0)
-		var bmat := ShaderMaterial.new()
-		bmat.shader = beam_sh
-		bmat.set_shader_parameter("col", VisualUtil.attr_color(k).lightened(0.15))
-		var bh := 900.0
-		var bw: float = rng.randf_range(6.0, 11.0)
-		var bi := _mi(beam, bmat, Vector3(cos(a) * r, bh * 0.5 - 5.0, sin(a) * r))
-		bi.scale = Vector3(bw, bh, bw)
-
-	# Силуэты гор у горизонта
-	var mount := CylinderMesh.new()
-	mount.top_radius = 0.04
-	mount.bottom_radius = 1.0
-	mount.height = 1.0
-	mount.radial_segments = 6
-	mount.rings = 2
-	var mmat := StandardMaterial3D.new()
-	mmat.albedo_color = Color(0.05, 0.045, 0.08)
-	mmat.roughness = 1.0
-	for k in range(22):
-		var a: float = TAU * k / 22.0 + rng.randf_range(-0.1, 0.1)
-		var r: float = rng.randf_range(850.0, 1300.0)
-		var mh: float = rng.randf_range(90.0, 260.0)
-		var ms := Vector3(rng.randf_range(140.0, 260.0), mh, rng.randf_range(120.0, 220.0))
-		_static(mount, mmat, Vector3(cos(a) * r, mh * 0.5 - 10.0, sin(a) * r), ms, Vector3(0.0, rng.randf() * TAU, 0.0))
-	_flush_static()
-
-
-## Шесть святилищ стихий обрамляют поле; декор за пределами траекторий броска.
-func _build_sanctuary() -> void:
-	var stone := _stone(Color(0.24, 0.29, 0.34), 0.9, 0.15, 0.3)
-	for i in range(6):
-		var a: float = TAU * (float(i) + 0.5) / 6.0
-		var center := Vector3(cos(a) * 103.0, 0, sin(a) * 103.0)
-		var color := VisualUtil.attr_color(i).lightened(0.15)
-		var glow := _glow_mat(color, 1.15)
-		var base := CylinderMesh.new()
-		base.top_radius = 7.0
-		base.bottom_radius = 8.2
-		base.height = 0.8
-		base.radial_segments = 12
-		_mi(base, stone, center + Vector3(0, 0.4, 0))
-		var ring := TorusMesh.new()
-		ring.inner_radius = 5.5
-		ring.outer_radius = 5.75
-		ring.rings = 32
-		ring.ring_segments = 6
-		_mi(ring, glow, center + Vector3(0, 0.9, 0))
-		var tangent := Vector3(-sin(a), 0, cos(a))
-		for side in [-1.0, 1.0]:
-			var pillar := BoxMesh.new()
-			pillar.size = Vector3(2.4, 14.0, 2.4)
-			var pos: Vector3 = center + tangent * side * 5.8 + Vector3(0, 7.4, 0)
-			var mi := _mi(pillar, stone, pos)
-			mi.rotation.y = -a
-			var rune := BoxMesh.new()
-			rune.size = Vector3(0.18, 10.0, 2.5)
-			var line := _mi(rune, glow, pos)
-			line.rotation.y = -a
-		var lintel := BoxMesh.new()
-		lintel.size = Vector3(14.0, 1.4, 3.0)
-		var top := _mi(lintel, stone, center + Vector3(0, 14.7, 0))
-		top.rotation.y = -a
-		_crystal(center + Vector3(0, 2.4, 0), color, 5.5, 700 + i, false)
+func _build_element_seals() -> void:
+	for element in range(6):
+		var angle := TAU * (element + 0.5) / 6.0
+		var pos := Vector3(cos(angle) * 56.5, 0.06, sin(angle) * 56.5)
+		var plane := PlaneMesh.new()
+		plane.size = Vector2(4.8, 4.8)
+		var material := StandardMaterial3D.new()
+		material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		material.albedo_texture = ElementIcon.badge(element)
+		material.albedo_color = Color(0.8, 0.8, 0.8, 0.75)
+		_mi(plane, material, pos)

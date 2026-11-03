@@ -1,4 +1,5 @@
 extends SceneTree
+const ModelTestCleanup := preload("res://scenes/model_lifetime.gd")
 ## A turning stance must use the same coordinate frame for anchors, poles and feet.
 const ReviewState := preload("res://tools/model_review_state.gd")
 const EPSILON := 0.00001
@@ -68,7 +69,7 @@ func sample(id: StringName, yaw: float, parent_yaw: float, stride: float = -1.0,
 	for bone in range(skeleton.get_bone_count()):
 		poses.append(skeleton.get_bone_global_pose(bone))
 		bone_names.append(skeleton.get_bone_name(bone))
-	parent.free()
+	ModelTestCleanup.release(parent, self)
 	return poses
 
 func run() -> void:

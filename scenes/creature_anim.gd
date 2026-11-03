@@ -7,8 +7,13 @@ signal strike_contact
 signal action_finished(action: StringName)
 
 const BodySupport := preload("res://scenes/creature_support.gd")
+const DragnarTorso := preload("res://scenes/dragnar_torso.gd")
+const GrifalonFlight := preload("res://scenes/grifalon_flight.gd")
+const GrifalonTail := preload("res://scenes/grifalon_tail.gd")
 var _support
 var _cloth
+## Диагностика синхронной подготовки (мс), вне игрового интерфейса.
+var preparation_ms: Dictionary = {}
 
 const FLYERS := ["bird", "flying_eye", "dragon"]
 const TEMPO := [1.04, 1.08, 1.0, 0.92, 0.96, 0.98]
@@ -57,6 +62,7 @@ func _ready() -> void:
 
 
 func set_model(model: Node3D, d: CreatureDef) -> void:
+	var preparation_started := Time.get_ticks_usec()
 	add_child(model)
 	_height = float(model.get_meta("height", 1.5))
 	_extent = float(model.get_meta("extent", _height))
@@ -69,6 +75,7 @@ func set_model(model: Node3D, d: CreatureDef) -> void:
 	_meshes.clear()
 	_player = null
 	_collect(model)
+	var animations_started := Time.get_ticks_usec()
 	if _player != null:
 		# Библиотеки экземпляра: сглаживание не меняет общий ресурс и соседних бойцов.
 		for name in _player.get_animation_library_list():
@@ -85,17 +92,28 @@ func set_model(model: Node3D, d: CreatureDef) -> void:
 					_prepare_idle_loop(animation)
 				for track in range(animation.get_track_count()):
 					animation.track_set_interpolation_loop_wrap(track, clip == &"idle")
+				# Both species authored a stationary pelvis below a moving chest.
+				if _species in [&"dragnar", &"grifalon"]:
+					DragnarTorso.prepare(animation, _player, clip in [&"idle", &"attack"])
+				if _species == &"grifalon" and clip in [&"idle", &"attack", &"stance", &"roar", &"hit"]:
+					GrifalonTail.prepare(animation, _player)
 		_player.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
 		_player.speed_scale = 1.0
 		_player.playback_default_blend_time = 0.2
+	var support_started := Time.get_ticks_usec()
 	reset()
 	# У шестирукого собственные опорные ключи и смена ноги в клипах.
 	_support = null
 	if _species != &"likorez":
 		_support = BodySupport.new()
 		_support.configure(self, model)
+	var cloth_started := Time.get_ticks_usec()
 	if _species == &"ratnik":
 		_cloth = CreatureCloth.attach(model)
+	preparation_ms = {"animations": (support_started - animations_started) / 1000.0,
+		"support": (cloth_started - support_started) / 1000.0,
+		"cloth": (Time.get_ticks_usec() - cloth_started) / 1000.0,
+		"total": (Time.get_ticks_usec() - preparation_started) / 1000.0}
 
 
 func get_height() -> float:
@@ -249,7 +267,9 @@ func _process(delta: float) -> void:
 		elif _player != null:
 			_player.advance(delta)
 	_apply(_clock)
-	if _support != null: _support.apply(delta)
+	if _support != null:
+		if _species == &"grifalon": GrifalonFlight.apply(_support)
+		else: _support.apply(delta)
 
 
 func _apply(now: float) -> void:

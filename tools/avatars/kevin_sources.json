@@ -1,0 +1,8 @@
+{
+  "author": "Kevin Iglesias",
+  "license_page": "https://www.keviniglesias.com/#license",
+  "sources": [
+    {"name":"throw", "page":"https://kevdev.itch.io/human-throwing-animations-free", "upload_id":"15613988", "sha256":"0d04fca026bd870c0348566e8c3e17208ab0de1593e38c5bf337e2598857f1cf"},
+    {"name":"spell", "page":"https://kevdev.itch.io/human-spellcasting-animations-free", "upload_id":"14261541", "sha256":"974918920b0276f94e0c750fde5aeb8ea2aca2e2051a77f553289f85d8770a95"}
+  ]
+}

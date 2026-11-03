@@ -1,0 +1,25 @@
+{
+  "inputs": {
+    "tools/avatars/build_street_set.gd": "80af6f398c74227c88b9fca1e3ed1042bb83560eb49f83d7e9c3f76510ca2ef4",
+    "tools/avatars/build_wardrobe_variants.gd": "2f7a4d8e4caddea955e19123940325ee6b4739ac6e04cfb88fe222668f560524",
+    "tools/avatars/prepare_vrm_parts.gd": "16fc40164703c5518dd3ee64c503f283a7b1e61bef73fdcd17c53449658944f6",
+    "assets/avatars/vrm/parts/body_0_2.res": "022d193aeafe1c1f2a198c851f3da82d084864d1fde917960be56411bdb7bcb0",
+    "assets/avatars/vrm/parts/body_1_3.res": "d2d86b5fd35668bf12281cf0979da3b66247cebfba771871fa4b06f252ee4be1",
+    "assets/avatars/vrm/parts/hair_0_0.res": "1e57df43df0fcfcf83d4344723e1e8de7dbaf3a713ab107f0c22fc39fdc9fa90",
+    "assets/avatars/vrm/parts/hair_1_0.res": "5f20d708c42edff102cdc345d3883789e2268dfc9dbee8dbddfc8776eeba15b9",
+    "assets/avatars/vrm/parts/skin_0.res": "5980dfd33df03c6d8f05d68e5042863f6bac5e13574b4ca78f6ea8a69cf71a99",
+    "assets/avatars/vrm/parts/skin_1.res": "8a4bb6a478f4e3ae605da1ec23516f7ca326af0f82a9cb9567415c036a0bdab6",
+    "assets/avatars/vrm/parts/wardrobe_cloth.res": "96c62a0b979a4cfe0cb394b9c505b9d54d35634857ef0704380c7da26a6c66e4",
+    "assets/avatars/vrm/Sakurada_Fumiriya.vrm": "d8fb05f33e377df028cb6b9d58c441ce68326c41fa23f6c735d40c65ae3dc710",
+    "assets/avatars/vrm/Vita.vrm": "f2bf78f28a24e2f75f5ca0b6c3b646654c394e4b03592dfaa0d0633ef0972b4d",
+    "assets/avatars/vrm/HairSample_Male.vrm": "7aeca142dabbc26ba0f5b9c998c8f3cb6df341287d67788427ac837223785a3f"
+  },
+  "outputs": {
+    "assets/avatars/street/bomber_0.res": "4db6714450aae23499a810859723611b430fa5e87fefa65cc2419527664a6620",
+    "assets/avatars/street/bomber_1.res": "8f70d7ab8756dea6af2d8cee0b4fb8b48a6737c9e5907b4112983eddaa906cf1",
+    "assets/avatars/street/ponytail_0.res": "a2977df6f539b2b60165161f3c0232fa048082d5cf953b35a9e4fa4ce775a9cc",
+    "assets/avatars/street/ponytail_1.res": "e41e4475fdc354bc355ce65d3005044c37969f981d0eb7fac2662ea9b5be9314",
+    "assets/avatars/street/case_0.res": "3e02eba4c81bd962a668675a09be9915748bfc718c3634408ae94873defdeebe",
+    "assets/avatars/street/case_1.res": "ef41d0f25ac739de555b051702145f79bee1b96670b8e5145fe887555b70a835"
+  }
+}

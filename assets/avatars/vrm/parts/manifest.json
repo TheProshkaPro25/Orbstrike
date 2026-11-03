@@ -1,0 +1,39 @@
+{
+  "generator": "tools/avatars/prepare_vrm_parts.gd",
+  "generator_sha256": "16fc40164703c5518dd3ee64c503f283a7b1e61bef73fdcd17c53449658944f6",
+  "engine": "Godot 4.7.2",
+  "model_sha256": {
+    "assets/avatars/vrm/HairSample_Female.vrm": "adfd242317aaabc773f31f7fff7b013979fbb5baa47e97427a78913d9cb4e979",
+    "assets/avatars/vrm/HairSample_Male.vrm": "7aeca142dabbc26ba0f5b9c998c8f3cb6df341287d67788427ac837223785a3f",
+    "assets/avatars/vrm/Sakurada_Fumiriya.vrm": "d8fb05f33e377df028cb6b9d58c441ce68326c41fa23f6c735d40c65ae3dc710",
+    "assets/avatars/vrm/Vita.vrm": "f2bf78f28a24e2f75f5ca0b6c3b646654c394e4b03592dfaa0d0633ef0972b4d",
+    "assets/avatars/vrm/Vivi.vrm": "eaf902e041a7a810f1423599ae75682f61184ab6ef0206da9a8ed9caa8ec3a9d"
+  },
+  "files": {
+    "body_0_0.res": "75eb3e35b767d7172f31c507f2b40c497fde93d1fc87e77aa39927ac1a752d12",
+    "body_0_1.res": "64e3c0bcb3426dac349ecc4e5f766052ab72497466b499859bcc4dd3449a32e2",
+    "body_1_0.res": "51f993670230d9e6eb55c56f2d761c0d6f16021bc0761b26c6f253dca9f831cd",
+    "body_1_1.res": "6dd3b1709f96e68ea5648292e3cab5247dddc964037128babc101e37196d203b",
+    "body_1_2.res": "a8b5c0193427406d05f3aaaed65284ebfffc0ad68c7dc3e0a5e46401b7fecf8e",
+    "hair_0_0.res": "1e57df43df0fcfcf83d4344723e1e8de7dbaf3a713ab107f0c22fc39fdc9fa90",
+    "hair_0_1.res": "ebb1a208f35ee5196d4fad71fe2cd3a3c4c0d6e7fdf6f15c1209710515ae3264",
+    "hair_0_2.res": "6f8d68f861479332760b5647437e9526b3eb65c09f60fcdda701068aa7bfa368",
+    "hair_0_3.res": "e3bfaf9867caadb807c8da08a2922ef65a43011418cac55b0be454cc30ce317e",
+    "hair_0_4.res": "7ca295b6ae26acc44e260db2381ed29e5fe5a0eeefd2ba67d18466e0053bee27",
+    "hair_1_0.res": "5f20d708c42edff102cdc345d3883789e2268dfc9dbee8dbddfc8776eeba15b9",
+    "hair_1_1.res": "25e1b3c4fd689982dec578fbbe2267df46bd2a49640ff0a2ef964d15c3be83f9",
+    "hair_1_2.res": "05cb84c1a8e38a283bbc0dc8582a831b6e20ed88ea0df91a22936434a96c6b70",
+    "hair_1_3.res": "127012d9cacc0dbc51909f7f5cd7f135c2f9113b63e562d138fc2e7871472c21",
+    "hair_1_4.res": "ca3d4fcb7801cf8fc138282ab935bc079de5f75d4d267461283c7c031607c8a9",
+    "skin_0.res": "5980dfd33df03c6d8f05d68e5042863f6bac5e13574b4ca78f6ea8a69cf71a99",
+    "skin_1.res": "8a4bb6a478f4e3ae605da1ec23516f7ca326af0f82a9cb9567415c036a0bdab6"
+  },
+  "description": "Static editor pose; shared original MToon textures, head-fitted hair, fitted complete body/costume meshes",
+  "body_binding": "Fitted relaxed pose, source weights remapped by humanoid bone name, donor-only bones use nearest shared ancestor. Two prepared target Skin resources.",
+  "hand_rebind": {
+    "part": "body_0_1.res",
+    "reason": "align donor hand/thumb pivots to target bones before rebinding",
+    "scope": "Left and Right Hand/Thumb/Index/Middle/Ring/Little influences only",
+    "command": "godot --headless --path . -s res://tools/avatars/prepare_vrm_parts.gd -- --only-hoodie-hands"
+  }
+}

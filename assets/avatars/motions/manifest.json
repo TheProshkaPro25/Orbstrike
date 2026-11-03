@@ -1,0 +1,13 @@
+{
+  "generator": "tools/avatars/retarget_quaternius.gd",
+  "generator_sha256": "a4409015b5f276cb393b1cf404d4919e421104d134c382c48931fb96a43fd1d6",
+  "source_files": {
+    "assets/avatars/motions/UAL1.glb": "be684571ed655a1b892c2c07e6e2aeca053b606c442d34004adaf1d944090d01",
+    "assets/avatars/motions/UAL2.glb": "814eee878f82934992d3ea746c539df25e981487109c591f5efbb8dd03286f99"
+  },
+  "outputs": {
+    "fighter_0.res": "034dd2187e2b82bfc76ff02dbd3fcc52055b60b3f718c1688319c0a97c20fdc8",
+    "fighter_1.res": "6d4777aaf769ec572551061f12d7545adeb5cb93f675acd7de2ebb186f5d7ead"
+  },
+  "mapping": "52 humanoid bones; world rest rotation deltas, target local rotations, scaled Hips translation. All leg and finger tracks retained. 30 fps."
+}

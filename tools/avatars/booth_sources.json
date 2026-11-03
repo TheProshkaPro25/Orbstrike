@@ -1,0 +1,52 @@
+{
+  "checked_on": "2026-11-01",
+  "sources": [
+    {
+      "id": "winter-coat",
+      "page": "https://booth.pm/en/items/5474204",
+      "author": "福猫堂 / HukunekoDou",
+      "price_jpy": 0,
+      "files": [
+        {
+          "name": "winter_coat_Free_.zip",
+          "url": "https://booth.pm/downloadables/4163759?variation_id=9240887"
+        }
+      ],
+      "license_notes": "Not CC0. In-game character selection explicitly allowed; prevent easy extraction/restoration and standalone redistribution. No export outside game."
+    },
+    {
+      "id": "orchid-uniform",
+      "page": "https://booth.pm/ja/items/7105675",
+      "author": "事務所Orchid",
+      "price_jpy": 0,
+      "files": [
+        {
+          "name": "カラーテンプレート軍服＿バッチ.vroidcustomitem",
+          "url": "https://booth.pm/downloadables/7036160?variation_id=11912557"
+        },
+        {
+          "name": "カラーテンプレート軍服＿帽子.vroidcustomitem",
+          "url": "https://booth.pm/downloadables/7036161?variation_id=11912557"
+        },
+        {
+          "name": "カラーテンプレート軍服.vroidcustomitem",
+          "url": "https://booth.pm/downloadables/7036162?variation_id=11912557"
+        }
+      ],
+      "license_notes": "Author labels custom material CC0 but also refers to VRoid terms; underlying VRoid preset rights are separate. Hat logo has another free-material source; inspect archive before integration."
+    },
+    {
+      "id": "chad-hoodie",
+      "page": "https://booth.pm/en/items/2158545",
+      "author": "The Moe Train",
+      "price_jpy": 0,
+      "files": [
+        {
+          "name": "Chad_Hoodie.rar",
+          "url": "https://booth.pm/downloadables/1154145?variation_id=3491010"
+        }
+      ],
+      "license_notes": "Not CC0. Games/commercial use and edits permitted; standalone redistribution prohibited. Textures only; no new garment geometry promised."
+    }
+  ]
+}

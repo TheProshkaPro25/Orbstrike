@@ -1,4 +1,5 @@
 extends SceneTree
+const ModelTestCleanup := preload("res://scenes/model_lifetime.gd")
 var checks:=0
 var failures:=0
 func check(ok:bool, msg:String):
@@ -35,5 +36,5 @@ func run():
   for frame in range(240):a._process(1.0/120)
   expected=fposmod(a._clock*speed+a._phase/TAU*clip.length,clip.length)
   check(a._player.current_animation==&'idle' and absf(a._player.current_animation_position-expected)<.002,'%s: resumes continuing phase after hit'%id)
-  a.free();CreatureModels.clear();await process_frame
+  ModelTestCleanup.release(a, self);CreatureModels.clear();await process_frame
  print('Idle runtime: %d checks, %d failures'%[checks,failures]);quit(1 if failures else 0)

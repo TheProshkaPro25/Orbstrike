@@ -15,8 +15,8 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Сферы Стихий"
-config/version="0.2.9"
-run/main_scene="res://scenes/menu/main_menu.tscn"
+config/version="0.3.0"
+run/main_scene="res://scenes/loading/boot.tscn"
 config/features=PackedStringArray("4.7")
 
 [display]
@@ -25,6 +25,10 @@ window/size/viewport_width=1280
 window/size/viewport_height=720
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/Godot-MToon-Shader/plugin.cfg", "res://addons/vrm/plugin.cfg")
 
 [gui]
 

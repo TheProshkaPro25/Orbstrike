@@ -1,0 +1,182 @@
+{
+  "date": "2026-10-31",
+  "scope": "Grifalon tail fan and flight legs only",
+  "model_glb_sha256": {
+    "assets/creatures_hd/dragnar_fire.glb": "2d759d92cc19566c5228e0ba913a7663fff934131b63f9295c4a84d92f47c6aa",
+    "assets/creatures_hd/dragnar_gale.glb": "d02f3a67084a9e3464716897c2ef5b24f5a53c7ce596c10bf007049d2c97b830",
+    "assets/creatures_hd/dragnar_light.glb": "8a82bcf7f89287daefd65baa25e96a5b1e1c4503b73ea3fa8817c83fcdd81f96",
+    "assets/creatures_hd/dragnar_shadow.glb": "ec28cf12618f5a739fc7b9604d384cf560d23b5590f64491a1ec320de39b8470",
+    "assets/creatures_hd/dragnar_stone.glb": "1db9f2a935fc8731ad7bd274364c749e1622a965deacdfaf9c3e4285f5b2a72d",
+    "assets/creatures_hd/dragnar_tide.glb": "fc95ce7731cf5331c84bfee312f69d7e3e6019c33e04ba011b878fa8adea8b6b",
+    "assets/creatures_hd/gorgul_fire.glb": "128eb7948519337b63fb3349447194910d0cc82e44d2efe22fc0ca0d20a7f3b6",
+    "assets/creatures_hd/gorgul_gale.glb": "55d82a572aec50ffffcc3912b2fc448dec5db1176c819dd4e7b189d2611bd073",
+    "assets/creatures_hd/gorgul_light.glb": "799f7c1f34ee27382315e42ef71a7625c2491648e45a02d6be611cb712b86e5c",
+    "assets/creatures_hd/gorgul_shadow.glb": "d31399c990f0148444c0082bf2bcc5d362d43f0a5516e3e70285beeec9b6ed86",
+    "assets/creatures_hd/gorgul_stone.glb": "e1fd5c9a9c8fd8ff1b01cc670b7a004689f6051484443e7d0518c5fc788d9bca",
+    "assets/creatures_hd/gorgul_tide.glb": "10cde043d74620940f53baff371f27631cf50ecff07bb888ef46255baa017d8a",
+    "assets/creatures_hd/grifalon_fire.glb": "295aaa4752b85e3febeb01dc36570b9845c3f05eea37188cc4c5c453b40f5954",
+    "assets/creatures_hd/grifalon_gale.glb": "0329fff5f70f53e6c14fbfaaf293c93860ff86cf5be79ef0f1e85f1c7d02bd79",
+    "assets/creatures_hd/grifalon_light.glb": "0437c2014c5c0e87801a0acc7b25a4f957acf3a8028dbb699b5e6672d9574481",
+    "assets/creatures_hd/grifalon_shadow.glb": "15da6c635d6aa002e11049082ece86d2f0124570d0da5a71f41091b07765b0b3",
+    "assets/creatures_hd/grifalon_stone.glb": "376640d70ecbdc35c0da1f3dec334118f9037b1b10f80364d973992310b3f540",
+    "assets/creatures_hd/grifalon_tide.glb": "9695d09298d8daeddb55c8908e7181b7e3503c7a30c1d3b402bf730c87b22413",
+    "assets/creatures_hd/klykar_fire.glb": "73fcda1b1a9466e5cfc8860de7df4c5beb9f2b2440e4a34bb7a2a17b4622a160",
+    "assets/creatures_hd/klykar_gale.glb": "f16e61d615e7897ed513d3abb73aa941cb335827d7f43c07961fd8e277ab4c28",
+    "assets/creatures_hd/klykar_light.glb": "57c8b87a62361796eaf7dc647762950065d8bef84d41d5d824c96f0d554cd4e0",
+    "assets/creatures_hd/klykar_shadow.glb": "30d7873a5bb6e83f906a44be7fa4cf7706dc919a1ecdee7667763d875c87963b",
+    "assets/creatures_hd/klykar_stone.glb": "bafa3a230c96e8799a061e81c58a058f1a43363d2c114858239fa3c109508027",
+    "assets/creatures_hd/klykar_tide.glb": "f5e70149c8408ecbc5a00bb3e11238a2d43e75fea021a8001ce3098dee697b2e",
+    "assets/creatures_hd/kolossar_fire.glb": "30cae0eb02ec6073300d1e2ed34aa65a3f8d6e64941612f8fd1555294ba60657",
+    "assets/creatures_hd/kolossar_gale.glb": "dbbabf794f6a5acf4d64463d80a253757d51ce24990814759ec6bc587f7f54fd",
+    "assets/creatures_hd/kolossar_light.glb": "e103137b0e52c6ba2a9673dda69e519c0034ac8eccba4b5e32194d1b1c93ef71",
+    "assets/creatures_hd/kolossar_shadow.glb": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+    "assets/creatures_hd/kolossar_stone.glb": "efbfa17fa96fbc5cbdf6acb36666f6595c4cfb9b5551f23ffea8f1d9576d5070",
+    "assets/creatures_hd/kolossar_tide.glb": "c212690db15deaf3e63e4aa44f312c657ebb2c2b8441650094ba837d38e1de56",
+    "assets/creatures_hd/levian_fire.glb": "ded936ce93435d9651078a26276a025aff627f150454a08a0d830bd5d2280310",
+    "assets/creatures_hd/levian_gale.glb": "fe5c04377285353b7a95bdb723612464824aaaed05f9b499acb732e858db2ddc",
+    "assets/creatures_hd/levian_light.glb": "8e15e3d6bc72489f271d0d16f1c6270158fd7d2b113ec96a358ba3ebaba2669a",
+    "assets/creatures_hd/levian_shadow.glb": "c8f42fa47c27e6a0d06dfa6fa5d570031601de9e52cb0c7f184979ea78d8a90e",
+    "assets/creatures_hd/levian_stone.glb": "070f9616426759b58ebd39b7d64c312fafb7597ef7e333ad6baef8402e188dcf",
+    "assets/creatures_hd/levian_tide.glb": "7eade977ce428ce052690b7bbf235740a002a91140b0677e92e5b0d7a2bf63d8",
+    "assets/creatures_hd/likorez_shadow.glb": "5874835226b02bce3dba194313d07ed1631f7b0fabf5b6d65ef38dc1b97d7b09",
+    "assets/creatures_hd/ratnik_fire.glb": "7824f01282e239912f40c3eafbf26dfa2ffd0c8b551c325ac75f3725242a81dd",
+    "assets/creatures_hd/ratnik_gale.glb": "6e40647983c1e9fb8c0c5f79513a6e5e97fe496f2ac5562f34999cf5769a1103",
+    "assets/creatures_hd/ratnik_light.glb": "454e8442b83fe7fd618d0bc0338dfc8b51b1daabaa49b4a5237dcb669598f727",
+    "assets/creatures_hd/ratnik_shadow.glb": "5be558ea4208a92f4b1b2684847935fa5b0ad9ebc2cb4b1f35a8329f19f5789b",
+    "assets/creatures_hd/ratnik_stone.glb": "0c7909c072cca08b68536d94df80915358b3052e8979eff39614a94cee753db6",
+    "assets/creatures_hd/ratnik_tide.glb": "1092ec4c85963fe869274d5555a881921e46b51327809cbaee385c70f38e37ce",
+    "assets/creatures_hd/rogozhuk_fire.glb": "1ff332d623750f53cbefb3c557cbe4ec80fe1341394f033910aca90d5848c61e",
+    "assets/creatures_hd/rogozhuk_gale.glb": "025b3c5488c18b8dc978afb5851e76db4b24534736d7d48c4dd0eafe8984aae5",
+    "assets/creatures_hd/rogozhuk_light.glb": "8dcffa2a2981714c5255403fb7b9ac337b4c709913384b845874cafc006ce21f",
+    "assets/creatures_hd/rogozhuk_shadow.glb": "51af8c75076d54f083c502156fe8e9a8dba737d819b7fdf86aacf1c7c36bc62f",
+    "assets/creatures_hd/rogozhuk_stone.glb": "e5e198539f5d6ed892a9f0b553dc9d46892a66696b5d7b808acfafa2bd6f1a39",
+    "assets/creatures_hd/rogozhuk_tide.glb": "4ff3f18af1934d271c019e2301f8b914f33d14746da550eb9ddb885094eba2a9"
+  },
+  "changed_glb": [
+    "assets/creatures_hd/grifalon_gale.glb"
+  ],
+  "skin_integrity": {
+    "failures": 0,
+    "triangles": 127814,
+    "wind_caps_preserved": 128,
+    "vertices": 97837,
+    "changed_vertices": 37323,
+    "protected_vertices": 55775,
+    "non_skin_bytes_exact": true,
+    "GLB_document_exact": true,
+    "all_geometry_uv_normals_indices_skeleton_binds_clips_images_exact": true,
+    "max_normalization_error": 1.1920928955078125e-07,
+    "max_weld_mass_error": 0.0,
+    "wrong_core_vertices": 12349,
+    "wrong_core_max_right_wing_mass": 0.0,
+    "full_rigid_core_vertices": 9218,
+    "rigid_tail1_skin_error": 1.0846457898849414e-06,
+    "core_motion_min_max": [
+      0.06729971654267129,
+      0.21932409930706034
+    ],
+    "core_posed_bbox": [
+      [
+        -0.2833036373905275,
+        -0.2976747675324019,
+        -0.36953265080999786
+      ],
+      [
+        -0.11899391974661866,
+        -0.05916965416257636,
+        -0.12397809337710282
+      ]
+    ],
+    "core_rest_bbox": [
+      [
+        -0.16571329534053802,
+        -0.307674765586853,
+        -0.46151265501976013
+      ],
+      [
+        -0.0293879397213459,
+        -0.06916965544223785,
+        -0.17341642081737518
+      ]
+    ],
+    "scope": "Synthetic rigid-tail surface equivalence; source numeric contract, not real runtime GPU check"
+  },
+  "model_manifest": "tools/checkpoints/grifalon-gale-tail-2026-10-31.json",
+  "targeted_animation": {
+    "script": "tests/grifalon_flight_tests.gd",
+    "variants": 6,
+    "actions": [
+      "idle",
+      "attack"
+    ],
+    "checks": 133477,
+    "failures": 0,
+    "log": "/tmp/grifalon-flight-agent-verified-output.log",
+    "idle_leg_sweep_degrees": [
+      17.12,
+      18.0
+    ],
+    "attack_leg_sweep_degrees": [
+      17.58,
+      18.0
+    ]
+  },
+  "gpu": {
+    "script": "tools/grifalon_flight_review.gd",
+    "log": "/tmp/sfery-grifalon-flight-verified.log",
+    "exit_code": 0,
+    "renderer": "Vulkan Forward+",
+    "minimized": true,
+    "frames": "build/checks/grifalon-flight/verified",
+    "poses": [
+      [
+        "idle",
+        0.25
+      ],
+      [
+        "idle",
+        0.75
+      ],
+      [
+        "idle",
+        1.25
+      ],
+      [
+        "attack",
+        0.4
+      ]
+    ],
+    "angles": [
+      "side",
+      "rear"
+    ],
+    "viewed": [
+      "idle-1.25-rear.png",
+      "attack-0.40-rear.png",
+      "idle-0.75-side.png"
+    ],
+    "errors": 0
+  },
+  "source_sha256": {
+    "scenes/creature_anim.gd": "e50a41f505f22f16df4809c2c8d6420c129a276e0c1b5b28ede58fbc30437d30",
+    "scenes/grifalon_flight.gd": "bcc74db143ad1bc8ccb5bfca04070ab4cb3b3db5a854f713e18d3a51a77c7d99",
+    "scenes/grifalon_tail.gd": "e5278a89597a1f6977b32be4a4721e9973a8248f48672007f93283f6181e611c",
+    "scenes/dragnar_torso.gd": "bb84d2cd7e838782d12049c171d9fcbece40a1bfd1e5d9112d6f234fec9530ed",
+    "tools/models/repair_grifalon_gale_tail.py": "b1d4e90bcf69ccee7fe152ae8c40ef9f67469b31e424b507fd1c8f0a82370023"
+  },
+  "limits": [
+    "No full gameplay/model profiles repeated",
+    "No FPS or startup benchmark repeated",
+    "No Windows build, commit or publication",
+    "Raw skin contract and imported model GPU reviewed; no claim of exhaustive anatomy audit"
+  ],
+  "player_launch": {
+    "session_id": 45860,
+    "log": "/tmp/sfery-player-griffon-updated.log",
+    "menu_ready_seconds": 13.05,
+    "window_mode": 1,
+    "launched_by": "GPT Terra",
+    "previous_own_session": 66770,
+    "previous_exit_code": 0
+  }
+}
