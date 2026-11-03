@@ -1,3 +1,16 @@
+## 2026-11-03 — выпуск 0.3.1 опубликован на GitHub
+
+https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.3.1
+Release ID433116473; latest=true,draft=false,prerelease=false. Все шесть
+вложений uploaded; их GitHub digest и размеры совпали с локальными независимо
+проверенными файлами. Новый Windows ZIP1030469484байт, SHA256
+d91522dbe87905ff10715131c0c74afbca10e9c8be44dda65496c4eb85fba724.
+Совместимый сервер0.3.0 приложен неизменённым под прежним именем.
+Tagv0.3.1→3eca041d16ef672559685c5f97959a633f861ff7; tagv0.3.0 не изменён.
+Следующий docs-only коммит фиксирует публикацию, не меняя бинарные пакеты.
+NativeWindows/прослушивание/публичныйсервер/WSS/TLS не заявляются.
+Полный отчёт — tools/checkpoints/release031-validation.json.
+
 ## 2026-11-03 — подготовлен выпуск 0.3.1
 
 По отдельному поручению автора Sol high собрали новую Windows-версию: терраса
