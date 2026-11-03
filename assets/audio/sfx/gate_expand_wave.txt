@@ -1,0 +1,16 @@
+Gate expansion wave / gate_expand_wave.wav
+
+Source: Magic - Cymbal Swell 2
+Author: Vrymaa
+Source page: https://freesound.org/people/Vrymaa/sounds/826131/
+License: CC0 1.0 Universal
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Based on the public HQ MP3 preview (not the original lossless WAV).
+Modified: selected recorded body, filtering, stereo expansion, pitch-preserving
+time compression to1.8seconds, and a quiet original filtered-noise tail.
+CC0 permits copying, modification and distribution including commercial use.
+Attribution is optional; source credit is retained for provenance.
+
+Selected preview: gate_wave_recorded_shimmer_synced_breeze.wav
+SHA256: 485f1acf0f863a6d23b13c0be92c568743cdbd24c13f973bd5859f803800eb04

@@ -24,6 +24,7 @@ if args.only and args.profile:
 MODELS = ['animation', 'support', 'flight', 'idle', 'stance', 'review-state', 'preparation-cache', 'preview-pool']
 RULES = ['campaign', 'tournament', 'rules', 'rules-edges', 'cards', 'card-balance', 'card-matches', 'card-scenarios', 'card-choices', 'ai', 'shot-physics']
 SCRIPTS = {
+    'duel-exit': 'tests/duel_exit_tests.gd',
     'online-core': 'tests/online_core_tests.gd',
     'online-messages': 'tests/online_message_validation_tests.gd',
     'online-physics': 'tests/online_physics_tests.gd',
@@ -59,13 +60,13 @@ SCRIPTS = {
     'experience': 'tools/experience_review.gd', 'autoplay': 'tools/autoplay.gd',
 }
 if args.profile == 'gameplay':
-    plan = ['import', *RULES, 'online-core', 'online-messages', 'online-physics', 'online-ui', 'startup-loading', 'turn-pool', 'campaign-flow', 'tournament-flow', 'autoplay']
+    plan = ['import', *RULES, 'online-core', 'online-messages', 'online-physics', 'online-ui', 'startup-loading', 'turn-pool', 'duel-exit', 'campaign-flow', 'tournament-flow', 'autoplay']
 elif args.profile == 'presentation':
-    plan = ['import', 'online-ui', 'online-disconnect', 'online-gate-result', 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'npc-appearance', 'hand-placement', 'campaign-ui', 'tournament-ui', 'menu-lighting', 'sanctuary-mood', 'shot-physics', 'sphere-pose', 'reveal-camera', 'ability-input', 'cards-ui', 'window-lighting', 'high-graphics', 'experience']
+    plan = ['import', 'duel-exit', 'online-ui', 'online-disconnect', 'online-gate-result', 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'npc-appearance', 'hand-placement', 'campaign-ui', 'tournament-ui', 'menu-lighting', 'sanctuary-mood', 'shot-physics', 'sphere-pose', 'reveal-camera', 'ability-input', 'cards-ui', 'window-lighting', 'high-graphics', 'experience']
 elif args.profile == 'models':
     plan = ['import', *MODELS]
 elif args.profile == 'full':
-    plan = ['import', *RULES, 'online-core', 'online-messages', 'online-physics', 'online-ui', *MODELS, 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'npc-appearance', 'hand-placement', 'campaign-ui', 'tournament-ui', 'gpu-core', 'menu-lighting', 'sanctuary-mood', 'sphere-pose', 'reveal-camera', 'ability-input', 'cards-ui', 'window-lighting', 'high-graphics', 'experience', 'startup-loading', 'turn-pool', 'campaign-flow', 'tournament-flow', 'autoplay']
+    plan = ['import', *RULES, 'online-core', 'online-messages', 'online-physics', 'online-ui', *MODELS, 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'npc-appearance', 'hand-placement', 'campaign-ui', 'tournament-ui', 'gpu-core', 'menu-lighting', 'sanctuary-mood', 'sphere-pose', 'reveal-camera', 'ability-input', 'cards-ui', 'window-lighting', 'high-graphics', 'experience', 'startup-loading', 'turn-pool', 'duel-exit', 'campaign-flow', 'tournament-flow', 'autoplay']
 elif args.only:
     plan = args.only
 else:
@@ -119,7 +120,7 @@ for name in plan:
     if name == 'import':
         command += ['--headless', '--editor', '--import']
     else:
-        graphics = name in ['online-ui', 'online-disconnect', 'online-gate-result', 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'cards-ui', 'menu-lighting', 'sanctuary-mood', 'startup-loading', 'experience', 'autoplay', 'gpu-core', 'ability-input', 'window-lighting', 'high-graphics', 'turn-pool', 'campaign-flow', 'campaign-flow', 'tournament-flow', 'tournament-ui', 'hand-placement', 'npc-appearance', 'campaign-ui'] or (name in MODELS and (args.visual or args.profile == 'full'))
+        graphics = name in ['duel-exit', 'online-ui', 'online-disconnect', 'online-gate-result', 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'cards-ui', 'menu-lighting', 'sanctuary-mood', 'startup-loading', 'experience', 'autoplay', 'gpu-core', 'ability-input', 'window-lighting', 'high-graphics', 'turn-pool', 'campaign-flow', 'campaign-flow', 'tournament-flow', 'tournament-ui', 'hand-placement', 'npc-appearance', 'campaign-ui'] or (name in MODELS and (args.visual or args.profile == 'full'))
         if not graphics:
             command += ['--headless']
         script = SCRIPTS[name]

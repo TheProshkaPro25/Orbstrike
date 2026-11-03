@@ -1,0 +1,386 @@
+{
+  "version": "0.3.1",
+  "date": "2026-11-03",
+  "status": "validated and ready for publication",
+  "engine": "Godot4.7.2.stable.arch_linux.ed1daf0bf",
+  "export": {
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "file_version": "0.3.1.0",
+    "product_version": "0.3.1",
+    "audio_sample_forced_reimport": true
+  },
+  "source_models_before": {
+    "assets/creatures_hd/dragnar_fire.glb": "2d759d92cc19566c5228e0ba913a7663fff934131b63f9295c4a84d92f47c6aa",
+    "assets/creatures_hd/dragnar_gale.glb": "d02f3a67084a9e3464716897c2ef5b24f5a53c7ce596c10bf007049d2c97b830",
+    "assets/creatures_hd/dragnar_light.glb": "8a82bcf7f89287daefd65baa25e96a5b1e1c4503b73ea3fa8817c83fcdd81f96",
+    "assets/creatures_hd/dragnar_shadow.glb": "ec28cf12618f5a739fc7b9604d384cf560d23b5590f64491a1ec320de39b8470",
+    "assets/creatures_hd/dragnar_stone.glb": "1db9f2a935fc8731ad7bd274364c749e1622a965deacdfaf9c3e4285f5b2a72d",
+    "assets/creatures_hd/dragnar_tide.glb": "fc95ce7731cf5331c84bfee312f69d7e3e6019c33e04ba011b878fa8adea8b6b",
+    "assets/creatures_hd/gorgul_fire.glb": "128eb7948519337b63fb3349447194910d0cc82e44d2efe22fc0ca0d20a7f3b6",
+    "assets/creatures_hd/gorgul_gale.glb": "55d82a572aec50ffffcc3912b2fc448dec5db1176c819dd4e7b189d2611bd073",
+    "assets/creatures_hd/gorgul_light.glb": "799f7c1f34ee27382315e42ef71a7625c2491648e45a02d6be611cb712b86e5c",
+    "assets/creatures_hd/gorgul_shadow.glb": "d31399c990f0148444c0082bf2bcc5d362d43f0a5516e3e70285beeec9b6ed86",
+    "assets/creatures_hd/gorgul_stone.glb": "e1fd5c9a9c8fd8ff1b01cc670b7a004689f6051484443e7d0518c5fc788d9bca",
+    "assets/creatures_hd/gorgul_tide.glb": "10cde043d74620940f53baff371f27631cf50ecff07bb888ef46255baa017d8a",
+    "assets/creatures_hd/grifalon_fire.glb": "295aaa4752b85e3febeb01dc36570b9845c3f05eea37188cc4c5c453b40f5954",
+    "assets/creatures_hd/grifalon_gale.glb": "0329fff5f70f53e6c14fbfaaf293c93860ff86cf5be79ef0f1e85f1c7d02bd79",
+    "assets/creatures_hd/grifalon_light.glb": "0437c2014c5c0e87801a0acc7b25a4f957acf3a8028dbb699b5e6672d9574481",
+    "assets/creatures_hd/grifalon_shadow.glb": "15da6c635d6aa002e11049082ece86d2f0124570d0da5a71f41091b07765b0b3",
+    "assets/creatures_hd/grifalon_stone.glb": "376640d70ecbdc35c0da1f3dec334118f9037b1b10f80364d973992310b3f540",
+    "assets/creatures_hd/grifalon_tide.glb": "9695d09298d8daeddb55c8908e7181b7e3503c7a30c1d3b402bf730c87b22413",
+    "assets/creatures_hd/klykar_fire.glb": "73fcda1b1a9466e5cfc8860de7df4c5beb9f2b2440e4a34bb7a2a17b4622a160",
+    "assets/creatures_hd/klykar_gale.glb": "f16e61d615e7897ed513d3abb73aa941cb335827d7f43c07961fd8e277ab4c28",
+    "assets/creatures_hd/klykar_light.glb": "57c8b87a62361796eaf7dc647762950065d8bef84d41d5d824c96f0d554cd4e0",
+    "assets/creatures_hd/klykar_shadow.glb": "30d7873a5bb6e83f906a44be7fa4cf7706dc919a1ecdee7667763d875c87963b",
+    "assets/creatures_hd/klykar_stone.glb": "bafa3a230c96e8799a061e81c58a058f1a43363d2c114858239fa3c109508027",
+    "assets/creatures_hd/klykar_tide.glb": "f5e70149c8408ecbc5a00bb3e11238a2d43e75fea021a8001ce3098dee697b2e",
+    "assets/creatures_hd/kolossar_fire.glb": "30cae0eb02ec6073300d1e2ed34aa65a3f8d6e64941612f8fd1555294ba60657",
+    "assets/creatures_hd/kolossar_gale.glb": "dbbabf794f6a5acf4d64463d80a253757d51ce24990814759ec6bc587f7f54fd",
+    "assets/creatures_hd/kolossar_light.glb": "e103137b0e52c6ba2a9673dda69e519c0034ac8eccba4b5e32194d1b1c93ef71",
+    "assets/creatures_hd/kolossar_shadow.glb": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+    "assets/creatures_hd/kolossar_stone.glb": "efbfa17fa96fbc5cbdf6acb36666f6595c4cfb9b5551f23ffea8f1d9576d5070",
+    "assets/creatures_hd/kolossar_tide.glb": "c212690db15deaf3e63e4aa44f312c657ebb2c2b8441650094ba837d38e1de56",
+    "assets/creatures_hd/levian_fire.glb": "ded936ce93435d9651078a26276a025aff627f150454a08a0d830bd5d2280310",
+    "assets/creatures_hd/levian_gale.glb": "fe5c04377285353b7a95bdb723612464824aaaed05f9b499acb732e858db2ddc",
+    "assets/creatures_hd/levian_light.glb": "8e15e3d6bc72489f271d0d16f1c6270158fd7d2b113ec96a358ba3ebaba2669a",
+    "assets/creatures_hd/levian_shadow.glb": "c8f42fa47c27e6a0d06dfa6fa5d570031601de9e52cb0c7f184979ea78d8a90e",
+    "assets/creatures_hd/levian_stone.glb": "070f9616426759b58ebd39b7d64c312fafb7597ef7e333ad6baef8402e188dcf",
+    "assets/creatures_hd/levian_tide.glb": "7eade977ce428ce052690b7bbf235740a002a91140b0677e92e5b0d7a2bf63d8",
+    "assets/creatures_hd/ratnik_fire.glb": "7824f01282e239912f40c3eafbf26dfa2ffd0c8b551c325ac75f3725242a81dd",
+    "assets/creatures_hd/ratnik_gale.glb": "6e40647983c1e9fb8c0c5f79513a6e5e97fe496f2ac5562f34999cf5769a1103",
+    "assets/creatures_hd/ratnik_light.glb": "454e8442b83fe7fd618d0bc0338dfc8b51b1daabaa49b4a5237dcb669598f727",
+    "assets/creatures_hd/ratnik_shadow.glb": "5be558ea4208a92f4b1b2684847935fa5b0ad9ebc2cb4b1f35a8329f19f5789b",
+    "assets/creatures_hd/ratnik_stone.glb": "0c7909c072cca08b68536d94df80915358b3052e8979eff39614a94cee753db6",
+    "assets/creatures_hd/ratnik_tide.glb": "1092ec4c85963fe869274d5555a881921e46b51327809cbaee385c70f38e37ce",
+    "assets/creatures_hd/rogozhuk_fire.glb": "1ff332d623750f53cbefb3c557cbe4ec80fe1341394f033910aca90d5848c61e",
+    "assets/creatures_hd/rogozhuk_gale.glb": "025b3c5488c18b8dc978afb5851e76db4b24534736d7d48c4dd0eafe8984aae5",
+    "assets/creatures_hd/rogozhuk_light.glb": "8dcffa2a2981714c5255403fb7b9ac337b4c709913384b845874cafc006ce21f",
+    "assets/creatures_hd/rogozhuk_shadow.glb": "51af8c75076d54f083c502156fe8e9a8dba737d819b7fdf86aacf1c7c36bc62f",
+    "assets/creatures_hd/rogozhuk_stone.glb": "e5e198539f5d6ed892a9f0b553dc9d46892a66696b5d7b808acfafa2bd6f1a39",
+    "assets/creatures_hd/rogozhuk_tide.glb": "4ff3f18af1934d271c019e2301f8b914f33d14746da550eb9ddb885094eba2a9",
+    "assets/creatures_hd/likorez_shadow.glb": "5874835226b02bce3dba194313d07ed1631f7b0fabf5b6d65ef38dc1b97d7b09"
+  },
+  "approved_audio": {
+    "canonical_sha256": "485f1acf0f863a6d23b13c0be92c568743cdbd24c13f973bd5859f803800eb04",
+    "approved_candidate_identical": true,
+    "removed_regenerable_cache_only": [
+      ".godot/imported/gate_expand_wave.wav-b562da1ef352d69922072c22396a4ea2.sample",
+      ".godot/imported/gate_expand_wave.wav-b562da1ef352d69922072c22396a4ea2.md5"
+    ],
+    "cache_resource": ".godot/imported/gate_expand_wave.wav-b562da1ef352d69922072c22396a4ea2.sample",
+    "fresh_sample_sha256": "883c9625c8f127650c8d176b9f7b7e4073f1090ccdcc510a1262486956ac2bfa",
+    "fresh_sample_bytes": 345995,
+    "fresh_stamp": "source_md5=\"8e449c02ee4f85325517c728c7efe876\"\ndest_md5=\"49ba95f01c22cae12850aae83b4756f0\"\n\n",
+    "canonical_md5": "8e449c02ee4f85325517c728c7efe876"
+  },
+  "independent_sol": {
+    "reviewer": "independent Sol high",
+    "timestamp_utc": "2026-11-03T19:11:01.056259+00:00",
+    "godot_launched": false,
+    "status": "PASS",
+    "client": {
+      "pck": {
+        "format": 4,
+        "engine": [
+          4,
+          7,
+          2
+        ],
+        "flags": 2,
+        "entries": 1303,
+        "all_entries_md5_pass": 1303,
+        "private_signature_findings": [],
+        "sha256": "6f6b22cfe3bb9c089169104ccdfaf49f593321587f68e99f5750a38bc77fc80b"
+      },
+      "exe": {
+        "architecture": "AMD64 PE32+",
+        "file_version": [
+          0,
+          3,
+          1,
+          0
+        ],
+        "product_version": [
+          0,
+          3,
+          1,
+          0
+        ],
+        "sha256": "6480b1f69ce9e7ebc9c88bfe462ee5fba29ebe3120a6bc94f5e5c31c2b4616ab"
+      },
+      "packed_runtime_project_settings": {
+        "application_version": "0.3.1",
+        "main_scene": "res://scenes/loading/boot.tscn",
+        "parsed_entries": 13
+      },
+      "gate_wave": {
+        "approved_candidate_sha256": "485f1acf0f863a6d23b13c0be92c568743cdbd24c13f973bd5859f803800eb04",
+        "source_equals_candidate": true,
+        "wav": {
+          "channels": 2,
+          "sample_width_bytes": 3,
+          "sample_rate_hz": 48000,
+          "frames": 86400,
+          "compression": "NONE"
+        },
+        "imported_sample": ".godot/imported/gate_expand_wave.wav-b562da1ef352d69922072c22396a4ea2.sample",
+        "sample_sha256": "883c9625c8f127650c8d176b9f7b7e4073f1090ccdcc510a1262486956ac2bfa",
+        "sample_matches_last_workspace_import": true,
+        "import_stamp_matches_source_md5": true,
+        "license_in_pck_and_external_matches": true,
+        "preview_candidate_entries": [],
+        "fresh_reimport_report_sha256": "0582bff7b36e076db0ff5532e7b9c7863640bc4a7108597052f9788bff5167d3",
+        "matches_fresh_reimport_report": true
+      },
+      "source_models_sha256_pass": 49,
+      "imported_models_workspace_pass": 49,
+      "prepared_pdat_sha256_pass": 68,
+      "prepared_manifest_sha256_pass": true,
+      "kevin_banks_sha256_pass": 2,
+      "editor_catalog_imports_sha256_pass": 2,
+      "required_runtime_resources": {
+        "project.binary": "project.binary",
+        "scenes/loading/boot.tscn": ".godot/exported/133200997/export-957917e049dbb644ce45c5cd4e97012e-boot.scn",
+        "scenes/main.tscn": ".godot/exported/133200997/export-3ad5c15c4f3250da0cc7c1af1770d85f-main.scn",
+        "scenes/main.gd": "scenes/main.gdc",
+        "scenes/loading/game_loading.gd": "scenes/loading/game_loading.gdc",
+        "scenes/loading/startup_catalog.gd": "scenes/loading/startup_catalog.gdc",
+        "scenes/ui/character_editor.gd": "scenes/ui/character_editor.gdc",
+        "core/campaign.gd": "core/campaign.gdc",
+        "core/tournament.gd": "core/tournament.gdc",
+        "data/tournament_session.gd": "data/tournament_session.gdc",
+        "scenes/online/online_game.gd": "scenes/online/online_game.gdc",
+        "network/online_client.gd": "network/online_client.gdc",
+        "network/online_protocol.gd": "network/online_protocol.gdc",
+        "network/online_physics.gd": "network/online_physics.gdc",
+        "network/state_codec.gd": "network/state_codec.gdc"
+      },
+      "forbidden_paths": [],
+      "zip_document_private_signature_findings": [],
+      "zip": {
+        "path": "build/Sfery_Stikhiy_v0.3.1_win64.zip",
+        "bytes": 1030469484,
+        "sha256": "d91522dbe87905ff10715131c0c74afbca10e9c8be44dda65496c4eb85fba724",
+        "crc_all_pass": 13,
+        "exact_staging_files_sha256": {
+          "CHANGELOG.md": "f392fa11f88423f4d54052ee5484d7b9f7206d587d102f19a9f2b2e3bcbc28b1",
+          "CREDITS.md": "f52c3f931ca76f885fc19c265e515051014250e4cba37006501ce074a3a0753a",
+          "LICENSES/FIRA_SANS_OFL.txt": "e1b302b6eac8d0cdbc7786f84fb4fa953d8be4db37613789c1a06adb57d33222",
+          "LICENSES/GATE_WAVE_CC0.txt": "f34c3ccfea18b90f943bac6545b876ffaf73ea0530cceff2c5c416712c92f8dc",
+          "LICENSES/GODOT_VRM.txt": "d39666c721f8453445364e66a08d0edec6fbc5b8e30ee1d9d710e84a3094c101",
+          "LICENSES/GPU_CLOTH.txt": "3e53bd060020c64601b050a039d42a07f969eafd1085e16b4b93e0f97f7c7689",
+          "LICENSES/MTOON.txt": "fd0a82d7d32ad7e39948363114587a3290252ee9a57da0da1582f1e9f0e602f5",
+          "LICENSES/QUATERNIUS.txt": "6d01f55c6e4c49a2c9963e147e561945ae2c83958c8ca667d90a6bffdbfac061",
+          "ONLINE_SERVER.md": "be7b9b171da0ebd5071f280398e48c8ff9a1d383d6ac8d2d9aaab8756c11356f",
+          "README.txt": "01becf359dbe5f2264414eb7070186c3e3bb9dd3a70dbe4dfebd545f2820bd06",
+          "RULES.md": "585e6d84016e2e256e7a5a1c49f345de33e88fd8090118712f5895674595982f",
+          "Sfery_Stikhiy.exe": "6480b1f69ce9e7ebc9c88bfe462ee5fba29ebe3120a6bc94f5e5c31c2b4616ab",
+          "Sfery_Stikhiy.pck": "6f6b22cfe3bb9c089169104ccdfaf49f593321587f68e99f5750a38bc77fc80b"
+        },
+        "sha256_sidecar_pass": true
+      }
+    },
+    "server": {
+      "archive": "build/Sfery_Stikhiy_v0.3.0_online-server.tar.gz",
+      "sha256": "63637368a89b6fcef51a9a3f449bc612fc040a19abfb512585e186d2f3cfa896",
+      "files_manifest_sha256_pass": 57,
+      "ownership_metadata_clean": true,
+      "paths_clean": true,
+      "private_signature_findings": [],
+      "bundle_reused_from": "0.3.0",
+      "runtime_smoke_repeated": false,
+      "archived_validation": {
+        "fresh_import": true,
+        "parse": true,
+        "network_two_client_two_physical_throws": true,
+        "protocol_healthcheck": true,
+        "readonly_project": true
+      }
+    },
+    "source_preview_preservation": {
+      "wav_count": 30,
+      "parent_gdignore_present": true,
+      "wav_gitignored": true,
+      "gdignore_available_for_source_commit": true
+    }
+  },
+  "client_archive": {
+    "archive": "build/Sfery_Stikhiy_v0.3.1_win64.zip",
+    "bytes": 1030469484,
+    "sha256": "d91522dbe87905ff10715131c0c74afbca10e9c8be44dda65496c4eb85fba724",
+    "file_count": 13,
+    "files": [
+      "CHANGELOG.md",
+      "CREDITS.md",
+      "LICENSES/FIRA_SANS_OFL.txt",
+      "LICENSES/GATE_WAVE_CC0.txt",
+      "LICENSES/GODOT_VRM.txt",
+      "LICENSES/GPU_CLOTH.txt",
+      "LICENSES/MTOON.txt",
+      "LICENSES/QUATERNIUS.txt",
+      "ONLINE_SERVER.md",
+      "README.txt",
+      "RULES.md",
+      "Sfery_Stikhiy.exe",
+      "Sfery_Stikhiy.pck"
+    ],
+    "build_seconds": 30.377
+  },
+  "server_compatibility": {
+    "asset": "build/Sfery_Stikhiy_v0.3.0_online-server.tar.gz",
+    "asset_version": "0.3.0",
+    "unchanged": true,
+    "rebuilt_for031": false,
+    "runtime_repeated": false,
+    "sha256": "63637368a89b6fcef51a9a3f449bc612fc040a19abfb512585e186d2f3cfa896",
+    "protocol_version": 1,
+    "content_tag_independent_of_application_version": true,
+    "server_source_allowlist_unchanged_since030": true,
+    "public_endpoint_provided": false
+  },
+  "test_policy": {
+    "max_fps": 60,
+    "graphical": "tools/test_window.gd minimized/unfocusable/offscreen",
+    "full_profile_repeated": false,
+    "reason": "Only main lifecycle, menu and one audio cue changed; rules/AI/network/models unchanged. Fresh affected source checks retained and packaged gameplay/exit/menu/audio are run."
+  },
+  "wine": {
+    "engine_started_actual031_exe": true,
+    "headless_normal_entry": true,
+    "quit_after_frames": 600,
+    "exit_code": 0,
+    "script_errors": 0,
+    "clean_shutdown": false,
+    "diagnostics": "Dummy renderer RID/ObjectDB leaks/RenderingServer=null at shutdown; not counted as a clean Windows gameplay check.",
+    "log": "build/release031/wine-entry.log"
+  },
+  "limitations": [
+    "No native Windows gameplay verification.",
+    "No subjective listening.",
+    "No public server/external WSS/TLS verification.",
+    "Cold pack startup timings are not FPS claims or comparable source-cache benchmarks."
+  ],
+  "publication": {
+    "status": "not yet published",
+    "tag": "v0.3.1",
+    "intended_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.3.1"
+  },
+  "packed_runs": [
+    {
+      "name": "autoplay",
+      "exit_code": 0,
+      "ok": true,
+      "seconds": 187.405,
+      "error_markers": [],
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/release031/autoplay.log",
+      "command": [
+        "/usr/bin/godot",
+        "--max-fps",
+        "60",
+        "--path",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release031/pck-runtime",
+        "--main-pack",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release031/pck-runtime/Sfery_Stikhiy.pck",
+        "--windowed",
+        "--position",
+        "-20000,-20000",
+        "--log-file",
+        "/home/loq/Документы/game/sfery_stikhiy/build/checks/release031/autoplay-engine.log",
+        "-s",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release031/pck-runtime/fixtures/packed_autoplay.gd"
+      ],
+      "pck_sha256": "6f6b22cfe3bb9c089169104ccdfaf49f593321587f68e99f5750a38bc77fc80b",
+      "source_project_overlay": false
+    },
+    {
+      "name": "duel-exit",
+      "exit_code": 0,
+      "ok": true,
+      "seconds": 75.045,
+      "error_markers": [],
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/release031/duel-exit.log",
+      "command": [
+        "/usr/bin/godot",
+        "--max-fps",
+        "60",
+        "--path",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release031/pck-runtime",
+        "--main-pack",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release031/pck-runtime/Sfery_Stikhiy.pck",
+        "--windowed",
+        "--position",
+        "-20000,-20000",
+        "--log-file",
+        "/home/loq/Документы/game/sfery_stikhiy/build/checks/release031/duel-exit-engine.log",
+        "-s",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release031/pck-runtime/fixtures/packed_duel_exit.gd"
+      ],
+      "pck_sha256": "6f6b22cfe3bb9c089169104ccdfaf49f593321587f68e99f5750a38bc77fc80b",
+      "source_project_overlay": false
+    }
+  ],
+  "packed_results": {
+    "autoplay": {
+      "completed_matches": 2,
+      "turns": [
+        16,
+        20
+      ],
+      "throws": [
+        12,
+        12
+      ],
+      "landings": [
+        12,
+        12
+      ],
+      "misses": [
+        0,
+        0
+      ],
+      "battles": 12,
+      "large_reveals": 2,
+      "resident_catalog_reused": true,
+      "same_actor_roles_after_lifo_permutation": true,
+      "exit_code": 0,
+      "engine_errors": 0,
+      "test_failures": 0,
+      "leak_diagnostics": false
+    },
+    "duel_exit": {
+      "checks": 996,
+      "failures": 0,
+      "exit_code": 0,
+      "covers": [
+        "confirmation/cancel",
+        "exit during flight/reveal/vanish/result",
+        "late event cleanup",
+        "return and reuse catalog",
+        "actual packed menu geometry and orb position",
+        "actual wave gain/pitch/stream cache"
+      ],
+      "wave_gain_db": -4.0,
+      "wave_pitch": 1.0,
+      "sfx_bus_db": -2.0,
+      "wave_mix_rate": 48000,
+      "wave_length_seconds": 1.8,
+      "wave_runtime_pcm_bits": 16,
+      "orbs_center": [
+        3200,
+        850,
+        -3000
+      ]
+    },
+    "pck_only_no_source_overlay": true,
+    "pck_sha256_unchanged": "6f6b22cfe3bb9c089169104ccdfaf49f593321587f68e99f5750a38bc77fc80b"
+  },
+  "visual_review": {
+    "reviewer": "Sol high",
+    "fresh_png_reviewed": 6,
+    "menu": "1280/960 day/night terrace, six spheres over mountains and version0.3.1 visible",
+    "exit_button": "readable and placed in free space",
+    "existing_limitation": "At960 an old tutorial popup intersects setup controls; the new menu exit button is in clear space. Not attributed to this patch."
+  }
+}

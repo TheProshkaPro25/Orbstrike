@@ -27,3 +27,7 @@ assets/avatars/motions/kevin_local/
 
 # Character editor runtime catalog textures.
 !assets/avatars/editor/catalog_*.png
+
+# Author audio previews remain local; only the selected canonical cue is shipped.
+assets/audio/candidates/*
+!assets/audio/candidates/.gdignore

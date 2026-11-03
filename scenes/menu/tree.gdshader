@@ -5,6 +5,7 @@ shader_type spatial;
 render_mode diffuse_burley;
 
 uniform float anim_t = 0.0;
+uniform float night = 0.0;
 
 varying flat vec4 cd;
 varying flat float part;
@@ -25,4 +26,5 @@ void fragment() {
 	ROUGHNESS = 0.9;
 	SPECULAR = 0.2;
 	BACKLIGHT = part > 0.5 ? vec3(0.0) : leaf * 0.5;
+	EMISSION = leaf * vec3(0.020,0.030,0.045) * night;
 }

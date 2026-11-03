@@ -314,7 +314,7 @@ func card_placed(player: int, slot: int) -> void:
 	await game._wait(0.10)
 	node.set_meta("placement_stage", &"expanding")
 	game.arena.element_wave(pos, col, 0.80)
-	SoundFx.i().play("gate_expand_wave", 5.0, 0.0)
+	SoundFx.i().play("gate_expand_wave", -4.0, 0.0)
 	var grow := create_tween()
 	grow.tween_property(node, "scale", Vector3.ONE, CARD_GROW_TIME).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	await grow.finished

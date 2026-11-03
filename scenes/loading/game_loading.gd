@@ -222,10 +222,10 @@ func return_ball(ball: CreatureBall) -> void:
 
 func _park_ball(ball: CreatureBall) -> void:
 	# Без close_up() на живом дереве: оно порождает одноразовую вспышку.
+	ball.reset_match_presentation()
 	if ball.get_parent() != _storage:
 		ball.reparent(_storage, false)
 	ball.visible = false
-	ball._kill_open_tween()
 	ball.freeze_at(Vector3(0, CreatureBall.RADIUS, 0))
 	ball._open = false
 	ball._figure.visible = false

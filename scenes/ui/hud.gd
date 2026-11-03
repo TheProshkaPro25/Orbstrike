@@ -5,6 +5,7 @@ extends Control
 
 signal creature_chosen(uid: int)
 signal creature_cancelled
+signal battle_mode_changed(on: bool)
 
 const LOG_LINES := 3
 
@@ -417,6 +418,7 @@ func set_battle_mode(on: bool) -> void:
 	_log_box.modulate.a = a
 	VisualUtil.place(_flash, 0.5, 0.42 if on else 0.0, 0.0, 0.0 if on else 128.0)
 	_place_coach()
+	battle_mode_changed.emit(on)
 
 
 ## Короткая вспышка всего экрана (удар).

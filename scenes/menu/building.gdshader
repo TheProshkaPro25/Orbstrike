@@ -204,7 +204,7 @@ void fragment() {
 			float shop = (1.0 - smoothstep(ground - 1.4, ground - 1.2, f.y)) * smoothstep(0.8, 1.0, f.y);
 			albedo = mix(albedo, glass, shop * 0.8);
 			vec3 sc = sh > 0.7 ? hue(sh * 3.0) * 0.6 + 0.4 : vec3(1.0, 0.82, 0.55);
-			emit += sc * shop * step(0.25, sh) * night * 1.8;
+			emit += sc * shop * step(0.25, sh) * night * 0.9;
 			// цоколь и маркизы над витринами (днём)
 			float plinth = 1.0 - smoothstep(0.75, 0.8 + fw.y, f.y);
 			albedo = mix(albedo, wall * 0.55, plinth);
@@ -276,7 +276,7 @@ void fragment() {
 		float band = smoothstep(sz.y - 5.0, sz.y - 4.4, m.y) * (1.0 - smoothstep(sz.y - 1.4, sz.y - 1.0, m.y));
 		float fins = step(0.5, fract(f.x / 2.4));
 		vec3 cc = mix(vec3(0.6, 0.9, 1.0), vec3(1.0, 0.8, 0.45), step(0.5, cd.w));
-		emit += cc * band * (roof ? 0.0 : 1.0) * mix(0.3, 1.0, fins) * 2.6 * night;
+		emit += cc * band * (roof ? 0.0 : 1.0) * mix(0.3, 1.0, fins) * 1.25 * night;
 	}
 	// светодиодные рёбра башни
 	if ((flags & 4) != 0 && !roof) {
@@ -297,12 +297,13 @@ void fragment() {
 	}
 	if (kind == 8) {
 		// пилон моста: вертикальная подсветка
-		emit += vec3(1.0, 0.85, 0.6) * smoothstep(0.75, 1.0, 1.0 - abs(fract(m.y / 6.0) - 0.5) * 2.0) * night * 0.9;
+		emit += vec3(1.0, 0.85, 0.6) * smoothstep(0.75, 1.0, 1.0 - abs(fract(m.y / 6.0) - 0.5) * 2.0) * night * 0.45;
 	}
 
 	ALBEDO = albedo;
 	ROUGHNESS = rough;
 	METALLIC = metal;
 	SPECULAR = mix(0.15, 0.5, step(rough, 0.5));
-	EMISSION = emit;
+	// Ночная панорама сохраняет массу фасадов между окнами; огни не выжигают детали.
+	EMISSION = emit * mix(1.0, 0.74, night) + albedo * vec3(0.020, 0.028, 0.045) * night;
 }

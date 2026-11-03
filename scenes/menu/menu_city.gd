@@ -17,7 +17,7 @@ const STREET_X := 70.0       # шаг улиц вдоль x
 const STREET_Z := 62.0       # шаг улиц вдоль z
 const SEA_X := -780.0        # левее — залив
 const CAM_POS := Vector3(-60.0, 46.0, 265.0)
-const CAM_LOOK := Vector3(110.0, 52.0, -320.0)
+const CAM_LOOK := Vector3(155.0, 58.0, -320.0)
 ## Воздушная дымка: город тонет в ней с расстоянием (днём слабее, ночью плотнее — огни пробивают).
 const FOG_DAY := 0.0007
 const FOG_NIGHT := 0.00085
@@ -47,6 +47,7 @@ var _tree_mat: ShaderMaterial
 var _tower_mat: ShaderMaterial
 var _tree_mis: Array[MultiMeshInstance3D] = []
 var _tree_far_mi: MultiMeshInstance3D
+var overlook: Node3D
 
 # накопители инстансов: [Transform3D, Color(custom)]
 var _bld: Array = []
@@ -68,6 +69,9 @@ func _ready() -> void:
 	_build_city()
 	_build_river_and_bridges()
 	_build_near_bank()
+	overlook = preload("res://scenes/menu/menu_overlook.gd").new()
+	overlook.name = "Overlook"
+	add_child(overlook)
 	_flush_multimeshes()
 	_build_mountains()
 	traffic = MenuTraffic.new()
@@ -80,12 +84,12 @@ func _ready() -> void:
 	add_child(orbs)
 	cam = Camera3D.new()
 	cam.environment = env
-	cam.fov = 50.0
+	cam.fov = 56.0
 	cam.near = 1.0
 	cam.far = 9000.0
 	_cam_attr = CameraAttributesPractical.new()
-	_cam_attr.dof_blur_far_distance = 300.0
-	_cam_attr.dof_blur_far_transition = 700.0
+	_cam_attr.dof_blur_far_distance = 650.0
+	_cam_attr.dof_blur_far_transition = 1200.0
 	cam.attributes = _cam_attr
 	add_child(cam)
 	cam.current = true
@@ -108,7 +112,8 @@ func apply_quality(level: int) -> void:
 	env.glow_enabled = not low
 	# лёгкое размытие дали: город — простые коробки, вблизи их не разглядеть (на Низких — без размытия)
 	_cam_attr.dof_blur_far_enabled = not low
-	_cam_attr.dof_blur_amount = 0.08 if level == GraphicsSettings.Level.HIGH else 0.06
+	_cam_attr.dof_blur_amount = 0.035 if level == GraphicsSettings.Level.HIGH else 0.025
+	overlook.apply_quality(level)
 	_sky_mat.set_shader_parameter("detail", 0.0 if low else 1.0)
 	traffic.apply_quality(level)
 	orbs.apply_quality(level)
@@ -165,7 +170,9 @@ func _update(delta: float) -> void:
 	_mount_mat.set_shader_parameter("day", s.day)
 	_mount_mat.set_shader_parameter("night", night)
 	_tree_mat.set_shader_parameter("anim_t", anim_t)
+	_tree_mat.set_shader_parameter("night", night)
 	_tower_mat.set_shader_parameter("night", night)
+	overlook.update_night(night)
 	traffic.update(anim_t, night, s.traffic, _water_mat)
 	orbs.update(phase, anim_t, _water_mat)
 	_update_camera(delta)
@@ -178,9 +185,9 @@ func _update_camera(delta: float) -> void:
 		var mp := vp.get_mouse_position() / vp.get_visible_rect().size - Vector2(0.5, 0.5)
 		_parallax = _parallax.lerp(mp.clamp(Vector2(-0.5, -0.5), Vector2(0.5, 0.5)), clampf(delta * 1.5, 0.0, 1.0))
 	var t := anim_t
-	var off := Vector3(sin(t * 0.043) * 16.0, sin(t * 0.031) * 4.0, sin(t * 0.027 + 1.0) * 10.0)
-	var look := CAM_LOOK + Vector3(sin(t * 0.037) * 24.0 + _parallax.x * 40.0, -_parallax.y * 18.0, 0.0)
-	cam.look_at_from_position(CAM_POS + off + Vector3(_parallax.x * 6.0, 0.0, 0.0), look)
+	var off := Vector3(sin(t * 0.043) * 3.0, sin(t * 0.031) * 0.7, sin(t * 0.027 + 1.0) * 2.0)
+	var look := CAM_LOOK + Vector3(sin(t * 0.037) * 7.0 + _parallax.x * 14.0, -_parallax.y * 7.0, 0.0)
+	cam.look_at_from_position(CAM_POS + off + Vector3(_parallax.x * 2.0, 0.0, 0.0), look)
 
 
 # ---------------------------------------------------------------- окружение
@@ -580,11 +587,17 @@ func _build_near_bank() -> void:
 		var y := height_at(x, z)
 		if y < 1.0 or (absf(x - CAM_POS.x) < 30.0 and absf(z - CAM_POS.z) < 30.0):
 			continue
+		# Смотровая площадка и подход к ней — открытый парк, без случайных стволов в мощении.
+		if x > -74.0 and x < 32.0 and z > 190.0 and z < 292.0:
+			continue
 		# у шоссе реже, выше по склону — сплошной лес
 		if _rng.randf() > smoothstep(RIVER_NEAR + 20.0, RIVER_NEAR + 70.0, z):
 			continue
 		var s := _rng.randf_range(6.0, 13.0)
 		_trees.append(_tree_item(x, y - 0.4, z, s, 0 if _rng.randf() < 0.62 else 1))
+	# Группы по краям площадки обрамляют реку, не заслоняя центр панорамы.
+	for place: Vector3 in [Vector3(32,0,217), Vector3(41,0,229), Vector3(-70,0,224)]:
+		_trees.append(_tree_item(place.x, height_at(place.x,place.z)-.4, place.z, 12.0, 0))
 	# деревья на холмах за городом (дальний лес)
 	for k in range(1600):
 		var x := _rng.randf_range(-1600.0, 1800.0)

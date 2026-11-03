@@ -44,6 +44,7 @@ var _mus_path := ""
 var _mus_resume: Dictionary = {}           # путь -> позиция: вернувшись к треку, играем дальше, а не сначала
 var _music_tw: Tween
 var _last_play: Dictionary = {}   # имя -> время, чтобы одинаковые звуки не накладывались кашей
+var _match_sfx_epoch := 0
 var music_muted := false
 
 static var _inst: SoundFx
@@ -185,9 +186,30 @@ func stop_sfx(sfx_name: String) -> void:
 		if player.stream == stream: player.stop()
 
 
+## Выход из обычной дуэли: хвосты и отложенные крики не переходят в меню.
+## Музыка и прогретый каталог остаются у singleton; следующий матч может звучать сразу.
+func cancel_match_sfx() -> void:
+	_match_sfx_epoch += 1
+	_roll.stop()
+	for player in _pool:
+		player.stop()
+		player.stream = null
+	_last_play.clear()
+
+
+func _play_if_current(epoch: int, sfx_name: String, db: float) -> void:
+	if epoch == _match_sfx_epoch:
+		play(sfx_name, db)
+
+
+func _play_stream_if_current(epoch: int, stream: AudioStream, db: float, pitch: float) -> void:
+	if epoch == _match_sfx_epoch:
+		_play_stream(stream, db, pitch)
+
+
 ## Отложенный эффект (не блокирует вызывающего).
 func play_later(sfx_name: String, delay: float, db: float = 0.0) -> void:
-	(Engine.get_main_loop() as SceneTree).create_timer(delay).timeout.connect(play.bind(sfx_name, db))
+	(Engine.get_main_loop() as SceneTree).create_timer(delay).timeout.connect(_play_if_current.bind(_match_sfx_epoch, sfx_name, db))
 
 
 ## Крик существа: kind = "appear" | "attack".
@@ -197,7 +219,7 @@ func cry(creature_id: StringName, kind: String = "appear", delay: float = 0.0, d
 	if delay <= 0.0:
 		_play_stream(s, db, randf_range(0.97, 1.03))
 	else:
-		(Engine.get_main_loop() as SceneTree).create_timer(delay).timeout.connect(_play_stream.bind(s, db, 1.0))
+		(Engine.get_main_loop() as SceneTree).create_timer(delay).timeout.connect(_play_stream_if_current.bind(_match_sfx_epoch, s, db, 1.0))
 
 
 ## Способность: звук по стихии карты (params.lock — стихия-замок) или слиянию, иначе общий.

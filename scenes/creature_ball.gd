@@ -78,6 +78,9 @@ var _prev_vel := Vector3.ZERO
 var _label_allowed := true
 var _halves: Array[MeshInstance3D] = []  ## части оболочки для раскрытия (лепестки, крышки, пояс)
 var _open_tween: Tween
+var _stage_tween: Tween
+var _throw_tween: Tween
+var _fx_epoch := 0
 var _launched := false
 var _done := false
 var _t := 0.0
@@ -580,10 +583,12 @@ func _throw_fx(impulse: Vector3) -> void:
 	BallFx.flash(w, p, c, _shell_r() * 7.0, 0.3)
 	var dir := Vector3(impulse.x, impulse.length() * 0.25, impulse.z)
 	BallFx.speed_ring(w, p + dir.normalized() * _shell_r() * 1.5, dir, c, _shell_r() * 3.0, 0.32)
+	var epoch := _fx_epoch
 	get_tree().create_timer(0.07).timeout.connect(func() -> void:
-		if is_inside_tree():
+		if epoch == _fx_epoch and is_inside_tree() and is_instance_valid(w):
 			BallFx.speed_ring(w, _shell_center(), dir, c.lightened(0.4), _shell_r() * 2.0, 0.25))
 	var tw := create_tween()
+	_throw_tween = tw
 	tw.tween_method(_set_glow, 2.2, 0.0, 0.6).set_ease(Tween.EASE_OUT)
 
 
@@ -664,6 +669,17 @@ func _kill_open_tween() -> void:
 	if _open_tween != null and _open_tween.is_valid():
 		_open_tween.kill()
 	_open_tween = null
+
+
+## Каталог сохраняет узел живым: его постановка не должна пережить матч.
+func reset_match_presentation() -> void:
+	_fx_epoch += 1
+	_kill_open_tween()
+	for tw in [_stage_tween, _throw_tween]:
+		if tw != null and tw.is_valid(): tw.kill()
+	_stage_tween = null
+	_throw_tween = null
+	_stop_fx()
 
 
 ## Части оболочки (общие меши BallShell), создаются у шара один раз — при первом раскрытии.
@@ -777,6 +793,7 @@ func stage_at(destination: Vector3, target: Vector3) -> Signal:
 	var angle := atan2(facing.x, facing.z)
 	var initial := _figure.rotation.y
 	var tw := create_tween().set_parallel(true)
+	_stage_tween = tw
 	tw.tween_property(self, "global_position", destination, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	tw.tween_method(func(value: float) -> void: _figure.rotation.y = lerp_angle(initial, angle, value), 0.0, 1.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	return tw.finished

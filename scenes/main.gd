@@ -70,6 +70,9 @@ var _tournament_match: Dictionary = {}
 var _tournament_registration := false
 var _tournament_exit: Button
 var _tournament_notice: Label
+var _duel_menu: Button
+var _duel_exit_confirm: ConfirmationDialog
+var _leaving_duel := false
 var _player_ids: Array[StringName] = []
 var _player_deck: Array = []  # [существа, ворота, способности] из конструктора колоды
 var _gate_pick: Dictionary = {}   # «ворота + бросок»: выбранные карта и слот, ждём выбора существа
@@ -266,6 +269,22 @@ func _build_ui() -> void:
 	hover_tips.resolver = _tip_at
 	ui_layer.add_child(hover_tips)
 	ui_layer.move_child(hover_tips, ui_layer.get_child_count() - 2)  # под меню, над остальным интерфейсом
+	# Отдельно от HUD: выход доступен и во время постановки/экрана результата.
+	_duel_menu = Button.new()
+	_duel_menu.text = "В меню"
+	_duel_menu.tooltip_text = "Завершить обычную дуэль и вернуться в главное меню"
+	_duel_menu.theme = UiTheme.get_theme()
+	_duel_menu.custom_minimum_size = Vector2(112, 38)
+	VisualUtil.place(_duel_menu, 1.0, 0.0, -16.0, 164.0)
+	_duel_menu.hide()
+	_duel_menu.pressed.connect(_request_duel_menu)
+	ui_layer.add_child(_duel_menu)
+	hud.battle_mode_changed.connect(_place_duel_menu)
+
+
+func _place_duel_menu(battle: bool) -> void:
+	# В бою верхняя полоса свободна; правую силу и руку способностей не закрываем.
+	VisualUtil.place(_duel_menu, 0.5 if battle else 1.0, 0.0, 0.0 if battle else -16.0, 12.0 if battle else 164.0)
 
 
 func _on_deck_chosen(creatures: Array[StringName], arena_ids: Array[StringName], abilities: Array[StringName]) -> void:
@@ -409,6 +428,42 @@ func _start_game() -> void:
 	_refresh_hand()
 	ability_panel.set_dock_visible(true)
 	setup_panel.set_dock_visible(true)
+	_duel_menu.visible = tournament == null
+
+
+func _request_duel_menu() -> void:
+	if _leaving_duel or tournament != null or ctrl == null:
+		return
+	if _game_over:
+		_leave_duel_to_menu()
+		return
+	if is_instance_valid(_duel_exit_confirm):
+		_duel_exit_confirm.popup_centered()
+		return
+	_duel_exit_confirm = ConfirmationDialog.new()
+	_duel_exit_confirm.theme = UiTheme.get_theme()
+	_duel_exit_confirm.title = "Вернуться в главное меню?"
+	_duel_exit_confirm.dialog_text = "Текущая дуэль завершится. Можно будет начать новую."
+	_duel_exit_confirm.ok_button_text = "В меню"
+	_duel_exit_confirm.cancel_button_text = "Продолжить дуэль"
+	_duel_exit_confirm.confirmed.connect(_leave_duel_to_menu)
+	ui_layer.add_child(_duel_exit_confirm)
+	_duel_exit_confirm.popup_centered()
+
+
+func _leave_duel_to_menu() -> void:
+	if _leaving_duel or tournament != null:
+		return
+	_leaving_duel = true
+	_pending.clear()
+	_gate_pick.clear()
+	events.stop()
+	SoundFx.i().cancel_match_sfx()
+	_duel_menu.disabled = true
+	# Сначала удаляется вся сцена (включая владельцев await и твинов).
+	# _exit_tree возвращает актёров/арену через _release_game_resources().
+	# Не ждём drained: результат боя может ждать подтверждения бесконечно.
+	get_tree().change_scene_to_file("res://scenes/menu/main_menu.tscn")
 
 
 ## Сохранённый образ применяется к готовой паре из стартового каталога.
@@ -1173,7 +1228,7 @@ func _anim_relocated(uid: int, _from: int, to: int) -> void:
 	var target := arena.slot_position(to) + Vector3(0.0, BALL_Y + 0.02, 0.0)
 	b.freeze_at(b.global_position)
 	cam.overview()
-	var tw := b.create_tween()
+	var tw := create_tween() # Владелец — матч, а не сохраняемый каталогом шар.
 	tw.tween_property(b, "global_position", target + Vector3(0, Arena.FIG_W * 0.4, 0), 0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tw.tween_property(b, "global_position", target, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	await tw.finished
@@ -1197,12 +1252,13 @@ func _anim_remove_ball(uid: int, eliminated: bool = false) -> void:
 		_refresh_status()
 		VisualUtil.burst(world, b.global_position + Vector3(0, Arena.FIG_H * 0.2, 0), _creature_def(uid).color, Arena.WORLD * 0.8)
 	balls.erase(uid)
+	# Актёр остаётся учтённым и во время vanish: выход должен вернуть и его.
+	_prepared_balls[uid] = b
 	if b == _active_ball:
 		_active_ball = null
 	await b.vanish(eliminated)
 	b.visible = false
 	b.process_mode = Node.PROCESS_MODE_DISABLED
-	_prepared_balls[uid] = b
 
 
 func _anim_stood(uid: int, slot: int) -> void:
@@ -1381,7 +1437,7 @@ func _report(uid: int, slot: int) -> void:
 # ---------------------------------------------------------------- ответы игроков (только после drained)
 
 func _pump() -> void:
-	if _game_over or events.is_busy() or _pending.is_empty():
+	if _leaving_duel or _game_over or events.is_busy() or _pending.is_empty():
 		return
 	var phase: int = ctrl.get_phase()
 	if phase == MatchController.Phase.GAME_OVER:

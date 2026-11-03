@@ -306,11 +306,19 @@ assets/avatars/vrm/README.md; генератор и SHA — assets/avatars/stree
 tools/avatars/build_street_set.gd, assets/avatars/street/manifest.json.
 
 
-## Звук волны карты (2026-11-01)
+## Звук волны карты (обновлён 2026-11-03)
 
-assets/audio/sfx/gate_expand_wave.wav — собственный синтезированный эффект,
-выбранный автором после подбора (08_field_clean). Сторонних сэмплов нет.
-Воспроизводимый генератор: tools/audio/build_gate_activation.py (Python/NumPy).
+`assets/audio/sfx/gate_expand_wave.wav` — выбранный автором записанный эффект
+с лёгким воздушным хвостом, 1,80 с. Источник: **Vrymaa — Magic - Cymbal Swell 2**,
+https://freesound.org/people/Vrymaa/sounds/826131/ . Лицензия **CC0 1.0 Universal**:
+https://creativecommons.org/publicdomain/zero/1.0/ . Авторство не обязательно,
+сохранено из уважения. Использован публичный HQ MP3-preview, не lossless WAV.
+Обработка: фрагмент после удара, фильтры/стереорасширение, сжатие времени без
+изменения высоты и тихий авторский шумовой хвост. Генераторы:
+`tools/audio/build_gate_recorded_shimmer.py`, `build_gate_recorded_shimmer_synced.py`,
+`build_gate_recorded_shimmer_breeze.py`. Подробные параметры и SHA — в manifest
+рядом с preview; краткое происхождение включено в `gate_expand_wave.txt`.
+Прежний синтезированный 08_field_clean заменён только для этой волны.
 
 
 ### Спортивный комплект и зачёс — 1 ноября 2026

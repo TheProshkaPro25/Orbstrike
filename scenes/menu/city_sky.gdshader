@@ -88,7 +88,7 @@ void sky() {
 				float br = pow(hash13(cell + 11.0), 3.0) * 2.2 + 0.25;
 				float tw = 0.75 + 0.25 * sin(anim_t * (2.0 + hs * 9.0) + hs * 80.0);
 				vec3 sc = mix(vec3(0.75, 0.85, 1.0), vec3(1.0, 0.85, 0.7), hash13(cell + 5.0));
-				col += sc * smoothstep(0.38, 0.0, dist) * br * tw * night * smoothstep(0.0, 0.18, y);
+				col += sc * smoothstep(0.20, 0.0, dist) * br * .65 * tw * smoothstep(.72,.98,night) * smoothstep(0.0, 0.18, y);
 			}
 		}
 		// солнце

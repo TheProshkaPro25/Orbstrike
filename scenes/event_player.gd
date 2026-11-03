@@ -6,9 +6,12 @@ signal drained
 
 var _queue: Array[Callable] = []
 var _running := false
+var _stopped := false
 
 
 func push(anim: Callable) -> void:
+	if _stopped:
+		return
 	_queue.append(anim)
 	if not _running:
 		_running = true
@@ -19,10 +22,17 @@ func is_busy() -> bool:
 	return _running or not _queue.is_empty()
 
 
+## Остановить очередь перед удалением сцены; активная корутина принадлежит ей.
+func stop() -> void:
+	_stopped = true
+	_queue.clear()
+
+
 func _run() -> void:
-	while not _queue.is_empty():
+	while not _stopped and not _queue.is_empty():
 		var anim: Callable = _queue.pop_front()
 		if anim.is_valid():
 			await anim.call()
 	_running = false
-	drained.emit()
+	if not _stopped:
+		drained.emit()
