@@ -1,4 +1,4 @@
-# Сборка 0.3.0 проверена — 3 ноября 2026 года
+# Выпуск 0.3.0 опубликован и проверен — 3 ноября 2026 года
 
 Автор отдельно поручил выпуск на GitHub и безопасную уборку. Версия проекта
 и Windows product version — 0.3.0, file version — 0.3.0.0.
@@ -11,10 +11,12 @@ SHA256: 25644cb360fc5e9e034385d8ac8bba8856b57e8591967adadd828d6461ad7e41.
 Сервер: build/Sfery_Stikhiy_v0.3.0_online-server.tar.gz, 67 261 байт.
 SHA256: 63637368a89b6fcef51a9a3f449bc612fc040a19abfb512585e186d2f3cfa896.
 
-Релиз подготовлен, но ещё не опубликован. Следующее действие — commit/tag,
-безопасный push и создание GitHub Release с шестью вложениями, затем сверка
-удалённых SHA256. Итоговая запись: tools/checkpoints/release030-validation.json.
-Планируемый адрес: https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.3.0.
+Опубликован GitHub Release 432998567, latest=true, draft=false, prerelease=false.
+Адрес: https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.3.0.
+Все шесть вложений имеют правильные размеры и SHA256 по GitHub API.
+Тег v0.3.0 указывает на 4c8eedc6084ac427f7fba669f9c8aff34cc66c6f.
+Следующий коммит только фиксирует публикацию в документации; код пакета и тег
+не меняются. Запись: tools/checkpoints/release030-validation.json.
 
 ## Проверки и ограничения
 

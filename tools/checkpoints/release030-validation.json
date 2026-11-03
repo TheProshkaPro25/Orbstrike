@@ -1,7 +1,7 @@
 {
   "version": "0.3.0",
   "date": "2026-11-03",
-  "status": "validated release package ready for publication",
+  "status": "published and verified",
   "engine": "Godot4.7.2.stable.arch_linux.ed1daf0bf",
   "testing": {
     "display": "minimized, unfocusable, offscreen tools/test_window.gd",
@@ -497,9 +497,65 @@
     "Model pose tests are sampled checks, not an exhaustive geometry audit."
   ],
   "publication": {
-    "status": "ready, not yet published",
-    "intended_tag": "v0.3.0",
-    "intended_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.3.0"
+    "status": "published; latest; all6remoteSHA256match",
+    "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.3.0",
+    "release_id": 432998567,
+    "tag": "v0.3.0",
+    "release_commit": "4c8eedc6084ac427f7fba669f9c8aff34cc66c6f",
+    "draft": false,
+    "prerelease": false,
+    "latest": true,
+    "published_at": "2026-11-03T17:17:49Z",
+    "remote_refs_before_publication_log_commit": {
+      "refs/heads/codex/release-0.3.0": "4c8eedc6084ac427f7fba669f9c8aff34cc66c6f",
+      "refs/heads/master": "4c8eedc6084ac427f7fba669f9c8aff34cc66c6f",
+      "refs/tags/v0.3.0": "afcc2c519c193ee4358c2bb0b7542e355a6ac49c",
+      "refs/tags/v0.3.0^{}": "4c8eedc6084ac427f7fba669f9c8aff34cc66c6f"
+    },
+    "assets": [
+      {
+        "name": "ONLINE_SERVER.md",
+        "size": 13224,
+        "digest": "sha256:be7b9b171da0ebd5071f280398e48c8ff9a1d383d6ac8d2d9aaab8756c11356f",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.0/ONLINE_SERVER.md"
+      },
+      {
+        "name": "Sfery_Stikhiy_v0.3.0_online-server.tar.gz",
+        "size": 67261,
+        "digest": "sha256:63637368a89b6fcef51a9a3f449bc612fc040a19abfb512585e186d2f3cfa896",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.0/Sfery_Stikhiy_v0.3.0_online-server.tar.gz"
+      },
+      {
+        "name": "Sfery_Stikhiy_v0.3.0_online-server.tar.gz.sha256",
+        "size": 108,
+        "digest": "sha256:aa06275f4a0e4978d20d3ff6f03438dde6ac76989bb46590db28d9bfc529a98a",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.0/Sfery_Stikhiy_v0.3.0_online-server.tar.gz.sha256"
+      },
+      {
+        "name": "Sfery_Stikhiy_v0.3.0_win64.zip",
+        "size": 1030237049,
+        "digest": "sha256:25644cb360fc5e9e034385d8ac8bba8856b57e8591967adadd828d6461ad7e41",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.0/Sfery_Stikhiy_v0.3.0_win64.zip"
+      },
+      {
+        "name": "Sfery_Stikhiy_v0.3.0_win64.zip.sha256",
+        "size": 97,
+        "digest": "sha256:b17d804da6ee2de9b734489f48fdf4a52611cdeb090f99d03b9c37f465c8b30a",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.0/Sfery_Stikhiy_v0.3.0_win64.zip.sha256"
+      },
+      {
+        "name": "SHA256SUMS",
+        "size": 507,
+        "digest": "sha256:c689006500ef02c74dc6beed1b41487d874351692ecb33a8f1faf27b44e570ae",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.0/SHA256SUMS"
+      }
+    ]
   },
   "source_full": {
     "full_raw_result": {
