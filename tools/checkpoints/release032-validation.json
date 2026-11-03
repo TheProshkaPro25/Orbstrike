@@ -1,7 +1,7 @@
 {
   "version": "0.3.2",
   "date": "2026-11-03",
-  "status": "validated release candidate; publication pending",
+  "status": "published and verified",
   "engine": "Godot4.7.2.stable.arch_linux.ed1daf0bf",
   "export": {
     "exit_code": 0,
@@ -882,5 +882,111 @@
     "latest_ai_outcomes": "build/checks/gameplay/selected-ai-outcomes/",
     "latest_card_audit_positions": "build/checks/gameplay/selected-card-audit-positions/",
     "balance_series": "400 valid/200 pairs, not repeated for release; limitations retained in audit"
-  }
+  },
+  "publication": {
+    "status": "published; latest; all6remoteSHA256match; publicHTTP200",
+    "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.3.2",
+    "release_id": 433204622,
+    "tag": "v0.3.2",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2026-11-03T20:54:22Z",
+    "assets": [
+      {
+        "name": "ONLINE_SERVER.md",
+        "size": 13324,
+        "digest": "sha256:29178ec75faa9fe5265bb03880d03f6e51a0fb68ad166e86022e90ce9e7da425",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.2/ONLINE_SERVER.md"
+      },
+      {
+        "name": "Sfery_Stikhiy_v0.3.2_online-server.tar.gz",
+        "size": 70088,
+        "digest": "sha256:4f4c50545b28f2188f8c0d4b515f5c0638e9d9fd38414b055397fbfd0cf6ddfc",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.2/Sfery_Stikhiy_v0.3.2_online-server.tar.gz"
+      },
+      {
+        "name": "Sfery_Stikhiy_v0.3.2_online-server.tar.gz.sha256",
+        "size": 108,
+        "digest": "sha256:c35dac16f92c4b90a1fd9114ce3f95a68cb0ae7de2aa3663d96b41585be24ede",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.2/Sfery_Stikhiy_v0.3.2_online-server.tar.gz.sha256"
+      },
+      {
+        "name": "Sfery_Stikhiy_v0.3.2_win64.zip",
+        "size": 1030494506,
+        "digest": "sha256:a459ffe71cdf244ec781aae74c54fc7fe0bf6a3b82cc98e4d4375d964683da39",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.2/Sfery_Stikhiy_v0.3.2_win64.zip"
+      },
+      {
+        "name": "Sfery_Stikhiy_v0.3.2_win64.zip.sha256",
+        "size": 97,
+        "digest": "sha256:5bef80d121a98f6bf5fba132cad2acdd4fe9493892dbbbad318254f13d44ad48",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.2/Sfery_Stikhiy_v0.3.2_win64.zip.sha256"
+      },
+      {
+        "name": "SHA256SUMS",
+        "size": 507,
+        "digest": "sha256:b9b52a95a8efdd35decf93e650165627d51b25ae9b8fe1f202477e9041482c36",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.2/SHA256SUMS"
+      }
+    ],
+    "latest": true,
+    "release_commit": "086c0948740cf4908c484a097d298070f87b74ae",
+    "public_availability": [
+      {
+        "name": "release",
+        "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.3.2",
+        "status": 200,
+        "content_length": null
+      },
+      {
+        "name": "ONLINE_SERVER.md",
+        "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.2/ONLINE_SERVER.md",
+        "status": 200,
+        "content_length": "13324"
+      },
+      {
+        "name": "Sfery_Stikhiy_v0.3.2_online-server.tar.gz",
+        "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.2/Sfery_Stikhiy_v0.3.2_online-server.tar.gz",
+        "status": 200,
+        "content_length": "70088"
+      },
+      {
+        "name": "Sfery_Stikhiy_v0.3.2_online-server.tar.gz.sha256",
+        "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.2/Sfery_Stikhiy_v0.3.2_online-server.tar.gz.sha256",
+        "status": 200,
+        "content_length": "108"
+      },
+      {
+        "name": "Sfery_Stikhiy_v0.3.2_win64.zip",
+        "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.2/Sfery_Stikhiy_v0.3.2_win64.zip",
+        "status": 200,
+        "content_length": "1030494506"
+      },
+      {
+        "name": "Sfery_Stikhiy_v0.3.2_win64.zip.sha256",
+        "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.2/Sfery_Stikhiy_v0.3.2_win64.zip.sha256",
+        "status": 200,
+        "content_length": "97"
+      },
+      {
+        "name": "SHA256SUMS",
+        "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.2/SHA256SUMS",
+        "status": 200,
+        "content_length": "507"
+      }
+    ],
+    "remote_refs_before_publication_log_commit": [
+      "086c0948740cf4908c484a097d298070f87b74ae\trefs/heads/codex/release-0.3.2",
+      "086c0948740cf4908c484a097d298070f87b74ae\trefs/heads/master",
+      "b415e2b664fb938890d7eea4f49420ce46fbd2f0\trefs/tags/v0.3.2",
+      "086c0948740cf4908c484a097d298070f87b74ae\trefs/tags/v0.3.2^{}"
+    ]
+  },
+  "publication_log_commit": "Follows tagged code commit; documentation only, release assets and tag unchanged."
 }
