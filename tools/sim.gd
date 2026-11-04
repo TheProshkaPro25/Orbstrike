@@ -23,6 +23,13 @@ const FX_KEYS: Array[String] = ["revived", "interrupted", "both_lose", "stays", 
 
 var _legacy_accuracy := false
 
+## Общий путь команды ИИ: целевые способности требуют явного выбора контроллера.
+static func play_ai_ability(ctrl: MatchController, ai: AIPlayer, player: int, id: StringName) -> Error:
+	if id == &"":
+		return ctrl.pass_ability(player)
+	var target := ai.choose_ability_target(ctrl.get_view(player), ctrl.get_battle_preview(), id, ctrl.legal_ability_targets(player, id))
+	return ctrl.play_ability(player, id, target)
+
 func _initialize() -> void:
 	var args: Dictionary = {"accuracy": "exact", "n": "600", "seed": "1", "d0": "1", "d1": "1", "levels": "1", "check": "0"}
 	for a in OS.get_cmdline_user_args():
@@ -154,7 +161,7 @@ func run_match(seed_value: int, d0: int, d1: int, st: Dictionary) -> void:
 					ctrl.reveal_gate(p)
 					continue
 				var pick: StringName = ais[p].choose_ability(ctrl.get_view(p), ctrl.get_battle_preview(), ctrl.legal_abilities(p))
-				err = ctrl.pass_ability(p) if pick == &"" else ctrl.play_ability(p, pick)
+				err = play_ai_ability(ctrl, ais[p], p, pick)
 		# Метрика камбэка не зависит от бонуса финального раунда LEGACY.
 		# Смотрим итог действия (включая возрождения); терминальная победа сама по себе не камбэк.
 		if int(m["final_player"]) == -2 and ctrl.get_phase() != MatchController.Phase.GAME_OVER:

@@ -146,6 +146,8 @@ func _handle(id: int, message: Dictionary) -> void:
 			room.rematch = [false, false]
 			room.last_battle = {}
 			room.battle_serial = 0
+			room.last_standoff = []
+			room.standoff_serial = 0
 		_lobby(room)
 		return
 	if message.t == "deck":
@@ -181,7 +183,8 @@ func _create(id: int, player_name: String) -> void:
 		for byte in _crypto.generate_random_bytes(8): code += CODE_ALPHABET[int(byte) % CODE_ALPHABET.length()]
 	var room := {"code": code, "peers": [id, -1], "names": [player_name, ""], "decks": [{}, {}],
 		"ready": [false, false], "rematch": [false, false], "ctrl": null, "physics": null,
-		"busy": false, "closed": false, "last_battle": {}, "battle_serial": 0}
+		"busy": false, "closed": false, "last_battle": {}, "battle_serial": 0,
+		"last_standoff": [], "standoff_serial": 0}
 	_rooms[code] = room
 	_peers[id].room = code
 	_peers[id].player = 0
@@ -220,6 +223,7 @@ func _start(room: Dictionary) -> void:
 	room.physics = Physics.new()
 	add_child(room.physics)
 	ctrl.battle_resolved.connect(_capture_battle.bind(String(room.code)))
+	ctrl.standoff.connect(_capture_standoff.bind(String(room.code)))
 	ctrl.start(0)
 	_states(room)
 
@@ -228,6 +232,12 @@ func _capture_battle(result: BattleResult, code: String) -> void:
 	var room: Dictionary = _rooms[code]
 	room.last_battle = Codec.preview(result)
 	room.battle_serial = int(room.battle_serial) + 1
+
+func _capture_standoff(attacker: int, defender: int, code: String) -> void:
+	if not _rooms.has(code): return
+	var room: Dictionary = _rooms[code]
+	room.last_standoff = [attacker, defender]
+	room.standoff_serial = int(room.standoff_serial) + 1
 
 func _action(id: int, room: Dictionary, player: int, command: String, args: Dictionary) -> void:
 	var ctrl: MatchController = room.ctrl
@@ -243,7 +253,7 @@ func _action(id: int, room: Dictionary, player: int, command: String, args: Dict
 		"throw_with_gate": err = ctrl.throw_with_gate(player, StringName(args.card), int(args.slot), int(args.uid))
 		"skip_gate": err = ctrl.skip_gate(player)
 		"select": err = ctrl.select_creature(player, int(args.uid))
-		"ability": err = ctrl.play_ability(player, StringName(args.card))
+		"ability": err = ctrl.play_ability(player, StringName(args.card), args.get("target", {}))
 		"pass": err = ctrl.pass_ability(player)
 		"reveal_gate": err = ctrl.reveal_gate(player)
 		"launch":
@@ -308,6 +318,13 @@ func _states(room: Dictionary) -> void:
 		if room.closed: break
 		var view := ctrl.get_view(player)
 		var reasons: Dictionary = {}
+		var targets: Dictionary = {}
+		for id in ctrl.legal_abilities(player):
+			var options := ctrl.legal_ability_targets(player, id)
+			if not options.is_empty():
+				targets[String(id)] = []
+				for option in options:
+					targets[String(id)].append({"target_uid":int(option.target_uid)} if option.has("target_uid") else {"target_card":String(option.target_card)})
 		for id in view.players[player].ability_hand: reasons[String(id)] = ctrl.ability_unavailable_reason(player, id)
 		# Battle plays are public. Recompute separately using each recipient's masked state.
 		var preview: BattleResult = ctrl.get_battle_preview()
@@ -321,11 +338,12 @@ func _states(room: Dictionary) -> void:
 			"legal": {"setup_slots": ctrl.legal_setup_slots() if ctrl.get_phase() == MatchController.Phase.SETUP and ctrl.get_active_player() == player else [],
 				"creatures": ctrl.legal_creatures(player), "abilities": ctrl.legal_abilities(player),
 				"can_skip_gate": ctrl.get_active_player() == player and ctrl.can_skip_gate(), "can_reveal_gate": ctrl.can_reveal_gate(player),
-				"abilities_left": ctrl.abilities_left(player), "ability_reasons": reasons},
+				"abilities_left": ctrl.abilities_left(player), "ability_reasons": reasons, "ability_targets": targets},
 			"selected_uid": ctrl.get_selected_uid(), "landed_uid": ctrl.get_landed_uid(),
 			"throw_gate_slot": ctrl.get_throw_gate_slot(), "ability_moment": String(ctrl.get_ability_moment()),
 			"preview": Codec.preview(preview), "busy": room.busy, "winner": ctrl.winner, "reason": String(ctrl.game_over_reason),
-			"last_battle": room.last_battle, "battle_serial": room.battle_serial})
+			"last_battle": room.last_battle, "battle_serial": room.battle_serial,
+			"last_standoff": room.last_standoff, "standoff_serial": room.standoff_serial})
 
 func _free_physics(room: Dictionary) -> void:
 	if is_instance_valid(room.physics): room.physics.queue_free()

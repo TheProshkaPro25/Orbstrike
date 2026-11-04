@@ -123,7 +123,7 @@ func _build() -> void:
 	var head := HBoxContainer.new()
 	head.add_theme_constant_override("separation", 8)
 	vb.add_child(head)
-	var logo := VisualUtil.label("Сферы Стихий", 24)
+	var logo := VisualUtil.label("Orbstrike", 24)
 	logo.add_theme_color_override("font_color", UiTheme.GOLD)
 	logo.custom_minimum_size = Vector2(LEFT_W - 8.0, 0)
 	head.add_child(logo)

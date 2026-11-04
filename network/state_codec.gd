@@ -71,7 +71,7 @@ static func preview(result: BattleResult) -> Dictionary:
 		data[key] = value.duplicate(true) if value is Array or value is Dictionary else value
 	return data
 
-const BATTLE_FIELDS := ["slot", "attacker_uid", "defender_uid", "winner_uid", "loser_uid", "powers", "breakdown", "atk_ability", "def_ability", "atk_cancelled", "def_cancelled", "arena_card_id", "arena_cancelled", "attr_atk", "attr_def", "atk_fusion", "def_fusion", "plays", "ability_counts", "battle_plays", "passed", "cancelled_plays", "trap_id", "sealed", "mirrored", "final_round", "momentum", "gate_effect", "gate_owner_side", "silenced", "interrupted", "relocate_uid", "relocate_to", "both_lose", "winner_stays", "auto_win", "revive", "recall", "marks", "copies"]
+const BATTLE_FIELDS := ["slot", "attacker_uid", "defender_uid", "winner_uid", "loser_uid", "powers", "breakdown", "atk_ability", "def_ability", "atk_cancelled", "def_cancelled", "arena_card_id", "arena_cancelled", "attr_atk", "attr_def", "atk_fusion", "def_fusion", "plays", "ability_counts", "battle_plays", "passed", "cancelled_plays", "trap_id", "sealed", "mirrored", "final_round", "momentum", "gate_effect", "gate_owner_side", "silenced", "interrupted", "relocate_uid", "relocate_to", "both_lose", "winner_stays", "auto_win", "revive", "recall", "marks", "copies", "ordinary", "called_uids", "reserve_cards", "triumph", "valor_saved_uid"]
 
 static func decode_battle(data: Dictionary, view: MatchState = null) -> BattleResult:
 	if data.is_empty(): return null
@@ -92,6 +92,11 @@ static func decode_battle(data: Dictionary, view: MatchState = null) -> BattleRe
 						TYPE_STRING_NAME: values.append(StringName(item))
 						_: values.append(item)
 			_: result.set(key, value)
+	for key in ["plays", "battle_plays", "cancelled_plays"]:
+		for play in result.get(key):
+			if play.size() == 3:
+				var target: Dictionary = play[2]
+				play[2] = {"target_uid":int(target.target_uid)} if target.has("target_uid") else {"target_card":StringName(target.target_card)}
 	if view != null and view.creatures.has(result.attacker_uid) and view.creatures.has(result.defender_uid):
 		result.context = BattleContext.duel(view, result.attacker_uid, result.defender_uid, result.slot)
 	return result
@@ -179,7 +184,11 @@ static func valid_battle(data: Variant) -> bool:
 		if not _card_id(data[key],true): return false
 	for key in ["plays","battle_plays","cancelled_plays"]:
 		for play in data[key]:
-			if not _array(play,2,2) or not _int(play[0],0,1) or not _card_id(play[1],false): return false
+			if not _array(play,2,3) or not _int(play[0],0,1) or not _card_id(play[1],false): return false
+			if play.size() == 3 and not OnlineProtocol.ability_target(play[2]): return false
+	if not _int(data.valor_saved_uid,-1,5) or not _array(data.called_uids,2,2) or not _array(data.reserve_cards,2,2) or not _array(data.triumph,2,2): return false
+	for i in 2:
+		if not _int(data.called_uids[i],-1,5) or not _card_id(data.reserve_cards[i],true) or not data.triumph[i] is bool: return false
 	for row in data.breakdown:
 		if not row is Dictionary or not _fields(row,["side","source","delta"]) or not _int(row.side,0,1) or not row.source is String or row.source.length() > 256 or not _int(row.delta,-100000,100000): return false
 	if not _array(data.recall,2,2): return false

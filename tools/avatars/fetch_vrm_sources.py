@@ -17,7 +17,7 @@ def obtain(path,url,digest):
     if not path.exists():
         if args.verify: raise FileNotFoundError(path)
         path.parent.mkdir(parents=True,exist_ok=True)
-        request=urllib.request.Request(url,headers={'User-Agent':'Sfery-Stikhiy-asset-evaluation'})
+        request=urllib.request.Request(url,headers={'User-Agent':'Orbstrike-asset-evaluation'})
         with urllib.request.urlopen(request,timeout=120) as response:
             data=response.read()
         if hashlib.sha256(data).hexdigest()!=digest: raise ValueError('Unexpected source hash: '+url)

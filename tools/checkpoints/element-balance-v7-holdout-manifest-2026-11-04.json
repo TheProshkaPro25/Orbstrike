@@ -1,0 +1,42 @@
+{
+  "label": "v7-bounded-swap-pair-paired-gold-holdout-240-preregistered",
+  "rosters": [
+    [
+      "dragnar",
+      "grifalon",
+      "levian"
+    ],
+    [
+      "dragnar",
+      "grifalon",
+      "levian"
+    ],
+    [
+      "kolossar",
+      "gorgul",
+      "rogozhuk"
+    ],
+    [
+      "kolossar",
+      "gorgul",
+      "rogozhuk"
+    ]
+  ],
+  "seeds": [
+    82301,
+    82333,
+    82301,
+    82333
+  ],
+  "random_starting_cards": true,
+  "pair_seeded_streams": true,
+  "pair_seeded_decks": true,
+  "common_deck_seed": true,
+  "gold_roles": [
+    "field",
+    "altar",
+    "field",
+    "altar"
+  ],
+  "mirrors": false
+}

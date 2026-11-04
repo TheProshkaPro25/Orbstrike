@@ -4,6 +4,12 @@ extends RefCounted
 ## точно в выбранные ворота: это явное приближение без физики, не случайный исход.
 const STEP_LIMIT := 4096
 
+static func play_ai_ability(ctrl: MatchController, bot: AIPlayer, player: int, id: StringName) -> Error:
+	if id == &"":
+		return ctrl.pass_ability(player)
+	var target := bot.choose_ability_target(ctrl.get_view(player), ctrl.get_battle_preview(), id, ctrl.legal_ability_targets(player, id))
+	return ctrl.play_ability(player, id, target)
+
 static func simulate(deck_a: DeckDef, deck_b: DeckDef, match_seed: int, first_player: int, difficulty: int, step_limit: int = STEP_LIMIT, personalities: Array = []) -> Dictionary:
 	if deck_a == null or deck_b == null or not [0, 1].has(first_player) or difficulty < 0 or difficulty > 2:
 		return {"error": "Некорректные параметры симуляции NPC"}
@@ -61,7 +67,7 @@ static func simulate(deck_a: DeckDef, deck_b: DeckDef, match_seed: int, first_pl
 					code = ctrl.reveal_gate(p)
 				else:
 					var pick := bot.choose_ability(ctrl.get_view(p), ctrl.get_battle_preview(), ctrl.legal_abilities(p))
-					code = ctrl.pass_ability(p) if pick == &"" else ctrl.play_ability(p, pick)
+					code = play_ai_ability(ctrl, bot, p, pick)
 			_:
 				return {"error": "Неожиданная фаза симуляции NPC", "seed": match_seed, "steps": steps}
 		if code != OK:

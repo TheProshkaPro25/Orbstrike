@@ -47,7 +47,6 @@ var _tree_mat: ShaderMaterial
 var _tower_mat: ShaderMaterial
 var _tree_mis: Array[MultiMeshInstance3D] = []
 var _tree_far_mi: MultiMeshInstance3D
-var overlook: Node3D
 
 # накопители инстансов: [Transform3D, Color(custom)]
 var _bld: Array = []
@@ -69,9 +68,6 @@ func _ready() -> void:
 	_build_city()
 	_build_river_and_bridges()
 	_build_near_bank()
-	overlook = preload("res://scenes/menu/menu_overlook.gd").new()
-	overlook.name = "Overlook"
-	add_child(overlook)
 	_flush_multimeshes()
 	_build_mountains()
 	traffic = MenuTraffic.new()
@@ -113,7 +109,6 @@ func apply_quality(level: int) -> void:
 	# лёгкое размытие дали: город — простые коробки, вблизи их не разглядеть (на Низких — без размытия)
 	_cam_attr.dof_blur_far_enabled = not low
 	_cam_attr.dof_blur_amount = 0.035 if level == GraphicsSettings.Level.HIGH else 0.025
-	overlook.apply_quality(level)
 	_sky_mat.set_shader_parameter("detail", 0.0 if low else 1.0)
 	traffic.apply_quality(level)
 	orbs.apply_quality(level)
@@ -172,7 +167,6 @@ func _update(delta: float) -> void:
 	_tree_mat.set_shader_parameter("anim_t", anim_t)
 	_tree_mat.set_shader_parameter("night", night)
 	_tower_mat.set_shader_parameter("night", night)
-	overlook.update_night(night)
 	traffic.update(anim_t, night, s.traffic, _water_mat)
 	orbs.update(phase, anim_t, _water_mat)
 	_update_camera(delta)
@@ -587,7 +581,7 @@ func _build_near_bank() -> void:
 		var y := height_at(x, z)
 		if y < 1.0 or (absf(x - CAM_POS.x) < 30.0 and absf(z - CAM_POS.z) < 30.0):
 			continue
-		# Смотровая площадка и подход к ней — открытый парк, без случайных стволов в мощении.
+		# Открытый склон перед камерой оставляет реку и город видимыми.
 		if x > -74.0 and x < 32.0 and z > 190.0 and z < 292.0:
 			continue
 		# у шоссе реже, выше по склону — сплошной лес
@@ -595,7 +589,7 @@ func _build_near_bank() -> void:
 			continue
 		var s := _rng.randf_range(6.0, 13.0)
 		_trees.append(_tree_item(x, y - 0.4, z, s, 0 if _rng.randf() < 0.62 else 1))
-	# Группы по краям площадки обрамляют реку, не заслоняя центр панорамы.
+	# Группы по краям кадра обрамляют реку, не заслоняя центр панорамы.
 	for place: Vector3 in [Vector3(32,0,217), Vector3(41,0,229), Vector3(-70,0,224)]:
 		_trees.append(_tree_item(place.x, height_at(place.x,place.z)-.4, place.z, 12.0, 0))
 	# деревья на холмах за городом (дальний лес)

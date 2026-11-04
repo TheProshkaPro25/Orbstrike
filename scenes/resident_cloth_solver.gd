@@ -4,6 +4,11 @@ extends "res://addons/godot_gpu_cloth/src/gpu_cloth_solver.gd"
 const VENDOR_PATH := "res://addons/godot_gpu_cloth/src/gpu_cloth_solver.gd"
 const STORE_PATH := "res://scenes/loading/preparation_store.gd"
 const CACHE_VERSION := 1
+# This exact allocator-only vendor revision preserves canonical CPU bytes (verified
+# against the previous revision on real cloth). Keep existing shipped .pdat keys;
+# any future vendor edit gets its actual hash and invalidates normally.
+const GPU_ALLOCATOR_VENDOR_SHA := "88b293bb0a1eaadf9c50dbd84d437fee350c390b544a7fca40022824631a6235"
+const CPU_COMPATIBLE_VENDOR_SHA := "c788381a4b2e79a8ce0ec9b10c23e6fcff51746a559f1770d0b7d123369f5a5a"
 const MEMORY_CACHE_LIMIT := 64 # Шесть стихий × шесть неизменяемых структур, с запасом.
 static var canonical_cache_enabled := true
 static var canonical_cache_hits: Dictionary = {}
@@ -22,8 +27,8 @@ func _initialize() -> void:
 	super._initialize()
 
 
-## Только канонические CPU-массивы. У каждого бойца остаются собственные GPU/RID,
-## текущие кости, collider nodes, материалы и результаты симуляции.
+## Только канонические CPU-массивы. У каждого бойца остаются собственные mutable
+## GPU/RID, текущие кости, collider nodes, материалы и результаты симуляции.
 static func clear_canonical_cache() -> void:
 	_canonical_cache.clear()
 	_mesh_digests.clear()
@@ -54,6 +59,8 @@ func _source_key(kind: String, settings: Array = []) -> String:
 			return ""
 	if _vendor_stamp.is_empty():
 		_vendor_stamp = FileAccess.get_sha256(VENDOR_PATH) if FileAccess.file_exists(VENDOR_PATH) else "compiled-vendor-v1"
+	if _vendor_stamp == GPU_ALLOCATOR_VENDOR_SHA:
+		_vendor_stamp = CPU_COMPATIBLE_VENDOR_SHA
 	return _digest([CACHE_VERSION, Engine.get_version_info().get("hash",""), _vendor_stamp, _source_stamp, kind, settings])
 
 
@@ -227,3 +234,61 @@ func _notification(what: int) -> void:
 		# затем передаёт только список RID в render-thread lambda (без self).
 		# Поэтому освобождение безопасно и при удалении всей подготовленной сцены.
 		super._exit_tree()
+
+
+## Content-addressed GPU storage, accessed exclusively on the render thread.
+## Values contain no actor/Node references. Only readonly shader inputs belong here;
+## poses, lambdas, skin targets, colliders, output images and normals stay local.
+static var _shared_gpu_buffers: Dictionary = {}
+var _shared_gpu_keys: Array[String] = []
+
+
+func _immutable_buffer_create(kind: String, size: int, data: PackedByteArray) -> RID:
+	var hash := HashingContext.new()
+	hash.start(HashingContext.HASH_SHA256)
+	hash.update(data)
+	var key := kind + ":" + str(size) + ":" + hash.finish().hex_encode()
+	if not _shared_gpu_buffers.has(key):
+		_shared_gpu_buffers[key] = {"rid":_rd.storage_buffer_create(size,data),"bytes":size,"refs":0}
+	_shared_gpu_buffers[key].refs += 1
+	_shared_gpu_keys.append(key)
+	return _shared_gpu_buffers[key].rid
+
+
+## Call only on the render thread (including diagnostic readback).
+static func shared_gpu_stats() -> Dictionary:
+	var result := {"buffers":_shared_gpu_buffers.size(),"bytes":0,"references":0,"entries":{}}
+	for key in _shared_gpu_buffers:
+		var item: Dictionary = _shared_gpu_buffers[key]
+		result.bytes += item.bytes
+		result.references += item.refs
+		result.entries[key] = {"rid":item.rid.get_id(),"bytes":item.bytes,"refs":item.refs}
+	return result
+
+
+func _queue_gpu_cleanup(rids: Array) -> void:
+	var keys := _shared_gpu_keys.duplicate()
+	_shared_gpu_keys.clear()
+	# Capture a script resource and plain keys, never a dying solver instance.
+	var script: GDScript = get_script()
+	RenderingServer.call_on_render_thread(func() -> void:
+		script._free_gpu_resources(rids,keys))
+
+
+static func _free_gpu_resources(rids: Array, keys: Array) -> void:
+	var rd := RenderingServer.get_rendering_device()
+	if rd == null: return
+	var pooled: Dictionary = {}
+	for key in keys:
+		assert(_shared_gpu_buffers.has(key),"unbalanced cloth GPU reference")
+		pooled[_shared_gpu_buffers[key].rid] = true
+	# Descriptor sets precede resources in the vendor list. They must disappear
+	# before the last shared storage reference is freed.
+	for rid: RID in rids:
+		if rid.is_valid() and not pooled.has(rid): rd.free_rid(rid)
+	for key in keys:
+		var item: Dictionary = _shared_gpu_buffers[key]
+		item.refs -= 1
+		if item.refs == 0:
+			rd.free_rid(item.rid)
+			_shared_gpu_buffers.erase(key)

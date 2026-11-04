@@ -1,11 +1,17 @@
-# Выделенный сервер интернет-матчей
+# Orbstrike — выделенный сервер интернет-матчей
 
 Подготовлен вариант для отдельного VPS: Ubuntu24.04LTS, Linux x86_64, 2vCPU,
 2–4ГБ RAM, 20ГБ диска, публичный IPv4 и домен. Это стартовая конфигурация для
 небольшого числа встреч, а не измеренная вместимость. Сервер и клиент должны
-использовать одинаковую текущую версию правил и данных. Выпуск 0.3.2 использует
-`online-rules-3`: нужны клиент и сервер 0.3.2. Серверные пакеты прежних
-выпусков 0.3.0/0.3.1 несовместимы с новым клиентом.
+использовать одинаковую текущую версию правил и данных. Выпуск Orbstrike0.4.0
+использует `online-rules-10`: нужны клиент и сервер0.4.0 из одного снимка исходников.
+Опубликованные прежде0.3.2 (`online-rules-3`) и более старые серверы несовместимы.
+При подключении проверяется также отпечаток содержимого правил и каталога,
+поэтому одного совпадения названия тега недостаточно.
+Полные игровые условия — в [docs/RULES.md](RULES.md).
+Все новые правила считает тот же MatchController;
+сервер сообщает обеим сторонам результат жребия до показа боя.
+Orbstrike — новое название игры, ранее «Сферы Стихий».
 
 Схема подключения: игра → `wss://ваш-домен` → Caddy:443 → Godot:127.0.0.1:8910.
 Сервер проверяет колоды и каждое действие, сам рассчитывает настоящий физический
@@ -15,6 +21,9 @@
 маскируются перед отправкой; seed и журнал команд клиентам не передаются.
 
 ## Что уже проверено
+
+Приведённый ниже полный прогон от3ноября — историческое свидетельство.
+Проверка нового пакета0.4.0 фиксируется отдельно в MANIFEST.json и release checkpoint.
 
 На Linux/Godot4.7.2 запущены отдельный сервер и два отдельных процесса клиентов:
 полный физический матч, одинаковый итог у обоих, взаимный реванш, начало следующего
@@ -37,7 +46,7 @@ python tools/build_online_server.py --godot /путь/к/godot
 ```
 
 Требуется Godot4.7.2. Скрипт создаёт `build/online-server/<дата-время>/` с архивом
-`sfery-online-<дата-время>.tar.gz`, файлом `.sha256`, отчётом и каталогом `sfery-online/`.
+`orbstrike-online-<дата-время>.tar.gz`, файлом `.sha256`, отчётом и каталогом `orbstrike-online/`.
 Проверка использует только127.0.0.1; окна не показываются, частота ограничена60FPS.
 Вариант `--skip-network-probe` позволяет лишь собрать пакет без сетевого запуска;
 в манифесте такая проверка будет отмечена как невыполненная.
@@ -55,7 +64,7 @@ ShotPhysics и файлы запуска. Не копируются49GLB, ава
 переносимым на Ubuntu. Для VPS скачайте **Standard Linux x86_64** с
 [официальной страницы Godot4.7.2](https://godotengine.org/download/archive/4.7.2-stable/),
 проверьте опубликованные издателем контрольные суммы, распакуйте бинарник и
-установите его как `/opt/sfery-online/godot` с владельцем root и правами0755.
+установите его как `/opt/orbstrike-online/godot` с владельцем root и правами0755.
 Специализированный серверный бинарник для `--headless` не требуется;
 это поддерживает обычный движок. [Руководство Godot](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_dedicated_servers.html).
 
@@ -74,26 +83,30 @@ ShotPhysics и файлы запуска. Не копируются49GLB, ава
    официальный бинарник Godot, как описано выше. Затем:
 
 ```sh
-sudo useradd --system --home-dir /var/lib/sfery-online --shell /usr/sbin/nologin sfery-online
-sudo install -d -m0755 /opt/sfery-online/releases
+sudo useradd --system --home-dir /var/lib/orbstrike-online --shell /usr/sbin/nologin orbstrike-online
+sudo install -d -m0755 /opt/orbstrike-online/releases
 cd /tmp
-sha256sum -c sfery-online-ДАТА.tar.gz.sha256
-sudo install -d -m0755 /opt/sfery-online/releases/ДАТА
-sudo tar --no-same-owner -xzf sfery-online-ДАТА.tar.gz -C /opt/sfery-online/releases/ДАТА
-sudo chown -R root:root /opt/sfery-online/releases/ДАТА
-sudo ln -s /opt/sfery-online/releases/ДАТА/sfery-online /opt/sfery-online/current
-sudo install -m0644 /opt/sfery-online/current/deploy/sfery-online.service /etc/systemd/system/sfery-online.service
+sha256sum -c orbstrike-online-ДАТА.tar.gz.sha256
+sudo install -d -m0755 /opt/orbstrike-online/releases/ДАТА
+sudo tar --no-same-owner -xzf orbstrike-online-ДАТА.tar.gz -C /opt/orbstrike-online/releases/ДАТА
+sudo chown -R root:root /opt/orbstrike-online/releases/ДАТА
+sudo ln -s /opt/orbstrike-online/releases/ДАТА/orbstrike-online /opt/orbstrike-online/current
+sudo install -m0644 /opt/orbstrike-online/current/deploy/orbstrike-online.service /etc/systemd/system/orbstrike-online.service
 sudo systemctl daemon-reload
-sudo systemctl enable --now sfery-online
-sudo systemctl status sfery-online --no-pager
+sudo systemctl enable --now orbstrike-online
+sudo systemctl status orbstrike-online --no-pager
 ```
+
+При обновлении старой службы `sfery-online` остановите её до запуска новой;
+прежний каталог и его данные сохраняйте для отката. Старые SFERY_* переменные
+запуска поддерживаются как резервные алиасы; новые установки используют ORBSTRIKE_*.
 
 `useradd` выполняется один раз; при обновлении существующую учётную запись
 не создавайте заново. Код в `/opt` остаётся у root. Служба работает от
-`sfery-online`, пишет только в `/var/lib/sfery-online`, ограничена256дескрипторами,
+`orbstrike-online`, пишет только в `/var/lib/orbstrike-online`, ограничена256дескрипторами,
 128задачами и1ГБ памяти. `ProtectSystem=strict` и `ProtectHome=true` ограничивают
 доступ службы. Состояние XDG и журнал Godot находятся в каталоге службы;
-диагностика также доступна через `journalctl -u sfery-online`.
+диагностика также доступна через `journalctl -u orbstrike-online`.
 
 Сам сервер допускает максимум32комнаты и64соединения; это защитные верхние границы,
 а не обещание производительности VPS. Переполнение лимита памяти остановит службу;
@@ -104,7 +117,7 @@ sudo systemctl status sfery-online --no-pager
 Сначала проверьте локальный протокол на VPS:
 
 ```sh
-sudo -u sfery-online env XDG_DATA_HOME=/var/lib/sfery-online/data XDG_CONFIG_HOME=/var/lib/sfery-online/config XDG_CACHE_HOME=/var/lib/sfery-online/cache /opt/sfery-online/godot --headless --path /opt/sfery-online/current --log-file /var/lib/sfery-online/health.log -s res://deploy/healthcheck.gd
+sudo -u orbstrike-online env XDG_DATA_HOME=/var/lib/orbstrike-online/data XDG_CONFIG_HOME=/var/lib/orbstrike-online/config XDG_CACHE_HOME=/var/lib/orbstrike-online/cache /opt/orbstrike-online/godot --headless --path /opt/orbstrike-online/current --log-file /var/lib/orbstrike-online/health.log -s res://deploy/healthcheck.gd
 ```
 
 Успех — `HEALTH OK: WebSocket and matching game protocol` и код возврата0.
@@ -112,7 +125,7 @@ sudo -u sfery-online env XDG_DATA_HOME=/var/lib/sfery-online/data XDG_CONFIG_HOM
 Обычный HTTP-запрос не подтверждает готовность игры; отдельного HTTP `/health`
 в сервере нет. Проверка не создаёт комнат и не отправляет карты.
 
-Откройте `/opt/sfery-online/current/deploy/Caddyfile.example`, замените
+Откройте `/opt/orbstrike-online/current/deploy/Caddyfile.example`, замените
 `example.com` реальным доменом и сохраните результат как `/etc/caddy/Caddyfile`.
 Пример требует выделенного домена; существующие сайты Caddy сохраняйте в конфигурации.
 Затем:
@@ -132,7 +145,7 @@ Caddy передаёт WebSocket Upgrade через `reverse_proxy`; отдел�
 После настройки домена с другой машины проверьте полный внешний путь:
 
 ```sh
-godot --headless --path /путь/к/распакованному/sfery-online --log-file /tmp/sfery-health.log -s res://deploy/healthcheck.gd -- --url=wss://ВАШ-ДОМЕН
+godot --headless --path /путь/к/распакованному/orbstrike-online --log-file /tmp/orbstrike-health.log -s res://deploy/healthcheck.gd -- --url=wss://ВАШ-ДОМЕН
 ```
 
 Затем у обоих игроков в меню «Интернет» укажите `wss://ВАШ-ДОМЕН`.
@@ -143,20 +156,20 @@ godot --headless --path /путь/к/распакованному/sfery-online -
 ## Обновление и откат
 
 Соберите новый пакет из тех же правил, что отправлены игрокам. Проверьте SHA256,
-распакуйте его в новый каталог `/opt/sfery-online/releases/НОВАЯ-ДАТА/`,
+распакуйте его в новый каталог `/opt/orbstrike-online/releases/НОВАЯ-ДАТА/`,
 сохраните прежний каталог. Перед переключением сообщите игрокам: состояние комнат
 хранится в памяти; любой перезапуск заканчивает все текущие матчи, восстановление
 в середине партии не предусмотрено.
 
 ```sh
-sudo systemctl stop sfery-online
-sudo ln -sfn /opt/sfery-online/releases/НОВАЯ-ДАТА/sfery-online /opt/sfery-online/current
-sudo systemctl start sfery-online
-sudo systemctl status sfery-online --no-pager
+sudo systemctl stop orbstrike-online
+sudo ln -sfn /opt/orbstrike-online/releases/НОВАЯ-ДАТА/orbstrike-online /opt/orbstrike-online/current
+sudo systemctl start orbstrike-online
+sudo systemctl status orbstrike-online --no-pager
 ```
 
 Повторите локальную и внешнюю протокольные проверки. Для отката остановите службу,
 направьте `current` на прежний каталог и снова запустите её; клиенты тоже должны
 иметь соответствующую версию правил. Не удаляйте старый каталог до успешной проверки.
-Журналы и настройки службы живут отдельно в `/var/lib/sfery-online`; секретов,
+Журналы и настройки службы живут отдельно в `/var/lib/orbstrike-online`; секретов,
 паролей или персональных конфигураций в пакет помещать не требуется.

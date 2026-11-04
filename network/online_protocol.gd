@@ -8,7 +8,7 @@ const COMMANDS := ["place_gate", "skip_gate", "select", "launch", "ability", "pa
 
 static func content_tag() -> String:
 	# Bump online-rules when a rule or physics implementation changes independently of data.
-	return JSON.stringify(["online-rules-3", GameData.SPECIES, GameData.CARDS,
+	return JSON.stringify(["online-rules-10", GameData.SPECIES, GameData.CARDS,
 		GameData.ATTR_POWER_SHIFT, GameData.TEAM_POWER_LIMIT]).sha256_text()
 
 static func integer(value: Variant, low: int, high: int) -> bool:
@@ -50,7 +50,7 @@ static func validate(packet: Dictionary) -> String:
 				"place_gate":
 					if not _keys(args, ["card", "slot"]) or not _card(args.get("card")) or not integer(args.get("slot"), 0, 5): return "Неверная карта или место"
 				"ability":
-					if not _keys(args, ["card"]) or not _card(args.get("card")): return "Неверная способность"
+					if not (_keys(args, ["card"]) or _keys(args, ["card", "target"])) or not _card(args.get("card")) or (args.has("target") and not ability_target(args.target)): return "Неверная способность или её цель"
 				"select":
 					if not _keys(args, ["uid"]) or not integer(args.get("uid"), 0, 5): return "Неверное существо"
 				"launch":
@@ -126,12 +126,17 @@ static func validate_server(packet: Dictionary) -> bool:
 
 static func _server_state(packet: Dictionary) -> bool:
 	const Codec = preload("res://network/state_codec.gd")
-	if not _keys(packet,["t","player","view","legal","selected_uid","landed_uid","throw_gate_slot","ability_moment","preview","busy","winner","reason","last_battle","battle_serial"]): return false
+	if not _keys(packet,["t","player","view","legal","selected_uid","landed_uid","throw_gate_slot","ability_moment","preview","busy","winner","reason","last_battle","battle_serial","last_standoff","standoff_serial"]): return false
+	if not integer(packet.standoff_serial,0,10000) or not _list(packet.last_standoff,0,2) or packet.last_standoff.size() == 1: return false
+	for uid in packet.last_standoff:
+		if not integer(uid,0,5): return false
+	if packet.last_standoff.size() == 2 and int(packet.last_standoff[0]) / 3 == int(packet.last_standoff[1]) / 3: return false
+	if (int(packet.standoff_serial) == 0) != packet.last_standoff.is_empty(): return false
 	if not integer(packet.player,0,1) or not Codec.valid_view(packet.view) or not packet.legal is Dictionary or not packet.busy is bool or not integer(packet.winner,-2,1) or not _text(packet.reason,80) or not integer(packet.battle_serial,0,10000): return false
 	if not integer(packet.selected_uid,-1,5) or not integer(packet.landed_uid,-1,5) or not integer(packet.throw_gate_slot,-1,5) or packet.ability_moment not in ["","battle","pre_throw","after_landing"]: return false
 	if not Codec.valid_battle(packet.preview) or not Codec.valid_battle(packet.last_battle): return false
 	var legal: Dictionary = packet.legal
-	if not _keys(legal,["setup_slots","creatures","abilities","can_skip_gate","can_reveal_gate","abilities_left","ability_reasons"]): return false
+	if not _keys(legal,["setup_slots","creatures","abilities","can_skip_gate","can_reveal_gate","abilities_left","ability_reasons","ability_targets"]): return false
 	if not legal.can_skip_gate is bool or not legal.can_reveal_gate is bool or not integer(legal.abilities_left,0,3) or not legal.ability_reasons is Dictionary or legal.ability_reasons.size() > 64: return false
 	for key in ["setup_slots","creatures"]:
 		if not _list(legal[key],0,6): return false
@@ -140,6 +145,11 @@ static func _server_state(packet: Dictionary) -> bool:
 	if not _list(legal.abilities,0,64): return false
 	for id in legal.abilities:
 		if not _known_card(id): return false
+	if not legal.ability_targets is Dictionary or legal.ability_targets.size() > 64: return false
+	for id in legal.ability_targets:
+		if not _known_card(id) or not legal.abilities.has(id) or not _list(legal.ability_targets[id],1,6): return false
+		for target in legal.ability_targets[id]:
+			if not ability_target(target): return false
 	for id in legal.ability_reasons:
 		if not _known_card(id) or not _text(legal.ability_reasons[id],512): return false
 	return true
@@ -157,3 +167,10 @@ static func _numbers(value: Variant, size: int, bound: float) -> bool:
 	for item in value:
 		if not _number(item,-bound,bound): return false
 	return true
+
+## Target metadata is deliberately narrow; the server still checks membership and legality.
+static func ability_target(value: Variant) -> bool:
+	if not value is Dictionary: return false
+	if _keys(value, ["target_uid"]): return integer(value.target_uid,0,5)
+	if _keys(value, ["target_card"]): return _known_card(value.target_card)
+	return false

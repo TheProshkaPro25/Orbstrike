@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <!-- Etched enamel relief: upper-left light, patinated shadows, fine metal edges. Original silhouettes retained. -->
+  <defs>
+    <radialGradient id="a" cx=".5" cy=".5" r=".5">
+      <stop stop-color="#b997ef" stop-opacity=".20" />
+      <stop offset="1" stop-color="#b997ef" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#fff1c3" />
+      <stop offset="0.18" stop-color="#b9a477" />
+      <stop offset="0.35" stop-color="#e1c994" />
+      <stop offset="0.49" stop-color="#967449" />
+      <stop offset="0.72" stop-color="#b19662" />
+      <stop offset="1" stop-color="#493d31" />
+    </linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#e9e4ce" />
+      <stop offset="0.24" stop-color="#a1b9bb" />
+      <stop offset="0.4" stop-color="#c6d1c5" />
+      <stop offset="0.54" stop-color="#526f79" />
+      <stop offset="0.76" stop-color="#6e8389" />
+      <stop offset="1" stop-color="#283e50" />
+    </linearGradient>
+    <linearGradient id="fire" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#fff0b4" />
+      <stop offset="0.24" stop-color="#e2bf79" />
+      <stop offset="0.45" stop-color="#dc9349" />
+      <stop offset="0.69" stop-color="#a95431" />
+      <stop offset="1" stop-color="#4e2730" />
+    </linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#d7eee0" />
+      <stop offset="0.23" stop-color="#8fc4c5" />
+      <stop offset="0.4" stop-color="#408c9f" />
+      <stop offset="0.57" stop-color="#427b92" />
+      <stop offset="0.8" stop-color="#245168" />
+      <stop offset="1" stop-color="#192d48" />
+    </linearGradient>
+    <linearGradient id="stone" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#e1d4a4" />
+      <stop offset="0.25" stop-color="#b5ac88" />
+      <stop offset="0.43" stop-color="#929b82" />
+      <stop offset="0.62" stop-color="#6b7b6f" />
+      <stop offset="1" stop-color="#343e3f" />
+    </linearGradient>
+    <linearGradient id="purple" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#d6c0de" />
+      <stop offset="0.3" stop-color="#a185b7" />
+      <stop offset="0.5" stop-color="#67527f" />
+      <stop offset="0.72" stop-color="#55476e" />
+      <stop offset="1" stop-color="#282539" />
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#eee0b8" />
+      <stop offset="0.28" stop-color="#b4b8a7" />
+      <stop offset="0.46" stop-color="#7c8a87" />
+      <stop offset="0.7" stop-color="#3e525a" />
+      <stop offset="1" stop-color="#222e3e" />
+    </linearGradient>
+    <linearGradient id="foam" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#e9eed6" />
+      <stop offset="0.35" stop-color="#b5ded6" />
+      <stop offset="0.72" stop-color="#70b9c0" />
+      <stop offset="1" stop-color="#477d91" />
+    </linearGradient>
+    <linearGradient id="core" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#fff5d0" />
+      <stop offset="0.35" stop-color="#f1dca0" />
+      <stop offset="0.7" stop-color="#d1a55d" />
+      <stop offset="1" stop-color="#9e603c" />
+    </linearGradient>
+    <linearGradient id="bone" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#ede6c9" />
+      <stop offset="0.3" stop-color="#bcc1ae" />
+      <stop offset="0.5" stop-color="#9aaea8" />
+      <stop offset="0.7" stop-color="#677f86" />
+      <stop offset="1" stop-color="#3a4c5e" />
+    </linearGradient>
+    <linearGradient id="face0" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#686262" />
+      <stop offset="0.32" stop-color="#48424c" />
+      <stop offset="0.48" stop-color="#322c3e" />
+      <stop offset="0.7" stop-color="#2c2838" />
+      <stop offset="1" stop-color="#1d1e2a" />
+    </linearGradient>
+    <linearGradient id="face1" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#807a79" />
+      <stop offset="0.32" stop-color="#656169" />
+      <stop offset="0.48" stop-color="#53505f" />
+      <stop offset="0.7" stop-color="#474554" />
+      <stop offset="1" stop-color="#2a2c37" />
+    </linearGradient>
+    <linearGradient id="face2" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#756b69" />
+      <stop offset="0.32" stop-color="#584d54" />
+      <stop offset="0.48" stop-color="#443a47" />
+      <stop offset="0.7" stop-color="#3b3340" />
+      <stop offset="1" stop-color="#24232e" />
+    </linearGradient>
+  </defs>
+  <circle cx="128" cy="128" r="125" fill="url(#a)" />
+  <g stroke="url(#edge)" stroke-width="1.35" stroke-linejoin="round">
+    <path d="M46 218V88q0-78 82-78t82 78v130z" fill="url(#steel)" />
+    <path d="M72 218V91q0-52 56-52t56 52v127" fill="url(#face0)" />
+    <path d="M77 84h102v124H77z" fill="url(#face1)" />
+    <path d="M128 85v123M82 144h92M91 103l73 85m0-85-73 85" stroke="url(#edge)" stroke-width="4.8" />
+    <rect x="103" y="125" width="50" height="51" rx="8" fill="url(#gold)" />
+    <path d="M115 129v-12a13 13 0 0 1 26 0v12" fill="none" stroke="url(#edge)" stroke-width="2.8" />
+    <circle cx="128" cy="146" r="6" fill="url(#face2)" />
+  </g>
+</svg>

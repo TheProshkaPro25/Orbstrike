@@ -145,6 +145,8 @@ func show_facedown(owner_pl: int, visible_to_owner_def: CardDef) -> void:
 	_mat.set_shader_parameter("glow", oc.lightened(0.45))
 	_mat.set_shader_parameter("gem", Color(oc.lightened(0.5), 1.0))
 	_mat.set_shader_parameter("sigil", 0)
+	_mat.set_shader_parameter("illustration_on", false)
+	_mat.set_shader_parameter("illustration_tex", null)
 	_mat.set_shader_parameter("tier", 0.0)
 	_mat.set_shader_parameter("title_box", Vector4.ZERO)
 	_mat.set_shader_parameter("text_box", Vector4.ZERO)
@@ -177,7 +179,10 @@ func show_face(def: CardDef) -> void:
 		_mat.set_shader_parameter("gem", Color(VisualUtil.attr_color(int(el[0])).lightened(0.25), 1.0))
 	else:
 		_mat.set_shader_parameter("gem", Color(cols[1], 0.0))
-	_mat.set_shader_parameter("sigil", UiTheme.card_sigil(def))
+	var illustration := CardArtwork.texture_for(def)
+	_mat.set_shader_parameter("sigil", -1 if illustration != null else UiTheme.card_sigil(def))
+	_mat.set_shader_parameter("illustration_on", illustration != null)
+	_mat.set_shader_parameter("illustration_tex", illustration)
 	_mat.set_shader_parameter("win", _lay["win"])
 	_mat.set_shader_parameter("text_box", Vector4.ZERO)
 	var tr: Rect2 = _lay["title"]

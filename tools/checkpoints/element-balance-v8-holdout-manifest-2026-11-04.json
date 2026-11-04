@@ -1,0 +1,42 @@
+{
+  "label": "v8-leap-base-price-paired-gold-holdout-240-preregistered",
+  "rosters": [
+    [
+      "ratnik",
+      "gorgul",
+      "levian"
+    ],
+    [
+      "ratnik",
+      "gorgul",
+      "levian"
+    ],
+    [
+      "kolossar",
+      "grifalon",
+      "rogozhuk"
+    ],
+    [
+      "kolossar",
+      "grifalon",
+      "rogozhuk"
+    ]
+  ],
+  "seeds": [
+    91301,
+    91333,
+    91301,
+    91333
+  ],
+  "random_starting_cards": true,
+  "pair_seeded_streams": true,
+  "pair_seeded_decks": true,
+  "common_deck_seed": true,
+  "gold_roles": [
+    "field",
+    "altar",
+    "field",
+    "altar"
+  ],
+  "mirrors": false
+}

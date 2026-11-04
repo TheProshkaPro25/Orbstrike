@@ -43,6 +43,21 @@ func run() -> void:
 		check(Protocol.validate_server(wire(packet)),"real server "+packet.t)
 		if packet.t == "state": state = wire(packet)
 	check(not state.is_empty(),"state fixture exists")
+	server._capture_standoff(0, 3, String(room.code))
+	server._states(room)
+	state = wire(server.messages.back())
+	check(state.last_standoff.size() == 2 and int(state.last_standoff[0]) == 0 and int(state.last_standoff[1]) == 3 and int(state.standoff_serial) == 1, "real server captures lottery pair and serial: " + str([state.last_standoff, state.standoff_serial]))
+	check(Protocol.validate_server(state), "valid opposite-owner lottery pair accepted")
+	for pair in [[0], [0, 0], [0, 2], [3, 5], [0, 6], [0.5, 3]]:
+		var invalid_pair := state.duplicate(true)
+		invalid_pair.last_standoff = pair
+		check(not Protocol.validate_server(invalid_pair), "invalid lottery pair rejected: " + str(pair))
+	var no_serial := state.duplicate(true)
+	no_serial.standoff_serial = 0
+	check(not Protocol.validate_server(no_serial), "lottery pair requires positive serial")
+	var no_pair := state.duplicate(true)
+	no_pair.last_standoff = []
+	check(not Protocol.validate_server(no_pair), "positive serial requires lottery pair")
 	var broken := state.duplicate(true)
 	broken.view.players = []
 	check(not Protocol.validate_server(broken),"short players rejected before decode")

@@ -1,0 +1,42 @@
+{
+  "label": "v6-sure-price-terminal-gate-paired-gold-holdout-240-preregistered",
+  "rosters": [
+    [
+      "ratnik",
+      "klykar",
+      "grifalon"
+    ],
+    [
+      "ratnik",
+      "klykar",
+      "grifalon"
+    ],
+    [
+      "kolossar",
+      "rogozhuk",
+      "levian"
+    ],
+    [
+      "kolossar",
+      "rogozhuk",
+      "levian"
+    ]
+  ],
+  "seeds": [
+    74303,
+    74333,
+    74303,
+    74333
+  ],
+  "random_starting_cards": true,
+  "pair_seeded_streams": true,
+  "pair_seeded_decks": true,
+  "common_deck_seed": true,
+  "gold_roles": [
+    "field",
+    "altar",
+    "field",
+    "altar"
+  ],
+  "mirrors": false
+}

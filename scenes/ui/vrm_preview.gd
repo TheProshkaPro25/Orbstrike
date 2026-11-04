@@ -14,6 +14,7 @@ var environment: Environment
 var caption: Label
 var turn := 0.0
 var face_view := false
+var _preview_activity: RefCounted
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -98,6 +99,7 @@ func _ready() -> void:
 	_build_extra_actions(stack)
 	_update_expressions()
 	set_face_view(false)
+	_preview_activity = preload("res://scenes/ui/preview_activity.gd").new(viewport,preview,self)
 
 func _title_text() -> String:
 	return "АНИМЕ-МОДЕЛИ · ПРЕДПРОСМОТР"
@@ -202,6 +204,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		close()
 
 func close() -> void:
+	if _preview_activity != null: _preview_activity.stop()
 	viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	closed.emit()
 	queue_free()

@@ -122,7 +122,7 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 	for k in range(n):
 		var sd: int = sides[k]
 		if cancelled[k]:
-			r.cancelled_plays.append([sd, cards[k].id if cards[k] != null else StringName(plays[k][1])])
+			r.cancelled_plays.append(plays[k].duplicate(true))
 			r.add(sd, "cancelled:" + String(plays[k][1]), 0)
 			continue
 		if CardEffects.is_fusion(cards[k]):
@@ -217,11 +217,26 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 		var i: int = sides[k]
 		for m in mains[i]:
 			if int(m["k"]) == k:
-				ordered.append([i, m["c"], m["src"]])
+				ordered.append([i, m["c"], m["src"], k])
 		for f in fusions[i]:
 			if int(f["k"]) == k:
-				ordered.append([i, f["c"], (f["c"] as CardDef).id])
+				ordered.append([i, f["c"], (f["c"] as CardDef).id, k])
+	# Пошлина видит сам факт расхода следующей карты, даже если её позже отменили.
+	# Применяем её в позиции карты, чтобы последующий срез видел реальную историю.
+	var tolls: Array = []
+	for i in range(2):
+		for m in mains[i]:
+			if (m["c"] as CardDef).effect_id == &"flame_toll":
+				tolls.append({"side": i, "k": int(m["k"]), "src": m["src"], "spent": 0})
+	var ceiling := false
+	var previous_k := -1
+	var finalized: Array[bool] = [false, false]
 	for entry in ordered:
+		var entry_k: int = int(entry[3])
+		# Отменённая карта тоже расходует Пошлину, поэтому обходим все позиции.
+		for tk in range(previous_k + 1, entry_k + 1):
+			_apply_tolls(r, p, tolls, sides, tk)
+		previous_k = entry_k
 		var i: int = int(entry[0])
 		var c: CardDef = entry[1]
 		var src: String = "ability:" + String(entry[2])
@@ -229,6 +244,9 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 			"foe_beats": Attr.beats(attr[1 - i], attr[i]), "dead_own": state.dead_count(owners[i]),
 			"alive_own": state.alive_count(owners[i]), "alive_foe": state.alive_count(owners[1 - i])}
 		var v: Vector2i = Vector2i(int(c.params.get("amount", 0)), 0) if CardEffects.is_fusion(c) else CardEffects.ability_delta(c, ctx)
+		if ceiling:
+			v.x = mini(v.x, 100)
+			v.y = mini(v.y, 100)
 		if v.x != 0 or v == Vector2i.ZERO:
 			r.add(i, src, v.x)
 		p[i] += v.x
@@ -236,10 +254,30 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 			p[1 - i] += v.y
 			r.add(1 - i, src, v.y)
 		match String(c.effect_id):
+			"stone_ceiling":
+				ceiling = true
+			"tide_wash":
+				# Восстановление видимой силы в этот момент, включая Гнёт/фиксацию.
+				# После него эти заключительные операции уже выполнены, поздние карты
+				# действуют поверх восстановленной силы. Зеркало меняет адрес результата.
+				var restore_side := 1 - i if arena != null and arena.effect_id == &"mirror" else i
+				var current := p[restore_side]
+				if not finalized[restore_side]:
+					if arena != null and arena.effect_id == &"weight" and current >= int(arena.params.get("threshold", 400)):
+						current -= int(arena.params.get("amount", 100))
+					if fixed[restore_side] >= 0:
+						current = fixed[restore_side]
+					current = maxi(0, current)
+				if current < base[i]:
+					r.add(restore_side, src, base[i] - p[restore_side])
+					p[restore_side] = base[i]
+					finalized[restore_side] = true
 			"siphon":
 				var extra: int = maxi(0, p[1 - i] - base[1 - i])
 				var gain: int = extra * int(c.params.get("share", 100)) / 100
 				p[1 - i] -= extra
+				if ceiling:
+					gain = mini(gain, 100)
 				p[i] += gain
 				r.add(1 - i, src, -extra)
 				r.add(i, src, gain)
@@ -253,17 +291,20 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 					r.add(j, src, base[j] - p[j])
 					p[j] = base[j]
 
+	for tk in range(previous_k + 1, n):
+		_apply_tolls(r, p, tolls, sides, tk)
+
 	# 10. «Гнёт»: −amount каждому с силой от порога
 	if arena != null and arena.effect_id == &"weight":
 		for i in range(2):
-			if p[i] >= int(arena.params.get("threshold", 400)):
+			if not finalized[i] and p[i] >= int(arena.params.get("threshold", 400)):
 				var w: int = int(arena.params.get("amount", 100))
 				p[i] -= w
 				r.add(i, "arena:" + String(arena.id), -w)
 
 	# 11. Фиксированная сила из метки
 	for i in range(2):
-		if fixed[i] >= 0:
+		if fixed[i] >= 0 and not finalized[i]:
 			r.add(i, "mark_fix", fixed[i] - p[i])
 			p[i] = fixed[i]
 
@@ -329,6 +370,10 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 		r.loser_uid = uids[1 - win_side]
 		r.winner_stays = gate_e == &"hold"
 
+	r.ordinary = not r.interrupted and not r.both_lose and not r.auto_win and not r.winner_stays and gate_e != &"limit" and p[0] != p[1]
+	if r.ordinary and gate_e == &"valor" and absi(p[0] - p[1]) <= int(arena.params.get("margin", 50)):
+		r.valor_saved_uid = r.loser_uid
+
 	# Последствия для контроллера: метки на следующий бой, возрождение, возврат карт
 	for i in range(2):
 		r.revive[i] = _has(mains[i], &"revive")
@@ -338,6 +383,18 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 			var c: CardDef = m["c"]
 			var amt: int = int(c.params.get("amount", 0))
 			match String(c.effect_id):
+				"gale_call":
+					var choice: Dictionary = plays[int(m["k"])][2] if plays[int(m["k"])].size() > 2 else {}
+					var target_uid := int(choice.get("target_uid", -1))
+					if support_targets(state, owners[i], uids).has(target_uid):
+						r.called_uids[i] = target_uid
+				"light_reserve":
+					var choice: Dictionary = plays[int(m["k"])][2] if plays[int(m["k"])].size() > 2 else {}
+					var target_card := StringName(choice.get("target_card", ""))
+					if reserve_targets(state, owners[i], plays, i).has(target_card):
+						r.reserve_cards[i] = target_card
+				"shadow_triumph":
+					r.triumph[i] = true
 				"scorch", "radiance":
 					var spare: int = int(c.params.get("spare", -1))
 					for u in _standing(state, owners[1 - i], uids):
@@ -564,7 +621,7 @@ static func preview_open_gate(state: MatchState, slot: int) -> MatchState:
 
 ## Предпросмотр: сторона side играет card_id следующей картой обмена (учитывает мгновенные «Сдвиг плит» и
 ## «Вихревую подмену» на копии состояния). Для ИИ.
-static func compute_with(state: MatchState, atk_uid: int, def_uid: int, slot: int, battle_plays: Array, side: int, card_id: StringName, spent_counts: Array = []) -> BattleResult:
+static func compute_with(state: MatchState, atk_uid: int, def_uid: int, slot: int, battle_plays: Array, side: int, card_id: StringName, spent_counts: Array = [], target: Dictionary = {}) -> BattleResult:
 	var counts: Array = spent_counts.duplicate()
 	if counts.is_empty():
 		counts = [0, 0]
@@ -572,7 +629,7 @@ static func compute_with(state: MatchState, atk_uid: int, def_uid: int, slot: in
 			counts[int(pl[0])] += 1
 	counts[side] += 1
 	var bp: Array = battle_plays.duplicate(true)
-	bp.append([side, card_id])
+	bp.append([side, card_id, target.duplicate(true)] if not target.is_empty() else [side, card_id])
 	var c: CardDef = CardDB.card(card_id)
 	if CardEffects.is_effect(c, &"shift_gate"):
 		var j: int = best_gate_swap(state, atk_uid, def_uid, slot, battle_plays, side)
@@ -682,3 +739,36 @@ static func side_locked(r: BattleResult, side: int) -> bool:
 		if int(cp[0]) == side and CardEffects.is_lockout(CardDB.card(StringName(cp[2]))):
 			return true
 	return false
+
+
+## Союзники на воротах; текущие участники не могут быть целью Зова.
+static func support_targets(state: MatchState, player: int, exclude: Array) -> Array[int]:
+	var targets: Array[int] = []
+	for uid in state.players[player].creature_uids:
+		var cs: CreatureState = state.creatures[uid]
+		if cs.alive and cs.slot >= 0 and not exclude.has(uid) and cs.slot < state.slots.size() and state.slots[cs.slot].has_card and state.slots[cs.slot].occupant_uid == uid:
+			targets.append(uid)
+	return targets
+
+
+## Только синяя карта, уже отдыхавшая до этого боя; карты текущего боя исключены.
+static func reserve_targets(state: MatchState, player: int, plays: Array, side: int = -1) -> Array[StringName]:
+	var targets: Array[StringName] = []
+	var current: Array = []
+	for pl in plays:
+		if side < 0 or int(pl[0]) == side:
+			current.append(StringName(pl[1]))
+	var ps: PlayerState = state.players[player]
+	for id in ps.ability_cooldown:
+		var card := CardDB.card(StringName(id))
+		if card != null and card.kind == CardDef.Kind.ABILITY and CardDB.card_class(card) == &"blue" and ps.abilities_used.has(id) and not current.has(id) and int(ps.ability_cooldown[id]) > 0:
+			targets.append(StringName(id))
+	return targets
+
+
+static func _apply_tolls(r: BattleResult, p: Array[int], tolls: Array, sides: Array[int], k: int) -> void:
+	for toll in tolls:
+		if k > int(toll.k) and sides[k] != int(toll.side) and int(toll.spent) < 2:
+			toll.spent = int(toll.spent) + 1
+			p[sides[k]] -= 60
+			r.add(sides[k], "ability:" + String(toll.src), -60)

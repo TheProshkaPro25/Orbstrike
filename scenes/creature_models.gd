@@ -26,6 +26,8 @@ static var resident_catalog := false
 static var _scenes: Dictionary = {}
 ## Производные неизменяемые данные текущего набора моделей; без узлов экземпляров.
 static var preparation_cache: Dictionary = {}
+## Immutable prepared curves; players, poses and blend state stay on each actor.
+static var animation_library_cache: Dictionary = {}
 
 ## Убирает запечённые фотографические блики из цветовой текстуры;
 ## широкие ступени света оставляют рисунок брони, но не имитируют полированный металл.
@@ -106,6 +108,7 @@ static func clear() -> void:
 		return
 	_scenes.clear()
 	preparation_cache.clear()
+	animation_library_cache.clear()
 
 
 static func _scene(res_key: String, path: String) -> PackedScene:
@@ -153,6 +156,8 @@ static func build(d: CreatureDef) -> Node3D:
 	root.set_meta("height", box.size.y * k)
 	root.set_meta("extent", maxf(box.size.x, box.size.z) * k)  # наибольший размер по полу (для камеры)
 	if hd:
+		# Audit the whole instance before replacing any active material.
+		_release_unused_hd_maps(model)
 		_fix_hd_materials(model, d.attribute)
 	else:
 		_recolor(model, d)
@@ -195,6 +200,60 @@ static func world_aabb(n: Node) -> AABB:
 				has = true
 		stack.append_array(c.get_children())
 	return out
+
+
+## Only these imported maps are proven absent from both ANIME_SHADER and the
+## cape variant (which adds vertex deformation + flash emission to that shader).
+## Keep albedo including alpha, emission, unknown slots, and every fallback use.
+const UNUSED_HD_TEXTURE_SLOTS := [&"normal_texture", &"roughness_texture", &"metallic_texture", &"ao_texture"]
+
+static func _release_unused_hd_maps(model: Node3D) -> void:
+	var candidates: Dictionary = {}
+	var protected: Dictionary = {}
+	var pending: Array[Node] = [model]
+	while not pending.is_empty():
+		var node: Node = pending.pop_back()
+		pending.append_array(node.get_children())
+		if node is MeshInstance3D and node.mesh != null:
+			# A whole-mesh override outranks surface overrides. Preserve it because
+			# _fix_hd_materials cannot replace this native/fallback rendering path.
+			_protect_material_value(node.material_override, protected)
+			_protect_material_value(node.material_overlay, protected)
+			for surface in node.mesh.get_surface_count():
+				var material := node.get_active_material(surface) as BaseMaterial3D
+				if material == null:
+					# Unconverted custom materials may retain a native PBR next pass.
+					_protect_material_value(node.get_active_material(surface), protected)
+					continue
+				if node.material_override != null:
+					protected[material] = true
+				else:
+					candidates[material] = true
+		if node is AnimationPlayer:
+			# A material/mesh assigned by a future animation key may still use PBR.
+			# Such authored resource swaps are not part of the conversion contract.
+			for clip in node.get_animation_list():
+				var animation: Animation = node.get_animation(clip)
+				for track in animation.get_track_count():
+					for key in animation.track_get_key_count(track):
+						_protect_material_value(animation.track_get_key_value(track, key), protected)
+	for material in candidates:
+		if protected.has(material): continue
+		for slot in UNUSED_HD_TEXTURE_SLOTS: material.set(slot, null)
+
+
+static func _protect_material_value(value: Variant, protected: Dictionary) -> void:
+	if value is Material:
+		if protected.has(value): return
+		protected[value] = true
+		_protect_material_value(value.next_pass, protected)
+	elif value is Mesh:
+		for surface in value.get_surface_count():
+			_protect_material_value(value.surface_get_material(surface), protected)
+	elif value is Array:
+		for child in value: _protect_material_value(child, protected)
+	elif value is Dictionary:
+		for child in value.values(): _protect_material_value(child, protected)
 
 
 ## Матовая аниме-подача: текстура цвета сохраняется, но PBR-карты не создают

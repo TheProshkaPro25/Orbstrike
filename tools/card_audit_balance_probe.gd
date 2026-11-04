@@ -164,7 +164,8 @@ func run_match(subject: DeckDef, foe: DeckDef, seed_value: int, side: int, targe
 							verify(err == OK, "открытие ворот")
 							continue
 					var pick: StringName = ais[p].choose_ability(ctrl.get_view(p), ctrl.get_battle_preview(), legal)
-					err = ctrl.pass_ability(p) if pick == &"" else ctrl.play_ability(p, pick)
+					var ability_target: Dictionary = {} if pick == &"" else ais[p].choose_ability_target(ctrl.get_view(p), ctrl.get_battle_preview(), pick, ctrl.legal_ability_targets(p, pick))
+					err = ctrl.pass_ability(p) if pick == &"" else ctrl.play_ability(p, pick, ability_target)
 		verify(err == OK, "действие seed=%d step=%d err=%d" % [seed_value, m.steps, err])
 		if err != OK: break
 	verify(ctrl.get_phase() == MatchController.Phase.GAME_OVER, "матч завершён seed=%d" % seed_value)

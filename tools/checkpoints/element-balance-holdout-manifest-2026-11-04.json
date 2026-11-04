@@ -1,0 +1,54 @@
+{
+  "label": "holdout-240-preregistered",
+  "rosters": [
+    [
+      "levian",
+      "klykar",
+      "gorgul"
+    ],
+    [
+      "levian",
+      "klykar",
+      "gorgul"
+    ],
+    [
+      "dragnar",
+      "grifalon",
+      "rogozhuk"
+    ],
+    [
+      "dragnar",
+      "grifalon",
+      "rogozhuk"
+    ]
+  ],
+  "seeds": [
+    21911,
+    21937,
+    21911,
+    21937
+  ],
+  "green": [
+    "levian_coil",
+    "levian_coil",
+    "dragnar_rush",
+    "dragnar_rush"
+  ],
+  "red": [
+    "fire_ash",
+    "gale_leap",
+    "light_purge",
+    "stone_shift",
+    "shadow_eclipse",
+    "tide_ebb"
+  ],
+  "blue": [
+    "fire_assault",
+    "gale_counter",
+    "light_guard",
+    "stone_footing",
+    "shadow_strike",
+    "tide_surf"
+  ],
+  "mirrors": false
+}

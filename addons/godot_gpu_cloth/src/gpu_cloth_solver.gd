@@ -667,6 +667,16 @@ func _exit_tree() -> void:
 	# their storage is freed, even while the model awaits end-of-frame deletion.
 	for texture in [_positions_tex, _normals_tex, _welded_index_tex]:
 		if texture: texture.texture_rd_rid = RID()
+	_queue_gpu_cleanup(rids)
+	print("[GPUCloth] GPU resource cleanup queued on render thread.")
+
+
+# Resident actors may pool immutable storage; standalone vendor use stays local.
+func _immutable_buffer_create(_kind: String, size: int, data: PackedByteArray) -> RID:
+	return _rd.storage_buffer_create(size, data)
+
+
+func _queue_gpu_cleanup(rids: Array) -> void:
 	RenderingServer.call_on_render_thread(func() -> void:
 		var rd := RenderingServer.get_rendering_device()
 		if not rd:
@@ -675,7 +685,6 @@ func _exit_tree() -> void:
 			if rid.is_valid():
 				rd.free_rid(rid)
 	)
-	print("[GPUCloth] GPU resource cleanup queued on render thread.")
 
 
 # ---------------------------------------------------------------------------
@@ -1430,36 +1439,36 @@ func _gpu_do_init(init_data: Dictionary) -> void:
 	_positions_buffer         = _rd.storage_buffer_create(pos_bytes.size(),       pos_bytes)
 	_predicted_buffer         = _rd.storage_buffer_create(pos_bytes.size(),       pos_bytes)
 	_velocities_buffer        = _rd.storage_buffer_create(vel_bytes.size(),       vel_bytes)
-	_constraints_buffer       = _rd.storage_buffer_create(max(con_bytes.size(), 64), con_bytes)
+	_constraints_buffer       = _immutable_buffer_create("constraints", max(con_bytes.size(), 64), con_bytes)
 	# XPBD lambda buffer: one float per constraint. Initial state irrelevant —
 	# iter 0 of every substep resets via the constraint_offset MSB flag.
 	var lambda_init_bytes := PackedByteArray()
 	lambda_init_bytes.resize(max(_constraint_count * 4, 16))
 	_lambda_buffer            = _rd.storage_buffer_create(lambda_init_bytes.size(), lambda_init_bytes)
 	_colliders_buffer         = _rd.storage_buffer_create(max(col_bytes.size(), 64), col_bytes)
-	_rest_positions_buffer    = _rd.storage_buffer_create(rest_bytes.size(),      rest_bytes)
-	_bone_indices_buffer      = _rd.storage_buffer_create(bone_idx_bytes.size(),  bone_idx_bytes)
-	_bone_weights_skin_buffer = _rd.storage_buffer_create(bone_w_bytes.size(),    bone_w_bytes)
+	_rest_positions_buffer    = _immutable_buffer_create("rest", rest_bytes.size(), rest_bytes)
+	_bone_indices_buffer      = _immutable_buffer_create("bone_indices", bone_idx_bytes.size(), bone_idx_bytes)
+	_bone_weights_skin_buffer = _immutable_buffer_create("bone_weights", bone_w_bytes.size(), bone_w_bytes)
 	_bone_transforms_buffer   = _rd.storage_buffer_create(max(bone_mat_bytes.size(), 64), bone_mat_bytes)
-	_cloth_weights_buffer     = _rd.storage_buffer_create(cloth_w_bytes.size(),   cloth_w_bytes)
+	_cloth_weights_buffer     = _immutable_buffer_create("cloth_weights", cloth_w_bytes.size(), cloth_w_bytes)
 	_skinned_targets_buffer   = _rd.storage_buffer_create(pos_bytes.size(),       pos_bytes)
 
 	if _collider_tris.size() > 0:
 		_collider_tri_buffer  = _rd.storage_buffer_create(max(_collider_tri_bytes.size(), 64))
 
 	_face_normals_buffer      = _rd.storage_buffer_create(max(_tri_count * 16, 64))
-	_indices_gpu_buffer       = _rd.storage_buffer_create(idx_bytes.size(),       idx_bytes)
+	_indices_gpu_buffer       = _immutable_buffer_create("indices", idx_bytes.size(), idx_bytes)
 	# Always create the proxy buffer (even at size 0 → uses _indices_gpu_buffer
 	# fallback in _ensure_peer_uniform_sets). Sized to whatever the rest-space
 	# voxel decimation produced.
 	if _peer_proxy_tri_count > 0:
-		_peer_proxy_indices_buffer = _rd.storage_buffer_create(peer_proxy_idx_bytes.size(), peer_proxy_idx_bytes)
-	_vert_tri_counts_buffer   = _rd.storage_buffer_create(adj_counts_bytes.size(),  adj_counts_bytes)
-	_vert_tri_offsets_buffer  = _rd.storage_buffer_create(adj_offsets_bytes.size(), adj_offsets_bytes)
-	_vert_tri_list_buffer     = _rd.storage_buffer_create(max(adj_list_bytes.size(), 16), adj_list_bytes)
+		_peer_proxy_indices_buffer = _immutable_buffer_create("peer_indices", peer_proxy_idx_bytes.size(), peer_proxy_idx_bytes)
+	_vert_tri_counts_buffer   = _immutable_buffer_create("adj_counts", adj_counts_bytes.size(), adj_counts_bytes)
+	_vert_tri_offsets_buffer  = _immutable_buffer_create("adj_offsets", adj_offsets_bytes.size(), adj_offsets_bytes)
+	_vert_tri_list_buffer     = _immutable_buffer_create("adj_list", max(adj_list_bytes.size(), 16), adj_list_bytes)
 
 	if _has_anchors:
-		_bindings_buffer       = _rd.storage_buffer_create(max(binding_bytes.size(), 16), binding_bytes)
+		_bindings_buffer       = _immutable_buffer_create("bindings", max(binding_bytes.size(), 16), binding_bytes)
 		_pin_overrides_buffer  = _rd.storage_buffer_create(max(pin_override_bytes.size(), 16), pin_override_bytes)
 
 	# ── Output storage images ──

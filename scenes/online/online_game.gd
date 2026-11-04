@@ -26,6 +26,7 @@ var _initial_buttons: HBoxContainer
 var _rendered_slots: Dictionary = {}
 var _battle_key := ""
 var _last_battle_serial := 0
+var _last_standoff_serial := 0
 var _input_pending := false
 var _match_ready := false
 var _names: Array = ["", ""]
@@ -247,6 +248,17 @@ func _apply_snapshot(data: Dictionary) -> void:
 			if state.revealed: node.reveal(CardDB.card(state.card_id))
 			else: node.show_facedown(state.card_owner, CardDB.card(state.card_id))
 	var serial := int(data.get("battle_serial", 0))
+	var standoff_serial := int(data.get("standoff_serial", 0))
+	if standoff_serial > _last_standoff_serial:
+		_last_standoff_serial = standoff_serial
+		var pair: Array = data.last_standoff
+		var attacker := CardDB.creature(view.creatures[int(pair[0])].def_id).display_name
+		var defender := CardDB.creature(view.creatures[int(pair[1])].def_id).display_name
+		var notice := "Тупик: жребий выбрал атакующего — %s идёт на %s!" % [attacker, defender]
+		hud.flash(notice)
+		await hud.wait_read(HudUI.read_time(1.4, notice))
+		if _closed or epoch != _connection_epoch: return
+		hud.clear_flash()
 	if serial > _last_battle_serial:
 		_last_battle_serial = serial
 		var result := Codec.decode_battle(data.last_battle, view)
@@ -429,6 +441,8 @@ func _play_flight(data: Dictionary) -> void:
 func _hide_input() -> void:
 	setup_panel.hide_panel()
 	ability_panel.hide_panel()
+	ability_target_picker.hide()
+	_ability_target_card = &""
 	hud.hide_creatures()
 	arena.set_highlight([])
 
@@ -491,7 +505,23 @@ func _on_creature_chosen(uid: int) -> void:
 		_gate_pick.clear()
 		_command("throw_with_gate",{"card":pick.card,"slot":pick.slot,"uid":uid})
 	else: _command("select",{"uid":uid})
-func _on_ability_chosen(card_id: StringName) -> void: _command("ability",{"card":card_id})
+func _on_ability_chosen(card_id: StringName) -> void:
+	var targets: Array = snapshot.get("legal", {}).get("ability_targets", {}).get(String(card_id), [])
+	if not targets.is_empty():
+		_ability_target_card = card_id
+		ability_panel.hide_panel()
+		ability_target_picker.show_targets(card_id, targets, ctrl.state)
+		return
+	_command("ability", {"card":card_id})
+
+func _on_ability_target_chosen(target: Dictionary) -> void:
+	var card_id := _ability_target_card
+	_ability_target_card = &""
+	_command("ability", {"card":card_id, "target":target})
+
+func _on_ability_target_cancelled() -> void:
+	_ability_target_card = &""
+	_show_input()
 func _on_gate_open_requested() -> void: _command("reveal_gate")
 func _on_ability_passed() -> void: _command("pass")
 func _on_setup_placed_throw(card_id: StringName, slot: int) -> void:
@@ -537,6 +567,7 @@ func _return_to_lobby() -> void:
 	card_nodes.clear()
 	_rendered_slots.clear()
 	_last_battle_serial = 0
+	_last_standoff_serial = 0
 	_last_flight = {}
 	_battle_key = ""
 	_match_ready = false

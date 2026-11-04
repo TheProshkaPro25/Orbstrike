@@ -225,6 +225,8 @@ static func card_sigil(def: CardDef) -> int:
 static func card_badge(def: CardDef) -> String:
 	var n: int = int(def.params.get("amount", 0))
 	match String(def.effect_id):
+		"flame_toll":
+			return ""
 		"drain", "radiance", "pact", "funnel":
 			return "+%d / −%d" % [n, n]
 		"scorch", "eclipse", "weaken_mark", "weaken", "weight":
@@ -241,6 +243,8 @@ static func card_badge(def: CardDef) -> String:
 			return "+%d" % (int(g[a]) if a < g.size() else n)
 	if n > 0:
 		return "+%d" % n
+	if n < 0:
+		return "−%d" % -n
 	return ""
 
 
@@ -281,6 +285,13 @@ static func card_role(def: CardDef) -> String:
 		"mirror": return "Обмен силой"
 		"hold": return "Удержание"
 		"web": return "Сила за ворота"
+		"flame_toll": return "Плата за ответ"
+		"gale_call": return "Возврат союзника"
+		"light_reserve": return "Возврат усиления"
+		"stone_ceiling": return "Предел прибавок"
+		"shadow_triumph": return "Перехват хода"
+		"tide_wash": return "Восстановление силы"
+		"valor": return "Спасение слабейшего"
 		"dusk_throne": return "Победа Тени"
 	return "Эффект"
 
@@ -288,15 +299,6 @@ static func card_role(def: CardDef) -> String:
 ## На лице — действие и цена; исключения и последовательность раскрывает наведение.
 ## Не уплотнять длинные правила до микротекста на карточке руки.
 static func card_face_text(def: CardDef) -> String:
-	if def.effect_id == &"negate" and bool(def.params.get("reactive", false)):
-		return "Отмени последнюю действующую основную карту соперника.\nБез прибавки силы."
-	match String(def.id):
-		"arena_mute": return "Гасит все карты соперника, даже неотменяемые.\nНовые карты запрещены."
-		"ability_gale_swap": return "Замена сильнейшим резервом.\n+200; против бьющей стихии +350.\nОбщий лимит: 3 карты."
-		"ability_stone_copy": return "+50. Повтори последнюю подходящую карту соперника или первую следующую."
-		"ability_kolossar_reset": return "Сила обоих — до базовой.\nПоздние карты действуют.\nБольше не играешь; без отмены."
-		"ability_rogozhuk_shell": return "Сила соперника — до твоей базовой. Поздние карты прибавляются сверху. Без отмены."
-		"ability_levian_coil": return "Сожги уже набранные бонусы соперника. Четверть — тебе. Больше не играешь."
 	return def.text
 
 
@@ -346,7 +348,7 @@ const CLASS_HELP := {
 	&"blue": ["Усиление", "Прибавка силы своей стихии. Крупные усиления требуют условия; защита от отмены и возврат в руку указаны на самой карте."],
 	&"green": ["Видовая способность", "Играет только существо своего вида любой стихии: отмена, сброс силы, перекачка бонусов, «нельзя отменить»."],
 }
-const GATE_WHEN := "В начале хода можно положить одну карту ворот: ближе к сопернику, рядом с другими картами. Можно сразу бросить на неё существо («Ворота + бросок»)."
+const GATE_WHEN := "До броска: одни ворота за ход, рядом с другими, ближе к сопернику. Открывай в свой ответ в бою. Закрытые не действуют."
 
 
 ## Строки подсказки для карты: [заголовок, тип, цвет типа, описание типа, эффект, когда играть].
@@ -355,30 +357,21 @@ static func card_help(def: CardDef) -> Array:
 	var info: Array = CLASS_HELP.get(cls, ["Карта", ""])
 	var when: String = GATE_WHEN
 	if def.kind == CardDef.Kind.ABILITY:
-		when = "В бою или прикреплением до броска / после приземления; до 3 карт на бой."
+		when = "В бою / прикреплением до броска или после приземления. До 3 карт стороны на бой."
 		if CardEffects.is_fusion(def):
-			when = "В бою поверх своей способности; до 3 карт на бой."
+			when = "В бою поверх своей способности. До 3 карт стороны на бой."
 		elif CardEffects.moment(def) == &"battle":
-			when = "Только в бою, в свой ответ; до 3 карт на бой."
+			when = "В бою, в свой ответ. До 3 карт стороны на бой."
 		elif CardEffects.moment(def) == &"landing":
 			when = "Только после приземления."
 		if CardEffects.returns_to_hand(def):
-			when += " После боя сразу в руку."
-		elif def.id in [&"ability_tide_ebb", &"ability_shadow_doom", &"ability_light_revive", &"ability_stone_copy"]:
-			when += " Отдых 2 боя, даже у последнего существа."
+			when += " После боя — в руку."
+		elif not MatchRules.last_rush_returns(def):
+			when += " Отдых: 2 следующих боя, даже у последнего существа."
 		else:
-			when += " Отдых 2 боя; у последнего существа — сразу в руку."
-	if def.effect_id == &"negate":
-		when += " Не отменяет слияния, мгновенные и неотменяемые карты."
-	elif def.effect_id == &"copy":
-		when += " Не копирует слияния, отмену, тишину, копирование, перенос и подмену."
-	var kind: String = info[0]
-	var lock: int = CardEffects.lock_attr(def)
-	if lock >= 0:
-		kind += " · только для стихии %s" % VisualUtil.attr_name(lock)
-	var sp: StringName = CardEffects.species_lock(def)
-	if sp != &"":
-		kind += " · только для вида %s" % CardDB.species_name(sp)
+			when += " Отдых: 2 следующих боя; у последнего существа — в руку."
+	# Исключения описаны самим эффектом; не повторяем их в общей строке сроков.
+	var kind: String = card_kind(def)
 	var cc := {&"gold": Color(1.0, 0.82, 0.35), &"silver": Color(0.82, 0.86, 0.92), &"bronze": Color(0.9, 0.58, 0.32),
 		&"red": Color(1.0, 0.45, 0.4), &"blue": Color(0.5, 0.7, 1.0), &"green": Color(0.5, 0.92, 0.58)}
 	var extra: String = ""
@@ -391,7 +384,7 @@ static func card_help(def: CardDef) -> Array:
 		if not parts.is_empty():
 			extra = "Сила G по стихиям: " + ", ".join(parts)
 	return [def.display_name, kind, cc.get(cls, GOLD), info[1], def.full_text(), when, extra,
-		{"role": card_role(def), "rule": card_rule_tag(def), "color": card_role_color(def)}]
+		{"role": card_role(def), "rule": card_rule_tag(def), "color": card_role_color(def), "card_id": def.id}]
 
 
 ## Подсказка для существа: имя, стихия, сила и совместимость карт.
@@ -404,6 +397,24 @@ static func creature_help(d: CreatureDef) -> Array:
 
 ## Панель подсказки (используется в CardView._make_custom_tooltip).
 static func help_panel(lines: Array) -> Control:
+	# Полное раскрытие руки и сыгранных карт: та же карта с эмалью, все правила
+	# и ограничения, без обрезки. Ширина подбирается по доступной высоте экрана.
+	if lines.size() > 7 and lines[7] is Dictionary and lines[7].has("card_id"):
+		var def := CardDB.card(lines[7]["card_id"])
+		if def != null:
+			var tree := Engine.get_main_loop() as SceneTree
+			var available := Vector2(960, 540) if tree == null else Vector2(tree.root.size)
+			# Один размер для всего каталога и любого контекста в этом окне.
+			var width := minf(360, floorf((available.y - 64) / 1.4))
+			width = minf(width, available.x - 64)
+			var fixed_size := Vector2(width, roundf(width * 1.4))
+			var cv := CardView.new().for_card(def, fixed_size, true)
+			cv._compose_card(def,fixed_size,true,lines)
+
+			cv.tooltip_text = ""
+			cv.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			return cv
+
 	var small_screen := false
 	var tree := Engine.get_main_loop() as SceneTree
 	if tree != null:

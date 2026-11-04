@@ -1,0 +1,34 @@
+{
+  "label": "v3-independent-streams-holdout-240-preregistered",
+  "rosters": [
+    [
+      "dragnar",
+      "klykar",
+      "gorgul"
+    ],
+    [
+      "dragnar",
+      "klykar",
+      "gorgul"
+    ],
+    [
+      "levian",
+      "ratnik",
+      "rogozhuk"
+    ],
+    [
+      "levian",
+      "ratnik",
+      "rogozhuk"
+    ]
+  ],
+  "seeds": [
+    47203,
+    47237,
+    47203,
+    47237
+  ],
+  "random_starting_cards": true,
+  "pair_seeded_streams": true,
+  "mirrors": false
+}

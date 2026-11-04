@@ -1,0 +1,42 @@
+{
+  "label": "v5-reserve-plan-paired-gold-holdout-240-preregistered",
+  "rosters": [
+    [
+      "dragnar",
+      "rogozhuk",
+      "gorgul"
+    ],
+    [
+      "dragnar",
+      "rogozhuk",
+      "gorgul"
+    ],
+    [
+      "kolossar",
+      "grifalon",
+      "levian"
+    ],
+    [
+      "kolossar",
+      "grifalon",
+      "levian"
+    ]
+  ],
+  "seeds": [
+    67103,
+    67133,
+    67103,
+    67133
+  ],
+  "random_starting_cards": true,
+  "pair_seeded_streams": true,
+  "pair_seeded_decks": true,
+  "common_deck_seed": true,
+  "gold_roles": [
+    "field",
+    "altar",
+    "field",
+    "altar"
+  ],
+  "mirrors": false
+}

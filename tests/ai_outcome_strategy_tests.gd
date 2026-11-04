@@ -67,8 +67,11 @@ func revival_limits() -> void:
 		var ai := AIPlayer.new(0, 113, -1.0, difficulty)
 		# Открытое Поле Света обеспечивает победу уже без карты, противник не ответит.
 		ctrl.state.slots[1].card_id = &"arena_field_light"
+		# Synthetic headroom keeps this a safe-win revival case with the accepted −100 G price.
+		ctrl.state.creatures[1].marks.append({"delta": 100, "src": &"fixture_margin"})
 		var pre := ctrl.get_battle_preview()
 		check(pre.winner_uid == 1, "контрольная победа без спасения")
+		check(ai._with_card(ctrl.get_view(0), pre, &"ability_light_revive", 0).winner_uid == 1, "Возрождение с ценой не уступает контрольную победу")
 		check(ai.choose_ability(ctrl.get_view(0), pre, ctrl.legal_abilities(0)) == &"", "Возрождение не тратится без выбывших при победе")
 		ctrl.state.creatures[0].alive = false
 		pre = ctrl.get_battle_preview()

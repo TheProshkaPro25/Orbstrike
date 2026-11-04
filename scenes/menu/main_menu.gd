@@ -99,7 +99,7 @@ void fragment() {
 	_column.add_theme_constant_override("separation", 6)
 	ui.add_child(_column)
 
-	var logo := VisualUtil.label("Сферы Стихий", LOGO_SIZE)
+	var logo := VisualUtil.label("Orbstrike", LOGO_SIZE)
 	logo.add_theme_color_override("font_color", UiTheme.GOLD)
 	logo.add_theme_color_override("font_outline_color", Color(0.10, 0.05, 0.0, 0.95))
 	logo.add_theme_constant_override("outline_size", 12)

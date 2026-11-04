@@ -14,6 +14,8 @@ uniform vec4 glow : source_color = vec4(1.0, 0.8, 0.45, 1.0);   // свечен�
 uniform vec4 gem : source_color = vec4(1.0, 0.8, 0.45, 0.0);    // камни накладок: цвет; a > 0.5 — горят цветом стихии
 uniform int frame = 4;
 uniform int sigil = 0;      // см. cf_sigil
+uniform bool illustration_on = false;
+uniform sampler2D illustration_tex : source_color, filter_linear_mipmap, repeat_disable;
 uniform float tier = 0.0;   // ступени силы у медальона (усиления): 0..3
 uniform float aspect = 1.4;
 uniform vec3 win = vec3(0.5, 0.6, 0.27);              // окно: центр, радиус
@@ -99,7 +101,7 @@ float cf_banner(vec2 p, vec2 c, vec2 h) {
 float cf_sigil(vec2 e, int id, float aa) {
 	float r = length(e);
 	float ang = atan(e.y, e.x);
-	if (id == 0) { // эмблема «сфер стихий»: шестилучевая звезда в кольце с шестью сферами
+	if (id == 0) { // эмблема Orbstrike: шестилучевая звезда в кольце с шестью сферами
 		float star = cf_fill(r - (0.024 + 0.04 * pow(abs(cos(ang * 3.0)), 8.0)), aa);
 		float sa = floor(ang / 1.0472 + 0.5) * 1.0472;
 		float orbs = cf_fill(length(e - vec2(cos(sa), sin(sa)) * 0.108) - 0.017, aa);
@@ -409,8 +411,9 @@ void card_face(vec2 p, float aa, float t, out vec3 col, out vec3 em, out float m
 			inner = mix(inner, g * 0.18 * (0.3 + z), 0.6);
 			inner_em += vec3(1.0) * pow(max(dot(normalize(vec3(e / wr, z)), normalize(vec3(-0.45, -0.6, 0.65))), 0.0), 24.0) * 0.5 * step(rr, 1.0);
 		}
-		// руны по кромке окна
-		if (detail > 0.25) {
+		// Рунная кромка остаётся только у эмблем существ и рубашек.
+		// Предметная иллюстрация CardDef читается без случайных знаков.
+		if (detail > 0.25 && sigil >= 0) {
 			float rb0 = wr * 0.06;
 			float rb1 = wr * 0.2;
 			float v = (-wsd - rb0) / (rb1 - rb0);
@@ -450,6 +453,15 @@ void card_face(vec2 p, float aa, float t, out vec3 col, out vec3 em, out float m
 			inner_em *= 1.0 - cf_fill(lid - wr * 0.04, aa);
 			inner_em += vec3(1.0, 0.16, 0.07) * (lm * 0.9 - cf_fill(pupil, aa) * 0.85 + cf_line(lid, 0.002, aa) * 0.6);
 			inner_em += vec3(1.0, 0.2, 0.08) * smoothstep(wr * 0.18, 0.0, lid) * (1.0 - lm) * 0.35;
+		}
+		// Literal card art is shared by floor cards and the hero's ability prop.
+		// Card backs and creature emblems retain the original shader-only path.
+		if (illustration_on && frame != 9) {
+			vec2 art_uv = e / (wr * 1.65) + vec2(0.5);
+			vec4 art = texture(illustration_tex, clamp(art_uv, vec2(0.0), vec2(1.0)));
+			float art_mask = art.a * step(0.0, art_uv.x) * step(art_uv.x, 1.0) * step(0.0, art_uv.y) * step(art_uv.y, 1.0);
+			inner = mix(inner, art.rgb * 0.6, art_mask);
+			inner_em = mix(inner_em, art.rgb * 0.55, art_mask);
 		}
 		col = mix(col, inner, wm);
 		em = mix(em, inner_em + em * 0.2, wm);

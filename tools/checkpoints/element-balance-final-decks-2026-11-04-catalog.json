@@ -1,0 +1,3923 @@
+{
+	"cards": [
+		{
+			"class": "gold",
+			"effect": "attr_bonus",
+			"id": "arena_field_fire",
+			"kind": 0,
+			"name": "Поле Пламени",
+			"params": {
+				"amount": 120,
+				"attr": 0,
+				"g": [
+					120,
+					0,
+					0,
+					0,
+					0,
+					0
+				]
+			},
+			"text": "+120 G существу Пламени."
+		},
+		{
+			"class": "gold",
+			"effect": "attr_bonus",
+			"id": "arena_field_gale",
+			"kind": 0,
+			"name": "Поле Бури",
+			"params": {
+				"amount": 150,
+				"attr": 1,
+				"g": [
+					0,
+					150,
+					0,
+					0,
+					0,
+					0
+				]
+			},
+			"text": "+150 G существу Бури."
+		},
+		{
+			"class": "gold",
+			"effect": "attr_bonus",
+			"id": "arena_field_light",
+			"kind": 0,
+			"name": "Поле Света",
+			"params": {
+				"amount": 90,
+				"attr": 2,
+				"g": [
+					0,
+					0,
+					90,
+					0,
+					0,
+					0
+				]
+			},
+			"text": "+90 G существу Света."
+		},
+		{
+			"class": "gold",
+			"effect": "attr_bonus",
+			"id": "arena_field_stone",
+			"kind": 0,
+			"name": "Поле Камня",
+			"params": {
+				"amount": 150,
+				"attr": 3,
+				"g": [
+					0,
+					0,
+					0,
+					150,
+					0,
+					0
+				]
+			},
+			"text": "+150 G существу Камня."
+		},
+		{
+			"class": "gold",
+			"effect": "attr_bonus",
+			"id": "arena_field_shadow",
+			"kind": 0,
+			"name": "Поле Тени",
+			"params": {
+				"amount": 80,
+				"attr": 4,
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					80,
+					0
+				]
+			},
+			"text": "+80 G существу Тени."
+		},
+		{
+			"class": "gold",
+			"effect": "attr_bonus",
+			"id": "arena_field_tide",
+			"kind": 0,
+			"name": "Поле Прилива",
+			"params": {
+				"amount": 130,
+				"attr": 5,
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					130
+				]
+			},
+			"text": "+130 G существу Прилива."
+		},
+		{
+			"class": "gold",
+			"effect": "owner_power",
+			"id": "arena_altar",
+			"kind": 0,
+			"name": "Алтарь силы",
+			"params": {
+				"amount": 300,
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				]
+			},
+			"text": "+300 G защитнику — владельцу ворот."
+		},
+		{
+			"class": "silver",
+			"effect": "species_double",
+			"id": "arena_den_dragnar",
+			"kind": 0,
+			"name": "Логово Драгнара",
+			"params": {
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				],
+				"species": "dragnar"
+			},
+			"text": "Драгнар на этих воротах удваивает базовую силу."
+		},
+		{
+			"class": "silver",
+			"effect": "species_double",
+			"id": "arena_den_klykar",
+			"kind": 0,
+			"name": "Нора Клыкаря",
+			"params": {
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				],
+				"species": "klykar"
+			},
+			"text": "Клыкарь на этих воротах удваивает базовую силу."
+		},
+		{
+			"class": "silver",
+			"effect": "species_double",
+			"id": "arena_den_grifalon",
+			"kind": 0,
+			"name": "Гнездо Грифалона",
+			"params": {
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				],
+				"species": "grifalon"
+			},
+			"text": "Грифалон на этих воротах удваивает базовую силу."
+		},
+		{
+			"class": "silver",
+			"effect": "species_double",
+			"id": "arena_den_kolossar",
+			"kind": 0,
+			"name": "Кузня Колоссара",
+			"params": {
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				],
+				"species": "kolossar"
+			},
+			"text": "Колоссар на этих воротах удваивает базовую силу."
+		},
+		{
+			"class": "silver",
+			"effect": "species_double",
+			"id": "arena_den_rogozhuk",
+			"kind": 0,
+			"name": "Чертог Рогожука",
+			"params": {
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				],
+				"species": "rogozhuk"
+			},
+			"text": "Рогожук на этих воротах удваивает базовую силу."
+		},
+		{
+			"class": "silver",
+			"effect": "species_double",
+			"id": "arena_den_levian",
+			"kind": 0,
+			"name": "Омут Левиана",
+			"params": {
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				],
+				"species": "levian"
+			},
+			"text": "Левиан на этих воротах удваивает базовую силу."
+		},
+		{
+			"class": "silver",
+			"effect": "species_double",
+			"id": "arena_den_ratnik",
+			"kind": 0,
+			"name": "Ристалище Ратника",
+			"params": {
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				],
+				"species": "ratnik"
+			},
+			"text": "Ратник на этих воротах удваивает базовую силу."
+		},
+		{
+			"class": "silver",
+			"effect": "species_double",
+			"id": "arena_den_gorgul",
+			"kind": 0,
+			"name": "Шпиль Горгула",
+			"params": {
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				],
+				"species": "gorgul"
+			},
+			"text": "Горгул на этих воротах удваивает базовую силу."
+		},
+		{
+			"class": "bronze",
+			"effect": "mirror",
+			"id": "arena_mirror",
+			"kind": 0,
+			"name": "Зеркало",
+			"params": {
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				],
+				"hidden_trap": true
+			},
+			"text": "Ловушка: итоговые силы бойцов меняются местами."
+		},
+		{
+			"class": "bronze",
+			"effect": "funnel",
+			"id": "arena_funnel",
+			"kind": 0,
+			"name": "Воронка",
+			"params": {
+				"amount": 100,
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				]
+			},
+			"text": "Владельцу +100 G; сопернику −100 G."
+		},
+		{
+			"class": "bronze",
+			"effect": "limit",
+			"id": "arena_limit",
+			"kind": 0,
+			"name": "Предел",
+			"params": {
+				"amount": 400,
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				],
+				"hidden_trap": true
+			},
+			"text": "После двух пасов: итоговая сила выше 400 G — поражение; выше у обоих — выбывают оба. До итога можно отвечать, подавить ворота или прервать бой «Отливом»."
+		},
+		{
+			"class": "bronze",
+			"effect": "weight",
+			"id": "arena_weight",
+			"kind": 0,
+			"name": "Гнёт",
+			"params": {
+				"amount": 100,
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				],
+				"threshold": 400
+			},
+			"text": "После всех карт один раз снижает на 100 G силу каждого, у кого от 400 G. Затем — фиксация силы из метки и «Зеркало»."
+		},
+		{
+			"class": "bronze",
+			"effect": "web",
+			"id": "arena_web",
+			"kind": 0,
+			"name": "Сеть врат",
+			"params": {
+				"amount": 50,
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				]
+			},
+			"text": "+50 G владельцу за каждые ворота на поле: текущие и закрытые, обеих сторон. Карты в руках, захваченные и пустые места не считаются."
+		},
+		{
+			"class": "bronze",
+			"effect": "hold",
+			"id": "arena_hold",
+			"kind": 0,
+			"name": "Удержание",
+			"params": {
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				]
+			},
+			"text": "При победе по силе победитель остаётся на воротах; карта не захватывается. «Отлив» и обоюдное поражение важнее удержания."
+		},
+		{
+			"class": "bronze",
+			"effect": "clash",
+			"id": "arena_clash",
+			"kind": 0,
+			"name": "Обоюдный удар",
+			"params": {
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				],
+				"hidden_trap": true
+			},
+			"text": "После двух пасов оба бойца выбывают, ворота сгорают. До итога можно отвечать, подавить ворота или прервать бой «Отливом» при свободной цели."
+		},
+		{
+			"class": "bronze",
+			"effect": "mute",
+			"id": "arena_mute",
+			"kind": 0,
+			"name": "Глухие врата",
+			"params": {
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				],
+				"hidden_trap": true
+			},
+			"text": "Гасит все способности соперника владельца в этом бою: прежние, прикреплённые, слияния и неотменяемые. Новые запрещены, в том числе ответная отмена. Выполненные мгновенные перемещения не откатывает; «Сдвиг плит» возможен до открытия."
+		},
+		{
+			"class": "bronze",
+			"effect": "dusk_throne",
+			"id": "arena_dusk_throne",
+			"kind": 0,
+			"name": "Трон сумрака",
+			"params": {
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				]
+			},
+			"text": "Существо Тени в этом бою побеждает. Если Тень у обоих — обычный бой."
+		},
+		{
+			"class": "bronze",
+			"effect": "fallen_call",
+			"id": "arena_fallen_call",
+			"kind": 0,
+			"name": "Зов павших",
+			"params": {
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				]
+			},
+			"text": "При открытии все выбывшие существа обеих сторон возвращаются в игру."
+		},
+		{
+			"class": "bronze",
+			"effect": "valor",
+			"id": "arena_valor",
+			"kind": 0,
+			"name": "Арена доблести",
+			"params": {
+				"g": [
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+				],
+				"margin": 50
+			},
+			"text": "После открытия при обычном поражении по силе с разницей не больше 50 G спасает проигравшего в зону использованных. Победителю остаются трофей и следующий ход. Особые исходы и ничья важнее этого спасения. Существо остаётся живым и при завершении матча."
+		},
+		{
+			"class": "red",
+			"effect": "negate",
+			"id": "ability_fire_counter",
+			"kind": 1,
+			"name": "Пламя разрыва",
+			"params": {
+				"lock": 0,
+				"moment": "battle",
+				"reactive": true
+			},
+			"text": "Отменяет последнюю действующую основную карту соперника и её слияние. Мгновенные и неотменяемые не затрагивает. Может ответить на саму Тишь, снимая запрет; Глухие врата и свой запрет не обходит. Реакцию тоже можно отменить."
+		},
+		{
+			"class": "red",
+			"effect": "negate",
+			"id": "ability_gale_rebuttal",
+			"kind": 1,
+			"name": "Встречный ветер",
+			"params": {
+				"lock": 1,
+				"moment": "battle",
+				"reactive": true
+			},
+			"text": "Отменяет последнюю действующую основную карту соперника и её слияние. Мгновенные и неотменяемые не затрагивает. Может ответить на саму Тишь, снимая запрет; Глухие врата и свой запрет не обходит. Реакцию тоже можно отменить."
+		},
+		{
+			"class": "red",
+			"effect": "negate",
+			"id": "ability_light_counter",
+			"kind": 1,
+			"name": "Свет развеивания",
+			"params": {
+				"lock": 2,
+				"moment": "battle",
+				"reactive": true
+			},
+			"text": "Отменяет последнюю действующую основную карту соперника и её слияние. Мгновенные и неотменяемые не затрагивает. Может ответить на саму Тишь, снимая запрет; Глухие врата и свой запрет не обходит. Реакцию тоже можно отменить."
+		},
+		{
+			"class": "red",
+			"effect": "negate",
+			"id": "ability_stone_counter",
+			"kind": 1,
+			"name": "Каменная печать",
+			"params": {
+				"lock": 3,
+				"moment": "battle",
+				"reactive": true
+			},
+			"text": "Отменяет последнюю действующую основную карту соперника и её слияние. Мгновенные и неотменяемые не затрагивает. Может ответить на саму Тишь, снимая запрет; Глухие врата и свой запрет не обходит. Реакцию тоже можно отменить."
+		},
+		{
+			"class": "red",
+			"effect": "negate",
+			"id": "ability_shadow_counter",
+			"kind": 1,
+			"name": "Разрыв тени",
+			"params": {
+				"lock": 4,
+				"moment": "battle",
+				"reactive": true
+			},
+			"text": "Отменяет последнюю действующую основную карту соперника и её слияние. Мгновенные и неотменяемые не затрагивает. Может ответить на саму Тишь, снимая запрет; Глухие врата и свой запрет не обходит. Реакцию тоже можно отменить."
+		},
+		{
+			"class": "red",
+			"effect": "negate",
+			"id": "ability_tide_counter",
+			"kind": 1,
+			"name": "Обратная волна",
+			"params": {
+				"lock": 5,
+				"moment": "battle",
+				"reactive": true
+			},
+			"text": "Отменяет последнюю действующую основную карту соперника и её слияние. Мгновенные и неотменяемые не затрагивает. Может ответить на саму Тишь, снимая запрет; Глухие врата и свой запрет не обходит. Реакцию тоже можно отменить."
+		},
+		{
+			"class": "red",
+			"effect": "drain",
+			"id": "ability_fire_drain",
+			"kind": 1,
+			"name": "Пожирающий жар",
+			"params": {
+				"amount": 100,
+				"lock": 0
+			},
+			"text": "Забирает 100 силы у соперника: +100 G тебе, −100 G ему."
+		},
+		{
+			"class": "red",
+			"effect": "scorch",
+			"id": "ability_fire_ash",
+			"kind": 1,
+			"name": "Пепельный дождь",
+			"params": {
+				"amount": 50,
+				"lock": 0,
+				"spare": 0
+			},
+			"text": "−50 G сопернику. Остальные его существа на воротах (кроме Пламени) получат −50 G в своём следующем бою."
+		},
+		{
+			"class": "red",
+			"effect": "gust",
+			"id": "ability_gale_leap",
+			"kind": 1,
+			"name": "Попутный шквал",
+			"params": {
+				"amount": 100,
+				"lock": 1,
+				"vs_adv": 150
+			},
+			"text": "+100 G (против стихии, которая бьёт твою, +250 G). После приземления: перелёт к слабейшему сопернику на воротах — бой."
+		},
+		{
+			"class": "red",
+			"effect": "swap_fighter",
+			"id": "ability_gale_swap",
+			"kind": 1,
+			"name": "Вихревая подмена",
+			"params": {
+				"amount": 200,
+				"instant": true,
+				"lock": 1,
+				"moment": "battle",
+				"vs_adv": 150
+			},
+			"text": "Сразу заменяет бойца сильнейшим допустимым живым не на воротах. Прежний уходит в руку с прикреплениями. +200 G новому; +350 G против бьющей его стихии. Карты прежнего, Подмена и прикрепления замены вместе входят в лимит 3. Без допустимой замены недоступна."
+		},
+		{
+			"class": "red",
+			"effect": "revive",
+			"id": "ability_light_revive",
+			"kind": 1,
+			"name": "Возрождение",
+			"params": {
+				"amount": 30,
+				"lock": 2
+			},
+			"text": "+30 G. После боя возвращает первое своё выбывшее существо в зону использованных, включая только что проигравшего бойца."
+		},
+		{
+			"class": "red",
+			"effect": "purge_gate",
+			"id": "ability_light_purge",
+			"kind": 1,
+			"name": "Очищающий луч",
+			"params": {
+				"amount": 50,
+				"lock": 2
+			},
+			"text": "+50 G. Подавляет чужие ворота боя: силу и особый исход. Не откатывает «Зов павших». «Глухие врата» гасят эту способность; после их открытия она недоступна сопернику владельца."
+		},
+		{
+			"class": "red",
+			"effect": "radiance",
+			"id": "ability_light_crown",
+			"kind": 1,
+			"name": "Сияющий венец",
+			"params": {
+				"amount": 50,
+				"lock": 2
+			},
+			"text": "+50 G тебе, −50 G сопернику. Остальные его существа на воротах получат −50 G в следующем бою."
+		},
+		{
+			"class": "red",
+			"effect": "copy",
+			"id": "ability_stone_copy",
+			"kind": 1,
+			"name": "Отпечаток в камне",
+			"params": {
+				"amount": 50,
+				"lock": 3
+			},
+			"text": "+50 G. Повторяет последнюю действующую повторяемую основную карту соперника, иначе первую следующую. Не копирует отмену, Тишь, Копию, слияние, перемещения, Попутный зов и Свет запаса. Наследует запрет дальнейших карт. Отмена или подавление Копии снимает повторённый эффект и запрет; защиту от отмены не наследует."
+		},
+		{
+			"class": "red",
+			"effect": "shift_gate",
+			"id": "ability_stone_shift",
+			"kind": 1,
+			"name": "Сдвиг плит",
+			"params": {
+				"amount": 80,
+				"instant": true,
+				"lock": 3,
+				"moment": "battle"
+			},
+			"text": "+80 G. Сразу меняет ворота боя с выгоднейшими свободными своими без ловушки и открывает их. Выбор учитывает исход, затем перевес силы с +80 G. Бойцы остаются. Подавление гасит +80 G, но не откатывает обмен."
+		},
+		{
+			"class": "red",
+			"effect": "doom",
+			"id": "ability_shadow_doom",
+			"kind": 1,
+			"name": "Общая бездна",
+			"params": {
+				"lock": 4
+			},
+			"text": "Если твой боец проигрывает этот бой, выбывают оба бойца, ворота сгорают."
+		},
+		{
+			"class": "red",
+			"effect": "eclipse",
+			"id": "ability_shadow_eclipse",
+			"kind": 1,
+			"name": "Затмение врат",
+			"params": {
+				"amount": 50,
+				"lock": 4
+			},
+			"text": "−50 G сопернику. Подавляет его ворота боя, пока действует. Не откатывает «Зов павших». «Глухие врата» гасят эту способность у соперника владельца."
+		},
+		{
+			"class": "red",
+			"effect": "pact",
+			"id": "ability_shadow_pact",
+			"kind": 1,
+			"name": "Тёмный пакт",
+			"params": {
+				"amount": 50,
+				"lock": 4
+			},
+			"text": "+50 G тебе, −50 G сопернику. Остальные твои существа на воротах получат +50 G в следующем бою."
+		},
+		{
+			"class": "red",
+			"effect": "silence",
+			"id": "ability_tide_hush",
+			"kind": 1,
+			"name": "Глубинная тишь",
+			"params": {
+				"amount": 50,
+				"lock": 5
+			},
+			"text": "+50 G. Запрещает сопернику новые способности и подавляет сыгранные после неё, кроме неотменяемых. Ранние и прикреплённые до неё сохраняются. Запрет снимается отменой Тиши; ответная отмена допустима, если цель — сама Тишь."
+		},
+		{
+			"class": "red",
+			"effect": "ebb",
+			"id": "ability_tide_ebb",
+			"kind": 1,
+			"name": "Отлив",
+			"params": {
+				"lock": 5
+			},
+			"text": "После двух пасов переносит соперника на первые по номеру свободные ворота, кроме текущих, и прерывает бой. Без цели не действует. До итога отменяем и подавляем; прерывание важнее особых поражений."
+		},
+		{
+			"class": "red",
+			"effect": "flame_toll",
+			"id": "ability_fire_toll",
+			"kind": 1,
+			"name": "Огненная пошлина",
+			"params": {
+				"amount": 60,
+				"cap": 120,
+				"cooldown_always": true,
+				"lock": 0,
+				"moment": "battle"
+			},
+			"text": "Без начальной прибавки силы. Каждая следующая потраченная способность соперника, даже позднее отменённая, даёт ему −60 G до конца боя; общий штраф не больше −120 G. Отмена самой Пошлины снимает все её штрафы."
+		},
+		{
+			"class": "red",
+			"effect": "gale_call",
+			"id": "ability_gale_call",
+			"kind": 1,
+			"name": "Попутный зов",
+			"params": {
+				"amount": 50,
+				"cooldown_always": true,
+				"lock": 1,
+				"moment": "battle"
+			},
+			"text": "+50 G. При розыгрыше выбери другое своё живое существо на воротах. Только при обычной победе своего бойца выбранное существо переходит в зону использованных. При поражении, отмене или особом исходе оно остаётся на месте."
+		},
+		{
+			"class": "red",
+			"effect": "light_reserve",
+			"id": "ability_light_reserve",
+			"kind": 1,
+			"name": "Свет запаса",
+			"params": {
+				"cooldown_always": true,
+				"lock": 2,
+				"moment": "battle"
+			},
+			"text": "Без прибавки силы. При розыгрыше выбери свою синюю способность, которая уже отдыхала после предыдущего боя. После исхода верни её в руку. Карты текущего боя не подходят; отмена и Тишь гасят возврат. Одна карта возвращается только один раз."
+		},
+		{
+			"class": "red",
+			"effect": "stone_ceiling",
+			"id": "ability_stone_ceiling",
+			"kind": 1,
+			"name": "Дробящий свод",
+			"params": {
+				"cap": 100,
+				"cooldown_always": true,
+				"lock": 3,
+				"moment": "battle"
+			},
+			"text": "Без прибавки силы. Пока действует, ограничивает каждую новую отдельную положительную прибавку от способностей обеих сторон до +100 G. Старые прибавки не меняет. Базовая сила, ворота, штрафы, срезы, фиксация и восстановление силы действуют обычно."
+		},
+		{
+			"class": "red",
+			"effect": "shadow_triumph",
+			"id": "ability_shadow_triumph",
+			"kind": 1,
+			"name": "Сорванный триумф",
+			"params": {
+				"cooldown_always": true,
+				"lock": 4,
+				"moment": "battle"
+			},
+			"text": "Без прибавки силы. При обычном поражении следующий ход получает владелец реально выбывшего и не возрождённого проигравшего, если у него остались другие живые существа. Трофей получает победитель. Особые исходы, ничья и конец матча не затрагивает."
+		},
+		{
+			"class": "red",
+			"effect": "tide_wash",
+			"id": "ability_tide_wash",
+			"kind": 1,
+			"name": "Омывающая волна",
+			"params": {
+				"cooldown_always": true,
+				"lock": 5,
+				"moment": "battle"
+			},
+			"text": "Доступна, только если текущая сила своего бойца ниже его базовой. Сразу восстанавливает видимую силу ровно до базовой, включая уже действующие Гнёт и фиксацию; они повторно не применяются. Поздние карты действуют обычно. Отмена карт пересчитывает последовательность; сама Волна отменяема."
+		},
+		{
+			"class": "blue",
+			"effect": "boost",
+			"id": "ability_fire_spark",
+			"kind": 1,
+			"name": "Искра",
+			"params": {
+				"amount": 30,
+				"lock": 0,
+				"sure": true
+			},
+			"text": "+30 G. Нельзя отменить."
+		},
+		{
+			"class": "blue",
+			"effect": "boost",
+			"id": "ability_fire_assault",
+			"kind": 1,
+			"name": "Жаркий натиск",
+			"params": {
+				"amount": 100,
+				"cond": "attack",
+				"lock": 0
+			},
+			"text": "+100 G в атаке."
+		},
+		{
+			"class": "blue",
+			"effect": "boost",
+			"id": "ability_fire_last",
+			"kind": 1,
+			"name": "Последний костёр",
+			"params": {
+				"amount": 200,
+				"cond": "last",
+				"lock": 0,
+				"returns": true
+			},
+			"text": "+200 G последнему своему существу. После боя — в руку."
+		},
+		{
+			"class": "blue",
+			"effect": "boost",
+			"id": "ability_gale_gust",
+			"kind": 1,
+			"name": "Порыв",
+			"params": {
+				"amount": 80,
+				"lock": 1,
+				"vs_adv": 170
+			},
+			"text": "+80 G. Если стихия соперника бьёт твою — ещё +170 G."
+		},
+		{
+			"class": "blue",
+			"effect": "boost",
+			"id": "ability_gale_counter",
+			"kind": 1,
+			"name": "Встречный вихрь",
+			"params": {
+				"amount": 120,
+				"cond": "underdog",
+				"lock": 1
+			},
+			"text": "+120 G, если базовая сила соперника выше твоей или его стихия бьёт твою."
+		},
+		{
+			"class": "blue",
+			"effect": "boost",
+			"id": "ability_gale_vengeance",
+			"kind": 1,
+			"name": "Буря мщения",
+			"params": {
+				"amount": 250,
+				"cond": "behind",
+				"lock": 1,
+				"returns": true
+			},
+			"text": "+250 G, если у тебя меньше живых существ, чем у соперника. После боя — в руку."
+		},
+		{
+			"class": "blue",
+			"effect": "boost",
+			"id": "ability_light_glint",
+			"kind": 1,
+			"name": "Отблеск",
+			"params": {
+				"amount": 50,
+				"lock": 2,
+				"sure": true
+			},
+			"text": "+50 G. Нельзя отменить."
+		},
+		{
+			"class": "blue",
+			"effect": "boost",
+			"id": "ability_light_guard",
+			"kind": 1,
+			"name": "Светлый страж",
+			"params": {
+				"amount": 100,
+				"cond": "defense",
+				"lock": 2
+			},
+			"text": "+100 G в защите."
+		},
+		{
+			"class": "blue",
+			"effect": "boost",
+			"id": "ability_light_dawn",
+			"kind": 1,
+			"name": "Последний рассвет",
+			"params": {
+				"amount": 150,
+				"cond": "last",
+				"lock": 2,
+				"returns": true
+			},
+			"text": "+150 G последнему своему существу. После боя — в руку."
+		},
+		{
+			"class": "blue",
+			"effect": "boost",
+			"id": "ability_stone_firm",
+			"kind": 1,
+			"name": "Твердь",
+			"params": {
+				"amount": 80,
+				"lock": 3
+			},
+			"text": "+80 G."
+		},
+		{
+			"class": "blue",
+			"effect": "boost",
+			"id": "ability_stone_footing",
+			"kind": 1,
+			"name": "Опора",
+			"params": {
+				"amount": 120,
+				"cond": "own_gate",
+				"lock": 3
+			},
+			"text": "+120 G на своих воротах."
+		},
+		{
+			"class": "blue",
+			"effect": "boost",
+			"id": "ability_stone_wrath",
+			"kind": 1,
+			"name": "Гнев гор",
+			"params": {
+				"amount": 180,
+				"cond": "behind",
+				"lock": 3,
+				"returns": true
+			},
+			"text": "+180 G, если у тебя меньше живых существ, чем у соперника. После боя — в руку."
+		},
+		{
+			"class": "blue",
+			"effect": "boost",
+			"id": "ability_shadow_haze",
+			"kind": 1,
+			"name": "Мгла",
+			"params": {
+				"amount": 30,
+				"lock": 4,
+				"sure": true
+			},
+			"text": "+30 G. Нельзя отменить."
+		},
+		{
+			"class": "blue",
+			"effect": "boost",
+			"id": "ability_shadow_strike",
+			"kind": 1,
+			"name": "Удар из тени",
+			"params": {
+				"amount": 100,
+				"cond": "attack",
+				"lock": 4
+			},
+			"text": "+100 G в атаке."
+		},
+		{
+			"class": "blue",
+			"effect": "boost",
+			"id": "ability_shadow_revenge",
+			"kind": 1,
+			"name": "Месть тьмы",
+			"params": {
+				"amount": 180,
+				"cond": "behind",
+				"lock": 4,
+				"returns": true
+			},
+			"text": "+180 G, если у тебя меньше живых существ, чем у соперника. После боя — в руку."
+		},
+		{
+			"class": "blue",
+			"effect": "boost",
+			"id": "ability_tide_spray",
+			"kind": 1,
+			"name": "Брызги",
+			"params": {
+				"amount": 50,
+				"lock": 5
+			},
+			"text": "+50 G."
+		},
+		{
+			"class": "blue",
+			"effect": "boost",
+			"id": "ability_tide_surf",
+			"kind": 1,
+			"name": "Прибой",
+			"params": {
+				"amount": 100,
+				"cond": "defense",
+				"lock": 5
+			},
+			"text": "+100 G в защите."
+		},
+		{
+			"class": "blue",
+			"effect": "boost",
+			"id": "ability_tide_ninth",
+			"kind": 1,
+			"name": "Девятый вал",
+			"params": {
+				"amount": 180,
+				"cond": "last",
+				"lock": 5,
+				"returns": true
+			},
+			"text": "+180 G последнему своему существу. После боя — в руку."
+		},
+		{
+			"class": "green",
+			"effect": "boost_fix",
+			"id": "ability_dragnar_rush",
+			"kind": 1,
+			"name": "Драконий напор",
+			"params": {
+				"amount": 100,
+				"fix": 440,
+				"species": "dragnar"
+			},
+			"text": "+100 G сейчас. Если боец уцелеет, в следующем бою сила фиксируется ровно на 440 G после бонусов, штрафов, срезов и «Гнёта», перед «Зеркалом». Усиления сверх 440 G теряются."
+		},
+		{
+			"class": "green",
+			"effect": "fusion_boost",
+			"id": "ability_dragnar_heart",
+			"kind": 1,
+			"name": "Сердце дракона",
+			"params": {
+				"amount": 200,
+				"fusion": true,
+				"species": "dragnar"
+			},
+			"text": "Слияние: +200 G, только поверх твоей способности в этом бою."
+		},
+		{
+			"class": "green",
+			"effect": "negate",
+			"id": "ability_klykar_bite",
+			"kind": 1,
+			"name": "Волчья хватка",
+			"params": {
+				"amount": 50,
+				"species": "klykar"
+			},
+			"text": "−50 G сопернику. Отменяет последнюю действующую основную карту соперника до себя, иначе первую следующую, кроме отмены. Не отменяет мгновенные, неотменяемые и слияния напрямую; слияние гаснет вместе с основой."
+		},
+		{
+			"class": "green",
+			"effect": "boost",
+			"id": "ability_klykar_hunt",
+			"kind": 1,
+			"name": "Загонщик",
+			"params": {
+				"amount": 200,
+				"cond": "weaker",
+				"species": "klykar"
+			},
+			"text": "+200 G, если базовая сила соперника выше твоей."
+		},
+		{
+			"class": "green",
+			"effect": "boost",
+			"id": "ability_grifalon_dive",
+			"kind": 1,
+			"name": "Пикирование",
+			"params": {
+				"amount": 200,
+				"cond": "attack",
+				"species": "grifalon"
+			},
+			"text": "+200 G в атаке."
+		},
+		{
+			"class": "green",
+			"effect": "aloft",
+			"id": "ability_grifalon_sky",
+			"kind": 1,
+			"name": "Взор с высоты",
+			"params": {
+				"amount": 100,
+				"species": "grifalon"
+			},
+			"text": "+100 G. Ворота боя не дают сопернику бонуса."
+		},
+		{
+			"class": "green",
+			"effect": "boost",
+			"id": "ability_kolossar_wall",
+			"kind": 1,
+			"name": "Несокрушимый",
+			"params": {
+				"amount": 250,
+				"cond": "defense",
+				"species": "kolossar",
+				"sure": true
+			},
+			"text": "+250 G в защите. Нельзя отменить."
+		},
+		{
+			"class": "green",
+			"effect": "reset_base",
+			"id": "ability_kolossar_reset",
+			"kind": 1,
+			"name": "Великий сброс",
+			"params": {
+				"lockout": true,
+				"species": "kolossar",
+				"sure": true
+			},
+			"text": "Сила обоих — ровно базовая. Поздние карты действуют; ты больше не играешь. Нельзя отменить."
+		},
+		{
+			"class": "green",
+			"effect": "cap_own_base",
+			"id": "ability_rogozhuk_shell",
+			"kind": 1,
+			"name": "Хитиновый панцирь",
+			"params": {
+				"species": "rogozhuk",
+				"sure": true
+			},
+			"text": "Снижает силу соперника до твоей базовой. Поздние карты действуют. Нельзя отменить."
+		},
+		{
+			"class": "green",
+			"effect": "weaken_mark",
+			"id": "ability_rogozhuk_ram",
+			"kind": 1,
+			"name": "Рогатый таран",
+			"params": {
+				"amount": 100,
+				"mark": 50,
+				"species": "rogozhuk"
+			},
+			"text": "−100 G сопернику. Если он уцелеет, в следующем бою ещё −50 G."
+		},
+		{
+			"class": "green",
+			"effect": "siphon",
+			"id": "ability_levian_coil",
+			"kind": 1,
+			"name": "Кольца глубин",
+			"params": {
+				"lockout": true,
+				"share": 25,
+				"species": "levian"
+			},
+			"text": "Сожги уже набранную силу соперника сверх его базовой; четверть — тебе. Ты больше не играешь."
+		},
+		{
+			"class": "green",
+			"effect": "strip",
+			"id": "ability_levian_abyss",
+			"kind": 1,
+			"name": "Пучина",
+			"params": {
+				"species": "levian"
+			},
+			"text": "Убери набранную силу соперника сверх его базовой. Поздние карты действуют."
+		},
+		{
+			"class": "green",
+			"effect": "boost",
+			"id": "ability_ratnik_oath",
+			"kind": 1,
+			"name": "Клятва стража",
+			"params": {
+				"amount": 100,
+				"species": "ratnik",
+				"sure": true
+			},
+			"text": "+100 G. Нельзя отменить."
+		},
+		{
+			"class": "green",
+			"effect": "recall",
+			"id": "ability_ratnik_rearm",
+			"kind": 1,
+			"name": "Второе дыхание",
+			"params": {
+				"amount": 50,
+				"species": "ratnik"
+			},
+			"text": "+50 G. После боя возвращает другие свои способности этого боя, включая прикреплённые и отменённые. Старую перезарядку не возвращает; сама карта отдыхает обычно."
+		},
+		{
+			"class": "green",
+			"effect": "nullify_gate",
+			"id": "ability_gorgul_gaze",
+			"kind": 1,
+			"name": "Каменный взгляд",
+			"params": {
+				"amount": 50,
+				"species": "gorgul"
+			},
+			"text": "+50 G. Подавляет ворота боя, кроме ворот вида, пока действует. Не откатывает «Зов павших». «Глухие врата» гасят эту способность у соперника владельца."
+		},
+		{
+			"class": "green",
+			"effect": "scorch",
+			"id": "ability_gorgul_night",
+			"kind": 1,
+			"name": "Крылья ночи",
+			"params": {
+				"amount": 100,
+				"spare": -1,
+				"species": "gorgul"
+			},
+			"text": "−100 G сопернику. Остальные его существа на воротах получат −100 G в следующем бою."
+		}
+	],
+	"creatures": [
+		{
+			"element": 0,
+			"id": "creature_dragnar_fire",
+			"power": 390,
+			"species": "dragnar"
+		},
+		{
+			"element": 1,
+			"id": "creature_dragnar_gale",
+			"power": 350,
+			"species": "dragnar"
+		},
+		{
+			"element": 2,
+			"id": "creature_dragnar_light",
+			"power": 370,
+			"species": "dragnar"
+		},
+		{
+			"element": 3,
+			"id": "creature_dragnar_stone",
+			"power": 330,
+			"species": "dragnar"
+		},
+		{
+			"element": 4,
+			"id": "creature_dragnar_shadow",
+			"power": 380,
+			"species": "dragnar"
+		},
+		{
+			"element": 5,
+			"id": "creature_dragnar_tide",
+			"power": 340,
+			"species": "dragnar"
+		},
+		{
+			"element": 0,
+			"id": "creature_klykar_fire",
+			"power": 320,
+			"species": "klykar"
+		},
+		{
+			"element": 1,
+			"id": "creature_klykar_gale",
+			"power": 340,
+			"species": "klykar"
+		},
+		{
+			"element": 2,
+			"id": "creature_klykar_light",
+			"power": 300,
+			"species": "klykar"
+		},
+		{
+			"element": 3,
+			"id": "creature_klykar_stone",
+			"power": 350,
+			"species": "klykar"
+		},
+		{
+			"element": 4,
+			"id": "creature_klykar_shadow",
+			"power": 310,
+			"species": "klykar"
+		},
+		{
+			"element": 5,
+			"id": "creature_klykar_tide",
+			"power": 360,
+			"species": "klykar"
+		},
+		{
+			"element": 0,
+			"id": "creature_grifalon_fire",
+			"power": 330,
+			"species": "grifalon"
+		},
+		{
+			"element": 1,
+			"id": "creature_grifalon_gale",
+			"power": 290,
+			"species": "grifalon"
+		},
+		{
+			"element": 2,
+			"id": "creature_grifalon_light",
+			"power": 340,
+			"species": "grifalon"
+		},
+		{
+			"element": 3,
+			"id": "creature_grifalon_stone",
+			"power": 300,
+			"species": "grifalon"
+		},
+		{
+			"element": 4,
+			"id": "creature_grifalon_shadow",
+			"power": 350,
+			"species": "grifalon"
+		},
+		{
+			"element": 5,
+			"id": "creature_grifalon_tide",
+			"power": 310,
+			"species": "grifalon"
+		},
+		{
+			"element": 0,
+			"id": "creature_kolossar_fire",
+			"power": 350,
+			"species": "kolossar"
+		},
+		{
+			"element": 1,
+			"id": "creature_kolossar_gale",
+			"power": 400,
+			"species": "kolossar"
+		},
+		{
+			"element": 2,
+			"id": "creature_kolossar_light",
+			"power": 360,
+			"species": "kolossar"
+		},
+		{
+			"element": 3,
+			"id": "creature_kolossar_stone",
+			"power": 410,
+			"species": "kolossar"
+		},
+		{
+			"element": 4,
+			"id": "creature_kolossar_shadow",
+			"power": 370,
+			"species": "kolossar"
+		},
+		{
+			"element": 5,
+			"id": "creature_kolossar_tide",
+			"power": 390,
+			"species": "kolossar"
+		},
+		{
+			"element": 0,
+			"id": "creature_rogozhuk_fire",
+			"power": 360,
+			"species": "rogozhuk"
+		},
+		{
+			"element": 1,
+			"id": "creature_rogozhuk_gale",
+			"power": 320,
+			"species": "rogozhuk"
+		},
+		{
+			"element": 2,
+			"id": "creature_rogozhuk_light",
+			"power": 370,
+			"species": "rogozhuk"
+		},
+		{
+			"element": 3,
+			"id": "creature_rogozhuk_stone",
+			"power": 330,
+			"species": "rogozhuk"
+		},
+		{
+			"element": 4,
+			"id": "creature_rogozhuk_shadow",
+			"power": 350,
+			"species": "rogozhuk"
+		},
+		{
+			"element": 5,
+			"id": "creature_rogozhuk_tide",
+			"power": 310,
+			"species": "rogozhuk"
+		},
+		{
+			"element": 0,
+			"id": "creature_levian_fire",
+			"power": 330,
+			"species": "levian"
+		},
+		{
+			"element": 1,
+			"id": "creature_levian_gale",
+			"power": 380,
+			"species": "levian"
+		},
+		{
+			"element": 2,
+			"id": "creature_levian_light",
+			"power": 340,
+			"species": "levian"
+		},
+		{
+			"element": 3,
+			"id": "creature_levian_stone",
+			"power": 360,
+			"species": "levian"
+		},
+		{
+			"element": 4,
+			"id": "creature_levian_shadow",
+			"power": 320,
+			"species": "levian"
+		},
+		{
+			"element": 5,
+			"id": "creature_levian_tide",
+			"power": 370,
+			"species": "levian"
+		},
+		{
+			"element": 0,
+			"id": "creature_ratnik_fire",
+			"power": 380,
+			"species": "ratnik"
+		},
+		{
+			"element": 1,
+			"id": "creature_ratnik_gale",
+			"power": 340,
+			"species": "ratnik"
+		},
+		{
+			"element": 2,
+			"id": "creature_ratnik_light",
+			"power": 360,
+			"species": "ratnik"
+		},
+		{
+			"element": 3,
+			"id": "creature_ratnik_stone",
+			"power": 320,
+			"species": "ratnik"
+		},
+		{
+			"element": 4,
+			"id": "creature_ratnik_shadow",
+			"power": 370,
+			"species": "ratnik"
+		},
+		{
+			"element": 5,
+			"id": "creature_ratnik_tide",
+			"power": 330,
+			"species": "ratnik"
+		},
+		{
+			"element": 0,
+			"id": "creature_gorgul_fire",
+			"power": 290,
+			"species": "gorgul"
+		},
+		{
+			"element": 1,
+			"id": "creature_gorgul_gale",
+			"power": 310,
+			"species": "gorgul"
+		},
+		{
+			"element": 2,
+			"id": "creature_gorgul_light",
+			"power": 270,
+			"species": "gorgul"
+		},
+		{
+			"element": 3,
+			"id": "creature_gorgul_stone",
+			"power": 320,
+			"species": "gorgul"
+		},
+		{
+			"element": 4,
+			"id": "creature_gorgul_shadow",
+			"power": 280,
+			"species": "gorgul"
+		},
+		{
+			"element": 5,
+			"id": "creature_gorgul_tide",
+			"power": 330,
+			"species": "gorgul"
+		}
+	],
+	"elements": [
+		{
+			"available_cards_all_species": [
+				"arena_field_fire",
+				"arena_altar",
+				"arena_den_dragnar",
+				"arena_den_klykar",
+				"arena_den_grifalon",
+				"arena_den_kolossar",
+				"arena_den_rogozhuk",
+				"arena_den_levian",
+				"arena_den_ratnik",
+				"arena_den_gorgul",
+				"arena_mirror",
+				"arena_funnel",
+				"arena_limit",
+				"arena_weight",
+				"arena_web",
+				"arena_hold",
+				"arena_clash",
+				"arena_mute",
+				"arena_dusk_throne",
+				"arena_fallen_call",
+				"arena_valor",
+				"ability_fire_counter",
+				"ability_fire_drain",
+				"ability_fire_ash",
+				"ability_fire_toll",
+				"ability_fire_spark",
+				"ability_fire_assault",
+				"ability_fire_last",
+				"ability_dragnar_rush",
+				"ability_dragnar_heart",
+				"ability_klykar_bite",
+				"ability_klykar_hunt",
+				"ability_grifalon_dive",
+				"ability_grifalon_sky",
+				"ability_kolossar_wall",
+				"ability_kolossar_reset",
+				"ability_rogozhuk_shell",
+				"ability_rogozhuk_ram",
+				"ability_levian_coil",
+				"ability_levian_abyss",
+				"ability_ratnik_oath",
+				"ability_ratnik_rearm",
+				"ability_gorgul_gaze",
+				"ability_gorgul_night"
+			],
+			"element": 0,
+			"key": "fire",
+			"legal_distinct_species_teams": [
+				[
+					0,
+					1,
+					2,
+					1040
+				],
+				[
+					0,
+					1,
+					3,
+					1060
+				],
+				[
+					0,
+					1,
+					4,
+					1070
+				],
+				[
+					0,
+					1,
+					5,
+					1040
+				],
+				[
+					0,
+					1,
+					6,
+					1090
+				],
+				[
+					0,
+					1,
+					7,
+					1000
+				],
+				[
+					0,
+					2,
+					3,
+					1070
+				],
+				[
+					0,
+					2,
+					4,
+					1080
+				],
+				[
+					0,
+					2,
+					5,
+					1050
+				],
+				[
+					0,
+					2,
+					6,
+					1100
+				],
+				[
+					0,
+					2,
+					7,
+					1010
+				],
+				[
+					0,
+					3,
+					4,
+					1100
+				],
+				[
+					0,
+					3,
+					5,
+					1070
+				],
+				[
+					0,
+					3,
+					7,
+					1030
+				],
+				[
+					0,
+					4,
+					5,
+					1080
+				],
+				[
+					0,
+					4,
+					7,
+					1040
+				],
+				[
+					0,
+					5,
+					6,
+					1100
+				],
+				[
+					0,
+					5,
+					7,
+					1010
+				],
+				[
+					0,
+					6,
+					7,
+					1060
+				],
+				[
+					1,
+					2,
+					3,
+					1000
+				],
+				[
+					1,
+					2,
+					4,
+					1010
+				],
+				[
+					1,
+					2,
+					5,
+					980
+				],
+				[
+					1,
+					2,
+					6,
+					1030
+				],
+				[
+					1,
+					2,
+					7,
+					940
+				],
+				[
+					1,
+					3,
+					4,
+					1030
+				],
+				[
+					1,
+					3,
+					5,
+					1000
+				],
+				[
+					1,
+					3,
+					6,
+					1050
+				],
+				[
+					1,
+					3,
+					7,
+					960
+				],
+				[
+					1,
+					4,
+					5,
+					1010
+				],
+				[
+					1,
+					4,
+					6,
+					1060
+				],
+				[
+					1,
+					4,
+					7,
+					970
+				],
+				[
+					1,
+					5,
+					6,
+					1030
+				],
+				[
+					1,
+					5,
+					7,
+					940
+				],
+				[
+					1,
+					6,
+					7,
+					990
+				],
+				[
+					2,
+					3,
+					4,
+					1040
+				],
+				[
+					2,
+					3,
+					5,
+					1010
+				],
+				[
+					2,
+					3,
+					6,
+					1060
+				],
+				[
+					2,
+					3,
+					7,
+					970
+				],
+				[
+					2,
+					4,
+					5,
+					1020
+				],
+				[
+					2,
+					4,
+					6,
+					1070
+				],
+				[
+					2,
+					4,
+					7,
+					980
+				],
+				[
+					2,
+					5,
+					6,
+					1040
+				],
+				[
+					2,
+					5,
+					7,
+					950
+				],
+				[
+					2,
+					6,
+					7,
+					1000
+				],
+				[
+					3,
+					4,
+					5,
+					1040
+				],
+				[
+					3,
+					4,
+					6,
+					1090
+				],
+				[
+					3,
+					4,
+					7,
+					1000
+				],
+				[
+					3,
+					5,
+					6,
+					1060
+				],
+				[
+					3,
+					5,
+					7,
+					970
+				],
+				[
+					3,
+					6,
+					7,
+					1020
+				],
+				[
+					4,
+					5,
+					6,
+					1070
+				],
+				[
+					4,
+					5,
+					7,
+					980
+				],
+				[
+					4,
+					6,
+					7,
+					1030
+				],
+				[
+					5,
+					6,
+					7,
+					1000
+				]
+			],
+			"mean_power": 343.75,
+			"powers": [
+				390,
+				320,
+				330,
+				350,
+				360,
+				330,
+				380,
+				290
+			],
+			"sum_power": 2750
+		},
+		{
+			"available_cards_all_species": [
+				"arena_field_gale",
+				"arena_altar",
+				"arena_den_dragnar",
+				"arena_den_klykar",
+				"arena_den_grifalon",
+				"arena_den_kolossar",
+				"arena_den_rogozhuk",
+				"arena_den_levian",
+				"arena_den_ratnik",
+				"arena_den_gorgul",
+				"arena_mirror",
+				"arena_funnel",
+				"arena_limit",
+				"arena_weight",
+				"arena_web",
+				"arena_hold",
+				"arena_clash",
+				"arena_mute",
+				"arena_dusk_throne",
+				"arena_fallen_call",
+				"arena_valor",
+				"ability_gale_rebuttal",
+				"ability_gale_leap",
+				"ability_gale_swap",
+				"ability_gale_call",
+				"ability_gale_gust",
+				"ability_gale_counter",
+				"ability_gale_vengeance",
+				"ability_dragnar_rush",
+				"ability_dragnar_heart",
+				"ability_klykar_bite",
+				"ability_klykar_hunt",
+				"ability_grifalon_dive",
+				"ability_grifalon_sky",
+				"ability_kolossar_wall",
+				"ability_kolossar_reset",
+				"ability_rogozhuk_shell",
+				"ability_rogozhuk_ram",
+				"ability_levian_coil",
+				"ability_levian_abyss",
+				"ability_ratnik_oath",
+				"ability_ratnik_rearm",
+				"ability_gorgul_gaze",
+				"ability_gorgul_night"
+			],
+			"element": 1,
+			"key": "gale",
+			"legal_distinct_species_teams": [
+				[
+					0,
+					1,
+					2,
+					980
+				],
+				[
+					0,
+					1,
+					3,
+					1090
+				],
+				[
+					0,
+					1,
+					4,
+					1010
+				],
+				[
+					0,
+					1,
+					5,
+					1070
+				],
+				[
+					0,
+					1,
+					6,
+					1030
+				],
+				[
+					0,
+					1,
+					7,
+					1000
+				],
+				[
+					0,
+					2,
+					3,
+					1040
+				],
+				[
+					0,
+					2,
+					4,
+					960
+				],
+				[
+					0,
+					2,
+					5,
+					1020
+				],
+				[
+					0,
+					2,
+					6,
+					980
+				],
+				[
+					0,
+					2,
+					7,
+					950
+				],
+				[
+					0,
+					3,
+					4,
+					1070
+				],
+				[
+					0,
+					3,
+					6,
+					1090
+				],
+				[
+					0,
+					3,
+					7,
+					1060
+				],
+				[
+					0,
+					4,
+					5,
+					1050
+				],
+				[
+					0,
+					4,
+					6,
+					1010
+				],
+				[
+					0,
+					4,
+					7,
+					980
+				],
+				[
+					0,
+					5,
+					6,
+					1070
+				],
+				[
+					0,
+					5,
+					7,
+					1040
+				],
+				[
+					0,
+					6,
+					7,
+					1000
+				],
+				[
+					1,
+					2,
+					3,
+					1030
+				],
+				[
+					1,
+					2,
+					4,
+					950
+				],
+				[
+					1,
+					2,
+					5,
+					1010
+				],
+				[
+					1,
+					2,
+					6,
+					970
+				],
+				[
+					1,
+					2,
+					7,
+					940
+				],
+				[
+					1,
+					3,
+					4,
+					1060
+				],
+				[
+					1,
+					3,
+					6,
+					1080
+				],
+				[
+					1,
+					3,
+					7,
+					1050
+				],
+				[
+					1,
+					4,
+					5,
+					1040
+				],
+				[
+					1,
+					4,
+					6,
+					1000
+				],
+				[
+					1,
+					4,
+					7,
+					970
+				],
+				[
+					1,
+					5,
+					6,
+					1060
+				],
+				[
+					1,
+					5,
+					7,
+					1030
+				],
+				[
+					1,
+					6,
+					7,
+					990
+				],
+				[
+					2,
+					3,
+					4,
+					1010
+				],
+				[
+					2,
+					3,
+					5,
+					1070
+				],
+				[
+					2,
+					3,
+					6,
+					1030
+				],
+				[
+					2,
+					3,
+					7,
+					1000
+				],
+				[
+					2,
+					4,
+					5,
+					990
+				],
+				[
+					2,
+					4,
+					6,
+					950
+				],
+				[
+					2,
+					4,
+					7,
+					920
+				],
+				[
+					2,
+					5,
+					6,
+					1010
+				],
+				[
+					2,
+					5,
+					7,
+					980
+				],
+				[
+					2,
+					6,
+					7,
+					940
+				],
+				[
+					3,
+					4,
+					5,
+					1100
+				],
+				[
+					3,
+					4,
+					6,
+					1060
+				],
+				[
+					3,
+					4,
+					7,
+					1030
+				],
+				[
+					3,
+					5,
+					7,
+					1090
+				],
+				[
+					3,
+					6,
+					7,
+					1050
+				],
+				[
+					4,
+					5,
+					6,
+					1040
+				],
+				[
+					4,
+					5,
+					7,
+					1010
+				],
+				[
+					4,
+					6,
+					7,
+					970
+				],
+				[
+					5,
+					6,
+					7,
+					1030
+				]
+			],
+			"mean_power": 341.25,
+			"powers": [
+				350,
+				340,
+				290,
+				400,
+				320,
+				380,
+				340,
+				310
+			],
+			"sum_power": 2730
+		},
+		{
+			"available_cards_all_species": [
+				"arena_field_light",
+				"arena_altar",
+				"arena_den_dragnar",
+				"arena_den_klykar",
+				"arena_den_grifalon",
+				"arena_den_kolossar",
+				"arena_den_rogozhuk",
+				"arena_den_levian",
+				"arena_den_ratnik",
+				"arena_den_gorgul",
+				"arena_mirror",
+				"arena_funnel",
+				"arena_limit",
+				"arena_weight",
+				"arena_web",
+				"arena_hold",
+				"arena_clash",
+				"arena_mute",
+				"arena_dusk_throne",
+				"arena_fallen_call",
+				"arena_valor",
+				"ability_light_counter",
+				"ability_light_revive",
+				"ability_light_purge",
+				"ability_light_crown",
+				"ability_light_reserve",
+				"ability_light_glint",
+				"ability_light_guard",
+				"ability_light_dawn",
+				"ability_dragnar_rush",
+				"ability_dragnar_heart",
+				"ability_klykar_bite",
+				"ability_klykar_hunt",
+				"ability_grifalon_dive",
+				"ability_grifalon_sky",
+				"ability_kolossar_wall",
+				"ability_kolossar_reset",
+				"ability_rogozhuk_shell",
+				"ability_rogozhuk_ram",
+				"ability_levian_coil",
+				"ability_levian_abyss",
+				"ability_ratnik_oath",
+				"ability_ratnik_rearm",
+				"ability_gorgul_gaze",
+				"ability_gorgul_night"
+			],
+			"element": 2,
+			"key": "light",
+			"legal_distinct_species_teams": [
+				[
+					0,
+					1,
+					2,
+					1010
+				],
+				[
+					0,
+					1,
+					3,
+					1030
+				],
+				[
+					0,
+					1,
+					4,
+					1040
+				],
+				[
+					0,
+					1,
+					5,
+					1010
+				],
+				[
+					0,
+					1,
+					6,
+					1030
+				],
+				[
+					0,
+					1,
+					7,
+					940
+				],
+				[
+					0,
+					2,
+					3,
+					1070
+				],
+				[
+					0,
+					2,
+					4,
+					1080
+				],
+				[
+					0,
+					2,
+					5,
+					1050
+				],
+				[
+					0,
+					2,
+					6,
+					1070
+				],
+				[
+					0,
+					2,
+					7,
+					980
+				],
+				[
+					0,
+					3,
+					4,
+					1100
+				],
+				[
+					0,
+					3,
+					5,
+					1070
+				],
+				[
+					0,
+					3,
+					6,
+					1090
+				],
+				[
+					0,
+					3,
+					7,
+					1000
+				],
+				[
+					0,
+					4,
+					5,
+					1080
+				],
+				[
+					0,
+					4,
+					6,
+					1100
+				],
+				[
+					0,
+					4,
+					7,
+					1010
+				],
+				[
+					0,
+					5,
+					6,
+					1070
+				],
+				[
+					0,
+					5,
+					7,
+					980
+				],
+				[
+					0,
+					6,
+					7,
+					1000
+				],
+				[
+					1,
+					2,
+					3,
+					1000
+				],
+				[
+					1,
+					2,
+					4,
+					1010
+				],
+				[
+					1,
+					2,
+					5,
+					980
+				],
+				[
+					1,
+					2,
+					6,
+					1000
+				],
+				[
+					1,
+					2,
+					7,
+					910
+				],
+				[
+					1,
+					3,
+					4,
+					1030
+				],
+				[
+					1,
+					3,
+					5,
+					1000
+				],
+				[
+					1,
+					3,
+					6,
+					1020
+				],
+				[
+					1,
+					3,
+					7,
+					930
+				],
+				[
+					1,
+					4,
+					5,
+					1010
+				],
+				[
+					1,
+					4,
+					6,
+					1030
+				],
+				[
+					1,
+					4,
+					7,
+					940
+				],
+				[
+					1,
+					5,
+					6,
+					1000
+				],
+				[
+					1,
+					5,
+					7,
+					910
+				],
+				[
+					1,
+					6,
+					7,
+					930
+				],
+				[
+					2,
+					3,
+					4,
+					1070
+				],
+				[
+					2,
+					3,
+					5,
+					1040
+				],
+				[
+					2,
+					3,
+					6,
+					1060
+				],
+				[
+					2,
+					3,
+					7,
+					970
+				],
+				[
+					2,
+					4,
+					5,
+					1050
+				],
+				[
+					2,
+					4,
+					6,
+					1070
+				],
+				[
+					2,
+					4,
+					7,
+					980
+				],
+				[
+					2,
+					5,
+					6,
+					1040
+				],
+				[
+					2,
+					5,
+					7,
+					950
+				],
+				[
+					2,
+					6,
+					7,
+					970
+				],
+				[
+					3,
+					4,
+					5,
+					1070
+				],
+				[
+					3,
+					4,
+					6,
+					1090
+				],
+				[
+					3,
+					4,
+					7,
+					1000
+				],
+				[
+					3,
+					5,
+					6,
+					1060
+				],
+				[
+					3,
+					5,
+					7,
+					970
+				],
+				[
+					3,
+					6,
+					7,
+					990
+				],
+				[
+					4,
+					5,
+					6,
+					1070
+				],
+				[
+					4,
+					5,
+					7,
+					980
+				],
+				[
+					4,
+					6,
+					7,
+					1000
+				],
+				[
+					5,
+					6,
+					7,
+					970
+				]
+			],
+			"mean_power": 338.75,
+			"powers": [
+				370,
+				300,
+				340,
+				360,
+				370,
+				340,
+				360,
+				270
+			],
+			"sum_power": 2710
+		},
+		{
+			"available_cards_all_species": [
+				"arena_field_stone",
+				"arena_altar",
+				"arena_den_dragnar",
+				"arena_den_klykar",
+				"arena_den_grifalon",
+				"arena_den_kolossar",
+				"arena_den_rogozhuk",
+				"arena_den_levian",
+				"arena_den_ratnik",
+				"arena_den_gorgul",
+				"arena_mirror",
+				"arena_funnel",
+				"arena_limit",
+				"arena_weight",
+				"arena_web",
+				"arena_hold",
+				"arena_clash",
+				"arena_mute",
+				"arena_dusk_throne",
+				"arena_fallen_call",
+				"arena_valor",
+				"ability_stone_counter",
+				"ability_stone_copy",
+				"ability_stone_shift",
+				"ability_stone_ceiling",
+				"ability_stone_firm",
+				"ability_stone_footing",
+				"ability_stone_wrath",
+				"ability_dragnar_rush",
+				"ability_dragnar_heart",
+				"ability_klykar_bite",
+				"ability_klykar_hunt",
+				"ability_grifalon_dive",
+				"ability_grifalon_sky",
+				"ability_kolossar_wall",
+				"ability_kolossar_reset",
+				"ability_rogozhuk_shell",
+				"ability_rogozhuk_ram",
+				"ability_levian_coil",
+				"ability_levian_abyss",
+				"ability_ratnik_oath",
+				"ability_ratnik_rearm",
+				"ability_gorgul_gaze",
+				"ability_gorgul_night"
+			],
+			"element": 3,
+			"key": "stone",
+			"legal_distinct_species_teams": [
+				[
+					0,
+					1,
+					2,
+					980
+				],
+				[
+					0,
+					1,
+					3,
+					1090
+				],
+				[
+					0,
+					1,
+					4,
+					1010
+				],
+				[
+					0,
+					1,
+					5,
+					1040
+				],
+				[
+					0,
+					1,
+					6,
+					1000
+				],
+				[
+					0,
+					1,
+					7,
+					1000
+				],
+				[
+					0,
+					2,
+					3,
+					1040
+				],
+				[
+					0,
+					2,
+					4,
+					960
+				],
+				[
+					0,
+					2,
+					5,
+					990
+				],
+				[
+					0,
+					2,
+					6,
+					950
+				],
+				[
+					0,
+					2,
+					7,
+					950
+				],
+				[
+					0,
+					3,
+					4,
+					1070
+				],
+				[
+					0,
+					3,
+					5,
+					1100
+				],
+				[
+					0,
+					3,
+					6,
+					1060
+				],
+				[
+					0,
+					3,
+					7,
+					1060
+				],
+				[
+					0,
+					4,
+					5,
+					1020
+				],
+				[
+					0,
+					4,
+					6,
+					980
+				],
+				[
+					0,
+					4,
+					7,
+					980
+				],
+				[
+					0,
+					5,
+					6,
+					1010
+				],
+				[
+					0,
+					5,
+					7,
+					1010
+				],
+				[
+					0,
+					6,
+					7,
+					970
+				],
+				[
+					1,
+					2,
+					3,
+					1060
+				],
+				[
+					1,
+					2,
+					4,
+					980
+				],
+				[
+					1,
+					2,
+					5,
+					1010
+				],
+				[
+					1,
+					2,
+					6,
+					970
+				],
+				[
+					1,
+					2,
+					7,
+					970
+				],
+				[
+					1,
+					3,
+					4,
+					1090
+				],
+				[
+					1,
+					3,
+					6,
+					1080
+				],
+				[
+					1,
+					3,
+					7,
+					1080
+				],
+				[
+					1,
+					4,
+					5,
+					1040
+				],
+				[
+					1,
+					4,
+					6,
+					1000
+				],
+				[
+					1,
+					4,
+					7,
+					1000
+				],
+				[
+					1,
+					5,
+					6,
+					1030
+				],
+				[
+					1,
+					5,
+					7,
+					1030
+				],
+				[
+					1,
+					6,
+					7,
+					990
+				],
+				[
+					2,
+					3,
+					4,
+					1040
+				],
+				[
+					2,
+					3,
+					5,
+					1070
+				],
+				[
+					2,
+					3,
+					6,
+					1030
+				],
+				[
+					2,
+					3,
+					7,
+					1030
+				],
+				[
+					2,
+					4,
+					5,
+					990
+				],
+				[
+					2,
+					4,
+					6,
+					950
+				],
+				[
+					2,
+					4,
+					7,
+					950
+				],
+				[
+					2,
+					5,
+					6,
+					980
+				],
+				[
+					2,
+					5,
+					7,
+					980
+				],
+				[
+					2,
+					6,
+					7,
+					940
+				],
+				[
+					3,
+					4,
+					5,
+					1100
+				],
+				[
+					3,
+					4,
+					6,
+					1060
+				],
+				[
+					3,
+					4,
+					7,
+					1060
+				],
+				[
+					3,
+					5,
+					6,
+					1090
+				],
+				[
+					3,
+					5,
+					7,
+					1090
+				],
+				[
+					3,
+					6,
+					7,
+					1050
+				],
+				[
+					4,
+					5,
+					6,
+					1010
+				],
+				[
+					4,
+					5,
+					7,
+					1010
+				],
+				[
+					4,
+					6,
+					7,
+					970
+				],
+				[
+					5,
+					6,
+					7,
+					1000
+				]
+			],
+			"mean_power": 340.0,
+			"powers": [
+				330,
+				350,
+				300,
+				410,
+				330,
+				360,
+				320,
+				320
+			],
+			"sum_power": 2720
+		},
+		{
+			"available_cards_all_species": [
+				"arena_field_shadow",
+				"arena_altar",
+				"arena_den_dragnar",
+				"arena_den_klykar",
+				"arena_den_grifalon",
+				"arena_den_kolossar",
+				"arena_den_rogozhuk",
+				"arena_den_levian",
+				"arena_den_ratnik",
+				"arena_den_gorgul",
+				"arena_mirror",
+				"arena_funnel",
+				"arena_limit",
+				"arena_weight",
+				"arena_web",
+				"arena_hold",
+				"arena_clash",
+				"arena_mute",
+				"arena_dusk_throne",
+				"arena_fallen_call",
+				"arena_valor",
+				"ability_shadow_counter",
+				"ability_shadow_doom",
+				"ability_shadow_eclipse",
+				"ability_shadow_pact",
+				"ability_shadow_triumph",
+				"ability_shadow_haze",
+				"ability_shadow_strike",
+				"ability_shadow_revenge",
+				"ability_dragnar_rush",
+				"ability_dragnar_heart",
+				"ability_klykar_bite",
+				"ability_klykar_hunt",
+				"ability_grifalon_dive",
+				"ability_grifalon_sky",
+				"ability_kolossar_wall",
+				"ability_kolossar_reset",
+				"ability_rogozhuk_shell",
+				"ability_rogozhuk_ram",
+				"ability_levian_coil",
+				"ability_levian_abyss",
+				"ability_ratnik_oath",
+				"ability_ratnik_rearm",
+				"ability_gorgul_gaze",
+				"ability_gorgul_night"
+			],
+			"element": 4,
+			"key": "shadow",
+			"legal_distinct_species_teams": [
+				[
+					0,
+					1,
+					2,
+					1040
+				],
+				[
+					0,
+					1,
+					3,
+					1060
+				],
+				[
+					0,
+					1,
+					4,
+					1040
+				],
+				[
+					0,
+					1,
+					5,
+					1010
+				],
+				[
+					0,
+					1,
+					6,
+					1060
+				],
+				[
+					0,
+					1,
+					7,
+					970
+				],
+				[
+					0,
+					2,
+					3,
+					1100
+				],
+				[
+					0,
+					2,
+					4,
+					1080
+				],
+				[
+					0,
+					2,
+					5,
+					1050
+				],
+				[
+					0,
+					2,
+					6,
+					1100
+				],
+				[
+					0,
+					2,
+					7,
+					1010
+				],
+				[
+					0,
+					3,
+					4,
+					1100
+				],
+				[
+					0,
+					3,
+					5,
+					1070
+				],
+				[
+					0,
+					3,
+					7,
+					1030
+				],
+				[
+					0,
+					4,
+					5,
+					1050
+				],
+				[
+					0,
+					4,
+					6,
+					1100
+				],
+				[
+					0,
+					4,
+					7,
+					1010
+				],
+				[
+					0,
+					5,
+					6,
+					1070
+				],
+				[
+					0,
+					5,
+					7,
+					980
+				],
+				[
+					0,
+					6,
+					7,
+					1030
+				],
+				[
+					1,
+					2,
+					3,
+					1030
+				],
+				[
+					1,
+					2,
+					4,
+					1010
+				],
+				[
+					1,
+					2,
+					5,
+					980
+				],
+				[
+					1,
+					2,
+					6,
+					1030
+				],
+				[
+					1,
+					2,
+					7,
+					940
+				],
+				[
+					1,
+					3,
+					4,
+					1030
+				],
+				[
+					1,
+					3,
+					5,
+					1000
+				],
+				[
+					1,
+					3,
+					6,
+					1050
+				],
+				[
+					1,
+					3,
+					7,
+					960
+				],
+				[
+					1,
+					4,
+					5,
+					980
+				],
+				[
+					1,
+					4,
+					6,
+					1030
+				],
+				[
+					1,
+					4,
+					7,
+					940
+				],
+				[
+					1,
+					5,
+					6,
+					1000
+				],
+				[
+					1,
+					5,
+					7,
+					910
+				],
+				[
+					1,
+					6,
+					7,
+					960
+				],
+				[
+					2,
+					3,
+					4,
+					1070
+				],
+				[
+					2,
+					3,
+					5,
+					1040
+				],
+				[
+					2,
+					3,
+					6,
+					1090
+				],
+				[
+					2,
+					3,
+					7,
+					1000
+				],
+				[
+					2,
+					4,
+					5,
+					1020
+				],
+				[
+					2,
+					4,
+					6,
+					1070
+				],
+				[
+					2,
+					4,
+					7,
+					980
+				],
+				[
+					2,
+					5,
+					6,
+					1040
+				],
+				[
+					2,
+					5,
+					7,
+					950
+				],
+				[
+					2,
+					6,
+					7,
+					1000
+				],
+				[
+					3,
+					4,
+					5,
+					1040
+				],
+				[
+					3,
+					4,
+					6,
+					1090
+				],
+				[
+					3,
+					4,
+					7,
+					1000
+				],
+				[
+					3,
+					5,
+					6,
+					1060
+				],
+				[
+					3,
+					5,
+					7,
+					970
+				],
+				[
+					3,
+					6,
+					7,
+					1020
+				],
+				[
+					4,
+					5,
+					6,
+					1040
+				],
+				[
+					4,
+					5,
+					7,
+					950
+				],
+				[
+					4,
+					6,
+					7,
+					1000
+				],
+				[
+					5,
+					6,
+					7,
+					970
+				]
+			],
+			"mean_power": 341.25,
+			"powers": [
+				380,
+				310,
+				350,
+				370,
+				350,
+				320,
+				370,
+				280
+			],
+			"sum_power": 2730
+		},
+		{
+			"available_cards_all_species": [
+				"arena_field_tide",
+				"arena_altar",
+				"arena_den_dragnar",
+				"arena_den_klykar",
+				"arena_den_grifalon",
+				"arena_den_kolossar",
+				"arena_den_rogozhuk",
+				"arena_den_levian",
+				"arena_den_ratnik",
+				"arena_den_gorgul",
+				"arena_mirror",
+				"arena_funnel",
+				"arena_limit",
+				"arena_weight",
+				"arena_web",
+				"arena_hold",
+				"arena_clash",
+				"arena_mute",
+				"arena_dusk_throne",
+				"arena_fallen_call",
+				"arena_valor",
+				"ability_tide_counter",
+				"ability_tide_hush",
+				"ability_tide_ebb",
+				"ability_tide_wash",
+				"ability_tide_spray",
+				"ability_tide_surf",
+				"ability_tide_ninth",
+				"ability_dragnar_rush",
+				"ability_dragnar_heart",
+				"ability_klykar_bite",
+				"ability_klykar_hunt",
+				"ability_grifalon_dive",
+				"ability_grifalon_sky",
+				"ability_kolossar_wall",
+				"ability_kolossar_reset",
+				"ability_rogozhuk_shell",
+				"ability_rogozhuk_ram",
+				"ability_levian_coil",
+				"ability_levian_abyss",
+				"ability_ratnik_oath",
+				"ability_ratnik_rearm",
+				"ability_gorgul_gaze",
+				"ability_gorgul_night"
+			],
+			"element": 5,
+			"key": "tide",
+			"legal_distinct_species_teams": [
+				[
+					0,
+					1,
+					2,
+					1010
+				],
+				[
+					0,
+					1,
+					3,
+					1090
+				],
+				[
+					0,
+					1,
+					4,
+					1010
+				],
+				[
+					0,
+					1,
+					5,
+					1070
+				],
+				[
+					0,
+					1,
+					6,
+					1030
+				],
+				[
+					0,
+					1,
+					7,
+					1030
+				],
+				[
+					0,
+					2,
+					3,
+					1040
+				],
+				[
+					0,
+					2,
+					4,
+					960
+				],
+				[
+					0,
+					2,
+					5,
+					1020
+				],
+				[
+					0,
+					2,
+					6,
+					980
+				],
+				[
+					0,
+					2,
+					7,
+					980
+				],
+				[
+					0,
+					3,
+					4,
+					1040
+				],
+				[
+					0,
+					3,
+					5,
+					1100
+				],
+				[
+					0,
+					3,
+					6,
+					1060
+				],
+				[
+					0,
+					3,
+					7,
+					1060
+				],
+				[
+					0,
+					4,
+					5,
+					1020
+				],
+				[
+					0,
+					4,
+					6,
+					980
+				],
+				[
+					0,
+					4,
+					7,
+					980
+				],
+				[
+					0,
+					5,
+					6,
+					1040
+				],
+				[
+					0,
+					5,
+					7,
+					1040
+				],
+				[
+					0,
+					6,
+					7,
+					1000
+				],
+				[
+					1,
+					2,
+					3,
+					1060
+				],
+				[
+					1,
+					2,
+					4,
+					980
+				],
+				[
+					1,
+					2,
+					5,
+					1040
+				],
+				[
+					1,
+					2,
+					6,
+					1000
+				],
+				[
+					1,
+					2,
+					7,
+					1000
+				],
+				[
+					1,
+					3,
+					4,
+					1060
+				],
+				[
+					1,
+					3,
+					6,
+					1080
+				],
+				[
+					1,
+					3,
+					7,
+					1080
+				],
+				[
+					1,
+					4,
+					5,
+					1040
+				],
+				[
+					1,
+					4,
+					6,
+					1000
+				],
+				[
+					1,
+					4,
+					7,
+					1000
+				],
+				[
+					1,
+					5,
+					6,
+					1060
+				],
+				[
+					1,
+					5,
+					7,
+					1060
+				],
+				[
+					1,
+					6,
+					7,
+					1020
+				],
+				[
+					2,
+					3,
+					4,
+					1010
+				],
+				[
+					2,
+					3,
+					5,
+					1070
+				],
+				[
+					2,
+					3,
+					6,
+					1030
+				],
+				[
+					2,
+					3,
+					7,
+					1030
+				],
+				[
+					2,
+					4,
+					5,
+					990
+				],
+				[
+					2,
+					4,
+					6,
+					950
+				],
+				[
+					2,
+					4,
+					7,
+					950
+				],
+				[
+					2,
+					5,
+					6,
+					1010
+				],
+				[
+					2,
+					5,
+					7,
+					1010
+				],
+				[
+					2,
+					6,
+					7,
+					970
+				],
+				[
+					3,
+					4,
+					5,
+					1070
+				],
+				[
+					3,
+					4,
+					6,
+					1030
+				],
+				[
+					3,
+					4,
+					7,
+					1030
+				],
+				[
+					3,
+					5,
+					6,
+					1090
+				],
+				[
+					3,
+					5,
+					7,
+					1090
+				],
+				[
+					3,
+					6,
+					7,
+					1050
+				],
+				[
+					4,
+					5,
+					6,
+					1010
+				],
+				[
+					4,
+					5,
+					7,
+					1010
+				],
+				[
+					4,
+					6,
+					7,
+					970
+				],
+				[
+					5,
+					6,
+					7,
+					1030
+				]
+			],
+			"mean_power": 342.5,
+			"powers": [
+				340,
+				360,
+				310,
+				390,
+				310,
+				370,
+				330,
+				330
+			],
+			"sum_power": 2740
+		}
+	],
+	"rare_excluded": "creature_likorez_shadow"
+}

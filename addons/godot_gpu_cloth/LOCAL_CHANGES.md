@@ -14,6 +14,10 @@ Upstream: alien-life/gpu-cloth-sim 3.0.0, MIT (see LICENSE).
 - Free uniform sets before their buffers/shaders and detach Texture2DRD wrappers
   before freeing image storage. This fixes invalid-RID errors on Godot 4.7.2.
 
+- Add overridable immutable-buffer allocation and queued cleanup hooks. The
+  resident solver shares readonly storage by packed content with render-thread
+  reference counts. Mutable state and output images retain actor ownership.
+
 The editor plugin need not be enabled to instantiate the runtime classes.
 `scenes/creature_cloth.gd` configures the solver, body proxy and ground box.
 `tools/cloth_review.gd` verifies actual GPU output and lifecycle operations.

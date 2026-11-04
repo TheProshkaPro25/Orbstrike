@@ -29,6 +29,17 @@ var ability_sound_shots: Dictionary = {}
 var prethrow_attachment_requested := false
 var prethrow_attachment_seen := false
 
+## Продолжить настоящий открытый выбор цели тем же решением, что использует ИИ.
+static func choose_pending_target(game: Node, ai: AIPlayer) -> bool:
+	if game.ability_target_picker == null or not game.ability_target_picker.visible or game._ability_target_card == &"":
+		return false
+	var id: StringName = game._ability_target_card
+	var target := ai.choose_ability_target(game.ctrl.get_view(0), game.ctrl.get_battle_preview(), id, game.ctrl.legal_ability_targets(0, id))
+	if target.is_empty():
+		return false
+	game.ability_target_picker._select(target)
+	return true
+
 func _initialize() -> void:
 	_lock_fps()
 	Engine.time_scale = 4.0
@@ -255,6 +266,8 @@ func _process(_d: float) -> bool:
 	if main.battle_overlay._open:
 		main.battle_overlay._close()
 	var view = main.ctrl.get_view(0)
+	if choose_pending_target(main, bot):
+		return false
 	if main.setup_panel._panel.visible:
 		var c = bot.choose_setup(view, main.ctrl.legal_setup_slots(), main.ctrl.can_skip_gate())
 		main.setup_panel.hide_panel()

@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <!-- Etched enamel relief: upper-left light, patinated shadows, fine metal edges. Original silhouettes retained. -->
+  <defs>
+    <radialGradient id="a" cx=".5" cy=".5" r=".5">
+      <stop stop-color="#bdc0e8" stop-opacity=".20" />
+      <stop offset="1" stop-color="#bdc0e8" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#fff1c3" />
+      <stop offset="0.18" stop-color="#b9a477" />
+      <stop offset="0.35" stop-color="#e1c994" />
+      <stop offset="0.49" stop-color="#967449" />
+      <stop offset="0.72" stop-color="#b19662" />
+      <stop offset="1" stop-color="#493d31" />
+    </linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#e9e4ce" />
+      <stop offset="0.24" stop-color="#a1b9bb" />
+      <stop offset="0.4" stop-color="#c6d1c5" />
+      <stop offset="0.54" stop-color="#526f79" />
+      <stop offset="0.76" stop-color="#6e8389" />
+      <stop offset="1" stop-color="#283e50" />
+    </linearGradient>
+    <linearGradient id="fire" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#fff0b4" />
+      <stop offset="0.24" stop-color="#e2bf79" />
+      <stop offset="0.45" stop-color="#dc9349" />
+      <stop offset="0.69" stop-color="#a95431" />
+      <stop offset="1" stop-color="#4e2730" />
+    </linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#d7eee0" />
+      <stop offset="0.23" stop-color="#8fc4c5" />
+      <stop offset="0.4" stop-color="#408c9f" />
+      <stop offset="0.57" stop-color="#427b92" />
+      <stop offset="0.8" stop-color="#245168" />
+      <stop offset="1" stop-color="#192d48" />
+    </linearGradient>
+    <linearGradient id="stone" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#e1d4a4" />
+      <stop offset="0.25" stop-color="#b5ac88" />
+      <stop offset="0.43" stop-color="#929b82" />
+      <stop offset="0.62" stop-color="#6b7b6f" />
+      <stop offset="1" stop-color="#343e3f" />
+    </linearGradient>
+    <linearGradient id="purple" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#d6c0de" />
+      <stop offset="0.3" stop-color="#a185b7" />
+      <stop offset="0.5" stop-color="#67527f" />
+      <stop offset="0.72" stop-color="#55476e" />
+      <stop offset="1" stop-color="#282539" />
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#eee0b8" />
+      <stop offset="0.28" stop-color="#b4b8a7" />
+      <stop offset="0.46" stop-color="#7c8a87" />
+      <stop offset="0.7" stop-color="#3e525a" />
+      <stop offset="1" stop-color="#222e3e" />
+    </linearGradient>
+    <linearGradient id="foam" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#e9eed6" />
+      <stop offset="0.35" stop-color="#b5ded6" />
+      <stop offset="0.72" stop-color="#70b9c0" />
+      <stop offset="1" stop-color="#477d91" />
+    </linearGradient>
+    <linearGradient id="core" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#fff5d0" />
+      <stop offset="0.35" stop-color="#f1dca0" />
+      <stop offset="0.7" stop-color="#d1a55d" />
+      <stop offset="1" stop-color="#9e603c" />
+    </linearGradient>
+    <linearGradient id="bone" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#ede6c9" />
+      <stop offset="0.3" stop-color="#bcc1ae" />
+      <stop offset="0.5" stop-color="#9aaea8" />
+      <stop offset="0.7" stop-color="#677f86" />
+      <stop offset="1" stop-color="#3a4c5e" />
+    </linearGradient>
+    <linearGradient id="face0" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#d0bb90" />
+      <stop offset="0.32" stop-color="#cab386" />
+      <stop offset="0.48" stop-color="#c6ad7f" />
+      <stop offset="0.7" stop-color="#a6926e" />
+      <stop offset="1" stop-color="#554f43" />
+    </linearGradient>
+    <linearGradient id="face1" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#656765" />
+      <stop offset="0.32" stop-color="#434850" />
+      <stop offset="0.48" stop-color="#2c3341" />
+      <stop offset="0.7" stop-color="#272e3b" />
+      <stop offset="1" stop-color="#1b212c" />
+    </linearGradient>
+    <linearGradient id="face2" x1="0" y1="0" x2=".78" y2="1">
+      <stop offset="0" stop-color="#cb988b" />
+      <stop offset="0.32" stop-color="#c38680" />
+      <stop offset="0.48" stop-color="#be7a78" />
+      <stop offset="0.7" stop-color="#a06969" />
+      <stop offset="1" stop-color="#533c41" />
+    </linearGradient>
+  </defs>
+  <circle cx="128" cy="128" r="125" fill="url(#a)" />
+  <path d="M19 226V99C19-9 237-9 237 99v127h-24V99C213 13 43 13 43 99v127z" fill="url(#steel)" stroke="url(#edge)" stroke-width="1.35" />
+  <path d="M15 226h48m130 0h48M23 99h20m170 0h20M34 57l20 12m148 0 20-12M76 22l8 21m88 0 8-21" stroke="url(#edge)" stroke-width="2.0" />
+  <g fill="none" stroke-linejoin="round">
+    <path d="M25 222V99C25 1 231 1 231 99v123M38 222V99C38 21 218 21 218 99v123" stroke="url(#edge)" stroke-width="1.2" />
+    <path d="M22 120h18m-18 37h18m-18 36h18m176-73h18m-18 37h18m-18 36h18" stroke="#534b3e" stroke-width="1.2" />
+    <path d="m26 103 5-5 5 5-5 5zM220 103l5-5 5 5-5 5z" stroke="#d4c493" stroke-width=".8" />
+  </g>
+  <g stroke="url(#edge)" stroke-width="1.35" stroke-linejoin="round">
+    <g transform="translate(32 34) scale(.75)">
+      <path d="m45 52 23 8 123 141-18 16L47 80zM211 52l-23 8L65 201l18 16L209 80z" fill="url(#steel)" />
+      <path d="M81 159V88q3-50 47-50t47 50v71l-47 46z" fill="url(#steel)" />
+      <path d="M76 98h104v20H76" fill="url(#face0)" />
+      <path d="m93 124 25 8v29l-25-17m70-20-25 8v29l25-17" fill="url(#face1)" />
+      <path d="M128 49v140" stroke="url(#edge)" stroke-width="3.6" />
+      <path d="m128 38-19-17h38z" fill="url(#face2)" />
+    </g>
+  </g>
+</svg>

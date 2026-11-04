@@ -1,0 +1,42 @@
+{
+  "label": "v4-paired-gold-holdout-240-preregistered",
+  "rosters": [
+    [
+      "dragnar",
+      "grifalon",
+      "gorgul"
+    ],
+    [
+      "dragnar",
+      "grifalon",
+      "gorgul"
+    ],
+    [
+      "kolossar",
+      "klykar",
+      "ratnik"
+    ],
+    [
+      "kolossar",
+      "klykar",
+      "ratnik"
+    ]
+  ],
+  "seeds": [
+    59303,
+    59333,
+    59303,
+    59333
+  ],
+  "random_starting_cards": true,
+  "pair_seeded_streams": true,
+  "pair_seeded_decks": true,
+  "common_deck_seed": true,
+  "gold_roles": [
+    "field",
+    "altar",
+    "field",
+    "altar"
+  ],
+  "mirrors": false
+}

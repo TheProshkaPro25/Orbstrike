@@ -34,6 +34,9 @@ var _ball_pool: GameLoading
 var _sigil: MeshInstance3D
 var _rim_light: OmniLight3D
 var _card_box: CenterContainer
+var _full_card_scroll: ScrollContainer
+var _full_card: CardView
+var _info_head: HBoxContainer
 var _loading: Label
 var _drag_hint: Label
 
@@ -109,6 +112,7 @@ func _init() -> void:
 	_stage.add_child(_drag_hint)
 
 	var head := HBoxContainer.new()
+	_info_head = head
 	head.add_theme_constant_override("separation", 8)
 	vb.add_child(head)
 	_icon = IconT.make(0, 30) as IconT
@@ -144,6 +148,14 @@ func _init() -> void:
 	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vb.add_child(_status)
+	_full_card_scroll = ScrollContainer.new()
+	_full_card_scroll.visible = false
+	_full_card_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_full_card_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_full_card_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vb.add_child(_full_card_scroll)
+	resized.connect(_resize_card)
+
 
 
 func _build_world() -> void:
@@ -203,6 +215,10 @@ func _build_world() -> void:
 func show_creature(d: CreatureDef, pose: bool = false, in_team: bool = false, note: String = "") -> void:
 	if d == null:
 		return
+	_full_card_scroll.visible = false
+	_stage.visible = true
+	_info_head.visible = true
+	_explanation.visible = true
 	_card_box.visible = false
 	VisualUtil.clear_children(_card_box)
 	_vpc.visible = true
@@ -274,6 +290,23 @@ func show_card(def: CardDef, picked: bool = false, note: String = "") -> void:
 		_line(String(help[6]), Color(1.0, 0.85, 0.5), 13)
 	_line(String(help[3]), UiTheme.TEXT_DIM, 12)
 	_set_status(picked, note)
+	_stage.visible = false
+	_info_head.visible = false
+	_explanation.visible = false
+	_full_card_scroll.visible = true
+	VisualUtil.clear_children(_full_card_scroll)
+	var width := maxf(224, size.x - 40)
+	_full_card = CardView.new().for_card(def, Vector2(width, 0), true)
+	_full_card.mouse_filter = Control.MOUSE_FILTER_STOP
+	_full_card.mouse_default_cursor_shape = Control.CURSOR_HELP
+	_status.text += "\nНаведите на карту — крупное раскрытие."
+	_full_card_scroll.add_child(_full_card)
+	_full_card_scroll.scroll_vertical = 0
+
+
+func _resize_card() -> void:
+	if is_instance_valid(_full_card) and _full_card_scroll.visible:
+		_full_card._compose_card(CardDB.card(_full_card.card_id), Vector2(maxf(224, size.x - 40), 0), true)
 
 
 ## Пустая панель с подсказкой.
@@ -283,6 +316,10 @@ func show_hint(text: String) -> void:
 	_vpc.visible = false
 	_drag_hint.visible = false
 	_loading.visible = false
+	_full_card_scroll.visible = false
+	_stage.visible = true
+	_info_head.visible = true
+	_explanation.visible = true
 	_card_box.visible = false
 	_vp.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	_icon.visible = false

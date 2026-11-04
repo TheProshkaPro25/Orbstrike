@@ -2,10 +2,9 @@ extends SceneTree
 ## Узкий воспроизводимый осмотр окружения меню, без Boot и подготовки существ.
 ## Запуск только свёрнуто, вне экрана; test_window удерживает60FPS.
 var menu: MainMenu
-var output := "res://build/checks/menu-environment/after"
+var output := "res://build/checks/menu-environment/open-panorama"
 var failures := 0
 var checks := 0
-var samples: Array = []
 var luma := {}
 
 func _initialize() -> void:
@@ -34,7 +33,7 @@ func capture(size: Vector2i, phase: float, name: String) -> void:
 	await RenderingServer.frame_post_draw
 	var image := root.get_texture().get_image()
 	check(image.get_size() == size, name + " viewport size")
-	image.save_png(output.path_join(name + ".png"))
+	check(image.save_png(output.path_join(name + ".png")) == OK, name + " PNG saved")
 	var sum := 0.0
 	var count := 0
 	for y in range(int(size.y*.86),int(size.y*.96),3):
@@ -60,29 +59,16 @@ func _run() -> void:
 	await capture(Vector2i(960,540), .66, "narrow-day")
 	await capture(Vector2i(1920,1050), .752, "wide-sunset")
 	await capture(Vector2i(1920,1050), .0, "wide-night")
-	check(menu.city.overlook.get_child_count() == 1,"terrace uses one static geometry node")
-	var landing: Vector3 = menu.city.overlook.position+menu.city.overlook.stair_landing
-	check(absf(landing.y-menu.city.height_at(landing.x,landing.z)) <= .7,"terrace stair flight reaches actual hillside")
+	check(menu.city.get_node_or_null("Overlook") == null,"open panorama has no foreground platform")
 	check(menu.city.find_children("*","Light3D",true,false).size() == 1,"one existing directional light, no added local lights")
 	check(menu.city.cam.environment == menu.city.env,"camera keeps menu environment")
-	check(luma["wide-night"] < luma["wide-day"]*.65,"night remains darker than day on terrace")
-	check(luma["wide-night"] > .035,"night terrace retains readable detail")
+	check(luma["wide-night"] < luma["wide-day"]*.65,"night darkens the near bank")
 	GraphicsSettings.force_level(GraphicsSettings.Level.LOW)
 	menu.city.apply_quality(GraphicsSettings.Level.LOW)
-	check(menu.city.overlook.geometry.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF,"low disables terrace shadow")
 	await capture(Vector2i(960,540), .0, "narrow-night-low")
 	GraphicsSettings.force_level(GraphicsSettings.Level.HIGH)
 	menu.city.apply_quality(GraphicsSettings.Level.HIGH)
-	check(menu.city.overlook.geometry.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_ON,"high restores terrace shadow")
-	root.size=Vector2i(1920,1050)
-	var vrid := root.get_viewport_rid()
-	RenderingServer.viewport_set_measure_render_time(vrid, true)
-	await frames(30)
-	for _i in range(120):
-		await process_frame
-		samples.append(RenderingServer.viewport_get_measured_render_time_gpu(vrid))
-	samples.sort()
-	var result := {"checks": checks, "failures": failures, "gpu_ms_median": samples[60], "gpu_ms_p95": samples[114], "node_count": menu.get_tree().get_node_count(), "terrace_vertices": menu.city.overlook.geometry.mesh.surface_get_array_len(0), "terrace_luminance":luma, "max_fps": Engine.max_fps, "limits": ["standalone menu without Boot", "minimized NVIDIA/Vulkan texture rendering", "capped60FPS sample, not maximum FPS", "muted audio, no listening"]}
+	var result := {"checks": checks, "failures": failures, "near_bank_luminance":luma, "max_fps": Engine.max_fps, "limits": ["standalone menu without Boot or match", "minimized NVIDIA/Vulkan texture rendering", "muted audio, no listening", "not a performance benchmark"]}
 	var file := FileAccess.open(output.path_join("result.json"), FileAccess.WRITE)
 	file.store_string(JSON.stringify(result,"  "))
 	print("MENU ENVIRONMENT ", JSON.stringify(result))

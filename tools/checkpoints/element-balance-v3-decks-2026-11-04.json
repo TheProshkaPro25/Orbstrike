@@ -1,0 +1,1040 @@
+{
+	"cases": [
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_fire",
+					"creature_klykar_fire",
+					"creature_gorgul_fire"
+				],
+				[
+					"arena_field_fire",
+					"arena_den_dragnar",
+					"arena_web"
+				],
+				[
+					"ability_fire_drain",
+					"ability_fire_last",
+					"ability_dragnar_heart"
+				]
+			],
+			"deck_seed": 14774539,
+			"element": 0,
+			"seed": 47203.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_gale",
+					"creature_klykar_gale",
+					"creature_gorgul_gale"
+				],
+				[
+					"arena_altar",
+					"arena_den_klykar",
+					"arena_web"
+				],
+				[
+					"ability_gale_rebuttal",
+					"ability_gale_gust",
+					"ability_dragnar_heart"
+				]
+			],
+			"deck_seed": 14774540,
+			"element": 1,
+			"seed": 47203.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_light",
+					"creature_klykar_light",
+					"creature_gorgul_light"
+				],
+				[
+					"arena_altar",
+					"arena_den_klykar",
+					"arena_limit"
+				],
+				[
+					"ability_light_revive",
+					"ability_light_guard",
+					"ability_dragnar_rush"
+				]
+			],
+			"deck_seed": 14774541,
+			"element": 2,
+			"seed": 47203.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_stone",
+					"creature_klykar_stone",
+					"creature_gorgul_stone"
+				],
+				[
+					"arena_field_stone",
+					"arena_den_klykar",
+					"arena_hold"
+				],
+				[
+					"ability_stone_counter",
+					"ability_stone_firm",
+					"ability_klykar_hunt"
+				]
+			],
+			"deck_seed": 14774542,
+			"element": 3,
+			"seed": 47203.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_shadow",
+					"creature_klykar_shadow",
+					"creature_gorgul_shadow"
+				],
+				[
+					"arena_altar",
+					"arena_den_dragnar",
+					"arena_mute"
+				],
+				[
+					"ability_shadow_counter",
+					"ability_shadow_revenge",
+					"ability_dragnar_heart"
+				]
+			],
+			"deck_seed": 14774543,
+			"element": 4,
+			"seed": 47203.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_tide",
+					"creature_klykar_tide",
+					"creature_gorgul_tide"
+				],
+				[
+					"arena_field_tide",
+					"arena_den_gorgul",
+					"arena_funnel"
+				],
+				[
+					"ability_tide_ebb",
+					"ability_tide_spray",
+					"ability_klykar_hunt"
+				]
+			],
+			"deck_seed": 14774544,
+			"element": 5,
+			"seed": 47203.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_fire",
+					"creature_klykar_fire",
+					"creature_gorgul_fire"
+				],
+				[
+					"arena_field_fire",
+					"arena_den_klykar",
+					"arena_hold"
+				],
+				[
+					"ability_fire_ash",
+					"ability_fire_spark",
+					"ability_dragnar_rush"
+				]
+			],
+			"deck_seed": 14785181,
+			"element": 0,
+			"seed": 47237.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_gale",
+					"creature_klykar_gale",
+					"creature_gorgul_gale"
+				],
+				[
+					"arena_altar",
+					"arena_den_klykar",
+					"arena_limit"
+				],
+				[
+					"ability_gale_swap",
+					"ability_gale_counter",
+					"ability_dragnar_rush"
+				]
+			],
+			"deck_seed": 14785182,
+			"element": 1,
+			"seed": 47237.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_light",
+					"creature_klykar_light",
+					"creature_gorgul_light"
+				],
+				[
+					"arena_altar",
+					"arena_den_gorgul",
+					"arena_fallen_call"
+				],
+				[
+					"ability_light_crown",
+					"ability_light_guard",
+					"ability_gorgul_gaze"
+				]
+			],
+			"deck_seed": 14785183,
+			"element": 2,
+			"seed": 47237.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_stone",
+					"creature_klykar_stone",
+					"creature_gorgul_stone"
+				],
+				[
+					"arena_altar",
+					"arena_den_gorgul",
+					"arena_weight"
+				],
+				[
+					"ability_stone_copy",
+					"ability_stone_firm",
+					"ability_gorgul_night"
+				]
+			],
+			"deck_seed": 14785184,
+			"element": 3,
+			"seed": 47237.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_shadow",
+					"creature_klykar_shadow",
+					"creature_gorgul_shadow"
+				],
+				[
+					"arena_altar",
+					"arena_den_klykar",
+					"arena_limit"
+				],
+				[
+					"ability_shadow_doom",
+					"ability_shadow_strike",
+					"ability_klykar_hunt"
+				]
+			],
+			"deck_seed": 14785185,
+			"element": 4,
+			"seed": 47237.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_tide",
+					"creature_klykar_tide",
+					"creature_gorgul_tide"
+				],
+				[
+					"arena_altar",
+					"arena_den_dragnar",
+					"arena_fallen_call"
+				],
+				[
+					"ability_tide_wash",
+					"ability_tide_ninth",
+					"ability_gorgul_night"
+				]
+			],
+			"deck_seed": 14785186,
+			"element": 5,
+			"seed": 47237.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_levian_fire",
+					"creature_ratnik_fire",
+					"creature_rogozhuk_fire"
+				],
+				[
+					"arena_field_fire",
+					"arena_den_rogozhuk",
+					"arena_web"
+				],
+				[
+					"ability_fire_drain",
+					"ability_fire_last",
+					"ability_rogozhuk_ram"
+				]
+			],
+			"deck_seed": 14774539,
+			"element": 0,
+			"seed": 47203.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_levian_gale",
+					"creature_ratnik_gale",
+					"creature_rogozhuk_gale"
+				],
+				[
+					"arena_altar",
+					"arena_den_levian",
+					"arena_web"
+				],
+				[
+					"ability_gale_rebuttal",
+					"ability_gale_gust",
+					"ability_rogozhuk_ram"
+				]
+			],
+			"deck_seed": 14774540,
+			"element": 1,
+			"seed": 47203.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_levian_light",
+					"creature_ratnik_light",
+					"creature_rogozhuk_light"
+				],
+				[
+					"arena_altar",
+					"arena_den_levian",
+					"arena_limit"
+				],
+				[
+					"ability_light_revive",
+					"ability_light_guard",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 14774541,
+			"element": 2,
+			"seed": 47203.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_levian_stone",
+					"creature_ratnik_stone",
+					"creature_rogozhuk_stone"
+				],
+				[
+					"arena_field_stone",
+					"arena_den_levian",
+					"arena_hold"
+				],
+				[
+					"ability_stone_counter",
+					"ability_stone_firm",
+					"ability_levian_abyss"
+				]
+			],
+			"deck_seed": 14774542,
+			"element": 3,
+			"seed": 47203.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_levian_shadow",
+					"creature_ratnik_shadow",
+					"creature_rogozhuk_shadow"
+				],
+				[
+					"arena_altar",
+					"arena_den_rogozhuk",
+					"arena_mute"
+				],
+				[
+					"ability_shadow_counter",
+					"ability_shadow_revenge",
+					"ability_rogozhuk_ram"
+				]
+			],
+			"deck_seed": 14774543,
+			"element": 4,
+			"seed": 47203.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_levian_tide",
+					"creature_ratnik_tide",
+					"creature_rogozhuk_tide"
+				],
+				[
+					"arena_field_tide",
+					"arena_den_ratnik",
+					"arena_funnel"
+				],
+				[
+					"ability_tide_ebb",
+					"ability_tide_spray",
+					"ability_levian_abyss"
+				]
+			],
+			"deck_seed": 14774544,
+			"element": 5,
+			"seed": 47203.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_levian_fire",
+					"creature_ratnik_fire",
+					"creature_rogozhuk_fire"
+				],
+				[
+					"arena_field_fire",
+					"arena_den_levian",
+					"arena_hold"
+				],
+				[
+					"ability_fire_ash",
+					"ability_fire_spark",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 14785181,
+			"element": 0,
+			"seed": 47237.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_levian_gale",
+					"creature_ratnik_gale",
+					"creature_rogozhuk_gale"
+				],
+				[
+					"arena_altar",
+					"arena_den_levian",
+					"arena_limit"
+				],
+				[
+					"ability_gale_swap",
+					"ability_gale_counter",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 14785182,
+			"element": 1,
+			"seed": 47237.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_levian_light",
+					"creature_ratnik_light",
+					"creature_rogozhuk_light"
+				],
+				[
+					"arena_altar",
+					"arena_den_ratnik",
+					"arena_fallen_call"
+				],
+				[
+					"ability_light_crown",
+					"ability_light_guard",
+					"ability_ratnik_oath"
+				]
+			],
+			"deck_seed": 14785183,
+			"element": 2,
+			"seed": 47237.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_levian_stone",
+					"creature_ratnik_stone",
+					"creature_rogozhuk_stone"
+				],
+				[
+					"arena_altar",
+					"arena_den_ratnik",
+					"arena_weight"
+				],
+				[
+					"ability_stone_copy",
+					"ability_stone_firm",
+					"ability_ratnik_rearm"
+				]
+			],
+			"deck_seed": 14785184,
+			"element": 3,
+			"seed": 47237.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_levian_shadow",
+					"creature_ratnik_shadow",
+					"creature_rogozhuk_shadow"
+				],
+				[
+					"arena_altar",
+					"arena_den_levian",
+					"arena_limit"
+				],
+				[
+					"ability_shadow_doom",
+					"ability_shadow_strike",
+					"ability_levian_abyss"
+				]
+			],
+			"deck_seed": 14785185,
+			"element": 4,
+			"seed": 47237.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_levian_tide",
+					"creature_ratnik_tide",
+					"creature_rogozhuk_tide"
+				],
+				[
+					"arena_altar",
+					"arena_den_rogozhuk",
+					"arena_fallen_call"
+				],
+				[
+					"ability_tide_wash",
+					"ability_tide_ninth",
+					"ability_ratnik_rearm"
+				]
+			],
+			"deck_seed": 14785186,
+			"element": 5,
+			"seed": 47237.0
+		}
+	],
+	"failures": [],
+	"label": "v3-independent-streams-holdout-240-preregistered",
+	"match_streams": [
+		{
+			"case": 0,
+			"match_seed": 4720300001,
+			"pair": [
+				0,
+				1
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 4720300002,
+			"pair": [
+				0,
+				2
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 4720300003,
+			"pair": [
+				0,
+				3
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 4720300004,
+			"pair": [
+				0,
+				4
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 4720300005,
+			"pair": [
+				0,
+				5
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 4720300012,
+			"pair": [
+				1,
+				2
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 4720300013,
+			"pair": [
+				1,
+				3
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 4720300014,
+			"pair": [
+				1,
+				4
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 4720300015,
+			"pair": [
+				1,
+				5
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 4720300023,
+			"pair": [
+				2,
+				3
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 4720300024,
+			"pair": [
+				2,
+				4
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 4720300025,
+			"pair": [
+				2,
+				5
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 4720300034,
+			"pair": [
+				3,
+				4
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 4720300035,
+			"pair": [
+				3,
+				5
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 4720300045,
+			"pair": [
+				4,
+				5
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 4723701001,
+			"pair": [
+				0,
+				1
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 4723701002,
+			"pair": [
+				0,
+				2
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 4723701003,
+			"pair": [
+				0,
+				3
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 4723701004,
+			"pair": [
+				0,
+				4
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 4723701005,
+			"pair": [
+				0,
+				5
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 4723701012,
+			"pair": [
+				1,
+				2
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 4723701013,
+			"pair": [
+				1,
+				3
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 4723701014,
+			"pair": [
+				1,
+				4
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 4723701015,
+			"pair": [
+				1,
+				5
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 4723701023,
+			"pair": [
+				2,
+				3
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 4723701024,
+			"pair": [
+				2,
+				4
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 4723701025,
+			"pair": [
+				2,
+				5
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 4723701034,
+			"pair": [
+				3,
+				4
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 4723701035,
+			"pair": [
+				3,
+				5
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 4723701045,
+			"pair": [
+				4,
+				5
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 4720302001,
+			"pair": [
+				0,
+				1
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 4720302002,
+			"pair": [
+				0,
+				2
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 4720302003,
+			"pair": [
+				0,
+				3
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 4720302004,
+			"pair": [
+				0,
+				4
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 4720302005,
+			"pair": [
+				0,
+				5
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 4720302012,
+			"pair": [
+				1,
+				2
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 4720302013,
+			"pair": [
+				1,
+				3
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 4720302014,
+			"pair": [
+				1,
+				4
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 4720302015,
+			"pair": [
+				1,
+				5
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 4720302023,
+			"pair": [
+				2,
+				3
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 4720302024,
+			"pair": [
+				2,
+				4
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 4720302025,
+			"pair": [
+				2,
+				5
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 4720302034,
+			"pair": [
+				3,
+				4
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 4720302035,
+			"pair": [
+				3,
+				5
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 4720302045,
+			"pair": [
+				4,
+				5
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 4723703001,
+			"pair": [
+				0,
+				1
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 4723703002,
+			"pair": [
+				0,
+				2
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 4723703003,
+			"pair": [
+				0,
+				3
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 4723703004,
+			"pair": [
+				0,
+				4
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 4723703005,
+			"pair": [
+				0,
+				5
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 4723703012,
+			"pair": [
+				1,
+				2
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 4723703013,
+			"pair": [
+				1,
+				3
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 4723703014,
+			"pair": [
+				1,
+				4
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 4723703015,
+			"pair": [
+				1,
+				5
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 4723703023,
+			"pair": [
+				2,
+				3
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 4723703024,
+			"pair": [
+				2,
+				4
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 4723703025,
+			"pair": [
+				2,
+				5
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 4723703034,
+			"pair": [
+				3,
+				4
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 4723703035,
+			"pair": [
+				3,
+				5
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 4723703045,
+			"pair": [
+				4,
+				5
+			]
+		}
+	]
+}

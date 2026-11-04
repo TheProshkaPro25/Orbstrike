@@ -1,0 +1,3848 @@
+{
+	"cases": [
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_fire",
+					"creature_grifalon_fire",
+					"creature_levian_fire"
+				],
+				[
+					"arena_field_fire",
+					"arena_den_grifalon",
+					"arena_limit"
+				],
+				[
+					"ability_fire_counter",
+					"ability_fire_last",
+					"ability_levian_coil"
+				]
+			],
+			"deck_seed": 2576021300313,
+			"element": 0,
+			"gold_role": "field",
+			"pair": [
+				0,
+				1
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_gale",
+					"creature_grifalon_gale",
+					"creature_levian_gale"
+				],
+				[
+					"arena_field_gale",
+					"arena_den_grifalon",
+					"arena_limit"
+				],
+				[
+					"ability_gale_rebuttal",
+					"ability_gale_vengeance",
+					"ability_levian_coil"
+				]
+			],
+			"deck_seed": 2576021300313,
+			"element": 1,
+			"gold_role": "field",
+			"pair": [
+				0,
+				1
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_fire",
+					"creature_grifalon_fire",
+					"creature_levian_fire"
+				],
+				[
+					"arena_field_fire",
+					"arena_den_grifalon",
+					"arena_mute"
+				],
+				[
+					"ability_fire_drain",
+					"ability_fire_spark",
+					"ability_levian_abyss"
+				]
+			],
+			"deck_seed": 2576021300626,
+			"element": 0,
+			"gold_role": "field",
+			"pair": [
+				0,
+				2
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_light",
+					"creature_grifalon_light",
+					"creature_levian_light"
+				],
+				[
+					"arena_field_light",
+					"arena_den_grifalon",
+					"arena_mute"
+				],
+				[
+					"ability_light_reserve",
+					"ability_light_glint",
+					"ability_levian_abyss"
+				]
+			],
+			"deck_seed": 2576021300626,
+			"element": 2,
+			"gold_role": "field",
+			"pair": [
+				0,
+				2
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_fire",
+					"creature_grifalon_fire",
+					"creature_levian_fire"
+				],
+				[
+					"arena_field_fire",
+					"arena_den_grifalon",
+					"arena_weight"
+				],
+				[
+					"ability_fire_ash",
+					"ability_fire_spark",
+					"ability_levian_coil"
+				]
+			],
+			"deck_seed": 2576021300939,
+			"element": 0,
+			"gold_role": "field",
+			"pair": [
+				0,
+				3
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_stone",
+					"creature_grifalon_stone",
+					"creature_levian_stone"
+				],
+				[
+					"arena_field_stone",
+					"arena_den_grifalon",
+					"arena_weight"
+				],
+				[
+					"ability_stone_shift",
+					"ability_stone_firm",
+					"ability_levian_coil"
+				]
+			],
+			"deck_seed": 2576021300939,
+			"element": 3,
+			"gold_role": "field",
+			"pair": [
+				0,
+				3
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_fire",
+					"creature_grifalon_fire",
+					"creature_levian_fire"
+				],
+				[
+					"arena_field_fire",
+					"arena_den_grifalon",
+					"arena_mute"
+				],
+				[
+					"ability_fire_toll",
+					"ability_fire_assault",
+					"ability_dragnar_heart"
+				]
+			],
+			"deck_seed": 2576021301252,
+			"element": 0,
+			"gold_role": "field",
+			"pair": [
+				0,
+				4
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_shadow",
+					"creature_grifalon_shadow",
+					"creature_levian_shadow"
+				],
+				[
+					"arena_field_shadow",
+					"arena_den_grifalon",
+					"arena_mute"
+				],
+				[
+					"ability_shadow_doom",
+					"ability_shadow_strike",
+					"ability_dragnar_heart"
+				]
+			],
+			"deck_seed": 2576021301252,
+			"element": 4,
+			"gold_role": "field",
+			"pair": [
+				0,
+				4
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_fire",
+					"creature_grifalon_fire",
+					"creature_levian_fire"
+				],
+				[
+					"arena_field_fire",
+					"arena_den_grifalon",
+					"arena_valor"
+				],
+				[
+					"ability_fire_ash",
+					"ability_fire_spark",
+					"ability_grifalon_dive"
+				]
+			],
+			"deck_seed": 2576021301565,
+			"element": 0,
+			"gold_role": "field",
+			"pair": [
+				0,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_tide",
+					"creature_grifalon_tide",
+					"creature_levian_tide"
+				],
+				[
+					"arena_field_tide",
+					"arena_den_grifalon",
+					"arena_valor"
+				],
+				[
+					"ability_tide_ebb",
+					"ability_tide_spray",
+					"ability_grifalon_dive"
+				]
+			],
+			"deck_seed": 2576021301565,
+			"element": 5,
+			"gold_role": "field",
+			"pair": [
+				0,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_gale",
+					"creature_grifalon_gale",
+					"creature_levian_gale"
+				],
+				[
+					"arena_field_gale",
+					"arena_den_dragnar",
+					"arena_mirror"
+				],
+				[
+					"ability_gale_call",
+					"ability_gale_gust",
+					"ability_grifalon_dive"
+				]
+			],
+			"deck_seed": 2576021303756,
+			"element": 1,
+			"gold_role": "field",
+			"pair": [
+				1,
+				2
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_light",
+					"creature_grifalon_light",
+					"creature_levian_light"
+				],
+				[
+					"arena_field_light",
+					"arena_den_dragnar",
+					"arena_mirror"
+				],
+				[
+					"ability_light_reserve",
+					"ability_light_glint",
+					"ability_grifalon_dive"
+				]
+			],
+			"deck_seed": 2576021303756,
+			"element": 2,
+			"gold_role": "field",
+			"pair": [
+				1,
+				2
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_gale",
+					"creature_grifalon_gale",
+					"creature_levian_gale"
+				],
+				[
+					"arena_field_gale",
+					"arena_den_dragnar",
+					"arena_funnel"
+				],
+				[
+					"ability_gale_call",
+					"ability_gale_counter",
+					"ability_levian_abyss"
+				]
+			],
+			"deck_seed": 2576021304069,
+			"element": 1,
+			"gold_role": "field",
+			"pair": [
+				1,
+				3
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_stone",
+					"creature_grifalon_stone",
+					"creature_levian_stone"
+				],
+				[
+					"arena_field_stone",
+					"arena_den_dragnar",
+					"arena_funnel"
+				],
+				[
+					"ability_stone_ceiling",
+					"ability_stone_footing",
+					"ability_levian_abyss"
+				]
+			],
+			"deck_seed": 2576021304069,
+			"element": 3,
+			"gold_role": "field",
+			"pair": [
+				1,
+				3
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_gale",
+					"creature_grifalon_gale",
+					"creature_levian_gale"
+				],
+				[
+					"arena_field_gale",
+					"arena_den_grifalon",
+					"arena_fallen_call"
+				],
+				[
+					"ability_gale_call",
+					"ability_gale_vengeance",
+					"ability_levian_abyss"
+				]
+			],
+			"deck_seed": 2576021304382,
+			"element": 1,
+			"gold_role": "field",
+			"pair": [
+				1,
+				4
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_shadow",
+					"creature_grifalon_shadow",
+					"creature_levian_shadow"
+				],
+				[
+					"arena_field_shadow",
+					"arena_den_grifalon",
+					"arena_fallen_call"
+				],
+				[
+					"ability_shadow_eclipse",
+					"ability_shadow_revenge",
+					"ability_levian_abyss"
+				]
+			],
+			"deck_seed": 2576021304382,
+			"element": 4,
+			"gold_role": "field",
+			"pair": [
+				1,
+				4
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_gale",
+					"creature_grifalon_gale",
+					"creature_levian_gale"
+				],
+				[
+					"arena_field_gale",
+					"arena_den_levian",
+					"arena_fallen_call"
+				],
+				[
+					"ability_gale_swap",
+					"ability_gale_vengeance",
+					"ability_levian_abyss"
+				]
+			],
+			"deck_seed": 2576021304695,
+			"element": 1,
+			"gold_role": "field",
+			"pair": [
+				1,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_tide",
+					"creature_grifalon_tide",
+					"creature_levian_tide"
+				],
+				[
+					"arena_field_tide",
+					"arena_den_levian",
+					"arena_fallen_call"
+				],
+				[
+					"ability_tide_ebb",
+					"ability_tide_ninth",
+					"ability_levian_abyss"
+				]
+			],
+			"deck_seed": 2576021304695,
+			"element": 5,
+			"gold_role": "field",
+			"pair": [
+				1,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_light",
+					"creature_grifalon_light",
+					"creature_levian_light"
+				],
+				[
+					"arena_field_light",
+					"arena_den_levian",
+					"arena_valor"
+				],
+				[
+					"ability_light_purge",
+					"ability_light_glint",
+					"ability_grifalon_sky"
+				]
+			],
+			"deck_seed": 2576021307199,
+			"element": 2,
+			"gold_role": "field",
+			"pair": [
+				2,
+				3
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_stone",
+					"creature_grifalon_stone",
+					"creature_levian_stone"
+				],
+				[
+					"arena_field_stone",
+					"arena_den_levian",
+					"arena_valor"
+				],
+				[
+					"ability_stone_ceiling",
+					"ability_stone_firm",
+					"ability_grifalon_sky"
+				]
+			],
+			"deck_seed": 2576021307199,
+			"element": 3,
+			"gold_role": "field",
+			"pair": [
+				2,
+				3
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_light",
+					"creature_grifalon_light",
+					"creature_levian_light"
+				],
+				[
+					"arena_field_light",
+					"arena_den_dragnar",
+					"arena_mirror"
+				],
+				[
+					"ability_light_counter",
+					"ability_light_dawn",
+					"ability_dragnar_heart"
+				]
+			],
+			"deck_seed": 2576021307512,
+			"element": 2,
+			"gold_role": "field",
+			"pair": [
+				2,
+				4
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_shadow",
+					"creature_grifalon_shadow",
+					"creature_levian_shadow"
+				],
+				[
+					"arena_field_shadow",
+					"arena_den_dragnar",
+					"arena_mirror"
+				],
+				[
+					"ability_shadow_counter",
+					"ability_shadow_revenge",
+					"ability_dragnar_heart"
+				]
+			],
+			"deck_seed": 2576021307512,
+			"element": 4,
+			"gold_role": "field",
+			"pair": [
+				2,
+				4
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_light",
+					"creature_grifalon_light",
+					"creature_levian_light"
+				],
+				[
+					"arena_field_light",
+					"arena_den_levian",
+					"arena_hold"
+				],
+				[
+					"ability_light_crown",
+					"ability_light_glint",
+					"ability_grifalon_dive"
+				]
+			],
+			"deck_seed": 2576021307825,
+			"element": 2,
+			"gold_role": "field",
+			"pair": [
+				2,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_tide",
+					"creature_grifalon_tide",
+					"creature_levian_tide"
+				],
+				[
+					"arena_field_tide",
+					"arena_den_levian",
+					"arena_hold"
+				],
+				[
+					"ability_tide_hush",
+					"ability_tide_spray",
+					"ability_grifalon_dive"
+				]
+			],
+			"deck_seed": 2576021307825,
+			"element": 5,
+			"gold_role": "field",
+			"pair": [
+				2,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_stone",
+					"creature_grifalon_stone",
+					"creature_levian_stone"
+				],
+				[
+					"arena_field_stone",
+					"arena_den_grifalon",
+					"arena_clash"
+				],
+				[
+					"ability_stone_copy",
+					"ability_stone_firm",
+					"ability_grifalon_dive"
+				]
+			],
+			"deck_seed": 2576021310642,
+			"element": 3,
+			"gold_role": "field",
+			"pair": [
+				3,
+				4
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_shadow",
+					"creature_grifalon_shadow",
+					"creature_levian_shadow"
+				],
+				[
+					"arena_field_shadow",
+					"arena_den_grifalon",
+					"arena_clash"
+				],
+				[
+					"ability_shadow_pact",
+					"ability_shadow_haze",
+					"ability_grifalon_dive"
+				]
+			],
+			"deck_seed": 2576021310642,
+			"element": 4,
+			"gold_role": "field",
+			"pair": [
+				3,
+				4
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_stone",
+					"creature_grifalon_stone",
+					"creature_levian_stone"
+				],
+				[
+					"arena_field_stone",
+					"arena_den_dragnar",
+					"arena_valor"
+				],
+				[
+					"ability_stone_shift",
+					"ability_stone_firm",
+					"ability_dragnar_rush"
+				]
+			],
+			"deck_seed": 2576021310955,
+			"element": 3,
+			"gold_role": "field",
+			"pair": [
+				3,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_tide",
+					"creature_grifalon_tide",
+					"creature_levian_tide"
+				],
+				[
+					"arena_field_tide",
+					"arena_den_dragnar",
+					"arena_valor"
+				],
+				[
+					"ability_tide_ebb",
+					"ability_tide_spray",
+					"ability_dragnar_rush"
+				]
+			],
+			"deck_seed": 2576021310955,
+			"element": 5,
+			"gold_role": "field",
+			"pair": [
+				3,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_shadow",
+					"creature_grifalon_shadow",
+					"creature_levian_shadow"
+				],
+				[
+					"arena_field_shadow",
+					"arena_den_levian",
+					"arena_dusk_throne"
+				],
+				[
+					"ability_shadow_counter",
+					"ability_shadow_strike",
+					"ability_grifalon_sky"
+				]
+			],
+			"deck_seed": 2576021314085,
+			"element": 4,
+			"gold_role": "field",
+			"pair": [
+				4,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_dragnar_tide",
+					"creature_grifalon_tide",
+					"creature_levian_tide"
+				],
+				[
+					"arena_field_tide",
+					"arena_den_levian",
+					"arena_dusk_throne"
+				],
+				[
+					"ability_tide_counter",
+					"ability_tide_surf",
+					"ability_grifalon_sky"
+				]
+			],
+			"deck_seed": 2576021314085,
+			"element": 5,
+			"gold_role": "field",
+			"pair": [
+				4,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_fire",
+					"creature_grifalon_fire",
+					"creature_levian_fire"
+				],
+				[
+					"arena_altar",
+					"arena_den_dragnar",
+					"arena_funnel"
+				],
+				[
+					"ability_fire_counter",
+					"ability_fire_last",
+					"ability_levian_coil"
+				]
+			],
+			"deck_seed": 2577023213313,
+			"element": 0,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				1
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_gale",
+					"creature_grifalon_gale",
+					"creature_levian_gale"
+				],
+				[
+					"arena_altar",
+					"arena_den_dragnar",
+					"arena_funnel"
+				],
+				[
+					"ability_gale_rebuttal",
+					"ability_gale_vengeance",
+					"ability_levian_coil"
+				]
+			],
+			"deck_seed": 2577023213313,
+			"element": 1,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				1
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_fire",
+					"creature_grifalon_fire",
+					"creature_levian_fire"
+				],
+				[
+					"arena_altar",
+					"arena_den_grifalon",
+					"arena_limit"
+				],
+				[
+					"ability_fire_ash",
+					"ability_fire_assault",
+					"ability_grifalon_dive"
+				]
+			],
+			"deck_seed": 2577023213626,
+			"element": 0,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				2
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_light",
+					"creature_grifalon_light",
+					"creature_levian_light"
+				],
+				[
+					"arena_altar",
+					"arena_den_grifalon",
+					"arena_limit"
+				],
+				[
+					"ability_light_crown",
+					"ability_light_guard",
+					"ability_grifalon_dive"
+				]
+			],
+			"deck_seed": 2577023213626,
+			"element": 2,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				2
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_fire",
+					"creature_grifalon_fire",
+					"creature_levian_fire"
+				],
+				[
+					"arena_altar",
+					"arena_den_dragnar",
+					"arena_mirror"
+				],
+				[
+					"ability_fire_counter",
+					"ability_fire_last",
+					"ability_grifalon_sky"
+				]
+			],
+			"deck_seed": 2577023213939,
+			"element": 0,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				3
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_stone",
+					"creature_grifalon_stone",
+					"creature_levian_stone"
+				],
+				[
+					"arena_altar",
+					"arena_den_dragnar",
+					"arena_mirror"
+				],
+				[
+					"ability_stone_counter",
+					"ability_stone_wrath",
+					"ability_grifalon_sky"
+				]
+			],
+			"deck_seed": 2577023213939,
+			"element": 3,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				3
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_fire",
+					"creature_grifalon_fire",
+					"creature_levian_fire"
+				],
+				[
+					"arena_altar",
+					"arena_den_dragnar",
+					"arena_fallen_call"
+				],
+				[
+					"ability_fire_toll",
+					"ability_fire_assault",
+					"ability_grifalon_sky"
+				]
+			],
+			"deck_seed": 2577023214252,
+			"element": 0,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				4
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_shadow",
+					"creature_grifalon_shadow",
+					"creature_levian_shadow"
+				],
+				[
+					"arena_altar",
+					"arena_den_dragnar",
+					"arena_fallen_call"
+				],
+				[
+					"ability_shadow_eclipse",
+					"ability_shadow_strike",
+					"ability_grifalon_sky"
+				]
+			],
+			"deck_seed": 2577023214252,
+			"element": 4,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				4
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_fire",
+					"creature_grifalon_fire",
+					"creature_levian_fire"
+				],
+				[
+					"arena_altar",
+					"arena_den_grifalon",
+					"arena_valor"
+				],
+				[
+					"ability_fire_toll",
+					"ability_fire_spark",
+					"ability_levian_abyss"
+				]
+			],
+			"deck_seed": 2577023214565,
+			"element": 0,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_tide",
+					"creature_grifalon_tide",
+					"creature_levian_tide"
+				],
+				[
+					"arena_altar",
+					"arena_den_grifalon",
+					"arena_valor"
+				],
+				[
+					"ability_tide_wash",
+					"ability_tide_spray",
+					"ability_levian_abyss"
+				]
+			],
+			"deck_seed": 2577023214565,
+			"element": 5,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_gale",
+					"creature_grifalon_gale",
+					"creature_levian_gale"
+				],
+				[
+					"arena_altar",
+					"arena_den_dragnar",
+					"arena_limit"
+				],
+				[
+					"ability_gale_rebuttal",
+					"ability_gale_gust",
+					"ability_grifalon_sky"
+				]
+			],
+			"deck_seed": 2577023216756,
+			"element": 1,
+			"gold_role": "altar",
+			"pair": [
+				1,
+				2
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_light",
+					"creature_grifalon_light",
+					"creature_levian_light"
+				],
+				[
+					"arena_altar",
+					"arena_den_dragnar",
+					"arena_limit"
+				],
+				[
+					"ability_light_reserve",
+					"ability_light_glint",
+					"ability_grifalon_sky"
+				]
+			],
+			"deck_seed": 2577023216756,
+			"element": 2,
+			"gold_role": "altar",
+			"pair": [
+				1,
+				2
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_gale",
+					"creature_grifalon_gale",
+					"creature_levian_gale"
+				],
+				[
+					"arena_altar",
+					"arena_den_levian",
+					"arena_limit"
+				],
+				[
+					"ability_gale_swap",
+					"ability_gale_counter",
+					"ability_dragnar_rush"
+				]
+			],
+			"deck_seed": 2577023217069,
+			"element": 1,
+			"gold_role": "altar",
+			"pair": [
+				1,
+				3
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_stone",
+					"creature_grifalon_stone",
+					"creature_levian_stone"
+				],
+				[
+					"arena_altar",
+					"arena_den_levian",
+					"arena_limit"
+				],
+				[
+					"ability_stone_shift",
+					"ability_stone_footing",
+					"ability_dragnar_rush"
+				]
+			],
+			"deck_seed": 2577023217069,
+			"element": 3,
+			"gold_role": "altar",
+			"pair": [
+				1,
+				3
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_gale",
+					"creature_grifalon_gale",
+					"creature_levian_gale"
+				],
+				[
+					"arena_altar",
+					"arena_den_dragnar",
+					"arena_web"
+				],
+				[
+					"ability_gale_swap",
+					"ability_gale_gust",
+					"ability_grifalon_sky"
+				]
+			],
+			"deck_seed": 2577023217382,
+			"element": 1,
+			"gold_role": "altar",
+			"pair": [
+				1,
+				4
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_shadow",
+					"creature_grifalon_shadow",
+					"creature_levian_shadow"
+				],
+				[
+					"arena_altar",
+					"arena_den_dragnar",
+					"arena_web"
+				],
+				[
+					"ability_shadow_doom",
+					"ability_shadow_haze",
+					"ability_grifalon_sky"
+				]
+			],
+			"deck_seed": 2577023217382,
+			"element": 4,
+			"gold_role": "altar",
+			"pair": [
+				1,
+				4
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_gale",
+					"creature_grifalon_gale",
+					"creature_levian_gale"
+				],
+				[
+					"arena_altar",
+					"arena_den_dragnar",
+					"arena_funnel"
+				],
+				[
+					"ability_gale_rebuttal",
+					"ability_gale_gust",
+					"ability_dragnar_heart"
+				]
+			],
+			"deck_seed": 2577023217695,
+			"element": 1,
+			"gold_role": "altar",
+			"pair": [
+				1,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_tide",
+					"creature_grifalon_tide",
+					"creature_levian_tide"
+				],
+				[
+					"arena_altar",
+					"arena_den_dragnar",
+					"arena_funnel"
+				],
+				[
+					"ability_tide_counter",
+					"ability_tide_spray",
+					"ability_dragnar_heart"
+				]
+			],
+			"deck_seed": 2577023217695,
+			"element": 5,
+			"gold_role": "altar",
+			"pair": [
+				1,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_light",
+					"creature_grifalon_light",
+					"creature_levian_light"
+				],
+				[
+					"arena_altar",
+					"arena_den_grifalon",
+					"arena_limit"
+				],
+				[
+					"ability_light_reserve",
+					"ability_light_guard",
+					"ability_levian_coil"
+				]
+			],
+			"deck_seed": 2577023220199,
+			"element": 2,
+			"gold_role": "altar",
+			"pair": [
+				2,
+				3
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_stone",
+					"creature_grifalon_stone",
+					"creature_levian_stone"
+				],
+				[
+					"arena_altar",
+					"arena_den_grifalon",
+					"arena_limit"
+				],
+				[
+					"ability_stone_shift",
+					"ability_stone_footing",
+					"ability_levian_coil"
+				]
+			],
+			"deck_seed": 2577023220199,
+			"element": 3,
+			"gold_role": "altar",
+			"pair": [
+				2,
+				3
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_light",
+					"creature_grifalon_light",
+					"creature_levian_light"
+				],
+				[
+					"arena_altar",
+					"arena_den_grifalon",
+					"arena_fallen_call"
+				],
+				[
+					"ability_light_revive",
+					"ability_light_glint",
+					"ability_dragnar_rush"
+				]
+			],
+			"deck_seed": 2577023220512,
+			"element": 2,
+			"gold_role": "altar",
+			"pair": [
+				2,
+				4
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_shadow",
+					"creature_grifalon_shadow",
+					"creature_levian_shadow"
+				],
+				[
+					"arena_altar",
+					"arena_den_grifalon",
+					"arena_fallen_call"
+				],
+				[
+					"ability_shadow_doom",
+					"ability_shadow_haze",
+					"ability_dragnar_rush"
+				]
+			],
+			"deck_seed": 2577023220512,
+			"element": 4,
+			"gold_role": "altar",
+			"pair": [
+				2,
+				4
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_light",
+					"creature_grifalon_light",
+					"creature_levian_light"
+				],
+				[
+					"arena_altar",
+					"arena_den_grifalon",
+					"arena_web"
+				],
+				[
+					"ability_light_revive",
+					"ability_light_dawn",
+					"ability_levian_coil"
+				]
+			],
+			"deck_seed": 2577023220825,
+			"element": 2,
+			"gold_role": "altar",
+			"pair": [
+				2,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_tide",
+					"creature_grifalon_tide",
+					"creature_levian_tide"
+				],
+				[
+					"arena_altar",
+					"arena_den_grifalon",
+					"arena_web"
+				],
+				[
+					"ability_tide_counter",
+					"ability_tide_ninth",
+					"ability_levian_coil"
+				]
+			],
+			"deck_seed": 2577023220825,
+			"element": 5,
+			"gold_role": "altar",
+			"pair": [
+				2,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_stone",
+					"creature_grifalon_stone",
+					"creature_levian_stone"
+				],
+				[
+					"arena_altar",
+					"arena_den_dragnar",
+					"arena_funnel"
+				],
+				[
+					"ability_stone_counter",
+					"ability_stone_footing",
+					"ability_levian_abyss"
+				]
+			],
+			"deck_seed": 2577023223642,
+			"element": 3,
+			"gold_role": "altar",
+			"pair": [
+				3,
+				4
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_shadow",
+					"creature_grifalon_shadow",
+					"creature_levian_shadow"
+				],
+				[
+					"arena_altar",
+					"arena_den_dragnar",
+					"arena_funnel"
+				],
+				[
+					"ability_shadow_counter",
+					"ability_shadow_strike",
+					"ability_levian_abyss"
+				]
+			],
+			"deck_seed": 2577023223642,
+			"element": 4,
+			"gold_role": "altar",
+			"pair": [
+				3,
+				4
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_stone",
+					"creature_grifalon_stone",
+					"creature_levian_stone"
+				],
+				[
+					"arena_altar",
+					"arena_den_dragnar",
+					"arena_funnel"
+				],
+				[
+					"ability_stone_counter",
+					"ability_stone_firm",
+					"ability_grifalon_dive"
+				]
+			],
+			"deck_seed": 2577023223955,
+			"element": 3,
+			"gold_role": "altar",
+			"pair": [
+				3,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_tide",
+					"creature_grifalon_tide",
+					"creature_levian_tide"
+				],
+				[
+					"arena_altar",
+					"arena_den_dragnar",
+					"arena_funnel"
+				],
+				[
+					"ability_tide_counter",
+					"ability_tide_spray",
+					"ability_grifalon_dive"
+				]
+			],
+			"deck_seed": 2577023223955,
+			"element": 5,
+			"gold_role": "altar",
+			"pair": [
+				3,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_shadow",
+					"creature_grifalon_shadow",
+					"creature_levian_shadow"
+				],
+				[
+					"arena_altar",
+					"arena_den_levian",
+					"arena_clash"
+				],
+				[
+					"ability_shadow_doom",
+					"ability_shadow_revenge",
+					"ability_dragnar_heart"
+				]
+			],
+			"deck_seed": 2577023227085,
+			"element": 4,
+			"gold_role": "altar",
+			"pair": [
+				4,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_dragnar_tide",
+					"creature_grifalon_tide",
+					"creature_levian_tide"
+				],
+				[
+					"arena_altar",
+					"arena_den_levian",
+					"arena_clash"
+				],
+				[
+					"ability_tide_ebb",
+					"ability_tide_ninth",
+					"ability_dragnar_heart"
+				]
+			],
+			"deck_seed": 2577023227085,
+			"element": 5,
+			"gold_role": "altar",
+			"pair": [
+				4,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_fire",
+					"creature_gorgul_fire",
+					"creature_rogozhuk_fire"
+				],
+				[
+					"arena_field_fire",
+					"arena_den_kolossar",
+					"arena_valor"
+				],
+				[
+					"ability_fire_toll",
+					"ability_fire_last",
+					"ability_rogozhuk_ram"
+				]
+			],
+			"deck_seed": 2576021926313,
+			"element": 0,
+			"gold_role": "field",
+			"pair": [
+				0,
+				1
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_gale",
+					"creature_gorgul_gale",
+					"creature_rogozhuk_gale"
+				],
+				[
+					"arena_field_gale",
+					"arena_den_kolossar",
+					"arena_valor"
+				],
+				[
+					"ability_gale_call",
+					"ability_gale_vengeance",
+					"ability_rogozhuk_ram"
+				]
+			],
+			"deck_seed": 2576021926313,
+			"element": 1,
+			"gold_role": "field",
+			"pair": [
+				0,
+				1
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_fire",
+					"creature_gorgul_fire",
+					"creature_rogozhuk_fire"
+				],
+				[
+					"arena_field_fire",
+					"arena_den_kolossar",
+					"arena_dusk_throne"
+				],
+				[
+					"ability_fire_counter",
+					"ability_fire_spark",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 2576021926626,
+			"element": 0,
+			"gold_role": "field",
+			"pair": [
+				0,
+				2
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_light",
+					"creature_gorgul_light",
+					"creature_rogozhuk_light"
+				],
+				[
+					"arena_field_light",
+					"arena_den_kolossar",
+					"arena_dusk_throne"
+				],
+				[
+					"ability_light_reserve",
+					"ability_light_glint",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 2576021926626,
+			"element": 2,
+			"gold_role": "field",
+			"pair": [
+				0,
+				2
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_fire",
+					"creature_gorgul_fire",
+					"creature_rogozhuk_fire"
+				],
+				[
+					"arena_field_fire",
+					"arena_den_kolossar",
+					"arena_mute"
+				],
+				[
+					"ability_fire_ash",
+					"ability_fire_spark",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 2576021926939,
+			"element": 0,
+			"gold_role": "field",
+			"pair": [
+				0,
+				3
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_stone",
+					"creature_gorgul_stone",
+					"creature_rogozhuk_stone"
+				],
+				[
+					"arena_field_stone",
+					"arena_den_kolossar",
+					"arena_mute"
+				],
+				[
+					"ability_stone_shift",
+					"ability_stone_firm",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 2576021926939,
+			"element": 3,
+			"gold_role": "field",
+			"pair": [
+				0,
+				3
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_fire",
+					"creature_gorgul_fire",
+					"creature_rogozhuk_fire"
+				],
+				[
+					"arena_field_fire",
+					"arena_den_rogozhuk",
+					"arena_valor"
+				],
+				[
+					"ability_fire_toll",
+					"ability_fire_spark",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 2576021927252,
+			"element": 0,
+			"gold_role": "field",
+			"pair": [
+				0,
+				4
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_shadow",
+					"creature_gorgul_shadow",
+					"creature_rogozhuk_shadow"
+				],
+				[
+					"arena_field_shadow",
+					"arena_den_rogozhuk",
+					"arena_valor"
+				],
+				[
+					"ability_shadow_counter",
+					"ability_shadow_haze",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 2576021927252,
+			"element": 4,
+			"gold_role": "field",
+			"pair": [
+				0,
+				4
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_fire",
+					"creature_gorgul_fire",
+					"creature_rogozhuk_fire"
+				],
+				[
+					"arena_field_fire",
+					"arena_den_gorgul",
+					"arena_weight"
+				],
+				[
+					"ability_fire_counter",
+					"ability_fire_spark",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 2576021927565,
+			"element": 0,
+			"gold_role": "field",
+			"pair": [
+				0,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_tide",
+					"creature_gorgul_tide",
+					"creature_rogozhuk_tide"
+				],
+				[
+					"arena_field_tide",
+					"arena_den_gorgul",
+					"arena_weight"
+				],
+				[
+					"ability_tide_counter",
+					"ability_tide_spray",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 2576021927565,
+			"element": 5,
+			"gold_role": "field",
+			"pair": [
+				0,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_gale",
+					"creature_gorgul_gale",
+					"creature_rogozhuk_gale"
+				],
+				[
+					"arena_field_gale",
+					"arena_den_kolossar",
+					"arena_funnel"
+				],
+				[
+					"ability_gale_call",
+					"ability_gale_gust",
+					"ability_kolossar_wall"
+				]
+			],
+			"deck_seed": 2576021929756,
+			"element": 1,
+			"gold_role": "field",
+			"pair": [
+				1,
+				2
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_light",
+					"creature_gorgul_light",
+					"creature_rogozhuk_light"
+				],
+				[
+					"arena_field_light",
+					"arena_den_kolossar",
+					"arena_funnel"
+				],
+				[
+					"ability_light_reserve",
+					"ability_light_glint",
+					"ability_kolossar_wall"
+				]
+			],
+			"deck_seed": 2576021929756,
+			"element": 2,
+			"gold_role": "field",
+			"pair": [
+				1,
+				2
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_gale",
+					"creature_gorgul_gale",
+					"creature_rogozhuk_gale"
+				],
+				[
+					"arena_field_gale",
+					"arena_den_rogozhuk",
+					"arena_clash"
+				],
+				[
+					"ability_gale_swap",
+					"ability_gale_counter",
+					"ability_gorgul_gaze"
+				]
+			],
+			"deck_seed": 2576021930069,
+			"element": 1,
+			"gold_role": "field",
+			"pair": [
+				1,
+				3
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_stone",
+					"creature_gorgul_stone",
+					"creature_rogozhuk_stone"
+				],
+				[
+					"arena_field_stone",
+					"arena_den_rogozhuk",
+					"arena_clash"
+				],
+				[
+					"ability_stone_shift",
+					"ability_stone_footing",
+					"ability_gorgul_gaze"
+				]
+			],
+			"deck_seed": 2576021930069,
+			"element": 3,
+			"gold_role": "field",
+			"pair": [
+				1,
+				3
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_gale",
+					"creature_gorgul_gale",
+					"creature_rogozhuk_gale"
+				],
+				[
+					"arena_field_gale",
+					"arena_den_kolossar",
+					"arena_web"
+				],
+				[
+					"ability_gale_leap",
+					"ability_gale_gust",
+					"ability_kolossar_reset"
+				]
+			],
+			"deck_seed": 2576021930382,
+			"element": 1,
+			"gold_role": "field",
+			"pair": [
+				1,
+				4
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_shadow",
+					"creature_gorgul_shadow",
+					"creature_rogozhuk_shadow"
+				],
+				[
+					"arena_field_shadow",
+					"arena_den_kolossar",
+					"arena_web"
+				],
+				[
+					"ability_shadow_pact",
+					"ability_shadow_haze",
+					"ability_kolossar_reset"
+				]
+			],
+			"deck_seed": 2576021930382,
+			"element": 4,
+			"gold_role": "field",
+			"pair": [
+				1,
+				4
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_gale",
+					"creature_gorgul_gale",
+					"creature_rogozhuk_gale"
+				],
+				[
+					"arena_field_gale",
+					"arena_den_kolossar",
+					"arena_dusk_throne"
+				],
+				[
+					"ability_gale_rebuttal",
+					"ability_gale_gust",
+					"ability_kolossar_wall"
+				]
+			],
+			"deck_seed": 2576021930695,
+			"element": 1,
+			"gold_role": "field",
+			"pair": [
+				1,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_tide",
+					"creature_gorgul_tide",
+					"creature_rogozhuk_tide"
+				],
+				[
+					"arena_field_tide",
+					"arena_den_kolossar",
+					"arena_dusk_throne"
+				],
+				[
+					"ability_tide_counter",
+					"ability_tide_spray",
+					"ability_kolossar_wall"
+				]
+			],
+			"deck_seed": 2576021930695,
+			"element": 5,
+			"gold_role": "field",
+			"pair": [
+				1,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_light",
+					"creature_gorgul_light",
+					"creature_rogozhuk_light"
+				],
+				[
+					"arena_field_light",
+					"arena_den_kolossar",
+					"arena_clash"
+				],
+				[
+					"ability_light_purge",
+					"ability_light_glint",
+					"ability_kolossar_wall"
+				]
+			],
+			"deck_seed": 2576021933199,
+			"element": 2,
+			"gold_role": "field",
+			"pair": [
+				2,
+				3
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_stone",
+					"creature_gorgul_stone",
+					"creature_rogozhuk_stone"
+				],
+				[
+					"arena_field_stone",
+					"arena_den_kolossar",
+					"arena_clash"
+				],
+				[
+					"ability_stone_counter",
+					"ability_stone_firm",
+					"ability_kolossar_wall"
+				]
+			],
+			"deck_seed": 2576021933199,
+			"element": 3,
+			"gold_role": "field",
+			"pair": [
+				2,
+				3
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_light",
+					"creature_gorgul_light",
+					"creature_rogozhuk_light"
+				],
+				[
+					"arena_field_light",
+					"arena_den_gorgul",
+					"arena_hold"
+				],
+				[
+					"ability_light_revive",
+					"ability_light_dawn",
+					"ability_gorgul_gaze"
+				]
+			],
+			"deck_seed": 2576021933512,
+			"element": 2,
+			"gold_role": "field",
+			"pair": [
+				2,
+				4
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_shadow",
+					"creature_gorgul_shadow",
+					"creature_rogozhuk_shadow"
+				],
+				[
+					"arena_field_shadow",
+					"arena_den_gorgul",
+					"arena_hold"
+				],
+				[
+					"ability_shadow_doom",
+					"ability_shadow_revenge",
+					"ability_gorgul_gaze"
+				]
+			],
+			"deck_seed": 2576021933512,
+			"element": 4,
+			"gold_role": "field",
+			"pair": [
+				2,
+				4
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_light",
+					"creature_gorgul_light",
+					"creature_rogozhuk_light"
+				],
+				[
+					"arena_field_light",
+					"arena_den_rogozhuk",
+					"arena_hold"
+				],
+				[
+					"ability_light_purge",
+					"ability_light_guard",
+					"ability_kolossar_reset"
+				]
+			],
+			"deck_seed": 2576021933825,
+			"element": 2,
+			"gold_role": "field",
+			"pair": [
+				2,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_tide",
+					"creature_gorgul_tide",
+					"creature_rogozhuk_tide"
+				],
+				[
+					"arena_field_tide",
+					"arena_den_rogozhuk",
+					"arena_hold"
+				],
+				[
+					"ability_tide_ebb",
+					"ability_tide_surf",
+					"ability_kolossar_reset"
+				]
+			],
+			"deck_seed": 2576021933825,
+			"element": 5,
+			"gold_role": "field",
+			"pair": [
+				2,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_stone",
+					"creature_gorgul_stone",
+					"creature_rogozhuk_stone"
+				],
+				[
+					"arena_field_stone",
+					"arena_den_rogozhuk",
+					"arena_limit"
+				],
+				[
+					"ability_stone_counter",
+					"ability_stone_footing",
+					"ability_gorgul_gaze"
+				]
+			],
+			"deck_seed": 2576021936642,
+			"element": 3,
+			"gold_role": "field",
+			"pair": [
+				3,
+				4
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_shadow",
+					"creature_gorgul_shadow",
+					"creature_rogozhuk_shadow"
+				],
+				[
+					"arena_field_shadow",
+					"arena_den_rogozhuk",
+					"arena_limit"
+				],
+				[
+					"ability_shadow_triumph",
+					"ability_shadow_strike",
+					"ability_gorgul_gaze"
+				]
+			],
+			"deck_seed": 2576021936642,
+			"element": 4,
+			"gold_role": "field",
+			"pair": [
+				3,
+				4
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_stone",
+					"creature_gorgul_stone",
+					"creature_rogozhuk_stone"
+				],
+				[
+					"arena_field_stone",
+					"arena_den_kolossar",
+					"arena_weight"
+				],
+				[
+					"ability_stone_counter",
+					"ability_stone_footing",
+					"ability_gorgul_gaze"
+				]
+			],
+			"deck_seed": 2576021936955,
+			"element": 3,
+			"gold_role": "field",
+			"pair": [
+				3,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_tide",
+					"creature_gorgul_tide",
+					"creature_rogozhuk_tide"
+				],
+				[
+					"arena_field_tide",
+					"arena_den_kolossar",
+					"arena_weight"
+				],
+				[
+					"ability_tide_counter",
+					"ability_tide_surf",
+					"ability_gorgul_gaze"
+				]
+			],
+			"deck_seed": 2576021936955,
+			"element": 5,
+			"gold_role": "field",
+			"pair": [
+				3,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_shadow",
+					"creature_gorgul_shadow",
+					"creature_rogozhuk_shadow"
+				],
+				[
+					"arena_field_shadow",
+					"arena_den_rogozhuk",
+					"arena_dusk_throne"
+				],
+				[
+					"ability_shadow_pact",
+					"ability_shadow_revenge",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 2576021940085,
+			"element": 4,
+			"gold_role": "field",
+			"pair": [
+				4,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_tide",
+					"creature_gorgul_tide",
+					"creature_rogozhuk_tide"
+				],
+				[
+					"arena_field_tide",
+					"arena_den_rogozhuk",
+					"arena_dusk_throne"
+				],
+				[
+					"ability_tide_hush",
+					"ability_tide_ninth",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 2576021940085,
+			"element": 5,
+			"gold_role": "field",
+			"pair": [
+				4,
+				5
+			],
+			"seed": 82301.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_fire",
+					"creature_gorgul_fire",
+					"creature_rogozhuk_fire"
+				],
+				[
+					"arena_altar",
+					"arena_den_kolossar",
+					"arena_clash"
+				],
+				[
+					"ability_fire_toll",
+					"ability_fire_spark",
+					"ability_rogozhuk_ram"
+				]
+			],
+			"deck_seed": 2577023839313,
+			"element": 0,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				1
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_gale",
+					"creature_gorgul_gale",
+					"creature_rogozhuk_gale"
+				],
+				[
+					"arena_altar",
+					"arena_den_kolossar",
+					"arena_clash"
+				],
+				[
+					"ability_gale_call",
+					"ability_gale_gust",
+					"ability_rogozhuk_ram"
+				]
+			],
+			"deck_seed": 2577023839313,
+			"element": 1,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				1
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_fire",
+					"creature_gorgul_fire",
+					"creature_rogozhuk_fire"
+				],
+				[
+					"arena_altar",
+					"arena_den_gorgul",
+					"arena_web"
+				],
+				[
+					"ability_fire_toll",
+					"ability_fire_last",
+					"ability_kolossar_reset"
+				]
+			],
+			"deck_seed": 2577023839626,
+			"element": 0,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				2
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_light",
+					"creature_gorgul_light",
+					"creature_rogozhuk_light"
+				],
+				[
+					"arena_altar",
+					"arena_den_gorgul",
+					"arena_web"
+				],
+				[
+					"ability_light_reserve",
+					"ability_light_dawn",
+					"ability_kolossar_reset"
+				]
+			],
+			"deck_seed": 2577023839626,
+			"element": 2,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				2
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_fire",
+					"creature_gorgul_fire",
+					"creature_rogozhuk_fire"
+				],
+				[
+					"arena_altar",
+					"arena_den_kolossar",
+					"arena_mute"
+				],
+				[
+					"ability_fire_drain",
+					"ability_fire_assault",
+					"ability_gorgul_night"
+				]
+			],
+			"deck_seed": 2577023839939,
+			"element": 0,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				3
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_stone",
+					"creature_gorgul_stone",
+					"creature_rogozhuk_stone"
+				],
+				[
+					"arena_altar",
+					"arena_den_kolossar",
+					"arena_mute"
+				],
+				[
+					"ability_stone_copy",
+					"ability_stone_footing",
+					"ability_gorgul_night"
+				]
+			],
+			"deck_seed": 2577023839939,
+			"element": 3,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				3
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_fire",
+					"creature_gorgul_fire",
+					"creature_rogozhuk_fire"
+				],
+				[
+					"arena_altar",
+					"arena_den_gorgul",
+					"arena_mirror"
+				],
+				[
+					"ability_fire_ash",
+					"ability_fire_spark",
+					"ability_rogozhuk_ram"
+				]
+			],
+			"deck_seed": 2577023840252,
+			"element": 0,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				4
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_shadow",
+					"creature_gorgul_shadow",
+					"creature_rogozhuk_shadow"
+				],
+				[
+					"arena_altar",
+					"arena_den_gorgul",
+					"arena_mirror"
+				],
+				[
+					"ability_shadow_eclipse",
+					"ability_shadow_haze",
+					"ability_rogozhuk_ram"
+				]
+			],
+			"deck_seed": 2577023840252,
+			"element": 4,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				4
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_fire",
+					"creature_gorgul_fire",
+					"creature_rogozhuk_fire"
+				],
+				[
+					"arena_altar",
+					"arena_den_kolossar",
+					"arena_funnel"
+				],
+				[
+					"ability_fire_ash",
+					"ability_fire_assault",
+					"ability_kolossar_wall"
+				]
+			],
+			"deck_seed": 2577023840565,
+			"element": 0,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_tide",
+					"creature_gorgul_tide",
+					"creature_rogozhuk_tide"
+				],
+				[
+					"arena_altar",
+					"arena_den_kolossar",
+					"arena_funnel"
+				],
+				[
+					"ability_tide_ebb",
+					"ability_tide_surf",
+					"ability_kolossar_wall"
+				]
+			],
+			"deck_seed": 2577023840565,
+			"element": 5,
+			"gold_role": "altar",
+			"pair": [
+				0,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_gale",
+					"creature_gorgul_gale",
+					"creature_rogozhuk_gale"
+				],
+				[
+					"arena_altar",
+					"arena_den_rogozhuk",
+					"arena_clash"
+				],
+				[
+					"ability_gale_leap",
+					"ability_gale_counter",
+					"ability_rogozhuk_ram"
+				]
+			],
+			"deck_seed": 2577023842756,
+			"element": 1,
+			"gold_role": "altar",
+			"pair": [
+				1,
+				2
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_light",
+					"creature_gorgul_light",
+					"creature_rogozhuk_light"
+				],
+				[
+					"arena_altar",
+					"arena_den_rogozhuk",
+					"arena_clash"
+				],
+				[
+					"ability_light_crown",
+					"ability_light_guard",
+					"ability_rogozhuk_ram"
+				]
+			],
+			"deck_seed": 2577023842756,
+			"element": 2,
+			"gold_role": "altar",
+			"pair": [
+				1,
+				2
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_gale",
+					"creature_gorgul_gale",
+					"creature_rogozhuk_gale"
+				],
+				[
+					"arena_altar",
+					"arena_den_kolossar",
+					"arena_clash"
+				],
+				[
+					"ability_gale_swap",
+					"ability_gale_counter",
+					"ability_gorgul_gaze"
+				]
+			],
+			"deck_seed": 2577023843069,
+			"element": 1,
+			"gold_role": "altar",
+			"pair": [
+				1,
+				3
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_stone",
+					"creature_gorgul_stone",
+					"creature_rogozhuk_stone"
+				],
+				[
+					"arena_altar",
+					"arena_den_kolossar",
+					"arena_clash"
+				],
+				[
+					"ability_stone_shift",
+					"ability_stone_footing",
+					"ability_gorgul_gaze"
+				]
+			],
+			"deck_seed": 2577023843069,
+			"element": 3,
+			"gold_role": "altar",
+			"pair": [
+				1,
+				3
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_gale",
+					"creature_gorgul_gale",
+					"creature_rogozhuk_gale"
+				],
+				[
+					"arena_altar",
+					"arena_den_gorgul",
+					"arena_limit"
+				],
+				[
+					"ability_gale_call",
+					"ability_gale_counter",
+					"ability_gorgul_gaze"
+				]
+			],
+			"deck_seed": 2577023843382,
+			"element": 1,
+			"gold_role": "altar",
+			"pair": [
+				1,
+				4
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_shadow",
+					"creature_gorgul_shadow",
+					"creature_rogozhuk_shadow"
+				],
+				[
+					"arena_altar",
+					"arena_den_gorgul",
+					"arena_limit"
+				],
+				[
+					"ability_shadow_triumph",
+					"ability_shadow_strike",
+					"ability_gorgul_gaze"
+				]
+			],
+			"deck_seed": 2577023843382,
+			"element": 4,
+			"gold_role": "altar",
+			"pair": [
+				1,
+				4
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_gale",
+					"creature_gorgul_gale",
+					"creature_rogozhuk_gale"
+				],
+				[
+					"arena_altar",
+					"arena_den_kolossar",
+					"arena_limit"
+				],
+				[
+					"ability_gale_rebuttal",
+					"ability_gale_vengeance",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 2577023843695,
+			"element": 1,
+			"gold_role": "altar",
+			"pair": [
+				1,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_tide",
+					"creature_gorgul_tide",
+					"creature_rogozhuk_tide"
+				],
+				[
+					"arena_altar",
+					"arena_den_kolossar",
+					"arena_limit"
+				],
+				[
+					"ability_tide_counter",
+					"ability_tide_ninth",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 2577023843695,
+			"element": 5,
+			"gold_role": "altar",
+			"pair": [
+				1,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_light",
+					"creature_gorgul_light",
+					"creature_rogozhuk_light"
+				],
+				[
+					"arena_altar",
+					"arena_den_gorgul",
+					"arena_dusk_throne"
+				],
+				[
+					"ability_light_revive",
+					"ability_light_glint",
+					"ability_rogozhuk_ram"
+				]
+			],
+			"deck_seed": 2577023846199,
+			"element": 2,
+			"gold_role": "altar",
+			"pair": [
+				2,
+				3
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_stone",
+					"creature_gorgul_stone",
+					"creature_rogozhuk_stone"
+				],
+				[
+					"arena_altar",
+					"arena_den_gorgul",
+					"arena_dusk_throne"
+				],
+				[
+					"ability_stone_counter",
+					"ability_stone_firm",
+					"ability_rogozhuk_ram"
+				]
+			],
+			"deck_seed": 2577023846199,
+			"element": 3,
+			"gold_role": "altar",
+			"pair": [
+				2,
+				3
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_light",
+					"creature_gorgul_light",
+					"creature_rogozhuk_light"
+				],
+				[
+					"arena_altar",
+					"arena_den_kolossar",
+					"arena_hold"
+				],
+				[
+					"ability_light_reserve",
+					"ability_light_guard",
+					"ability_kolossar_wall"
+				]
+			],
+			"deck_seed": 2577023846512,
+			"element": 2,
+			"gold_role": "altar",
+			"pair": [
+				2,
+				4
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_shadow",
+					"creature_gorgul_shadow",
+					"creature_rogozhuk_shadow"
+				],
+				[
+					"arena_altar",
+					"arena_den_kolossar",
+					"arena_hold"
+				],
+				[
+					"ability_shadow_triumph",
+					"ability_shadow_strike",
+					"ability_kolossar_wall"
+				]
+			],
+			"deck_seed": 2577023846512,
+			"element": 4,
+			"gold_role": "altar",
+			"pair": [
+				2,
+				4
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_light",
+					"creature_gorgul_light",
+					"creature_rogozhuk_light"
+				],
+				[
+					"arena_altar",
+					"arena_den_gorgul",
+					"arena_funnel"
+				],
+				[
+					"ability_light_counter",
+					"ability_light_glint",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 2577023846825,
+			"element": 2,
+			"gold_role": "altar",
+			"pair": [
+				2,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_tide",
+					"creature_gorgul_tide",
+					"creature_rogozhuk_tide"
+				],
+				[
+					"arena_altar",
+					"arena_den_gorgul",
+					"arena_funnel"
+				],
+				[
+					"ability_tide_wash",
+					"ability_tide_spray",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 2577023846825,
+			"element": 5,
+			"gold_role": "altar",
+			"pair": [
+				2,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_stone",
+					"creature_gorgul_stone",
+					"creature_rogozhuk_stone"
+				],
+				[
+					"arena_altar",
+					"arena_den_kolossar",
+					"arena_mirror"
+				],
+				[
+					"ability_stone_shift",
+					"ability_stone_firm",
+					"ability_gorgul_gaze"
+				]
+			],
+			"deck_seed": 2577023849642,
+			"element": 3,
+			"gold_role": "altar",
+			"pair": [
+				3,
+				4
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_shadow",
+					"creature_gorgul_shadow",
+					"creature_rogozhuk_shadow"
+				],
+				[
+					"arena_altar",
+					"arena_den_kolossar",
+					"arena_mirror"
+				],
+				[
+					"ability_shadow_eclipse",
+					"ability_shadow_haze",
+					"ability_gorgul_gaze"
+				]
+			],
+			"deck_seed": 2577023849642,
+			"element": 4,
+			"gold_role": "altar",
+			"pair": [
+				3,
+				4
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_stone",
+					"creature_gorgul_stone",
+					"creature_rogozhuk_stone"
+				],
+				[
+					"arena_altar",
+					"arena_den_gorgul",
+					"arena_weight"
+				],
+				[
+					"ability_stone_counter",
+					"ability_stone_wrath",
+					"ability_kolossar_reset"
+				]
+			],
+			"deck_seed": 2577023849955,
+			"element": 3,
+			"gold_role": "altar",
+			"pair": [
+				3,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_tide",
+					"creature_gorgul_tide",
+					"creature_rogozhuk_tide"
+				],
+				[
+					"arena_altar",
+					"arena_den_gorgul",
+					"arena_weight"
+				],
+				[
+					"ability_tide_counter",
+					"ability_tide_ninth",
+					"ability_kolossar_reset"
+				]
+			],
+			"deck_seed": 2577023849955,
+			"element": 5,
+			"gold_role": "altar",
+			"pair": [
+				3,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_shadow",
+					"creature_gorgul_shadow",
+					"creature_rogozhuk_shadow"
+				],
+				[
+					"arena_altar",
+					"arena_den_kolossar",
+					"arena_valor"
+				],
+				[
+					"ability_shadow_counter",
+					"ability_shadow_haze",
+					"ability_gorgul_night"
+				]
+			],
+			"deck_seed": 2577023853085,
+			"element": 4,
+			"gold_role": "altar",
+			"pair": [
+				4,
+				5
+			],
+			"seed": 82333.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_tide",
+					"creature_gorgul_tide",
+					"creature_rogozhuk_tide"
+				],
+				[
+					"arena_altar",
+					"arena_den_kolossar",
+					"arena_valor"
+				],
+				[
+					"ability_tide_hush",
+					"ability_tide_spray",
+					"ability_gorgul_night"
+				]
+			],
+			"deck_seed": 2577023853085,
+			"element": 5,
+			"gold_role": "altar",
+			"pair": [
+				4,
+				5
+			],
+			"seed": 82333.0
+		}
+	],
+	"failures": [],
+	"label": "v7-bounded-swap-pair-paired-gold-holdout-240-preregistered",
+	"match_streams": [
+		{
+			"case": 0,
+			"match_seed": 8230100001,
+			"pair": [
+				0,
+				1
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 8230100002,
+			"pair": [
+				0,
+				2
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 8230100003,
+			"pair": [
+				0,
+				3
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 8230100004,
+			"pair": [
+				0,
+				4
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 8230100005,
+			"pair": [
+				0,
+				5
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 8230100012,
+			"pair": [
+				1,
+				2
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 8230100013,
+			"pair": [
+				1,
+				3
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 8230100014,
+			"pair": [
+				1,
+				4
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 8230100015,
+			"pair": [
+				1,
+				5
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 8230100023,
+			"pair": [
+				2,
+				3
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 8230100024,
+			"pair": [
+				2,
+				4
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 8230100025,
+			"pair": [
+				2,
+				5
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 8230100034,
+			"pair": [
+				3,
+				4
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 8230100035,
+			"pair": [
+				3,
+				5
+			]
+		},
+		{
+			"case": 0,
+			"match_seed": 8230100045,
+			"pair": [
+				4,
+				5
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 8233301001,
+			"pair": [
+				0,
+				1
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 8233301002,
+			"pair": [
+				0,
+				2
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 8233301003,
+			"pair": [
+				0,
+				3
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 8233301004,
+			"pair": [
+				0,
+				4
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 8233301005,
+			"pair": [
+				0,
+				5
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 8233301012,
+			"pair": [
+				1,
+				2
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 8233301013,
+			"pair": [
+				1,
+				3
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 8233301014,
+			"pair": [
+				1,
+				4
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 8233301015,
+			"pair": [
+				1,
+				5
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 8233301023,
+			"pair": [
+				2,
+				3
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 8233301024,
+			"pair": [
+				2,
+				4
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 8233301025,
+			"pair": [
+				2,
+				5
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 8233301034,
+			"pair": [
+				3,
+				4
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 8233301035,
+			"pair": [
+				3,
+				5
+			]
+		},
+		{
+			"case": 1,
+			"match_seed": 8233301045,
+			"pair": [
+				4,
+				5
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 8230102001,
+			"pair": [
+				0,
+				1
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 8230102002,
+			"pair": [
+				0,
+				2
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 8230102003,
+			"pair": [
+				0,
+				3
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 8230102004,
+			"pair": [
+				0,
+				4
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 8230102005,
+			"pair": [
+				0,
+				5
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 8230102012,
+			"pair": [
+				1,
+				2
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 8230102013,
+			"pair": [
+				1,
+				3
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 8230102014,
+			"pair": [
+				1,
+				4
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 8230102015,
+			"pair": [
+				1,
+				5
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 8230102023,
+			"pair": [
+				2,
+				3
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 8230102024,
+			"pair": [
+				2,
+				4
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 8230102025,
+			"pair": [
+				2,
+				5
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 8230102034,
+			"pair": [
+				3,
+				4
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 8230102035,
+			"pair": [
+				3,
+				5
+			]
+		},
+		{
+			"case": 2,
+			"match_seed": 8230102045,
+			"pair": [
+				4,
+				5
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 8233303001,
+			"pair": [
+				0,
+				1
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 8233303002,
+			"pair": [
+				0,
+				2
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 8233303003,
+			"pair": [
+				0,
+				3
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 8233303004,
+			"pair": [
+				0,
+				4
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 8233303005,
+			"pair": [
+				0,
+				5
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 8233303012,
+			"pair": [
+				1,
+				2
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 8233303013,
+			"pair": [
+				1,
+				3
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 8233303014,
+			"pair": [
+				1,
+				4
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 8233303015,
+			"pair": [
+				1,
+				5
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 8233303023,
+			"pair": [
+				2,
+				3
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 8233303024,
+			"pair": [
+				2,
+				4
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 8233303025,
+			"pair": [
+				2,
+				5
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 8233303034,
+			"pair": [
+				3,
+				4
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 8233303035,
+			"pair": [
+				3,
+				5
+			]
+		},
+		{
+			"case": 3,
+			"match_seed": 8233303045,
+			"pair": [
+				4,
+				5
+			]
+		}
+	]
+}

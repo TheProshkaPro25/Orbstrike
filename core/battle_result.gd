@@ -45,6 +45,13 @@ var recall: Array[StringName] = [&"", &""]  # «Второе дыхание»: i
 var marks: Array = []  # новые метки на следующий бой: [[uid, {"src", "delta"|"fix"}], ...] (контроллер вешает живым)
 var copies: Array = []  # «Отпечаток в камне»: [[сторона, id копии, id повторённой карты], ...]
 
+## Обычный результат по неравной итоговой силе, без особого исхода.
+var ordinary: bool = false
+var called_uids: Array[int] = [-1, -1]
+var reserve_cards: Array[StringName] = [&"", &""]
+var triumph: Array[bool] = [false, false]
+var valor_saved_uid: int = -1
+
 
 func ability_count(side: int) -> int:
 	var active := 0

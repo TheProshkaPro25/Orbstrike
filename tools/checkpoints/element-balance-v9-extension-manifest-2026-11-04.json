@@ -1,0 +1,70 @@
+{
+  "label": "v9-one-fixed-validation-extension-480-preregistered",
+  "rosters": [
+    [
+      "dragnar",
+      "klykar",
+      "grifalon"
+    ],
+    [
+      "dragnar",
+      "klykar",
+      "grifalon"
+    ],
+    [
+      "kolossar",
+      "rogozhuk",
+      "levian"
+    ],
+    [
+      "kolossar",
+      "rogozhuk",
+      "levian"
+    ],
+    [
+      "dragnar",
+      "klykar",
+      "rogozhuk"
+    ],
+    [
+      "dragnar",
+      "klykar",
+      "rogozhuk"
+    ],
+    [
+      "grifalon",
+      "kolossar",
+      "levian"
+    ],
+    [
+      "grifalon",
+      "kolossar",
+      "levian"
+    ]
+  ],
+  "seeds": [
+    111301,
+    111331,
+    111301,
+    111331,
+    111301,
+    111331,
+    111301,
+    111331
+  ],
+  "random_starting_cards": true,
+  "pair_seeded_streams": true,
+  "pair_seeded_decks": true,
+  "common_deck_seed": true,
+  "gold_roles": [
+    "field",
+    "altar",
+    "field",
+    "altar",
+    "field",
+    "altar",
+    "field",
+    "altar"
+  ],
+  "mirrors": false
+}

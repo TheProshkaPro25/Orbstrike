@@ -17,6 +17,7 @@ var uid: int = -1
 
 var _inner: Control
 var _bg: ColorRect
+var _artwork: TextureRect
 var _mat: ShaderMaterial
 var _title: Label
 var _kind: Label
@@ -57,6 +58,13 @@ func _build() -> void:
 	_mat.set_shader_parameter("detail", detail_level())
 	_bg.material = _mat
 	_inner.add_child(_bg)
+	_artwork = TextureRect.new()
+	_artwork.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_artwork.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_artwork.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_artwork.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	_artwork.visible = false
+	_inner.add_child(_artwork)
 
 	_title = _mk_label(title_font())
 	_kind = _mk_label(null)
@@ -192,8 +200,8 @@ static func power_font() -> FontVariation:
 	if _pfont == null:
 		_pfont = FontVariation.new()
 		_pfont.base_font = UiTheme.heading_font()
-		_pfont.variation_embolden = 0.2
-		_pfont.variation_transform = Transform2D(Vector2(1, 0), Vector2(0.12, 1), Vector2.ZERO)
+		# Прямой набор SemiBold без искусственного наклона и утолщения.
+		_pfont.variation_embolden = 0.0
 	return _pfont
 
 
@@ -203,6 +211,8 @@ static func power_font() -> FontVariation:
 ## short_text — мало текста (карта существа): крупнее окно.
 func setup(title: String, kind: String, text: String, _foot: String, base: Color, glow: Color, size_px: Vector2 = Vector2(150, 210), short_text: bool = false) -> CardView:
 	_card_size = size_px
+	_artwork.visible = false
+	_artwork.texture = null
 	_role.visible = false
 	_rule.visible = false
 	_glow = glow
@@ -212,6 +222,14 @@ func setup(title: String, kind: String, text: String, _foot: String, base: Color
 	var aspect: float = size_px.y / size_px.x
 	var with_text: bool = w >= 112.0
 	_lay = layout(aspect, with_text, short_text)
+	if short_text:
+		_lay["title"] = Rect2(.07, .05, .86, .38)
+		if with_text:
+			_lay["kind_y"] = .46
+			_lay["win"] = Vector3(.5, .80, .20)
+			_lay["plaque"] = Vector4(.5, 1.06, .2, .056)
+			_lay["text"] = Rect2(.075, 1.16, .85, aspect - 1.16 - .055)
+
 	# Только 2D-компакт: оставить место для роли. Общая layout(false) нужна воротам арены.
 	if not with_text:
 		_lay["win"] = Vector3(0.5, aspect * 0.5 - 0.03, 0.235)
@@ -304,35 +322,55 @@ func _set_mechanics(role: String, rule: String, color: Color) -> void:
 
 ## Название в прямоугольнике плашки r (px): отступ под заострённые концы, подбор кегля/строк/ужатия.
 func _place_title(l: Label, text: String, r: Rect2, max_fs: int) -> void:
-	var inset: float = r.size.y * 0.42
-	var aw: float = r.size.x - inset * 2.0
-	var ah: float = r.size.y * 0.96
-	if _card_size.x < 112.0:
-		# В маленькой руке сохраняем читаемый кегль: длинное имя сокращается,
-		# полное имя остаётся в hover. Ни ужатия до 6px, ни выхода за плашку.
-		l.clip_text = true
-		l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		l.text = text
-		l.add_theme_font_size_override("font_size", maxi(10, max_fs))
-		l.add_theme_constant_override("outline_size", 1)
-		l.add_theme_constant_override("shadow_outline_size", 0)
-		l.scale = Vector2.ONE
-		l.pivot_offset = Vector2.ZERO
-		l.position = r.position + Vector2(inset, 0)
-		l.size = Vector2(aw, ah)
-		l.set_deferred("size", Vector2(aw, ah))
-		return
-	l.clip_text = false
+	# Перенос сохраняет каждую букву; граница Label не служит способом сократить имя.
+	l.text = text
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	l.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
-	var f: Dictionary = fit_title(l.get_theme_font("font"), text, max_fs, aw, ah)
-	l.text = f["text"]
-	l.add_theme_font_size_override("font_size", int(f["fs"]))
-	var sx: float = float(f["sx"])
-	l.size = Vector2(aw / sx, ah)
-	l.set_deferred("size", Vector2(aw / sx, ah))
-	l.pivot_offset = l.size * 0.5
-	l.scale = Vector2(sx, 1.0)
-	l.position = r.get_center() - l.size * 0.5
+	l.clip_text = true
+	l.scale = Vector2.ONE
+	l.pivot_offset = Vector2.ZERO
+	l.add_theme_constant_override("outline_size", 1)
+	l.add_theme_constant_override("shadow_outline_size", 0)
+	l.add_theme_constant_override("line_spacing", 0)
+	var fs := maxi(11, max_fs)
+	while fs > 11 and _wrapped_height(l, text, r.size.x - 10, fs) > r.size.y:
+		fs -= 1
+	l.add_theme_font_size_override("font_size", fs)
+	l.position = r.position + Vector2(5, 0)
+	l.size = Vector2(r.size.x - 10, r.size.y)
+
+
+static func _wrapped_height(label: Label, value: String, width: float, fs: int) -> float:
+	if value.is_empty(): return 0.0
+	var paragraph := TextParagraph.new()
+	paragraph.break_flags = TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND | TextServer.BREAK_ADAPTIVE
+	paragraph.width = maxf(1,width - label.get_theme_constant("outline_size") * 2)
+	paragraph.add_string(value,label.get_theme_font("font"),fs)
+	var height := 0.0
+	for i in paragraph.get_line_count():
+		height += ceilf(paragraph.get_line_size(i).y)
+	return height + 3.0
+
+
+func _card_label(label: Label, value: String, fs: int, rect: Rect2, color: Color, centered: bool = false) -> void:
+	label.visible = not value.is_empty()
+	label.text = value
+	label.scale = Vector2.ONE
+	label.pivot_offset = Vector2.ZERO
+	label.clip_text = true
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER if centered else HORIZONTAL_ALIGNMENT_LEFT
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", fs)
+	label.add_theme_constant_override("line_spacing", 0)
+	label.add_theme_constant_override("outline_size", 1)
+	label.add_theme_constant_override("shadow_outline_size", 0)
+	label.add_theme_color_override("font_color", color)
+	label.set_meta("fixed_rect",rect)
+	label.position = rect.position
+	label.size = rect.size
+	label.set_deferred("size", rect.size)
 
 
 ## Тип рамки и ступени силы (усиления: 1..3).
@@ -364,12 +402,12 @@ func set_mark(sigil: int, badge: String, _glow_unused: Color) -> CardView:
 		return self
 	_mat.set_shader_parameter("plaque", pq)
 	_power.text = txt
-	_power.add_theme_color_override("font_color", Color(1.0, 0.98, 0.92))
-	_power.add_theme_constant_override("outline_size", maxi(3, int(w * 0.035)))
-	_power.add_theme_color_override("font_shadow_color", Color(_glow, 0.8))
-	_power.add_theme_constant_override("shadow_outline_size", maxi(5, int(w * 0.07)))
+	_power.add_theme_color_override("font_color", Color(.91, .88, .79))
+	_power.add_theme_constant_override("outline_size", maxi(1, int(w * 0.004)))
+	_power.add_theme_color_override("font_shadow_color", Color(0, 0, 0, .65))
+	_power.add_theme_constant_override("shadow_outline_size", 0)
 	_power.add_theme_constant_override("shadow_offset_x", 0)
-	_power.add_theme_constant_override("shadow_offset_y", 0)
+	_power.add_theme_constant_override("shadow_offset_y", 1)
 	var pw: float = (pq.z * 2.0 - pq.w * 1.4) * w
 	var ph: float = pq.w * 2.0 * w
 	var f: Dictionary = fit_title(_power.get_theme_font("font"), txt, int(ph * 1.02), pw, ph)
@@ -403,15 +441,129 @@ func _make_custom_tooltip(_for_text: String) -> Object:
 
 
 ## Карта способности или арены из CardDef.
-func for_card(def: CardDef, size_px: Vector2 = Vector2(150, 210)) -> CardView:
+func for_card(def: CardDef, size_px: Vector2 = Vector2(150, 210), complete: bool = false) -> CardView:
 	card_id = def.id
 	_help = UiTheme.card_help(def)
 	var cols: Array = UiTheme.card_colors(def)
-	setup(def.display_name, UiTheme.card_kind(def), UiTheme.card_face_text(def), "", cols[0], cols[1], size_px)
+	setup(def.display_name, UiTheme.card_kind(def), "", "", cols[0], cols[1], size_px)
 	set_frame(UiTheme.card_frame(def), UiTheme.card_tier(def))
 	set_elements(UiTheme.card_elements(def))
-	_set_mechanics(UiTheme.card_role(def), UiTheme.card_rule_tag(def), UiTheme.card_role_color(def))
-	return set_mark(UiTheme.card_sigil(def), UiTheme.card_badge(def), cols[1])
+	_compose_card(def, size_px, complete or size_px.x >= 224.0)
+	return self
+
+
+## В каждом контексте все карты имеют один прямоугольник. Текст меняет только
+## кегль: ни содержание, ни боевой статус не меняют ширину/высоту карточки.
+func _compose_card(def: CardDef, requested: Vector2, complete: bool, display_help: Array = []) -> void:
+	var w := requested.x
+	var h := requested.y if requested.y > 0 else roundf(w * 1.4)
+	_card_size = Vector2(w, h)
+	var original_help := UiTheme.card_help(def)
+	var help := original_help if display_help.is_empty() else display_help
+	var inset := w * .085
+	var content_w := w - inset * 2
+	var title_rect := Rect2(inset - 3, w * .045, content_w + 6, w * (.125 if complete else .215))
+	var name_rect := Rect2(inset + 2, title_rect.position.y, content_w - 4, title_rect.size.y)
+	_card_label(_title, def.display_name, 20 if complete else maxi(11, int(w * .095)), name_rect, Color(1,.94,.8), true)
+	_fit_fixed(_title, 20 if complete else maxi(11, int(w * .095)))
+	var kind := str(help[1]) if complete else UiTheme.card_kind(def)
+	var kind_rect := Rect2(inset, w * (.185 if complete else .275), content_w, w * (.09 if complete else .105))
+	_card_label(_kind, kind, 11 if complete else 10, kind_rect, _glow.lerp(Color.WHITE,.5), true)
+	_fit_fixed(_kind, 11 if complete else 10)
+	var art_h := w * (.22 if complete else .26)
+	var numeric := not power_text(UiTheme.card_badge(def)).is_empty()
+	var art_center := Vector2(w * (.32 if numeric else .5), w * (.40 if complete else .53))
+	_lay["win"] = Vector3(art_center.x / w, art_center.y / w, art_h * .5 / w)
+	_lay["plaque"] = Vector4(.73, art_center.y / w, .18, .06)
+	_mat.set_shader_parameter("win", _lay["win"])
+	set_mark(UiTheme.card_sigil(def), UiTheme.card_badge(def), _glow)
+	_artwork.texture = CardArtwork.texture_for(def)
+	_artwork.visible = _artwork.texture != null
+	_artwork.size = Vector2.ONE * art_h
+	_artwork.position = art_center - _artwork.size * .5
+	_artwork.self_modulate = Color.WHITE
+	if _artwork.visible: _mat.set_shader_parameter("sigil", -1)
+	var role := UiTheme.card_role(def).to_upper()
+	var role_rect := Rect2(inset, w * (.535 if complete else .695), content_w, w * (.065 if complete else .105))
+	_card_label(_role, role, 11 if complete else 10, role_rect, UiTheme.card_role_color(def).lightened(.35), true)
+	_role.add_theme_stylebox_override("normal", UiTheme.box(Color(.025,.035,.06,.97),Color(UiTheme.card_role_color(def),.5),1,3,0))
+	_fit_fixed(_role, 11 if complete else 10)
+	var body := def.full_text() if complete else UiTheme.card_face_text(def)
+	if complete:
+		var extra := str(help[6])
+		if not str(original_help[6]).is_empty() and not extra.contains(str(original_help[6])):
+			extra = str(original_help[6]) + ("\n" + extra if not extra.is_empty() else "")
+		if not extra.is_empty(): body += "\n\n" + extra
+		var when := str(help[5])
+		if not when.contains(str(original_help[5])): when = str(original_help[5]) + "\n" + when
+		body += "\n\n" + when
+	var body_y := w * (.625 if complete else .84)
+	# Угловая гравировка не заходит под последние строки.
+	var body_bottom := h - w * (.135 if complete else .15)
+	var body_rect := Rect2(inset + 3, body_y, content_w - 6, body_bottom - body_y)
+	_card_label(_text, body, 14 if complete else 11, body_rect, Color(.93,.91,.86), not complete)
+	_text.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	_fit_fixed(_text, 14 if complete else 11)
+	_rule.visible = not complete
+	if not complete:
+		var footer_rect := Rect2(inset + 3, h - w * .125, content_w - 6, maxf(11,w * .065))
+		_card_label(_rule, "Все условия ↗", 9, footer_rect, Color(.98,.91,.7), true)
+		_fit_fixed(_rule,9)
+	custom_minimum_size = _card_size
+	size = _card_size
+	call_deferred("_settle_card_size")
+	_inner.size = _card_size
+	_bg.position = -Vector2.ONE * MARGIN * w
+	_bg.size = _card_size + Vector2.ONE * MARGIN * w * 2
+	_lay["title"] = Rect2(title_rect.position / w, title_rect.size / w)
+	_lay["text"] = Rect2(Vector2(inset - 1, body_y - 2) / w, Vector2(content_w + 2, body_rect.size.y + 4) / w)
+	_mat.set_shader_parameter("aspect", h / w)
+	_mat.set_shader_parameter("title_box", Vector4(title_rect.position.x/w,title_rect.position.y/w,title_rect.end.x/w,title_rect.end.y/w))
+	var tx: Rect2 = _lay["text"]
+	_mat.set_shader_parameter("text_box",Vector4(tx.position.x,tx.position.y,tx.end.x,tx.end.y))
+	set_meta("complete_card",complete)
+	set_meta("face_body",body)
+	tooltip_text = def.display_name
+
+
+func _settle_card_size() -> void:
+	# Tooltip растягивает ребёнка якорями; в этом случае размер задаёт его Popup.
+	if is_equal_approx(anchor_left,anchor_right) and is_equal_approx(anchor_top,anchor_bottom):
+		size = _card_size
+
+
+func _fit_fixed(label: Label, maximum: int) -> void:
+	var rect: Rect2 = label.get_meta("fixed_rect")
+	var fs := maximum
+	while fs > 3 and _wrapped_height(label,label.text,rect.size.x,fs) > rect.size.y - 1:
+		fs -= 1
+	label.add_theme_font_size_override("font_size",fs)
+	label.size = rect.size
+	label.set_deferred("size",rect.size)
+
+
+## Full-colour vector scene replaces the abstract glyph inside the existing window.
+## Keep the shared card geometry, numeric badge and mechanical text untouched.
+func _set_artwork(def: CardDef) -> void:
+	_artwork.texture = CardArtwork.texture_for(def)
+	_artwork.visible = _artwork.texture != null
+	if not _artwork.visible:
+		return
+	_mat.set_shader_parameter("sigil", -1)
+	var window: Vector3 = _lay["win"]
+	var w := _card_size.x
+	var top := (window.y - window.z) * w
+	var bottom := (window.y + window.z) * w
+	if _rule.visible:
+		top = maxf(top, _rule.position.y + _rule.size.y + 1.0)
+		bottom = _role.position.y - 2.0
+	if _power.visible and w < 112.0:
+		var badge: Vector4 = _lay["plaque"]
+		bottom = minf(bottom, (badge.y - badge.w) * w - 1.0)
+	var diameter := minf(window.z * 2.0 * w, bottom - top)
+	_artwork.size = Vector2.ONE * diameter
+	_artwork.position = Vector2(window.x * w - diameter * 0.5, top + (bottom - top - diameter) * 0.5)
+	_artwork.self_modulate = Color.WHITE
 
 
 ## Карта существа.
@@ -434,6 +586,7 @@ func for_creature(def: CreatureDef, p_uid: int, note: String = "", size_px: Vect
 func set_dimmed(on: bool, readable: bool = false) -> void:
 	_dimmed = on
 	disabled = on
+	_artwork.self_modulate = Color(0.76, 0.76, 0.76) if on and readable else (Color(0.55, 0.55, 0.55) if on else Color.WHITE)
 	_mat.set_shader_parameter("dim", (0.38 if readable else 0.75) if on else 0.0)
 	for l in [_title, _kind, _role, _rule, _text, _power]:
 		(l as Label).self_modulate = Color(0.76, 0.76, 0.76) if on and readable else (Color(0.55, 0.55, 0.55) if on else Color.WHITE)

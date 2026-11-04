@@ -292,7 +292,7 @@ func turn_music() -> String:
 func play_music(path: String, fade: float = MUSIC_XFADE, resume: bool = true) -> void:
 	var cur := _mus[_mus_cur]
 	if path == _mus_path and cur.playing:
-		_fade_to(cur, null, fade)  # тот же трек: только снять приглушение
+		_fade_to(cur, fade)  # снять приглушение и завершить уход другого трека
 		return
 	var s := _load(path.get_basename())
 	if s == null:
@@ -302,19 +302,22 @@ func play_music(path: String, fade: float = MUSIC_XFADE, resume: bool = true) ->
 	if _mus_path != "" and cur.playing:
 		_mus_resume[_mus_path] = cur.get_playback_position()
 	var nxt := _mus[1 - _mus_cur]
-	nxt.stop()
-	nxt.stream = s
-	nxt.volume_db = -80.0
-	var at := 0.0
-	if resume and _mus_resume.has(path):
-		at = fmod(float(_mus_resume[path]), maxf(s.get_length(), 1.0))
-	if nxt.is_inside_tree():
-		nxt.play(at)
-	else:
-		nxt.play.call_deferred(at)
+	# Быстрый возврат A→B→A разворачивает ещё живой кроссфейд:
+	# сохраняем амплитуду и декодер A, вместо stop/play и провала до −80 dB.
+	if not (resume and nxt.playing and nxt.stream == s):
+		nxt.stop()
+		nxt.stream = s
+		nxt.volume_db = -80.0
+		var at := 0.0
+		if resume and _mus_resume.has(path):
+			at = fmod(float(_mus_resume[path]), maxf(s.get_length(), 1.0))
+		if nxt.is_inside_tree():
+			nxt.play(at)
+		else:
+			nxt.play.call_deferred(at)
 	_mus_cur = 1 - _mus_cur
 	_mus_path = path
-	_fade_to(nxt, cur if cur.playing else null, fade)
+	_fade_to(nxt, fade)
 
 
 func stop_music(fade: float = 1.2) -> void:
@@ -322,32 +325,35 @@ func stop_music(fade: float = 1.2) -> void:
 	if _mus_path != "" and cur.playing:
 		_mus_resume[_mus_path] = cur.get_playback_position()
 	_mus_path = ""
-	_fade_to(null, cur if cur.playing else null, fade)
+	_fade_to(null, fade)
 
 
 ## Приглушить музыку на время джингла/важного звука (вернуть — play_music того же трека).
 func duck_music(db: float = -14.0, fade: float = 0.4) -> void:
-	if _music_tw != null:
-		_music_tw.kill()
-	_music_tw = create_tween()
-	_music_tw.tween_property(_mus[_mus_cur], "volume_db", db, fade)
+	var cur := _mus[_mus_cur]
+	_fade_to(cur if cur.playing else null, fade, db)
 
 
-## Кроссфейд равной мощности: incoming 0→1, outgoing 1→0 по амплитуде; outgoing после — стоп.
-func _fade_to(incoming: AudioStreamPlayer, outgoing: AudioStreamPlayer, fade: float) -> void:
+## Любой новый переход завершает уход всех остальных плееров, даже если
+## предыдущий tween прервали повторным запросом, приглушением или stop.
+func _fade_to(incoming: AudioStreamPlayer, fade: float, incoming_db: float = 0.0) -> void:
 	if _music_tw != null:
 		_music_tw.kill()
 	var in0 := db_to_linear(incoming.volume_db) if incoming != null else 0.0
-	var out0 := db_to_linear(outgoing.volume_db) if outgoing != null else 0.0
+	var target := db_to_linear(incoming_db)
+	var outgoing: Dictionary = {}
+	for player in _mus:
+		if player != incoming and player.playing:
+			outgoing[player] = db_to_linear(player.volume_db)
 	_music_tw = create_tween()
 	_music_tw.tween_method(func(t: float) -> void:
 		if incoming != null:
-			incoming.volume_db = linear_to_db(maxf(lerpf(in0, 1.0, sin(t * PI / 2.0)), 0.0001))
-		if outgoing != null:
-			outgoing.volume_db = linear_to_db(maxf(out0 * cos(t * PI / 2.0), 0.0001)),
+			incoming.volume_db = linear_to_db(maxf(lerpf(in0, target, sin(t * PI / 2.0)), 0.0001))
+		for player: AudioStreamPlayer in outgoing:
+			player.volume_db = linear_to_db(maxf(float(outgoing[player]) * cos(t * PI / 2.0), 0.0001)),
 		0.0, 1.0, maxf(fade, 0.05))
-	if outgoing != null:
-		_music_tw.tween_callback(outgoing.stop)
+	for player: AudioStreamPlayer in outgoing:
+		_music_tw.tween_callback(player.stop)
 
 
 func toggle_music_mute() -> void:

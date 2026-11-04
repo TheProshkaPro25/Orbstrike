@@ -25,7 +25,7 @@ const MAX_BATTLE_ABILITIES: int = MatchRules.MAX_BATTLE_ABILITIES
 ## Перезарядка: сколько боёв после розыгрыша карта способности отдыхает, прежде чем вернуться в руку.
 const RECHARGE_BATTLES: int = 2
 ## Карты, которые и у последнего существа отдыхают полный срок (см. _recharge_abilities).
-const RESCUE_EFFECTS: Array[String] = ["ebb", "doom", "revive", "copy"]
+const RESCUE_EFFECTS: Array[String] = MatchRules.LEGACY_RESCUE_EFFECTS
 
 signal phase_changed(phase: int, active_player: int)
 signal setup_requested(player: int)
@@ -38,7 +38,8 @@ signal creature_relocated(uid: int, from_slot: int, to_slot: int)
 signal creatures_refilled(player: int)
 ## Все живые существа игрока стоят на воротах — бросать некого, ход переходит сопернику.
 signal turn_skipped(player: int)
-## Бросать некому обоим: сильнейшее стоящее существо игрока идёт на ворота к сильнейшему стоящему сопернику.
+## Бросать некому обоим: жребий определяет атакующую сторону (LEGACY — пропустивший ход).
+## Её сильнейшее стоящее существо идёт на ворота к сильнейшему сопернику.
 signal standoff(attacker_uid: int, defender_uid: int)
 signal gates_recycled
 signal battle_started(slot: int, attacker_uid: int, defender_uid: int)
@@ -107,6 +108,8 @@ var landing_window: bool = false
 signal card_drawn(player: int, card_id: StringName)
 
 var _personal_turns: Array[int] = [0, 0]
+## Отдельный жребий тупика не меняет последовательность добора.
+var _standoff_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _draw_pools: Array = []
 
 var _stall: int = 0  # подряд ходов, где бросать было некого
@@ -137,6 +140,7 @@ func save_debug_trace(path: String = "user://replays/last_match.json") -> Error:
 
 func _init(deck0: DeckDef, deck1: DeckDef, rng_seed: int, ruleset: int = MatchRules.Ruleset.ANIME_INSPIRED) -> void:
 	_rng.seed = rng_seed
+	_standoff_rng.seed = rng_seed ^ 0x5354414E
 	state = MatchState.new()
 	state.ruleset = ruleset
 	state.manual_gates = ruleset == MatchRules.Ruleset.ANIME_INSPIRED
@@ -379,6 +383,16 @@ func _ability_requirement_reason(uid: int, id: StringName, own: Array, mom: Stri
 				"fallen": "У вас пока нет выбывших существ", "last": "Только для последнего живого существа", "behind": "Нужно отставать по числу живых существ"}
 			return reasons.get(String(c.params.cond), "Условие усиления сейчас не выполнено")
 	match String(c.effect_id):
+		"gale_call":
+			if PowerCalc.support_targets(state, owner, [_b_atk, _b_def]).is_empty():
+				return "Нет другого своего живого существа на воротах"
+		"light_reserve":
+			if PowerCalc.reserve_targets(state, owner, PowerCalc.attached_plays(state, _b_atk, _b_def) + _b_plays, 0 if owner == state.creatures[_b_atk].owner else 1).is_empty():
+				return "Нет синей способности, отдыхающей после прошлого боя"
+		"tide_wash":
+			var pre := get_battle_preview()
+			if pre == null or pre.powers[0 if uid == _b_atk else 1] >= cdef.base_power:
+				return "Текущая сила должна быть ниже базовой"
 		"swap_fighter":
 			if PowerCalc.swap_candidate(state, owner, [_b_atk, _b_def]) < 0:
 				return "Нет другого живого существа для замены"
@@ -388,6 +402,23 @@ func _ability_requirement_reason(uid: int, id: StringName, own: Array, mom: Stri
 			if PowerCalc.best_gate_swap(state, _b_atk, _b_def, _b_slot, _b_plays, _b_turn) < 0:
 				return "Нет подходящих свободных ворот для обмена"
 	return ""
+
+
+## Явный выбор игрока: допустимые цели без расхода карты и без скрытого автовыбора.
+func legal_ability_targets(player: int, card_id: StringName) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	if player not in [0, 1] or state.phase != Phase.ABILITY_WINDOW:
+		return out
+	var card := CardDB.card(card_id)
+	if card == null:
+		return out
+	if card.effect_id == &"gale_call":
+		for uid in PowerCalc.support_targets(state, player, [_b_atk, _b_def]):
+			out.append({"target_uid": uid, "label": CardDB.creature(state.creatures[uid].def_id).display_name})
+	elif card.effect_id == &"light_reserve":
+		for id in PowerCalc.reserve_targets(state, player, PowerCalc.attached_plays(state, _b_atk, _b_def) + _b_plays, 0 if player == state.creatures[_b_atk].owner else 1):
+			out.append({"target_card": id, "label": CardDB.card(id).display_name})
+	return out
 
 
 func ability_unavailable_reason(player: int, id: StringName) -> String:
@@ -666,8 +697,8 @@ func _to_used(uid: int, reason: StringName) -> void:
 
 
 ## Сыграть способность: в бою — в свой черёд обмена; до броска и после приземления — прикрепить к своему существу.
-func play_ability(player: int, card_id: StringName) -> Error:
-	_trace("play_ability", [player, card_id])
+func play_ability(player: int, card_id: StringName, target: Dictionary = {}) -> Error:
+	_trace("play_ability", [player, card_id, target])
 	var ph: int = state.phase
 	if (ph != Phase.ABILITY_WINDOW and ph != Phase.AWAIT_LANDING and ph != Phase.AFTER_LANDING) or player != state.active_player:
 		return ERR_UNAUTHORIZED
@@ -676,15 +707,25 @@ func play_ability(player: int, card_id: StringName) -> Error:
 		return ERR_DOES_NOT_EXIST
 	if not legal_abilities(player).has(card_id):
 		return ERR_UNAVAILABLE
+	var card: CardDef = CardDB.card(card_id)
+	var choice: Dictionary = {}
+	if card.effect_id in [&"gale_call", &"light_reserve"]:
+		var targets := legal_ability_targets(player, card_id)
+		for option in targets:
+			if card.effect_id == &"gale_call" and int(target.get("target_uid", -1)) == int(option.get("target_uid", -2)):
+				choice = {"target_uid": int(option.target_uid)}
+			elif card.effect_id == &"light_reserve" and StringName(target.get("target_card", "")) == StringName(option.get("target_card", "_")):
+				choice = {"target_card": StringName(option.target_card)}
+		if choice.is_empty():
+			return ERR_INVALID_PARAMETER
 	ps.ability_hand.erase(card_id)
 	ps.abilities_used.append(card_id)
-	var card: CardDef = CardDB.card(card_id)
 	if ph == Phase.AFTER_LANDING and CardEffects.is_effect(card, &"gust") and PowerCalc.gust_target(state, player) >= 0:
 		# «Попутный шквал»: вставшее существо перелетает к самому слабому существу соперника — бой
 		var mover: int = _landed_uid
-		var target: int = PowerCalc.gust_target(state, player)
+		var gust_uid: int = PowerCalc.gust_target(state, player)
 		var from: int = state.creatures[mover].slot
-		var to: int = state.creatures[target].slot
+		var to: int = state.creatures[gust_uid].slot
 		state.slots[from].occupant_uid = -1
 		state.creatures[mover].slot = -1
 		# карта остаётся при бойце (её +100 действует в этом бою и входит в лимит 3 карт)
@@ -693,7 +734,7 @@ func play_ability(player: int, card_id: StringName) -> Error:
 		state.play_stamp += 1
 		_ev(&"ability_played", [player, card_id])
 		_ev(&"creature_relocated", [mover, from, to])
-		_start_battle(mover, state.creatures[target].uid, to)
+		_start_battle(mover, state.creatures[gust_uid].uid, to)
 		return OK
 	if ph != Phase.ABILITY_WINDOW:
 		var uid: int = _pending_uid if ph == Phase.AWAIT_LANDING else _landed_uid
@@ -710,7 +751,7 @@ func play_ability(player: int, card_id: StringName) -> Error:
 		_flush()
 		return OK
 	var side: int = _b_turn
-	_b_plays.append([side, card_id])
+	_b_plays.append([side, card_id, choice] if not choice.is_empty() else [side, card_id])
 	_b_count[side] += 1
 	state.play_stamp += 1
 	_ev(&"ability_played", [player, card_id])
@@ -833,9 +874,12 @@ func _begin_turn(player: int) -> void:
 	_begin_throw(player)
 
 
-## Тупик (у обоих все живые на воротах): существо player с наибольшей БС переходит на ворота к сильнейшему
-## стоящему существу соперника, дальше обычный бой (окна способностей, открытие ворот, расчёт).
+## Тупик: жребий определяет атакующую сторону, а не номер пропущенного хода.
+## Иначе первый выставившийся постоянно получает защиту своих ворот.
+## Обычная очередь пропущенных ходов сохраняется; победа/Триумф меняют её как в любом бою.
 func _standoff(player: int) -> void:
+	if state.ruleset == MatchRules.Ruleset.ANIME_INSPIRED:
+		player = _standoff_rng.randi_range(0, 1)
 	var atk: int = _strongest_standing(player)
 	var dfn: int = _strongest_standing(1 - player)
 	if atk < 0 or dfn < 0:
@@ -1016,7 +1060,10 @@ func _resolve() -> void:
 	else:
 		var wc: CreatureState = state.creatures[r.winner_uid]
 		var lc: CreatureState = state.creatures[r.loser_uid]
-		_eliminate(lc.uid)
+		if r.valor_saved_uid == lc.uid:
+			_to_used(lc.uid, &"valor")
+		else:
+			_eliminate(lc.uid)
 		if r.winner_stays:
 			# «Удержание»: победитель остаётся на воротах, карта лежит дальше (открытой)
 			wc.slot = slot
@@ -1038,6 +1085,11 @@ func _resolve() -> void:
 			lp.momentum = 0
 			_ev(&"momentum_changed", [lc.owner, 0])
 		next_player = wc.owner
+		if r.ordinary:
+			var winner_side := 0 if wc.uid == uids[0] else 1
+			var called := r.called_uids[winner_side]
+			if called >= 0 and PowerCalc.support_targets(state, wc.owner, uids).has(called):
+				_to_used(called, &"gale_call")
 
 	# последствия карт: возрождение, возврат сыгранных способностей, метки на следующий бой
 	for side in range(2):
@@ -1046,6 +1098,14 @@ func _resolve() -> void:
 				if not state.creatures[u].alive:
 					_revive(u)
 					break
+		if r.reserve_cards[side] != &"":
+			var reserve_ps: PlayerState = state.players[owners[side]]
+			var reserve_id := r.reserve_cards[side]
+			if reserve_ps.abilities_used.has(reserve_id) and not reserve_ps.ability_hand.has(reserve_id):
+				reserve_ps.abilities_used.erase(reserve_id)
+				reserve_ps.ability_cooldown.erase(reserve_id)
+				reserve_ps.ability_hand.append(reserve_id)
+				_ev(&"abilities_recalled", [owners[side], [reserve_id]])
 		if r.recall[side] != &"":
 			var ps: PlayerState = state.players[owners[side]]
 			var back: Array = []
@@ -1079,6 +1139,11 @@ func _resolve() -> void:
 			mc.marks.append(mk)
 			_ev(&"creature_marked", [mc.uid, StringName(mk.get("src", "")), mk])
 
+	# Триумф проверяется после возрождений: реально выбывший боец и другие живые.
+	if r.ordinary and r.loser_uid >= 0 and not state.creatures[r.loser_uid].alive:
+		var loser_side := 0 if r.loser_uid == uids[0] else 1
+		if r.triumph[loser_side] and state.alive_count(owners[loser_side]) > 0:
+			next_player = owners[loser_side]
 	state.battle_context = null
 	if not _check_victory():
 		_check_final_round()
@@ -1088,7 +1153,7 @@ func _resolve() -> void:
 ## Перезарядка способностей (как в аниме — карты не сгорают навсегда): после каждого боя у сыгранных карт
 ## (не прикреплённых к живому существу) убывает отдых; отдохнувшие RECHARGE_BATTLES боёв возвращаются в руку.
 ## Бой, в котором карту сыграли, в отдых не входит. Карты «возвращается в руку» и «Второе дыхание» возвращаются
-## раньше — без отдыха. У кого осталось одно существо, тому карты возвращаются сразу (последний рывок).
+## раньше — без отдыха. У последнего существа обычный отдых сокращает MatchRules.last_rush_returns.
 func _recharge_abilities() -> void:
 	for p in range(2):
 		var ps: PlayerState = state.players[p]
@@ -1105,9 +1170,7 @@ func _recharge_abilities() -> void:
 				attached.erase(id)
 				continue
 			var left: int = int(ps.ability_cooldown.get(id, RECHARGE_BATTLES + 1)) - 1
-			# карты-«спасатели» и Копия отдыхают всегда: иначе последнее существо уходило бы
-			# от боя каждый ход или сводило матч к ничьей
-			if left <= 0 or (last_one and not RESCUE_EFFECTS.has(String(CardDB.card(id).effect_id))):
+			if left <= 0 or (last_one and MatchRules.last_rush_returns(CardDB.card(id), state.ruleset)):
 				ps.ability_cooldown.erase(id)
 				ps.abilities_used.erase(id)
 				ps.ability_hand.append(id)

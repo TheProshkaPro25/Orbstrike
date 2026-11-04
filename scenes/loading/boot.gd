@@ -18,7 +18,7 @@ func _ready() -> void:
 	column.custom_minimum_size.x = 500
 	column.add_theme_constant_override("separation", 22)
 	center.add_child(column)
-	var title := VisualUtil.label("Сферы Стихий", 42)
+	var title := VisualUtil.label("Orbstrike", 42)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_color_override("font_color", UiTheme.GOLD)
 	column.add_child(title)

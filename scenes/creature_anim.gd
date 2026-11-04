@@ -77,26 +77,34 @@ func set_model(model: Node3D, d: CreatureDef) -> void:
 	_collect(model)
 	var animations_started := Time.get_ticks_usec()
 	if _player != null:
-		# Библиотеки экземпляра: сглаживание не меняет общий ресурс и соседних бойцов.
+		# Prepared curves are immutable; playback/seek/blends belong to each player.
 		for name in _player.get_animation_library_list():
-			var library := _player.get_animation_library(name).duplicate(true) as AnimationLibrary
+			var original := _player.get_animation_library(name)
+			var source: Resource = model.get_meta("preparation_source", original)
+			var rest_signature: Array = []
+			# The accepted Grifalon correction reads these three authored rest poses.
+			# Include them in the key so a custom model can never reuse other rests.
+			if _species == &"grifalon":
+				for clip in original.get_animation_list():
+					var animation := original.get_animation(clip)
+					for track in animation.get_track_count():
+						var path := animation.track_get_path(track)
+						if path.get_subname_count() != 1 or path.get_subname(0) not in [&"tail2", &"tail3", &"tail4"]: continue
+						var skeleton := _player.get_node(_player.root_node).get_node_or_null(NodePath(path.get_concatenated_names())) as Skeleton3D
+						if skeleton == null: continue
+						var bone := skeleton.find_bone(path.get_subname(0))
+						if bone >= 0: rest_signature.append([path, skeleton.get_bone_rest(bone)])
+			var key := str([source.get_instance_id(), original.get_instance_id(), name, _species]) + ":" + var_to_bytes(rest_signature).hex_encode().sha256_text()
+			var cache := CreatureModels.animation_library_cache
+			if not cache.has(key):
+				var prepared := original.duplicate(true) as AnimationLibrary
+				_prepare_library(prepared)
+				if cache.size() >= CreatureModels.preparation_cache_limit(): cache.erase(cache.keys()[0])
+				# Strong source reference prevents instance-id reuse. No Node is cached.
+				cache[key] = {"source":source, "original":original, "library":prepared}
+			var library: AnimationLibrary = cache[key].library
 			_player.remove_animation_library(name)
 			_player.add_animation_library(name, library)
-			for clip in library.get_animation_list():
-				var animation := library.get_animation(clip)
-				for track in range(animation.get_track_count()):
-					if animation.track_get_type(track) in [Animation.TYPE_ROTATION_3D, Animation.TYPE_POSITION_3D]:
-						animation.track_set_interpolation_type(track, Animation.INTERPOLATION_CUBIC)
-				animation.loop_mode = Animation.LOOP_LINEAR if clip == &"idle" else Animation.LOOP_NONE
-				if clip == &"idle":
-					_prepare_idle_loop(animation)
-				for track in range(animation.get_track_count()):
-					animation.track_set_interpolation_loop_wrap(track, clip == &"idle")
-				# Both species authored a stationary pelvis below a moving chest.
-				if _species in [&"dragnar", &"grifalon"]:
-					DragnarTorso.prepare(animation, _player, clip in [&"idle", &"attack"])
-				if _species == &"grifalon" and clip in [&"idle", &"attack", &"stance", &"roar", &"hit"]:
-					GrifalonTail.prepare(animation, _player)
 		_player.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
 		_player.speed_scale = 1.0
 		_player.playback_default_blend_time = 0.2
@@ -114,6 +122,23 @@ func set_model(model: Node3D, d: CreatureDef) -> void:
 		"support": (cloth_started - support_started) / 1000.0,
 		"cloth": (Time.get_ticks_usec() - cloth_started) / 1000.0,
 		"total": (Time.get_ticks_usec() - preparation_started) / 1000.0}
+
+
+## Called exactly once before publication in the shared cache; never at playback.
+func _prepare_library(library: AnimationLibrary) -> void:
+	for clip in library.get_animation_list():
+		var animation := library.get_animation(clip)
+		for track in animation.get_track_count():
+			if animation.track_get_type(track) in [Animation.TYPE_ROTATION_3D, Animation.TYPE_POSITION_3D]:
+				animation.track_set_interpolation_type(track, Animation.INTERPOLATION_CUBIC)
+		animation.loop_mode = Animation.LOOP_LINEAR if clip == &"idle" else Animation.LOOP_NONE
+		if clip == &"idle": _prepare_idle_loop(animation)
+		for track in animation.get_track_count():
+			animation.track_set_interpolation_loop_wrap(track, clip == &"idle")
+		if _species in [&"dragnar", &"grifalon"]:
+			DragnarTorso.prepare(animation, _player, clip in [&"idle", &"attack"])
+		if _species == &"grifalon" and clip in [&"idle", &"attack", &"stance", &"roar", &"hit"]:
+			GrifalonTail.prepare(animation, _player)
 
 
 func get_height() -> float:

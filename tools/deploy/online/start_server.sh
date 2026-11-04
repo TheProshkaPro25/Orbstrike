@@ -1,10 +1,10 @@
 #!/bin/sh
 set -eu
 # The systemd unit sets both directories explicitly; overrides are useful for a local bundle check.
-task_server_root=${SFERY_SERVER_ROOT:-/opt/sfery-online/current}
-task_godot_bin=${GODOT:-/opt/sfery-online/godot}
-task_state_dir=${SFERY_STATE_DIR:-/var/lib/sfery-online}
-task_port=${SFERY_PORT:-8910}
+task_server_root=${ORBSTRIKE_SERVER_ROOT:-${SFERY_SERVER_ROOT:-/opt/orbstrike-online/current}}
+task_godot_bin=${GODOT:-/opt/orbstrike-online/godot}
+task_state_dir=${ORBSTRIKE_STATE_DIR:-${SFERY_STATE_DIR:-/var/lib/orbstrike-online}}
+task_port=${ORBSTRIKE_PORT:-${SFERY_PORT:-8910}}
 mkdir -p "$task_state_dir"
 export XDG_DATA_HOME="$task_state_dir/data"
 export XDG_CONFIG_HOME="$task_state_dir/config"

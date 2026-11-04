@@ -182,6 +182,12 @@ func set_portrait(side: int,texture: Texture2D) -> void:
 	_plates[side].set_portrait(texture)
 
 
+## The portrait viewport follows this consumer's effective visibility.
+func portrait_consumer(side: int) -> CanvasItem:
+	_build()
+	return _plates[side]._portrait
+
+
 func kill_creature(player: int, idx: int) -> void:
 	_build()
 	_plates[player].kill(idx)
@@ -409,6 +415,11 @@ func _on_creature_pressed(uid: int) -> void:
 func set_battle_mode(on: bool) -> void:
 	_build()
 	_battle = on
+	if on:
+		# Недочитанные советы постановки/прикрепления уже не относятся к бою
+		# и занимали место компактного блока ответа на невысоком экране.
+		_coach_queue.clear()
+		_close_coach()
 	var a: float = 0.0 if on else 1.0
 	for p in _plates:
 		p.modulate.a = a

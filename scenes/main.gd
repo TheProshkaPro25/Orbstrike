@@ -37,6 +37,8 @@ var ui_layer: CanvasLayer
 var hud: HudUI
 var battle_hud: BattleHud
 var setup_panel: SetupPanel
+var ability_target_picker: AbilityTargetPicker
+var _ability_target_card: StringName = &""
 var ability_panel: AbilityPanel
 var battle_overlay: BattleOverlay
 var game_over_ui: GameOverUI
@@ -257,6 +259,10 @@ func _build_ui() -> void:
 	ui_layer.add_child(setup_panel)
 	ability_panel = ABILITY_SCENE.instantiate() as AbilityPanel
 	ui_layer.add_child(ability_panel)
+	ability_target_picker = AbilityTargetPicker.new()
+	ui_layer.add_child(ability_target_picker)
+	ability_target_picker.chosen.connect(_on_ability_target_chosen)
+	ability_target_picker.cancelled.connect(_on_ability_target_cancelled)
 	battle_overlay = BATTLE_SCENE.instantiate() as BattleOverlay
 	ui_layer.add_child(battle_overlay)
 	game_over_ui = GAMEOVER_SCENE.instantiate() as GameOverUI
@@ -363,7 +369,7 @@ func _build_logic() -> void:
 		hud.clear_flash()))
 	ctrl.creatures_refilled.connect(func(p: int) -> void: events.push(_anim_refilled.bind(p)))
 	ctrl.standoff.connect(func(a: int, d: int) -> void: events.push(func() -> void:
-		var msg := "Бросать некому — %s идёт на %s!" % [_cname(a), _cname(d)]
+		var msg := "Тупик: жребий выбрал атакующего — %s идёт на %s!" % [_cname(a), _cname(d)]
 		hud.flash(msg)
 		await hud.wait_read(HudUI.read_time(1.4, msg))
 		hud.clear_flash()))
@@ -408,7 +414,7 @@ func _start_game() -> void:
 			ball.process_mode = Node.PROCESS_MODE_DISABLED
 			_prepared_balls[uid] = ball
 			preparation_times_ms[uid] = (Time.get_ticks_usec() - begin) / 1000.0
-	hud.set_hint("Сферы Стихий")
+	hud.set_hint("Orbstrike")
 	SoundFx.i().play_music(SoundFx.i().turn_music())  # матч начался — музыка ходов
 	var view: MatchState = ctrl.get_view(HUMAN)
 	var cols: Array = [[], []]
@@ -489,6 +495,7 @@ func _prepare_match_fighters() -> void:
 		portrait.bind(fighter,side)
 		fighter_portraits.append(portrait)
 		hud.set_portrait(side,portrait.get_texture())
+		portrait.watch_consumer(hud.portrait_consumer(side),hud)
 
 
 ## Подписи существ: только перечисленные uid (пустой список - все).
@@ -1581,7 +1588,8 @@ func _do_ability(player: int) -> void:
 		if not ctrl.state.slots[preview.slot].revealed:
 			note = ("Ворота закрыты. " if ctrl.can_reveal_gate(HUMAN) else "Закрытые ворота соперника. ") + note
 		hud.set_hint("Слияние?" if fusion_only else "Ваша способность?")
-		hud.coach("ability", "Бой! Закрытые ворота откроются, когда их владелец нажмёт «Открыть мои ворота». Карты играются по очереди, до 3 на бой — счётчик на плашке. Светящиеся — доступны. «Пас» — пропуск хода: на карту соперника можно ответить, бой решается после двух пасов подряд. Сыгранные карты отдыхают 2 боя и возвращаются в руку.")
+		# Справка доступна наведением на блок ответа; отдельная большая карточка
+		# наставника закрывала ленту и управление на невысоком экране.
 		ability_panel.show_options(entries, hdr, {"moment": &"battle", "used": MatchController.MAX_BATTLE_ABILITIES - ctrl.abilities_left(HUMAN),
 			"can_open_gate": ctrl.can_reveal_gate(HUMAN), "pass_text": "Пас", "pass_tip": "Пропустить ход обмена. Спасуют оба подряд — бой решится.", "note": note})
 	else:
@@ -1594,7 +1602,8 @@ func _do_ability(player: int) -> void:
 		if cid == &"":
 			err = ctrl.pass_ability(AI_PLAYER)
 		else:
-			err = ctrl.play_ability(AI_PLAYER, cid)
+			var target := ai.choose_ability_target(ctrl.get_view(AI_PLAYER), preview, cid, ctrl.legal_ability_targets(AI_PLAYER, cid))
+			err = ctrl.play_ability(AI_PLAYER, cid, target)
 		if err != OK:
 			ctrl.save_debug_trace("user://replays/last_error.json")
 			push_error("ИИ: ошибка способности %d" % err)
@@ -1716,9 +1725,30 @@ func _on_setup_placed(card_id: StringName, slot: int) -> void:
 
 
 func _on_ability_chosen(card_id: StringName) -> void:
+	var targets := ctrl.legal_ability_targets(HUMAN, card_id)
+	if not targets.is_empty():
+		_ability_target_card = card_id
+		ability_panel.hide_panel()
+		ability_target_picker.show_targets(card_id, targets, ctrl.get_view(HUMAN))
+		return
+	_play_chosen_ability(card_id)
+
+
+func _on_ability_target_chosen(target: Dictionary) -> void:
+	var card_id := _ability_target_card
+	_ability_target_card = &""
+	_play_chosen_ability(card_id, target)
+
+
+func _on_ability_target_cancelled() -> void:
+	_ability_target_card = &""
+	_do_ability(HUMAN)
+
+
+func _play_chosen_ability(card_id: StringName, target: Dictionary = {}) -> void:
 	var moment: StringName = ctrl.get_ability_moment()
 	ability_panel.hide_panel()
-	var err: int = ctrl.play_ability(HUMAN, card_id)
+	var err: int = ctrl.play_ability(HUMAN, card_id, target)
 	if err != OK:
 		ctrl.save_debug_trace("user://replays/last_error.json")
 		hud.reject_action(ctrl.ability_unavailable_reason(HUMAN, card_id))

@@ -1,0 +1,142 @@
+{
+  "date": "2026-11-04",
+  "publication": "none; last public 0.3.2; 0.3.3 paused",
+  "platform": "Godot4.7.2/Linux/Vulkan Forward+/RTX4070Laptop",
+  "methodology": "Resident49x2+3arenas, no graphics-quality change,60FPS minimized/unfocusable test_window wrapper; loaded snapshot before expensive curve fingerprints; timing180settledframes(last90sampled). Metrics are distinct: process RSS, engine allocator, renderer resources; do not sum them. Single comparison, no statistically established FPS or GPU speedup.",
+  "baseline_provenance": "Original pre-optimization source snapshot: HEAD plus preserved preexisting.diff user changes; compact isolated /tmp copy, assets/import resources shared read-only. Schema2 resets skeleton/stop/play(blend0)/advance0/seek; earlier arbitrary Boot blend poses were nondeterministic diagnostic, not accepted comparison.",
+  "before": {
+    "startup_ms": 14725.986,
+    "fps_cap": 60,
+    "loaded": {
+      "buffer_bytes": 822460468,
+      "objects": 11242.0,
+      "resources": 2125.0,
+      "rss": "2132176 kB",
+      "static_bytes": 373487017,
+      "texture_bytes": 2304038400,
+      "video_bytes": 3300553072
+    },
+    "settled": {
+      "buffer_bytes": 822460468,
+      "objects": 11242.0,
+      "resources": 2125.0,
+      "rss": "2137976 kB",
+      "static_bytes": 374566293,
+      "texture_bytes": 2304038400,
+      "video_bytes": 3300553072
+    },
+    "prepared_libraries": 98,
+    "prepared_animations": 490,
+    "prepared_unique_keys": 536500,
+    "source_materials": 62,
+    "source_texture_slots": {
+      "albedo_texture": 55,
+      "ao_texture": 57,
+      "metallic_texture": 54,
+      "normal_texture": 57,
+      "roughness_texture": 54
+    },
+    "unique_source_textures": 145,
+    "dormant_process_ms": 1.10726666666667,
+    "dormant_render_cpu_ms": 0.212400000459618,
+    "dormant_render_gpu_ms": 2.01765555010902,
+    "preparation_store": {
+      "hits": 68,
+      "misses": 0,
+      "resident_entries": 68,
+      "source_hash_ms": 2965.958,
+      "writes": 0
+    }
+  },
+  "after": {
+    "startup_ms": 13105.281,
+    "fps_cap": 60,
+    "loaded": {
+      "buffer_bytes": 801870916,
+      "objects": 10776.0,
+      "resources": 2030.0,
+      "rss": "2028444 kB",
+      "static_bytes": 357096530,
+      "texture_bytes": 1901426176,
+      "video_bytes": 2877351056
+    },
+    "settled": {
+      "buffer_bytes": 801870916,
+      "objects": 10776.0,
+      "resources": 2030.0,
+      "rss": "2039648 kB",
+      "static_bytes": 358125856,
+      "texture_bytes": 1901426176,
+      "video_bytes": 2877351056
+    },
+    "prepared_libraries": 49,
+    "prepared_animations": 245,
+    "prepared_unique_keys": 268250,
+    "source_materials": 62,
+    "source_texture_slots": {
+      "albedo_texture": 55
+    },
+    "unique_source_textures": 49,
+    "dormant_process_ms": 1.11901111111111,
+    "dormant_render_cpu_ms": 0.206011111372047,
+    "dormant_render_gpu_ms": 1.52688887847794,
+    "preparation_store": {
+      "hits": 68,
+      "misses": 0,
+      "resident_entries": 68,
+      "source_hash_ms": 2785.416,
+      "writes": 0
+    }
+  },
+  "exact_equal": {
+    "all49_animation_contents": true,
+    "all49_canonical_skeleton_poses": true,
+    "animation_fingerprints_sha256": "9f7dd5fc98f435acc14ffd7fbbce6024322d5ded826fbea7c9d54eaf424c20e4",
+    "sample_poses_sha256": "3a5cb577beb9d5a219c3ce76306aaa1f313654448abc87a7540e4264409cccfe"
+  },
+  "shared_cloth": {
+    "buffers": 60,
+    "bytes": 20589552,
+    "references": 120
+  },
+  "logical_unshared_cloth_bytes": 41179104,
+  "runtime_cloth_actors": 12,
+  "checks": {
+    "memory-catalog": "155/0",
+    "hd-material-retention": "99/0",
+    "animation": "435/0",
+    "idle": "374/0",
+    "preparation-cache": "497/0",
+    "cloth-sharing": "68/0",
+    "portrait-visibility": "77/0",
+    "startup-loading": "183/0",
+    "turn-pool": "0 failures,12 activations, uid/collider/pose/reuse"
+  },
+  "limitations": [
+    "No full physical matches or online run in this optimization task.",
+    "No Windows/export/publication/listening.",
+    "Renderer bytes are resource accounting, not driver VRAM; RSS is a point sample, not peak.",
+    "Cloth pair fixed poses/moved states pixel-exact; all49 animation curves and canonical poses exact; this is not a complete49-model visual audit.",
+    "First main-menu startup PNG captures fade-in; use match-ready/portrait/cloth captures for visual acceptance."
+  ],
+  "artifacts": {
+    "raw": "build/checks/memory-optimization-20261104/{baseline-v2,after-v2}.json",
+    "catalog": "build/checks/models/selected-memory-catalog/",
+    "startup": "build/checks/gameplay/selected-startup-loading-turn-pool/",
+    "cloth_comparison": "build/checks/cloth-sharing-comparison.json",
+    "portraits": "build/checks/presentation/selected-portrait-visibility/portrait-visibility/",
+    "headless": "build/checks/models/selected-animation-idle-preparation-cache-hd-material-retention/"
+  },
+  "independent_review": "Sol high cross-review of animation/model/rest cache, materials fallback/overlay/nextpass/method keys, portrait visibility/manual sampling, cloth readonly/refcount/reparent/lastfree. Overlay/nextpass/method-key findings fixed and covered by99/0 fixture.",
+  "baseline_source_sha256": {
+    "scenes/creature_anim.gd": "e50a41f505f22f16df4809c2c8d6420c129a276e0c1b5b28ede58fbc30437d30",
+    "scenes/creature_models.gd": "8f69e9d1ae107c10a63fc21d3654e65bd0ac8e26757ab53614a2f906d8f1e77b",
+    "scenes/resident_cloth_solver.gd": "8d9cc64e73dab67bf4146bb1d8f7f9a116841f8bb4388e58247b4ecc3fc0548a",
+    "addons/godot_gpu_cloth/src/gpu_cloth_solver.gd": "c788381a4b2e79a8ce0ec9b10c23e6fcff51746a559f1770d0b7d123369f5a5a",
+    "scenes/avatar/fighter_portrait.gd": "d5c01b20ae77a514280633a49f971d0ce472705f8ea58237ec970df121e05c7d",
+    "scenes/ui/vrm_preview.gd": "6cdb35ac3a15c38c4ea603ddad2bd9c0f5acce270f6a82ea2c7f3fca09560f96",
+    "scenes/ui/legacy_character_editor.gd": "91c4287481c210c5742278bbd1df8dcd8e48bd685d853fcb8e99f4bf8464267a",
+    "scenes/main.gd": "449031b2d845f159476fdd9845cf4e6e2568bf6ddf9d2961a8b44b7553f79ebf",
+    "scenes/ui/hud.gd": "77ddd04ba52c41e89332168eb8f2d4b589ec7146e772a0ff0bceb444ed2eb5c5"
+  }
+}

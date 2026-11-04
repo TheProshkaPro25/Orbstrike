@@ -16,6 +16,7 @@ var preview: SubViewportContainer
 var turn := 0.0
 var close_after_save := false
 var vrm_preview: VrmPreview
+var _preview_activity: RefCounted
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -159,6 +160,7 @@ func _ready() -> void:
 	confirm.custom_action.connect(func(_action: StringName) -> void: _close())
 	add_child(confirm)
 	name_field.grab_focus()
+	_preview_activity = preload("res://scenes/ui/preview_activity.gd").new(viewport,preview,self)
 
 func _button(parent: Node, text: String, action: Callable) -> Button:
 	var button := Button.new()
@@ -202,6 +204,7 @@ func request_close() -> void:
 	else: _close()
 
 func _close() -> void:
+	if _preview_activity != null: _preview_activity.stop()
 	viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	set_process(false)
 	closed.emit()
@@ -238,8 +241,6 @@ func _open_vrm_preview() -> void:
 	vrm_preview = VrmPreview.new()
 	get_parent().add_child(vrm_preview)
 	hide()
-	viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	vrm_preview.closed.connect(func() -> void:
 		show()
-		viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 		name_field.grab_focus())

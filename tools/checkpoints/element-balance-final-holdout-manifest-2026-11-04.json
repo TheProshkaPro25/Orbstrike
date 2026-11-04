@@ -1,0 +1,33 @@
+{
+  "label": "final-holdout-240-preregistered",
+  "rosters": [
+    [
+      "ratnik",
+      "grifalon",
+      "gorgul"
+    ],
+    [
+      "ratnik",
+      "grifalon",
+      "gorgul"
+    ],
+    [
+      "kolossar",
+      "klykar",
+      "rogozhuk"
+    ],
+    [
+      "kolossar",
+      "klykar",
+      "rogozhuk"
+    ]
+  ],
+  "seeds": [
+    30103,
+    30133,
+    30103,
+    30133
+  ],
+  "random_starting_cards": true,
+  "mirrors": false
+}

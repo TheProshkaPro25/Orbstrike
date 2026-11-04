@@ -1,0 +1,558 @@
+{
+	"cases": [
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_ratnik_fire",
+					"creature_grifalon_fire",
+					"creature_gorgul_fire"
+				],
+				[
+					"arena_altar",
+					"arena_den_gorgul",
+					"arena_weight"
+				],
+				[
+					"ability_fire_drain",
+					"ability_fire_spark",
+					"ability_gorgul_night"
+				]
+			],
+			"deck_seed": 9422239,
+			"element": 0,
+			"seed": 30103.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_ratnik_gale",
+					"creature_grifalon_gale",
+					"creature_gorgul_gale"
+				],
+				[
+					"arena_field_gale",
+					"arena_den_ratnik",
+					"arena_limit"
+				],
+				[
+					"ability_gale_call",
+					"ability_gale_vengeance",
+					"ability_grifalon_dive"
+				]
+			],
+			"deck_seed": 9422240,
+			"element": 1,
+			"seed": 30103.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_ratnik_light",
+					"creature_grifalon_light",
+					"creature_gorgul_light"
+				],
+				[
+					"arena_field_light",
+					"arena_den_gorgul",
+					"arena_limit"
+				],
+				[
+					"ability_light_crown",
+					"ability_light_guard",
+					"ability_gorgul_gaze"
+				]
+			],
+			"deck_seed": 9422241,
+			"element": 2,
+			"seed": 30103.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_ratnik_stone",
+					"creature_grifalon_stone",
+					"creature_gorgul_stone"
+				],
+				[
+					"arena_field_stone",
+					"arena_den_gorgul",
+					"arena_funnel"
+				],
+				[
+					"ability_stone_ceiling",
+					"ability_stone_footing",
+					"ability_gorgul_night"
+				]
+			],
+			"deck_seed": 9422242,
+			"element": 3,
+			"seed": 30103.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_ratnik_shadow",
+					"creature_grifalon_shadow",
+					"creature_gorgul_shadow"
+				],
+				[
+					"arena_field_shadow",
+					"arena_den_gorgul",
+					"arena_web"
+				],
+				[
+					"ability_shadow_doom",
+					"ability_shadow_revenge",
+					"ability_gorgul_gaze"
+				]
+			],
+			"deck_seed": 9422243,
+			"element": 4,
+			"seed": 30103.0
+		},
+		{
+			"case": 0,
+			"deck": [
+				[
+					"creature_ratnik_tide",
+					"creature_grifalon_tide",
+					"creature_gorgul_tide"
+				],
+				[
+					"arena_field_tide",
+					"arena_den_ratnik",
+					"arena_limit"
+				],
+				[
+					"ability_tide_hush",
+					"ability_tide_surf",
+					"ability_ratnik_rearm"
+				]
+			],
+			"deck_seed": 9422244,
+			"element": 5,
+			"seed": 30103.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_ratnik_fire",
+					"creature_grifalon_fire",
+					"creature_gorgul_fire"
+				],
+				[
+					"arena_altar",
+					"arena_den_ratnik",
+					"arena_fallen_call"
+				],
+				[
+					"ability_fire_drain",
+					"ability_fire_spark",
+					"ability_grifalon_sky"
+				]
+			],
+			"deck_seed": 9431629,
+			"element": 0,
+			"seed": 30133.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_ratnik_gale",
+					"creature_grifalon_gale",
+					"creature_gorgul_gale"
+				],
+				[
+					"arena_altar",
+					"arena_den_grifalon",
+					"arena_weight"
+				],
+				[
+					"ability_gale_swap",
+					"ability_gale_gust",
+					"ability_grifalon_dive"
+				]
+			],
+			"deck_seed": 9431630,
+			"element": 1,
+			"seed": 30133.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_ratnik_light",
+					"creature_grifalon_light",
+					"creature_gorgul_light"
+				],
+				[
+					"arena_altar",
+					"arena_den_ratnik",
+					"arena_limit"
+				],
+				[
+					"ability_light_reserve",
+					"ability_light_dawn",
+					"ability_ratnik_rearm"
+				]
+			],
+			"deck_seed": 9431631,
+			"element": 2,
+			"seed": 30133.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_ratnik_stone",
+					"creature_grifalon_stone",
+					"creature_gorgul_stone"
+				],
+				[
+					"arena_field_stone",
+					"arena_den_gorgul",
+					"arena_limit"
+				],
+				[
+					"ability_stone_copy",
+					"ability_stone_wrath",
+					"ability_gorgul_night"
+				]
+			],
+			"deck_seed": 9431632,
+			"element": 3,
+			"seed": 30133.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_ratnik_shadow",
+					"creature_grifalon_shadow",
+					"creature_gorgul_shadow"
+				],
+				[
+					"arena_altar",
+					"arena_den_grifalon",
+					"arena_fallen_call"
+				],
+				[
+					"ability_shadow_doom",
+					"ability_shadow_strike",
+					"ability_gorgul_gaze"
+				]
+			],
+			"deck_seed": 9431633,
+			"element": 4,
+			"seed": 30133.0
+		},
+		{
+			"case": 1,
+			"deck": [
+				[
+					"creature_ratnik_tide",
+					"creature_grifalon_tide",
+					"creature_gorgul_tide"
+				],
+				[
+					"arena_field_tide",
+					"arena_den_gorgul",
+					"arena_fallen_call"
+				],
+				[
+					"ability_tide_wash",
+					"ability_tide_ninth",
+					"ability_grifalon_dive"
+				]
+			],
+			"deck_seed": 9431634,
+			"element": 5,
+			"seed": 30133.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_fire",
+					"creature_klykar_fire",
+					"creature_rogozhuk_fire"
+				],
+				[
+					"arena_altar",
+					"arena_den_rogozhuk",
+					"arena_weight"
+				],
+				[
+					"ability_fire_drain",
+					"ability_fire_spark",
+					"ability_rogozhuk_ram"
+				]
+			],
+			"deck_seed": 9422239,
+			"element": 0,
+			"seed": 30103.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_gale",
+					"creature_klykar_gale",
+					"creature_rogozhuk_gale"
+				],
+				[
+					"arena_field_gale",
+					"arena_den_kolossar",
+					"arena_limit"
+				],
+				[
+					"ability_gale_call",
+					"ability_gale_vengeance",
+					"ability_klykar_bite"
+				]
+			],
+			"deck_seed": 9422240,
+			"element": 1,
+			"seed": 30103.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_light",
+					"creature_klykar_light",
+					"creature_rogozhuk_light"
+				],
+				[
+					"arena_field_light",
+					"arena_den_rogozhuk",
+					"arena_limit"
+				],
+				[
+					"ability_light_crown",
+					"ability_light_guard",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 9422241,
+			"element": 2,
+			"seed": 30103.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_stone",
+					"creature_klykar_stone",
+					"creature_rogozhuk_stone"
+				],
+				[
+					"arena_field_stone",
+					"arena_den_rogozhuk",
+					"arena_funnel"
+				],
+				[
+					"ability_stone_ceiling",
+					"ability_stone_footing",
+					"ability_rogozhuk_ram"
+				]
+			],
+			"deck_seed": 9422242,
+			"element": 3,
+			"seed": 30103.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_shadow",
+					"creature_klykar_shadow",
+					"creature_rogozhuk_shadow"
+				],
+				[
+					"arena_field_shadow",
+					"arena_den_rogozhuk",
+					"arena_web"
+				],
+				[
+					"ability_shadow_doom",
+					"ability_shadow_revenge",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 9422243,
+			"element": 4,
+			"seed": 30103.0
+		},
+		{
+			"case": 2,
+			"deck": [
+				[
+					"creature_kolossar_tide",
+					"creature_klykar_tide",
+					"creature_rogozhuk_tide"
+				],
+				[
+					"arena_field_tide",
+					"arena_den_kolossar",
+					"arena_limit"
+				],
+				[
+					"ability_tide_hush",
+					"ability_tide_surf",
+					"ability_kolossar_reset"
+				]
+			],
+			"deck_seed": 9422244,
+			"element": 5,
+			"seed": 30103.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_fire",
+					"creature_klykar_fire",
+					"creature_rogozhuk_fire"
+				],
+				[
+					"arena_altar",
+					"arena_den_kolossar",
+					"arena_fallen_call"
+				],
+				[
+					"ability_fire_drain",
+					"ability_fire_spark",
+					"ability_klykar_hunt"
+				]
+			],
+			"deck_seed": 9431629,
+			"element": 0,
+			"seed": 30133.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_gale",
+					"creature_klykar_gale",
+					"creature_rogozhuk_gale"
+				],
+				[
+					"arena_altar",
+					"arena_den_klykar",
+					"arena_weight"
+				],
+				[
+					"ability_gale_swap",
+					"ability_gale_gust",
+					"ability_klykar_bite"
+				]
+			],
+			"deck_seed": 9431630,
+			"element": 1,
+			"seed": 30133.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_light",
+					"creature_klykar_light",
+					"creature_rogozhuk_light"
+				],
+				[
+					"arena_altar",
+					"arena_den_kolossar",
+					"arena_limit"
+				],
+				[
+					"ability_light_reserve",
+					"ability_light_dawn",
+					"ability_kolossar_reset"
+				]
+			],
+			"deck_seed": 9431631,
+			"element": 2,
+			"seed": 30133.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_stone",
+					"creature_klykar_stone",
+					"creature_rogozhuk_stone"
+				],
+				[
+					"arena_field_stone",
+					"arena_den_rogozhuk",
+					"arena_limit"
+				],
+				[
+					"ability_stone_copy",
+					"ability_stone_wrath",
+					"ability_rogozhuk_ram"
+				]
+			],
+			"deck_seed": 9431632,
+			"element": 3,
+			"seed": 30133.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_shadow",
+					"creature_klykar_shadow",
+					"creature_rogozhuk_shadow"
+				],
+				[
+					"arena_altar",
+					"arena_den_klykar",
+					"arena_fallen_call"
+				],
+				[
+					"ability_shadow_doom",
+					"ability_shadow_strike",
+					"ability_rogozhuk_shell"
+				]
+			],
+			"deck_seed": 9431633,
+			"element": 4,
+			"seed": 30133.0
+		},
+		{
+			"case": 3,
+			"deck": [
+				[
+					"creature_kolossar_tide",
+					"creature_klykar_tide",
+					"creature_rogozhuk_tide"
+				],
+				[
+					"arena_field_tide",
+					"arena_den_rogozhuk",
+					"arena_fallen_call"
+				],
+				[
+					"ability_tide_wash",
+					"ability_tide_ninth",
+					"ability_klykar_bite"
+				]
+			],
+			"deck_seed": 9431634,
+			"element": 5,
+			"seed": 30133.0
+		}
+	],
+	"failures": [],
+	"label": "final-holdout-240-preregistered"
+}

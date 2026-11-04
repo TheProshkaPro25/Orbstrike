@@ -1,0 +1,42 @@
+{
+  "label": "v9-pact-price-paired-gold-holdout-240-preregistered",
+  "rosters": [
+    [
+      "dragnar",
+      "klykar",
+      "kolossar"
+    ],
+    [
+      "dragnar",
+      "klykar",
+      "kolossar"
+    ],
+    [
+      "grifalon",
+      "rogozhuk",
+      "levian"
+    ],
+    [
+      "grifalon",
+      "rogozhuk",
+      "levian"
+    ]
+  ],
+  "seeds": [
+    101303,
+    101333,
+    101303,
+    101333
+  ],
+  "random_starting_cards": true,
+  "pair_seeded_streams": true,
+  "pair_seeded_decks": true,
+  "common_deck_seed": true,
+  "gold_roles": [
+    "field",
+    "altar",
+    "field",
+    "altar"
+  ],
+  "mirrors": false
+}

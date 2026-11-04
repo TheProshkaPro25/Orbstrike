@@ -17,7 +17,8 @@ CORE = ("attr battle_context battle_participant battle_result card_db card_def c
 NETWORK = "online_server online_protocol state_codec online_physics server_main".split()
 PROJECT = '''config_version=5
 [application]
-config/name="Sfery Online Server"
+config/name="Orbstrike Online Server"
+config/version="0.4.0"
 config/features=PackedStringArray("4.7")
 [rendering]
 renderer/rendering_method="gl_compatibility"
@@ -44,7 +45,7 @@ def main() -> int:
     project = Path(__file__).resolve().parents[1]
     stamp = time.strftime("%Y%m%d-%H%M%S")
     output = project / "build/online-server" / stamp
-    bundle = output / "sfery-online"
+    bundle = output / "orbstrike-online"
     bundle.mkdir(parents=True)
     env = dict(os.environ)
     for variable, directory in [("XDG_DATA_HOME", "data"), ("XDG_CONFIG_HOME", "config"), ("XDG_CACHE_HOME", "cache")]:
@@ -60,7 +61,7 @@ def main() -> int:
         target = bundle / name
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(project / name, target)
-    for name in ["start_server.sh", "sfery-online.service", "Caddyfile.example", "healthcheck.gd"]:
+    for name in ["start_server.sh", "orbstrike-online.service", "Caddyfile.example", "healthcheck.gd"]:
         target = bundle / "deploy" / name
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(project / "tools/deploy/online" / name, target)
@@ -77,7 +78,7 @@ def main() -> int:
         elif path.is_dir() and not any(path.iterdir()): path.rmdir()
     checked([args.godot, "--headless", "--path", str(bundle), "--log-file", str(output / "parse-engine.log"),
              "--check-only", "-s", "res://network/server_main.gd"], output / "parse.log", env)
-    (bundle / "README.txt").write_text("Sfery Online source-server bundle; engine is installed separately.\n"
+    (bundle / "README.txt").write_text("Orbstrike 0.4.0 source-server bundle; engine is installed separately.\n"
         "Use official Godot4.7.2 Linux x86_64; see the included docs/ONLINE_SERVER.md.\n"
         "No art, client UI, private configuration, account information or engine binary included.\n"
         "Runtime requires pre-generated .godot class cache shipped here; do not delete it.\n")
@@ -90,8 +91,8 @@ def main() -> int:
         for path in bundle.rglob("*"):
             path.chmod(0o555 if path.is_dir() or path.name == "start_server.sh" else 0o444)
         bundle.chmod(0o555)
-        runtime_env = dict(env, SFERY_SERVER_ROOT=str(bundle), GODOT=str(Path(args.godot).resolve()),
-                           SFERY_STATE_DIR=str(output / "server-state"), SFERY_PORT=str(port))
+        runtime_env = dict(env, ORBSTRIKE_SERVER_ROOT=str(bundle), GODOT=str(Path(args.godot).resolve()),
+                           ORBSTRIKE_STATE_DIR=str(output / "server-state"), ORBSTRIKE_PORT=str(port))
         server_log = open(output / "runtime.log", "w")
         server = subprocess.Popen([str(bundle / "deploy/start_server.sh")], env=runtime_env,
                                   stdout=server_log, stderr=subprocess.STDOUT)
@@ -125,13 +126,13 @@ def main() -> int:
     (bundle / "MANIFEST.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
     (bundle / "MANIFEST.json").chmod(0o444)
     bundle.chmod(0o555)
-    archive = output / f"sfery-online-{stamp}.tar.gz"
+    archive = output / f"orbstrike-online-{stamp}.tar.gz"
     def public_metadata(entry: tarfile.TarInfo) -> tarfile.TarInfo:
         entry.uid = entry.gid = 0
         entry.uname = entry.gname = ""
         return entry
     with tarfile.open(archive, "w:gz") as tar:
-        tar.add(bundle, arcname="sfery-online", filter=public_metadata)
+        tar.add(bundle, arcname="orbstrike-online", filter=public_metadata)
     digest = sha(archive)
     (output / (archive.name + ".sha256")).write_text(f"{digest}  {archive.name}\n")
     report = {"archive": str(archive), "bytes": archive.stat().st_size, "sha256": digest,

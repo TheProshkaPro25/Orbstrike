@@ -116,14 +116,17 @@ func _build() -> void:
 	left.add_child(_note)
 	_gate_btn = Button.new()
 	_gate_btn.text = "Открыть мои ворота"
-	_gate_btn.custom_minimum_size = Vector2(232, 40)
+	_gate_btn.custom_minimum_size = Vector2(176, 44)
 	_gate_btn.pressed.connect(func() -> void: gate_open_requested.emit())
-	hb.add_child(_gate_btn)
+	var actions := HBoxContainer.new()
+	actions.add_theme_constant_override("separation", 8)
+	hb.add_child(actions)
+	actions.add_child(_gate_btn)
 	_pass_btn = Button.new()
 	_pass_btn.text = "Пас"
-	_pass_btn.custom_minimum_size = Vector2(232, 44)
+	_pass_btn.custom_minimum_size = Vector2(92, 44)
 	_pass_btn.pressed.connect(_on_pass)
-	hb.add_child(_pass_btn)
+	actions.add_child(_pass_btn)
 	_panel.visible = false
 	_pager = HBoxContainer.new()
 	VisualUtil.place(_pager, 1.0, 1.0, -18.0, -20.0)
@@ -146,9 +149,12 @@ func _build() -> void:
 	get_viewport().size_changed.connect(_on_resized)
 
 
-## Компактное управление справа внизу; центр кадра остаётся бойцам.
+## В бою блок лежит над опущенной рукой ворот, не закрывая бойцов и ленту карт.
 func _place_panel() -> void:
-	VisualUtil.place(_panel, 1.0, 1.0, -16.0, -_card.y - 96.0)
+	if StringName(str(_info.get("moment", &""))) == &"battle":
+		VisualUtil.place(_panel, 0.0, 1.0, 16.0, -110.0)
+	else:
+		VisualUtil.place(_panel, 1.0, 1.0, -16.0, -_card.y - 96.0)
 
 
 func _on_resized() -> void:
@@ -188,7 +194,9 @@ func show_options(entries: Array, header: String = "Окно способнос�
 	_mode = Mode.PRETHROW if moment == &"pre_throw" else Mode.WINDOW
 	_title.text = header
 	_note.text = str(info.get("note", ""))
-	_note.visible = _note.text != ""
+	# Длинная справка не должна растить боевой блок поверх последней сыгранной карты.
+	_note.visible = _note.text != "" and moment != &"battle"
+	_panel.tooltip_text = _note.text + ("\nКарты играются по очереди, до трёх за бой. Наведите на название сыгранной карты, чтобы прочитать полные условия. Отдых — два следующих боя, даже после отмены. Последнему сразу возвращаются только синие усиления; явный возврат карты действует раньше." if moment == &"battle" else "")
 	_gate_btn.visible = bool(info.get("can_open_gate", false))
 	_pass_btn.visible = _mode == Mode.WINDOW
 	_pass_btn.text = str(info.get("pass_text", "Пас"))
