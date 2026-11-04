@@ -1,4 +1,4 @@
-# Orbstrike0.4.0 — приёмка завершена,4ноября2026
+# Orbstrike 0.4.0 опубликован — 4 ноября 2026
 
 По явному поручению автора игра переименована в **Orbstrike**, версия0.4.0.
 Включена вся завершённая работа после0.3.2:39SVG/эмаль/единые1:1.4карты/
@@ -25,8 +25,16 @@ Windows/macOSfeatureoverrideпроверенынаLinux, это не насто�
 НастоящаяWindows,внешнийWSS/TLS и прослушивание не выполнены.
 900балансныхматчейнеповторяли;сильныеусловныеконтрматчапы сохранены в отчёте.
 
-Checkpoint:tools/checkpoints/release040-validation.json. Публикация выполняется
-следующим шагом; в checkpoint будет отдельно указан проверенный публичный статус.
+Опубликован [Orbstrike 0.4.0](https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.4.0):
+Release ID 433502758, latest=true, draft=false, prerelease=false.
+Все шесть удалённых SHA256/размеров совпали; страница и все шесть скачиваний
+проверены без авторизации — HTTP200. Windows:
+https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.0/Orbstrike_v0.4.0_win64.zip.
+Сервер:
+https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.0/Orbstrike_v0.4.0_online-server.tar.gz.
+Тег v0.4.0 = 6bae0a7167ea524d77c2129fdd45a807d3216a06; master и ветка выпуска
+отправлены. Следующий коммит фиксирует только факт публикации; пакеты и тег неизменны.
+Checkpoint: tools/checkpoints/release040-validation.json.
 Исходники/.codex/49GLB/старыеисториисохранены. Успешныепроверки неповторятьбезпричины.
 
 # Баланс V9: конечная локальная приёмка завершена — 4 ноября 2026

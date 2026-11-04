@@ -1,7 +1,7 @@
 {
   "release": "Orbstrike 0.4.0",
   "date": "2026-11-04",
-  "status": "VALIDATED; publication pending",
+  "status": "published and verified",
   "authorization": "Explicit author request: rename game to Orbstrike and release0.4.0; supersedes paused0.3.3",
   "repository": "https://github.com/TheProshkaPro25/sfery-stikhiy",
   "release_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.4.0",
@@ -1198,5 +1198,118 @@
     "No subjective audio listening",
     "Small3–6px text in narrow card context; enlarged hover view available"
   ],
-  "publication": null
+  "publication": {
+    "status": "published;latest;all6remoteSHA256andsizesmatch;publicHTTP200",
+    "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.4.0",
+    "release_id": 433502758,
+    "tag": "v0.4.0",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2026-11-04T04:10:34Z",
+    "assets": [
+      {
+        "name": "ONLINE_SERVER.md",
+        "size": 14838,
+        "digest": "sha256:019c88c2b8360108d3eaffc66bb6fdd54e0ab1ae00bbe7d9fa4774ac2ce2ba90",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.0/ONLINE_SERVER.md"
+      },
+      {
+        "name": "Orbstrike_v0.4.0_online-server.tar.gz",
+        "size": 74109,
+        "digest": "sha256:bee0e5f765f6e236c42d75b9bec0e3220281b673eb3b7bafd72f621659849000",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.0/Orbstrike_v0.4.0_online-server.tar.gz"
+      },
+      {
+        "name": "Orbstrike_v0.4.0_online-server.tar.gz.sha256",
+        "size": 104,
+        "digest": "sha256:2c57c800738b56aec253c227a6a987083abf0b4770f94a6b512feef2164a6a93",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.0/Orbstrike_v0.4.0_online-server.tar.gz.sha256"
+      },
+      {
+        "name": "Orbstrike_v0.4.0_win64.zip",
+        "size": 1031717493,
+        "digest": "sha256:c51fd00b6b2ba0a0aa4c5e375bb9404a7990fcf993730e5085d42a9051419f20",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.0/Orbstrike_v0.4.0_win64.zip"
+      },
+      {
+        "name": "Orbstrike_v0.4.0_win64.zip.sha256",
+        "size": 93,
+        "digest": "sha256:1adfad600614788b53baff3cb51d664c9c9203584765186633c814421d7816c6",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.0/Orbstrike_v0.4.0_win64.zip.sha256"
+      },
+      {
+        "name": "SHA256SUMS",
+        "size": 491,
+        "digest": "sha256:66df73a38772b991232784eff291ee4867910168de73e86f5c1b99991979e0fc",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.0/SHA256SUMS"
+      }
+    ],
+    "latest": true,
+    "release_commit": "6bae0a7167ea524d77c2129fdd45a807d3216a06",
+    "public_availability": [
+      {
+        "name": "release",
+        "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.4.0",
+        "status": 200,
+        "content_length": null,
+        "authenticated": false
+      },
+      {
+        "name": "ONLINE_SERVER.md",
+        "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.0/ONLINE_SERVER.md",
+        "status": 200,
+        "content_length": "14838",
+        "authenticated": false
+      },
+      {
+        "name": "Orbstrike_v0.4.0_online-server.tar.gz",
+        "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.0/Orbstrike_v0.4.0_online-server.tar.gz",
+        "status": 200,
+        "content_length": "74109",
+        "authenticated": false
+      },
+      {
+        "name": "Orbstrike_v0.4.0_online-server.tar.gz.sha256",
+        "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.0/Orbstrike_v0.4.0_online-server.tar.gz.sha256",
+        "status": 200,
+        "content_length": "104",
+        "authenticated": false
+      },
+      {
+        "name": "Orbstrike_v0.4.0_win64.zip",
+        "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.0/Orbstrike_v0.4.0_win64.zip",
+        "status": 200,
+        "content_length": "1031717493",
+        "authenticated": false
+      },
+      {
+        "name": "Orbstrike_v0.4.0_win64.zip.sha256",
+        "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.0/Orbstrike_v0.4.0_win64.zip.sha256",
+        "status": 200,
+        "content_length": "93",
+        "authenticated": false
+      },
+      {
+        "name": "SHA256SUMS",
+        "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.0/SHA256SUMS",
+        "status": 200,
+        "content_length": "491",
+        "authenticated": false
+      }
+    ],
+    "remote_refs_before_publication_log_commit": [
+      "6bae0a7167ea524d77c2129fdd45a807d3216a06\trefs/heads/codex/release-0.4.0",
+      "6bae0a7167ea524d77c2129fdd45a807d3216a06\trefs/heads/master",
+      "6209205a16cd3b331ec3b9a78c65ef277a226d75\trefs/tags/v0.4.0",
+      "6bae0a7167ea524d77c2129fdd45a807d3216a06\trefs/tags/v0.4.0^{}"
+    ]
+  },
+  "release_code_commit": "6bae0a7167ea524d77c2129fdd45a807d3216a06",
+  "publication_log_commit": "Documentation only after tagged release code; tag and six assets unchanged."
 }
