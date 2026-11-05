@@ -7,7 +7,7 @@
   "rename_verified": true,
   "origin": "https://github.com/TheProshkaPro25/Orbstrike.git",
   "default_branch": "master",
-  "publication_status": "README prepared; repository rename and metadata public; final default-branch push verification follows",
+  "publication_status": "published on default master; public HTML/README/three images verified; release041 remains latest with unchanged assets",
   "description": "Orbstrike — пошаговая 3D-дуэль: шесть стихий, существа, карты ворот и физические броски. Windows · русский язык.",
   "homepage": "https://github.com/TheProshkaPro25/Orbstrike/releases/latest",
   "topics": [
@@ -68,7 +68,8 @@
     "reasoning_effort": "high",
     "status": "PASS; no blocking issues",
     "images_personally_viewed": 3,
-    "recommendation_applied": "Canyon uses location1-architecture.png from same accepted final set"
+    "recommendation_applied": "Canyon uses location1-architecture.png from same accepted final set",
+    "final_canyon_webp_review": "PASS; personally viewed after replacement, source/output SHA verified"
   },
   "public_links": [
     {
@@ -153,5 +154,75 @@
   "limitations": [
     "No native Windows or audio/FPS verification; documentation-only task",
     "Two arena images are accepted source test captures with HUD hidden, not retail gameplay screenshots"
-  ]
+  ],
+  "published_verification": {
+    "timestamp_utc": "2026-11-05T05:38:37.539949+00:00",
+    "repository": "https://github.com/TheProshkaPro25/Orbstrike",
+    "default_branch": "master",
+    "published_readme_commit": "2085e806346123f50a062e045f440e046f27d667",
+    "readme_public_matches_local": true,
+    "readme_blob_sha": "49d845c17ba3081d2580476d217cced22bb55837",
+    "public_page": {
+      "url": "https://github.com/TheProshkaPro25/Orbstrike",
+      "status": 200,
+      "rendered_content_checks": {
+        "title": true,
+        "features": true,
+        "start": true,
+        "download": true,
+        "three_images": true,
+        "technical_readme_link": true
+      }
+    },
+    "images": [
+      {
+        "url": "https://raw.githubusercontent.com/TheProshkaPro25/Orbstrike/master/docs/images/canyon.webp",
+        "status": 200,
+        "bytes": 158402,
+        "sha256": "c1f3cfc0f36029f303d3a7b3e462c92232c284f08165008dac41ae00f33d716d",
+        "matches_local": true
+      },
+      {
+        "url": "https://raw.githubusercontent.com/TheProshkaPro25/Orbstrike/master/docs/images/harbor.webp",
+        "status": 200,
+        "bytes": 149524,
+        "sha256": "9f983769677b58a367b5ff0d2115ddeb4ed369c805b122071c3fc428409ae511",
+        "matches_local": true
+      },
+      {
+        "url": "https://raw.githubusercontent.com/TheProshkaPro25/Orbstrike/master/docs/images/menu.webp",
+        "status": 200,
+        "bytes": 132920,
+        "sha256": "71905f419ed32c3bf12b7609b81d6ca54894ac595433d081e3129328972a756d",
+        "matches_local": true
+      }
+    ],
+    "release041_latest_id": 434817135,
+    "release041_assets_unchanged": true,
+    "release040_six_assets_unchanged": true,
+    "refs": [
+      "2085e806346123f50a062e045f440e046f27d667\trefs/heads/master",
+      "6209205a16cd3b331ec3b9a78c65ef277a226d75\trefs/tags/v0.4.0",
+      "6bae0a7167ea524d77c2129fdd45a807d3216a06\trefs/tags/v0.4.0^{}",
+      "80cf404d2a1e04570dd25d39170d39592a9386f2\trefs/tags/v0.4.1",
+      "61ed19cff19d02409d0614ce3a3a36304b28895d\trefs/tags/v0.4.1^{}"
+    ],
+    "metadata": {
+      "name": "Orbstrike",
+      "description": "Orbstrike — пошаговая 3D-дуэль: шесть стихий, существа, карты ворот и физические броски. Windows · русский язык.",
+      "homepage": "https://github.com/TheProshkaPro25/Orbstrike/releases/latest",
+      "topics": [
+        "3d-game",
+        "card-game",
+        "game",
+        "gdscript",
+        "godot",
+        "godot4",
+        "russian",
+        "singleplayer",
+        "turn-based-strategy",
+        "windows"
+      ]
+    }
+  }
 }
