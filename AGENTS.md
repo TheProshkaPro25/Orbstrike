@@ -1,7 +1,7 @@
 # Orbstrike — инструкции проекта
 
-Начинать с README.md и NEXT_SESSION.md. Текущий список задач — TODO.md, действующие
-правила — docs/RULES.md. SESSION_LOG.md — журнал, docs/archive/ — история,
+Начинать с README.md, docs/DEVELOPMENT.md и NEXT_SESSION.md. Текущий список задач —
+TODO.md, действующие правила — docs/RULES.md. SESSION_LOG.md — журнал, docs/archive/ — история,
 не руководство по актуальному состоянию. Код и воспроизводимые проверки имеют
 приоритет над старой записью об успешной проверке.
 

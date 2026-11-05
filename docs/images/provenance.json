@@ -1,0 +1,35 @@
+[
+  {
+    "image": "docs/images/menu.webp",
+    "source": "build/release041/runtime/checks/captures/05-settled-menu-1280.png",
+    "source_sha256": "bf2cf33fb8dc92bb5404b3db10d2b80769c0eff6f09fb4f903944edc11531edf",
+    "image_sha256": "71905f419ed32c3bf12b7609b81d6ca54894ac595433d081e3129328972a756d",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "bytes": 132920
+  },
+  {
+    "image": "docs/images/canyon.webp",
+    "source": "build/checks/presentation/selected-location-detail/location-detail/surface-geometry-fx-final-20261105/location1-architecture.png",
+    "source_sha256": "4efdd0d00b84baffd826465bcc13bfaacb793acd38e49adc069778bb335a60dd",
+    "image_sha256": "c1f3cfc0f36029f303d3a7b3e462c92232c284f08165008dac41ae00f33d716d",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "bytes": 158402
+  },
+  {
+    "image": "docs/images/harbor.webp",
+    "source": "build/checks/presentation/selected-location-detail/location-detail/surface-geometry-fx-final-20261105/location2-side.png",
+    "source_sha256": "b4178faa2a165458ac3a0090b7cb5f24aa33df807fca876c6d218223a44eca2c",
+    "image_sha256": "9f983769677b58a367b5ff0d2115ddeb4ed369c805b122071c3fc428409ae511",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "bytes": 149524
+  }
+]

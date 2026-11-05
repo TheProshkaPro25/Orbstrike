@@ -1,3 +1,31 @@
+# Оформление GitHub и имя Orbstrike — 5 ноября 2026
+
+По новому поручению автора репозиторий переименован в **Orbstrike**:
+https://github.com/TheProshkaPro25/Orbstrike. `origin` обновлён; папка проекта
+и пользовательские профили остаются прежними. Старые ссылки репозитория,
+релиза0.4.1 и трёх скачиваний перенаправляются: все10publicHEAD далиHTTP200.
+
+README теперь предназначен игрокам: короткое описание,49вариантов/6стихий,
+режимы, Windows0.4.1, запуск/управление и честное ограничение интернет-дуэли.
+Техническое содержимое прежнегоREADME полностью сохранено в docs/DEVELOPMENT.md;
+AGENTS указывает читать его при начале работы. Description/topics/homepage
+GitHub обновлены; homepage ведёт на последний выпуск. Актуальные навигационные
+ссылки используют Orbstrike, исторические отчёты/архивы не переписаны.
+
+Три реальных кадра сохранены в docs/images/ как WebP1280×720: меню из
+проверенногоPCK0.4.1, Каньон/Гавань из финального принятого source-стенда.
+В source-кадрах скрытHUD; происхождение/SHA256 — docs/images/provenance.json.
+Добавлен .gdignore, чтобы иллюстрации документации не импортировались в игру.
+Solhigh независимо прочитал текст/перенос/ссылки/SHA и лично просмотрел3WebP:
+блокеров нет. По рекомендации выбран более выразительный architecture-ракурс
+Каньона. Локальные ссылки/декодирование3WebP/diff--check — PASS.
+
+Обновление главной ветки — обычныйfast-forward от38d1daf через уже опубликованный
+код0.4.1 и документы. Тегv0.4.1/пакеты остаются прежними; новой сборки, игрового
+запуска или серверной работы не было. Подробная проверка публикации оформления —
+tools/checkpoints/repository-presentation-2026-11-05.json.
+NEXT: ждать следующего поручения автора; сервер не трогать без отдельной просьбы.
+
 # Orbstrike 0.4.1 опубликован — только клиент, 5 ноября 2026
 
 По явному поручению автора выпущен клиент0.4.1. Позднее уточнение сохраняется:
@@ -25,12 +53,12 @@ runtime использует прежний assets/audio/music/battle.ogg; но�
 Все графические запуски свёрнутые/нефокусируемые/offscreen60FPS через wrapper,
 звук приглушён. Это Linux/Vulkan: настоящая Windows, прослушивание и FPS не проверены.
 
-Опубликован [Orbstrike0.4.1](https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.4.1):
+Опубликован [Orbstrike0.4.1](https://github.com/TheProshkaPro25/Orbstrike/releases/tag/v0.4.1):
 ReleaseID434817135,latest=true,draft=false,prerelease=false. Состав строго клиентский:
 Orbstrike_v0.4.1_win64.zip, его.sha256 и SHA256SUMS. Все3удалённыхSHA256/размера
 совпали; страница и3скачивания HTTP200 без авторизации. ZIP1031768343байт,
 SHA256 41c54a7b68a63d8c36dbc303ea3165f56be9ca3ce6e099727022431387531569.
-Windows: https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.1/Orbstrike_v0.4.1_win64.zip
+Windows: https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.1/Orbstrike_v0.4.1_win64.zip
 Тегv0.4.1 →61ed19cff19d02409d0614ce3a3a36304b28895d,новаяветкаcodex/release-0.4.1.
 Master не менялся;0.4.0 и SHA/размеры всех6егоassets сохранены. Следующий коммит
 фиксирует только документы/checkpoint публикации, не тег/код/пакеты.
@@ -38,8 +66,8 @@ Master не менялся;0.4.0 и SHA/размеры всех6егоassets с�
 Автоматическая проверка первоначально отклонила отправку; после явного «разрешаю»
 на конкретныйрепозиторий/исходники/клиент/ветку/tag/release публикация разрешена
 и завершена. История блока/согласия/remoteпроверок — release041checkpoint.
-NEXT: отдельное новое поручение автора — переименовать/оформить репозиторий;
-в рамках этого выпуска rename/редизайн не выполнялись. Без новых изменений
+Следующее отдельное поручение автора — переименовать/оформить репозиторий —
+выполнено после этого выпуска; см. раздел в начале файла. Без новых изменений
 успешные проверки и сборку не повторять.
 
 Checkpoint: tools/checkpoints/release041-validation.json.
@@ -295,13 +323,13 @@ Windows/macOSfeatureoverrideпроверенынаLinux, это не насто�
 НастоящаяWindows,внешнийWSS/TLS и прослушивание не выполнены.
 900балансныхматчейнеповторяли;сильныеусловныеконтрматчапы сохранены в отчёте.
 
-Опубликован [Orbstrike 0.4.0](https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.4.0):
+Опубликован [Orbstrike 0.4.0](https://github.com/TheProshkaPro25/Orbstrike/releases/tag/v0.4.0):
 Release ID 433502758, latest=true, draft=false, prerelease=false.
 Все шесть удалённых SHA256/размеров совпали; страница и все шесть скачиваний
 проверены без авторизации — HTTP200. Windows:
-https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.0/Orbstrike_v0.4.0_win64.zip.
+https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.0/Orbstrike_v0.4.0_win64.zip.
 Сервер:
-https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.0/Orbstrike_v0.4.0_online-server.tar.gz.
+https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.0/Orbstrike_v0.4.0_online-server.tar.gz.
 Тег v0.4.0 = 6bae0a7167ea524d77c2129fdd45a807d3216a06; master и ветка выпуска
 отправлены. Следующий коммит фиксирует только факт публикации; пакеты и тег неизменны.
 Checkpoint: tools/checkpoints/release040-validation.json.
@@ -655,7 +683,7 @@ SHA256`4f4c50545b28f2188f8c0d4b515f5c0638e9d9fd38414b055397fbfd0cf6ddfc`.
 
 ## Публикация
 
-Выпуск опубликован: https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.3.2.
+Выпуск опубликован: https://github.com/TheProshkaPro25/Orbstrike/releases/tag/v0.3.2.
 Release ID433204622; latest=true, draft=false, prerelease=false.
 Все шесть удалённых SHA256/размеров совпали с проверенными пакетами;
 страница и все шесть ссылок скачивания ответили HTTP200 без авторизации.
@@ -663,7 +691,7 @@ Release ID433204622; latest=true, draft=false, prerelease=false.
 master иcodex/release-0.3.2 отправлены, прежние теги сохранены.
 Следующий коммит фиксирует только факт публикации: код, тег и пакеты неизменны.
 Прямой WindowsZIP:
-https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.3.2/Sfery_Stikhiy_v0.3.2_win64.zip.
+https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.3.2/Sfery_Stikhiy_v0.3.2_win64.zip.
 
 ## Границы и следующий этап
 

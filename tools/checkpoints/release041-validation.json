@@ -5,8 +5,8 @@
   "authorization": "Explicit author request: обновление0.4.1сделай. Later author steering: defer server work until explicitly requested; publish CLIENT ONLY.",
   "version": "0.4.1",
   "rules_tag": "online-rules-11",
-  "repository": "https://github.com/TheProshkaPro25/sfery-stikhiy",
-  "release_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.4.1",
+  "repository": "https://github.com/TheProshkaPro25/Orbstrike",
+  "release_url": "https://github.com/TheProshkaPro25/Orbstrike/releases/tag/v0.4.1",
   "previous_release_preserved": "v0.4.0",
   "scope": "Windows client only; no server/deployment assets published",
   "all_completed_changes_included": [
@@ -1211,5 +1211,6 @@
     "package_still_validated": true,
     "resolved": "Explicit destination authorization received; branch/tag/release publication and public verification completed successfully."
   },
-  "publication_log_commit": "Documentation/checkpoint only after tagged release code; tag and3assets unchanged."
+  "publication_log_commit": "Documentation/checkpoint only after tagged release code; tag and3assets unchanged.",
+  "repository_rename_note": "Repository renamed from sfery-stikhiy to Orbstrike on 2026-11-05 after publication; recorded publication URL/HTTP evidence below is retained as captured."
 }
