@@ -291,15 +291,15 @@ func _test_card_db() -> void:
 	for d in CardDB.all_creatures():
 		per_attr[d.attribute] += 1
 	_check(per_attr.min() >= 3, "по 3+ существа каждой стихии: %s" % str(per_attr))
-	_check(CardDB.arena_ids().size() == 25, "25 карт ворот (7 стихии + 8 вида + 10 командных): %d" % CardDB.arena_ids().size())
-	_check(CardDB.ability_ids().size() == 54, "54 способности (20 стихийных + 18 усилений + 16 видовых): %d" % CardDB.ability_ids().size())
+	_check(CardDB.arena_ids().size() == 26, "26 карт ворот (7 стихии + 8 вида + 11 командных): %d" % CardDB.arena_ids().size())
+	_check(CardDB.ability_ids().size() == 60, "60 способностей (26 стихийных + 18 усилений + 16 видовых): %d" % CardDB.ability_ids().size())
 	var counts: Dictionary = {}
 	for id in CardDB.arena_ids() + CardDB.ability_ids():
 		var c: CardDef = CardDB.card(id)
 		var cls: StringName = CardDB.card_class(c)
 		counts[cls] = int(counts.get(cls, 0)) + 1
 		_check(c.text != "" and c.text.length() <= 120, "текст карты %s короткий и непустой" % id)
-	_check(counts == {&"gold": 7, &"silver": 8, &"bronze": 10, &"red": 14, &"blue": 18, &"green": 16}, "классы карт: %s" % str(counts))
+	_check(counts == {&"gold": 7, &"silver": 8, &"bronze": 11, &"red": 26, &"blue": 18, &"green": 16}, "классы карт: %s" % str(counts))
 	# у каждой стихии 2–3 стихийные и 3 усиления, у каждого вида 2 видовые
 	for el in range(6):
 		_check(CardDB.cards_of(CardDef.Kind.ABILITY, &"red", el).size() >= 2, "стихийные способности стихии %d" % el)

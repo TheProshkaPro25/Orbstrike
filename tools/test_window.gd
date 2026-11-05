@@ -15,7 +15,9 @@ static func background(tree: SceneTree) -> void:
 		if not window.unfocusable: window.unfocusable = true
 		if window.mode != Window.MODE_MINIMIZED: window.mode = Window.MODE_MINIMIZED
 		RenderingServer.viewport_set_update_mode(window.get_viewport_rid(), RenderingServer.VIEWPORT_UPDATE_ALWAYS)
-		RenderingServer.force_draw(false)
+		# force_draw по умолчанию получает frame_step=0: в свёрнутом окне тогда
+		# замирают TIME и GPU-частицы. Продвигаем их тем же временем, что SceneTree.
+		RenderingServer.force_draw(false,window.get_process_delta_time())
 	tree.process_frame.connect(draw)
 	tree.set_meta("sfery_background_draw", draw)
 	print("Background GPU test: minimized, unfocusable, offscreen rendering")

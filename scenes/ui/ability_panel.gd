@@ -11,6 +11,7 @@ signal gate_open_requested
 signal passed
 signal unavailable(reason: String)
 var reason_for_card: Callable
+var warning_for_card: Callable
 var _page := 0
 var _capacity := 5
 var _pager: HBoxContainer
@@ -191,6 +192,7 @@ func show_options(entries: Array, header: String = "Окно способнос�
 	_page = 0
 	_info = info
 	var moment: StringName = StringName(str(info.get("moment", &"battle")))
+	_info["header"] = header
 	_mode = Mode.PRETHROW if moment == &"pre_throw" else Mode.WINDOW
 	_title.text = header
 	_note.text = str(info.get("note", ""))
@@ -301,7 +303,7 @@ func _rebuild() -> void:
 					_change_page(-1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1)
 					get_viewport().set_input_as_handled())
 		var reason := str(reason_for_card.call(cid)) if reason_for_card.is_valid() else "Сейчас эта карта недоступна"
-		cv._help[6] = reason if not _legal.has(cid) else "ДОСТУПНА · щелчок, чтобы сыграть"
+		cv._help[6] = reason if not _legal.has(cid) else _playable_help(cid)
 		cv.set_meta("silent_select", not _legal.has(cid) or _mode == Mode.IDLE)
 		if _mode != Mode.IDLE:
 			var ok: bool = _legal.has(cid)
@@ -351,11 +353,31 @@ func _layout(animate: bool) -> void:
 func _on_hover(cv: CardView, on: bool) -> void:
 	if on:
 		if reason_for_card.is_valid():
-			cv._help[6] = str(reason_for_card.call(cv.card_id)) if _mode == Mode.IDLE or not _legal.has(cv.card_id) else "ДОСТУПНА · щелчок, чтобы сыграть"
+			cv._help[6] = str(reason_for_card.call(cv.card_id)) if _mode == Mode.IDLE or not _legal.has(cv.card_id) else _playable_help(cv.card_id)
 		_hovered = cv
 	elif _hovered == cv:
 		_hovered = null
+	var warning := _warning(cv.card_id) if on and _mode != Mode.IDLE and _legal.has(cv.card_id) else ""
+	_title.text = _warning_title(cv.card_id) if warning != "" else str(_info.get("header", ""))
+	_title.tooltip_text = warning
 	_layout(true)
+
+
+func _warning(id: StringName) -> String:
+	return str(warning_for_card.call(id)) if warning_for_card.is_valid() else ""
+
+
+func _warning_title(id: StringName) -> String:
+	var card := CardDB.card(id)
+	if CardEffects.is_effect(card, &"swap_fighter"): return "Внимание: замена бойца"
+	if CardEffects.is_effect(card, &"shift_gate"): return "Внимание: обмен воротами"
+	if CardEffects.is_effect(card, &"ebb"): return "Внимание: условие прерывания"
+	return "Внимание: запрет дальнейших карт"
+
+
+func _playable_help(id: StringName) -> String:
+	var warning := _warning(id)
+	return "ДОСТУПНА · щелчок, чтобы сыграть" + ("\n" + warning if warning != "" else "")
 
 
 func _on_card_pressed(cv: CardView) -> void:

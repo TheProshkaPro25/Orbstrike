@@ -67,6 +67,7 @@ func _ready() -> void:
 	ability_panel.unavailable.connect(func(reason: String) -> void: hud.reject_action(reason))
 	ability_panel.reason_for_card = func(id: StringName) -> String:
 		return str(snapshot.get("legal", {}).get("ability_reasons", {}).get(String(id), "Ожидается ответ сервера"))
+	ability_panel.warning_for_card = MatchController.ability_play_warning
 	arena.slot_clicked.connect(_on_slot_picked)
 	game_over_ui.restart_requested.connect(_on_restart)
 	game_over_ui.set_restart_text("Реванш")
@@ -326,7 +327,7 @@ func _apply_snapshot(data: Dictionary) -> void:
 			await director.battle_started(preview.slot,preview.attacker_uid,preview.defender_uid,preview.powers,preview.momentum)
 			if _closed or epoch != _connection_epoch: return
 		battle_hud.set_powers(preview.powers)
-		battle_hud.set_chain(preview.plays, preview.passed, 0 if _owner_of(preview.attacker_uid) == view.active_player else 1, preview.cancelled_plays, preview.ability_counts)
+		battle_hud.set_chain(preview.plays, preview.passed, 0 if _owner_of(preview.attacker_uid) == view.active_player else 1, preview.cancelled_plays, preview.ability_counts, [MatchController.battle_ability_block_reason(preview, 0), MatchController.battle_ability_block_reason(preview, 1)])
 	else:
 		battle_hud.close()
 		hud.set_battle_mode(false)

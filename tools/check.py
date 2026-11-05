@@ -22,8 +22,11 @@ args = parser.parse_args()
 if args.only and args.profile:
     parser.error('--only и --profile выбирают область разными способами; укажите один')
 MODELS = ['animation', 'support', 'flight', 'idle', 'stance', 'review-state', 'preparation-cache', 'preview-pool', 'memory-catalog', 'cloth-sharing', 'hd-material-retention']
-RULES = ['ai-swap-combo', 'ai-fallen-call', 'ai-formation', 'card-price-rules', 'standoff-lottery', 'last-rush', 'ai-interruption', 'ai-material', 'ai-forecast', 'ai-gust-risk', 'ai-target-flow', 'cards033', 'campaign', 'tournament', 'rules', 'rules-edges', 'cards', 'card-balance', 'card-matches', 'card-counters', 'card-scenarios', 'card-choices', 'card-audit-positions', 'ai', 'ai-gates', 'ai-outcomes', 'ai-rescue-matches', 'shot-physics']
+RULES = ['card-effect-edges', 'battle-lockout', 'ai-swap-combo', 'ai-fallen-call', 'ai-formation', 'card-price-rules', 'standoff-lottery', 'last-rush', 'ai-interruption', 'ai-material', 'ai-forecast', 'ai-gust-risk', 'ai-target-flow', 'cards033', 'campaign', 'tournament', 'rules', 'rules-edges', 'cards', 'card-balance', 'card-matches', 'card-counters', 'card-scenarios', 'card-choices', 'card-audit-positions', 'ai', 'ai-gates', 'ai-outcomes', 'ai-rescue-matches', 'shot-physics']
 SCRIPTS = {
+    'card-effect-edges': 'tests/card_effect_edge_tests.gd',
+    'battle-lockout': 'tests/battle_lockout_tests.gd',
+    'battle-lockout-ui': 'tests/battle_lockout_ui_tests.gd',
     'ai-swap-combo': 'tests/ai_swap_combo_strategy_tests.gd',
     'ai-fallen-call': 'tests/ai_fallen_call_strategy_tests.gd',
     'ai-formation': 'tools/ai_formation_positions.gd',
@@ -72,6 +75,7 @@ SCRIPTS = {
     'character-editor': 'tests/character_editor_tests.gd',
     'card-balance': 'tools/card_balance_probe.gd', 'card-matches': 'tools/card_balance_matches.gd', 'card-counters': 'tools/card_counter_probe.gd', 'card-scenarios': 'tests/card_balance_scenarios.gd', 'card-choices': 'tools/card_choice_audit.gd',
     'card-audit-positions': 'tests/card_audit_balance_tests.gd', 'card-audit-balance': 'tools/card_audit_balance_probe.gd',
+    'location-detail': 'tests/location_detail_tests.gd',
     'battle-card-hover': 'tests/battle_card_hover_tests.gd',
     'cards033': 'tests/cards033_tests.gd', 'cards033-ui': 'tests/new_cards_ui_tests.gd',
     'cards': 'tests/card_revision_tests.gd', 'cards-ui': 'tests/card_readability_tests.gd',
@@ -89,11 +93,11 @@ SCRIPTS = {
 if args.profile == 'gameplay':
     plan = ['import', *RULES, 'online-core', 'online-messages', 'online-physics', 'online-ui', 'startup-loading', 'turn-pool', 'duel-exit', 'campaign-flow', 'tournament-flow', 'autoplay']
 elif args.profile == 'presentation':
-    plan = ['import', 'card-pact-price-ui', 'card-leap-price-ui', 'card-sure-price-ui', 'card-price-ui', 'standoff-notice', 'last-rush-ui', 'duel-exit', 'online-ui', 'online-disconnect', 'online-gate-result', 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'npc-appearance', 'hand-placement', 'campaign-ui', 'tournament-ui', 'menu-lighting', 'sanctuary-mood', 'shot-physics', 'sphere-pose', 'reveal-camera', 'ability-input', 'battle-card-hover', 'cards-ui', 'cards-art', 'cards033-ui', 'portrait-visibility', 'menu-music', 'menu-environment', 'window-lighting', 'high-graphics', 'experience']
+    plan = ['import', 'battle-lockout-ui', 'card-pact-price-ui', 'card-leap-price-ui', 'card-sure-price-ui', 'card-price-ui', 'standoff-notice', 'last-rush-ui', 'duel-exit', 'online-ui', 'online-disconnect', 'online-gate-result', 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'npc-appearance', 'hand-placement', 'campaign-ui', 'tournament-ui', 'menu-lighting', 'sanctuary-mood', 'location-detail', 'shot-physics', 'sphere-pose', 'reveal-camera', 'ability-input', 'battle-card-hover', 'cards-ui', 'cards-art', 'cards033-ui', 'portrait-visibility', 'menu-music', 'menu-environment', 'window-lighting', 'high-graphics', 'experience']
 elif args.profile == 'models':
     plan = ['import', *MODELS]
 elif args.profile == 'full':
-    plan = ['import', *RULES, 'online-core', 'online-messages', 'online-physics', 'online-ui', 'card-pact-price-ui', 'card-leap-price-ui', 'card-sure-price-ui', 'card-price-ui', 'standoff-notice', 'last-rush-ui', *MODELS, 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'npc-appearance', 'hand-placement', 'campaign-ui', 'tournament-ui', 'gpu-core', 'menu-lighting', 'sanctuary-mood', 'sphere-pose', 'reveal-camera', 'ability-input', 'battle-card-hover', 'cards-ui', 'cards-art', 'cards033-ui', 'portrait-visibility', 'menu-music', 'menu-environment', 'window-lighting', 'high-graphics', 'experience', 'startup-loading', 'turn-pool', 'duel-exit', 'campaign-flow', 'tournament-flow', 'autoplay']
+    plan = ['import', *RULES, 'online-core', 'online-messages', 'online-physics', 'online-ui', 'card-pact-price-ui', 'card-leap-price-ui', 'card-sure-price-ui', 'card-price-ui', 'standoff-notice', 'last-rush-ui', *MODELS, 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'npc-appearance', 'hand-placement', 'campaign-ui', 'tournament-ui', 'gpu-core', 'menu-lighting', 'sanctuary-mood', 'location-detail', 'sphere-pose', 'reveal-camera', 'ability-input', 'battle-card-hover', 'cards-ui', 'cards-art', 'cards033-ui', 'portrait-visibility', 'menu-music', 'menu-environment', 'window-lighting', 'high-graphics', 'experience', 'startup-loading', 'turn-pool', 'duel-exit', 'campaign-flow', 'tournament-flow', 'autoplay']
 elif args.only:
     plan = args.only
 else:
@@ -151,7 +155,7 @@ for name in plan:
     if name == 'import':
         command += ['--headless', '--editor', '--import']
     else:
-        graphics = name in ['card-pact-price-ui', 'card-leap-price-ui', 'card-sure-price-ui', 'card-price-ui', 'standoff-notice', 'last-rush-ui', 'menu-music', 'memory-catalog', 'cloth-sharing', 'portrait-visibility', 'duel-exit', 'online-ui', 'online-disconnect', 'online-gate-result', 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'battle-card-hover', 'cards-ui', 'cards-art', 'cards033-ui', 'menu-environment', 'menu-lighting', 'sanctuary-mood', 'startup-loading', 'experience', 'autoplay', 'gpu-core', 'ability-input', 'window-lighting', 'high-graphics', 'turn-pool', 'campaign-flow', 'campaign-flow', 'tournament-flow', 'tournament-ui', 'hand-placement', 'npc-appearance', 'campaign-ui'] or (name in MODELS and (args.visual or args.profile == 'full'))
+        graphics = name in ['location-detail', 'battle-lockout-ui', 'card-pact-price-ui', 'card-leap-price-ui', 'card-sure-price-ui', 'card-price-ui', 'standoff-notice', 'last-rush-ui', 'menu-music', 'memory-catalog', 'cloth-sharing', 'portrait-visibility', 'duel-exit', 'online-ui', 'online-disconnect', 'online-gate-result', 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'battle-card-hover', 'cards-ui', 'cards-art', 'cards033-ui', 'menu-environment', 'menu-lighting', 'sanctuary-mood', 'startup-loading', 'experience', 'autoplay', 'gpu-core', 'ability-input', 'window-lighting', 'high-graphics', 'turn-pool', 'campaign-flow', 'campaign-flow', 'tournament-flow', 'tournament-ui', 'hand-placement', 'npc-appearance', 'campaign-ui'] or (name in MODELS and (args.visual or args.profile == 'full'))
         if not graphics:
             command += ['--headless']
         script = SCRIPTS[name]
@@ -175,7 +179,7 @@ for name in plan:
             command += ['--', str(OUT/'ui')]
         elif name == 'rules':
             command += ['--', 'rules-only']
-        elif name in ['menu-lighting', 'sanctuary-mood', 'cards-art', 'menu-environment']:
+        elif name in ['location-detail', 'menu-lighting', 'sanctuary-mood', 'cards-art', 'menu-environment']:
             command += ['--', str(OUT/name)]
         elif name == 'startup-loading':
             command += ['--', str(OUT/'startup-loading')]

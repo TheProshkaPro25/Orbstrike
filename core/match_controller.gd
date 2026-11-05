@@ -357,6 +357,19 @@ func _ability_requirement_reason(uid: int, id: StringName, own: Array, mom: Stri
 	if cm == &"battle" and mom != &"battle":
 		return "Только во время боя"
 	if CardEffects.is_fusion(c):
+		if mom == &"battle":
+			# Основа фиксируется порядком розыгрышей, как main_of в PowerCalc.
+			# Нельзя пропустить последнюю отменённую основу и потратить слияние
+			# поверх более ранней действующей: расчёт всё равно погасит его.
+			var pre := get_battle_preview()
+			var side := 0 if uid == _b_atk else 1
+			for k in range(pre.plays.size() - 1, -1, -1):
+				var pl: Array = pre.plays[k]
+				var main := CardDB.card(StringName(pl[1]))
+				if int(pl[0]) == side and not CardEffects.is_fusion(main):
+					if pre.cancelled_plays.has(pl):
+						return "Последняя основная способность «%s» отменена; слияние с ней не сработает" % main.display_name
+					break
 		if own.is_empty() or CardEffects.is_fusion(CardDB.card(StringName(own.back()))):
 			return "Сначала сыграйте свою основную способность без слияния"
 	var cdef: CreatureDef = CardDB.creature(state.creatures[uid].def_id)
@@ -440,7 +453,7 @@ func ability_unavailable_reason(player: int, id: StringName) -> String:
 		if pre.silenced[side] and not (c != null and bool(c.params.get("reactive", false)) and PowerCalc.reactive_allowed(pre, side)):
 			return "Способности запрещены действием ворот или карты соперника"
 		if PowerCalc.side_locked(pre, side):
-			return "Ваша карта или скопированный эффект запрещает дальнейшие способности в этом бою"
+			return battle_ability_block_reason(pre, side)
 		uid = _b_atk if side == 0 else _b_def
 		for pl in PowerCalc.attached_plays(state, _b_atk, _b_def) + _b_plays:
 			if int(pl[0]) == side and not pre.cancelled_plays.has(pl):
@@ -460,6 +473,40 @@ func ability_unavailable_reason(player: int, id: StringName) -> String:
 	else:
 		return "Сейчас выберите ворота или существо; способности доступны перед размещением и в бою"
 	return _ability_requirement_reason(uid, id, own, mom)
+
+
+## Объяснение текущего запрета по самому расчёту, включая итог прошлого боя.
+## Лимит — потолок; действующий собственный lockout может закрыть карты раньше.
+static func battle_ability_block_reason(r: BattleResult, side: int) -> String:
+	if r == null or side not in [0, 1]:
+		return ""
+	if PowerCalc.side_locked(r, side):
+		for pl in r.plays:
+			var card := CardDB.card(StringName(pl[1]))
+			if int(pl[0]) == side and not r.cancelled_plays.has(pl) and CardEffects.is_lockout(card):
+				return "«%s»: дальнейшие способности этой стороны запрещены в этом бою" % card.display_name
+		for cp in r.copies:
+			if int(cp[0]) == side and CardEffects.is_lockout(CardDB.card(StringName(cp[2]))):
+				return "«%s»: скопированный эффект «%s» запрещает дальнейшие способности этой стороны в этом бою" % [CardDB.card(StringName(cp[1])).display_name, CardDB.card(StringName(cp[2])).display_name]
+	if r.ability_count(side) >= MAX_BATTLE_ABILITIES:
+		return "Лимит: не больше трёх способностей на бой"
+	return ""
+
+
+## Предупреждение до щелчка; Копия может получить запрет от будущей карты.
+static func ability_play_warning(id: StringName) -> String:
+	var card := CardDB.card(id)
+	if CardEffects.is_lockout(card):
+		return "Пока «%s» действует в бою, после неё вы больше не играете способности, даже если сыграно меньше трёх. Соперник сможет ответить." % card.display_name
+	if CardEffects.is_effect(card, &"copy"):
+		return "Если Копия повторит запрет дальнейших карт, вы больше не сможете отвечать способностями в этом бою. Соперник сможет играть дальше. Отмена или подавление Копии снимет её запрет."
+	if CardEffects.is_effect(card, &"swap_fighter"):
+		return "Замена происходит сразу. Прикрепления прежнего бойца останутся на нём, но потраченные на них действия не освободятся. Подавление силы карты не вернёт прежнего бойца в этот бой."
+	if CardEffects.is_effect(card, &"shift_gate"):
+		return "Обмен воротами происходит сразу, новая карта открывается. Подавление прибавки силы не отменит обмен воротами."
+	if CardEffects.is_effect(card, &"ebb"):
+		return "Бой прервётся после двух пасов, только если есть свободные ворота. До итога соперник может отменить или подавить Отлив."
+	return ""
 
 
 ## Предпросмотр боя в окне способностей (уже сыгранные способности учтены, будущие — нет). Иначе null.

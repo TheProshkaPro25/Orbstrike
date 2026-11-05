@@ -20,6 +20,11 @@ func _run() -> void:
 	if not args.is_empty(): out_dir = args[0]
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	root.theme = UiTheme.get_theme()
+	if OS.get_environment("ORBSTRIKE_HOVER_FOCUS") == "1":
+		await _real_battle()
+		print("Подсказки сыгранных карт: %d проверок, %d ошибок" % [checks, failures])
+		quit(1 if failures else 0)
+		return
 	var hud := BattleHud.new()
 	root.add_child(hud)
 	var plays: Array = [[0, &"ability_fire_drain"], [1, &"ability_klykar_bite"], [0, &"ability_dragnar_heart"], [1, &"ability_light_purge"], [0, &"ability_rogozhuk_shell"], [1, &"ability_stone_copy"]]
@@ -45,7 +50,7 @@ func _run() -> void:
 			Input.parse_input_event(motion)
 			await process_frame
 			check(root.gui_get_hovered_control() == chip, "реальное наведение достигает карты любой стороны")
-			var explanation: Control = chip._make_custom_tooltip(chip.tooltip_text)
+			var explanation: Control = UiTheme.help_panel(chip.help)
 			root.add_child(explanation)
 			await process_frame
 			check(explanation.size.x < viewport_size.x and explanation.size.y < viewport_size.y - 24, "подсказка помещается в экран: %s %s %s" % [card.id, viewport_size, explanation.size])
@@ -81,11 +86,19 @@ func _run() -> void:
 	quit(1 if failures else 0)
 
 func _has_tooltip(node: Node) -> bool:
+	if node is BattleHud and is_instance_valid(node._chain_help): return true
 	if node is PopupPanel and node.visible:
 		return true
 	for child in node.get_children(true):
 		if _has_tooltip(child): return true
 	return false
+
+func _tooltip(node: Node) -> Control:
+	if node is BattleHud and is_instance_valid(node._chain_help): return node._chain_help
+	for child in node.get_children(true):
+		var found := _tooltip(child)
+		if found != null: return found
+	return null
 
 func _real_battle() -> void:
 	# Та же сцена и порядок слоёв, что в дуэли; standalone BattleHud не видит перекрытий.
@@ -101,7 +114,8 @@ func _real_battle() -> void:
 	game.hud.set_battle_mode(true)
 	check(not is_instance_valid(game.hud._coach) and game.hud._coach_queue.is_empty(), "вход в бой убирает устаревшие советы, освобождая блок ответа")
 	game.hud.set_hint("Ваша способность?")
-	for viewport_size in [Vector2i(960,540), Vector2i(1280,720), Vector2i(1920,1080)]:
+	var sizes := [Vector2i(960,540)] if OS.get_environment("ORBSTRIKE_HOVER_FOCUS") == "1" else [Vector2i(960,540), Vector2i(1280,720), Vector2i(1920,1080)]
+	for viewport_size in sizes:
 		root.size = viewport_size
 		root.content_scale_size = viewport_size
 		await process_frame
@@ -150,11 +164,48 @@ func _real_battle() -> void:
 	for frame in 5: await process_frame
 
 func _hover_chip(chip: Control, viewport_size: Vector2i, description: String) -> void:
-	var motion := InputEventMouseMotion.new()
-	motion.position = chip.get_global_rect().get_center()
-	Input.parse_input_event(motion)
+	# Центр не обнаруживает частичное перекрытие букв/краёв соседним UI.
+	var rect := chip.get_global_rect()
+	# Завершить чтение предыдущего раскрытия: над закрытой им надписью
+	# указатель всё ещё находится на читаемой карте, а не выбирает новую.
+	var leave := InputEventMouseMotion.new()
+	leave.position = root.get_final_transform() * Vector2(8,viewport_size.y - 8)
+	Input.parse_input_event(leave)
+	await create_timer(.2).timeout
+	var start := InputEventMouseMotion.new()
+	start.position = root.get_final_transform() * rect.get_center()
+	Input.parse_input_event(start)
+	await create_timer(.8).timeout
+	var popup := _tooltip(root)
+	check(popup != null,"подсказка открыта перед проходом всей надписи: " + description)
+	if popup != null:
+		check(popup.get_child(0).card_id == chip.help[7].card_id, "раскрыта именно выбранная надпись: " + description)
+		check(not popup.get_global_rect().intersects(rect), "раскрытие не закрывает свою надпись: " + description)
+	for fy in [.12, .5, .88]:
+		for fx in [.02, .25, .5, .75, .98]:
+			var motion := InputEventMouseMotion.new()
+			# parse_input_event принимает координаты окна, включая stretch/масштаб
+			# (менеджер окон может ограничить физические 1080px свёрнутого окна).
+			motion.position = root.get_final_transform() * (rect.position + rect.size * Vector2(fx, fy))
+			Input.parse_input_event(motion)
+			await process_frame
+			check(root.gui_get_hovered_control() == chip,"реальная сцена: вся плашка %s %s (%s,%s); попали в %s; rect%s mouse%s" % [description,viewport_size,fx,fy,root.gui_get_hovered_control(),rect,root.get_mouse_position()])
+			check(popup != null and _tooltip(root) == popup,"движение по надписи сохраняет ту же подсказку: " + description)
+	var title: Label = chip.get_child(0)
+	check(rect.grow(.5).encloses(title.get_global_rect()), "вся область названия внутри hover: " + description)
+	var center_motion := InputEventMouseMotion.new()
+	center_motion.position = root.get_final_transform() * rect.get_center()
+	Input.parse_input_event(center_motion)
 	await process_frame
-	check(root.gui_get_hovered_control() == chip,"реальная сцена: наведение %s %s" % [description,viewport_size])
+	if popup != null:
+		var reading_rect: Rect2 = popup.get_global_rect()
+		var reading := InputEventMouseMotion.new()
+		reading.position = root.get_final_transform() * reading_rect.get_center()
+		Input.parse_input_event(reading)
+		await create_timer(.4).timeout
+		check(is_instance_valid(popup) and _tooltip(root) == popup, "мышь на раскрытой карте сохраняет чтение: %s; target%s mouse%s hovered%s active%s" % [description,reading_rect,root.get_mouse_position(),root.gui_get_hovered_control(),_tooltip(root)])
+		Input.parse_input_event(center_motion)
+		await process_frame
 
 func _animated_titles(cards: Array) -> void:
 	for cv: CardView in cards:

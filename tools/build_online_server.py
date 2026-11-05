@@ -18,7 +18,7 @@ NETWORK = "online_server online_protocol state_codec online_physics server_main"
 PROJECT = '''config_version=5
 [application]
 config/name="Orbstrike Online Server"
-config/version="0.4.0"
+config/version="0.4.1"
 config/features=PackedStringArray("4.7")
 [rendering]
 renderer/rendering_method="gl_compatibility"
@@ -78,7 +78,7 @@ def main() -> int:
         elif path.is_dir() and not any(path.iterdir()): path.rmdir()
     checked([args.godot, "--headless", "--path", str(bundle), "--log-file", str(output / "parse-engine.log"),
              "--check-only", "-s", "res://network/server_main.gd"], output / "parse.log", env)
-    (bundle / "README.txt").write_text("Orbstrike 0.4.0 source-server bundle; engine is installed separately.\n"
+    (bundle / "README.txt").write_text("Orbstrike 0.4.1 source-server bundle; engine is installed separately.\n"
         "Use official Godot4.7.2 Linux x86_64; see the included docs/ONLINE_SERVER.md.\n"
         "No art, client UI, private configuration, account information or engine binary included.\n"
         "Runtime requires pre-generated .godot class cache shipped here; do not delete it.\n")

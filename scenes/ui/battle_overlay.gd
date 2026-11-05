@@ -9,6 +9,7 @@ const AUTO_CLOSE_SEC := 5.0  # минимум; для длинных разбо�
 var _dim: ColorRect
 var _panel: PanelContainer
 var _vbox: VBoxContainer
+var _scroll: ScrollContainer
 var _open := false
 var _seq := 0
 var _built := false
@@ -34,10 +35,28 @@ func _build() -> void:
 	VisualUtil.place(_panel, 0.5, 0.5, 0.0, 0.0)
 	_panel.visible = false
 	add_child(_panel)
+	_panel.resized.connect(_center_result)
+	_scroll = ScrollContainer.new()
+	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_panel.add_child(_scroll)
 	_vbox = VBoxContainer.new()
 	_vbox.add_theme_constant_override("separation", 6)
-	_vbox.custom_minimum_size = Vector2(460, 0)
-	_panel.add_child(_vbox)
+	_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_scroll.add_child(_vbox)
+	_vbox.minimum_size_changed.connect(_fit_result)
+	get_viewport().size_changed.connect(_fit_result)
+
+
+## Длинное объяснение не растягивает итог за экран; весь разбор доступен прокруткой.
+func _fit_result() -> void:
+	var vp := get_viewport_rect().size
+	_scroll.custom_minimum_size = Vector2(maxf(280, minf(900, vp.x - 64)), maxf(180, minf(_vbox.get_combined_minimum_size().y, minf(680, vp.y - 64))))
+	_panel.reset_size()
+	_center_result()
+
+
+func _center_result() -> void:
+	_panel.position = (get_viewport_rect().size - _panel.size) * 0.5
 
 
 ## names: словарь uid -> строка (имя существа). Возвращает сигнал closed.
@@ -105,6 +124,11 @@ func show_result(r: BattleResult, names: Dictionary = {}) -> Signal:
 	btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	btn.pressed.connect(_close)
 	_vbox.add_child(btn)
+	for child in _vbox.get_children():
+		if child is Label:
+			child.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_scroll.scroll_vertical = 0
+	_fit_result()
 
 	_dim.visible = true
 	_panel.visible = true
@@ -143,6 +167,10 @@ func _outcome_lines(r: BattleResult) -> PackedStringArray:
 			out.append("«%s»: сыгранные карты вернутся в руку" % _card_name(r.recall[side]))
 	for c in r.copies:
 		out.append("«%s» повторяет «%s»" % [_card_name(c[1]), _card_name(c[2])])
+	for side in range(2):
+		var reason := MatchController.battle_ability_block_reason(r, side)
+		if reason != "":
+			out.append("%s · %d/3: %s" % ["Атака" if side == 0 else "Защита", r.ability_count(side), reason])
 	if not r.marks.is_empty():
 		out.append("Метки на следующий бой: %d" % r.marks.size())
 	return out

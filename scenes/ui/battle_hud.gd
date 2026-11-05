@@ -20,13 +20,20 @@ var _chain_state: Array = []
 var _chain_width := 0.0
 var _chain_turn := -1
 var _chain_counts: Array = []
+var _chain_blocks: Array = []
+var _chain_help: Control
+var _help_chip: PlayedCardChip
+var _help_wait := 0.0
+var _help_lost := 0.0
+var _mouse_position := Vector2.ZERO
 
 
 ## Сыгранная карта остаётся читаемой, но не становится игровым действием.
 class PlayedCardChip extends PanelContainer:
 	var help: Array = []
-	func _make_custom_tooltip(_for_text: String) -> Object:
-		return UiTheme.help_panel(help) if not help.is_empty() else null
+	func _has_point(point: Vector2) -> bool:
+		# Вся плашка — одна цель, включая поля и скруглённые углы рамки.
+		return Rect2(Vector2.ZERO, size).has_point(point)
 
 
 var _open := false
@@ -35,6 +42,69 @@ var _built := false
 
 func _ready() -> void:
 	_build()
+	_mouse_position = get_viewport().get_mouse_position()
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseMotion: _mouse_position = event.position
+
+
+func _process(delta: float) -> void:
+	if not _open or not _chain.visible:
+		_clear_chain_help()
+		return
+	if _chain_help != null and _chain_help.get_global_rect().has_point(_mouse_position):
+		# Видимое раскрытие имеет приоритет над скрытой под ним надписью.
+		_help_lost = 0.0
+		return
+	var hovered := get_viewport().gui_get_hovered_control()
+	if hovered is PlayedCardChip and hovered.get_parent() == _chain and not hovered.help.is_empty():
+		_help_lost = 0.0
+		if hovered != _help_chip:
+			_clear_chain_help()
+			_help_chip = hovered
+		_help_wait += delta
+		if _chain_help == null and _help_wait >= .3:
+			# Только прямоугольник читаемой карты закрывает hover лежащего
+			# под ней UI, иначе его подсказка возникает поверх раскрытия.
+			_chain_help = PanelContainer.new()
+			_chain_help.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+			_chain_help.mouse_filter = Control.MOUSE_FILTER_STOP
+			_chain_help.add_child(UiTheme.help_panel(_help_chip.help))
+			_chain_help.z_index = 100
+			add_child(_chain_help)
+		if _chain_help != null:
+			_place_chain_help()
+	elif _chain_help != null and _chain_help.get_global_rect().has_point(_mouse_position):
+		# Можно перевести мышь на крупную карту и дочитать.
+		_help_lost = 0.0
+	else:
+		_help_lost += delta
+		if _help_lost > .14: _clear_chain_help()
+
+
+func _clear_chain_help() -> void:
+	if is_instance_valid(_chain_help):
+		_chain_help.queue_free()
+	_chain_help = null
+	_help_chip = null
+	_help_wait = 0.0
+	_help_lost = 0.0
+
+
+func _exit_tree() -> void:
+	_clear_chain_help()
+
+
+func _place_chain_help() -> void:
+	var rect := _help_chip.get_global_rect()
+	var sz := _chain_help.get_combined_minimum_size()
+	var vp := get_viewport_rect().size
+	# Штатный PopupPanel при малой высоте сдвигался поверх собственной
+	# надписи. Позиция привязана ко всей плашке, а не к движущемуся курсору.
+	var x := rect.end.x + 10.0
+	if x + sz.x > vp.x - 8.0: x = rect.position.x - sz.x - 10.0
+	_chain_help.position = Vector2(clampf(x, 8.0, vp.x - sz.x - 8.0), clampf(rect.get_center().y - sz.y * .5, 8.0, maxf(8.0, vp.y - sz.y - 8.0)))
 
 
 func _build() -> void:
@@ -194,18 +264,20 @@ func _float_number(side: int, delta: int) -> void:
 
 ## Лента карт боя по порядку (прикреплённые — первыми): plays — [[сторона, card_id], ...], passed — кто спасовал.
 ## Лента карт боя и счётчики «Способности N/3» на плашках. turn — чья очередь обмена (сторона, -1 — ничья).
-func set_chain(plays: Array, passed: Array, turn: int = -1, cancelled: Array = [], ability_counts: Array = []) -> void:
+func set_chain(plays: Array, passed: Array, turn: int = -1, cancelled: Array = [], ability_counts: Array = [], block_reasons: Array = []) -> void:
 	_build()
 	_chain_turn = turn
 	_chain_counts = ability_counts.duplicate()
+	_chain_blocks = block_reasons.duplicate()
 	var used: Array[int] = [0, 0]
 	for pl in plays:
 		used[int(pl[0])] += 1
 	if ability_counts.size() == 2: used.assign(ability_counts)
 	# Повторный сетевой снимок не пересоздаёт Control под мышью и его подсказку.
-	var snapshot: Array = [plays, passed, cancelled]
+	var snapshot: Array = [plays, passed, cancelled, block_reasons]
 	var width := get_viewport_rect().size.x
 	if snapshot != _chain_state or width != _chain_width:
+		_clear_chain_help()
 		_chain_state = snapshot.duplicate(true)
 		_chain_width = width
 		VisualUtil.clear_children(_chain)
@@ -217,34 +289,43 @@ func set_chain(plays: Array, passed: Array, turn: int = -1, cancelled: Array = [
 			if c != null:
 				chip.help = UiTheme.card_help(c)
 				chip.help[6] = ("Атакующий. " if side == 0 else "Защитник. ") + ("Карта отменена или подавлена в расчёте этого боя." if inactive else "Карта сыграна в этом бою.")
-				chip.tooltip_text = c.display_name + "\n" + c.full_text()
+				# Собственное раскрытие сохраняет всю область текста доступной.
+				chip.tooltip_text = ""
 				chip.mouse_filter = Control.MOUSE_FILTER_STOP
 			_chain.add_child(chip)
 		for side in range(2):
 			if side < passed.size() and bool(passed[side]):
-				_chain.add_child(_chip("ПАС", side, true))
+				var reason := str(block_reasons[side]) if side < block_reasons.size() else ""
+				var chip := _chip("АВТОПАС" if reason != "" else "ПАС", side, true)
+				chip.tooltip_text = reason
+				if reason != "": chip.mouse_filter = Control.MOUSE_FILTER_STOP
+				_chain.add_child(chip)
 	_chain.visible = _open and _chain.get_child_count() > 0
 	for side in range(2):
-		_set_count(side, used[side], side < passed.size() and bool(passed[side]), side == turn)
+		_set_count(side, used[side], side < passed.size() and bool(passed[side]), side == turn, str(block_reasons[side]) if side < block_reasons.size() else "")
 
 
 func _resize_chain() -> void:
-	if _chain_state.size() == 3:
-		set_chain(_chain_state[0], _chain_state[1], _chain_turn, _chain_state[2], _chain_counts)
+	if _chain_state.size() == 4:
+		set_chain(_chain_state[0], _chain_state[1], _chain_turn, _chain_state[2], _chain_counts, _chain_blocks)
 
 
 ## Счётчик карт стороны: закрашенные кружки — сыгранные (с прикреплёнными), «ПАС» — сторона вышла из обмена.
-func _set_count(side: int, used: int, passed: bool, turn: bool) -> void:
+func _set_count(side: int, used: int, passed: bool, turn: bool, block_reason: String = "") -> void:
 	var cap: int = MatchController.MAX_BATTLE_ABILITIES
 	var dots := ""
 	for i in range(cap):
 		dots += "●" if i < used else "○"
 	var t := "СПОСОБНОСТИ %s %d/%d" % [dots, mini(used, cap), cap]
-	if passed:
+	if block_reason != "":
+		t = "%d/%d · КАРТЫ ЗАКРЫТЫ" % [mini(used, cap), cap]
+	elif passed:
 		t += "  ·  ПАС"
 	elif turn:
 		t = ("▶ " + t) if side == 0 else (t + " ◀")
 	var l: Label = _counts[side]
+	l.tooltip_text = block_reason
+	l.mouse_filter = Control.MOUSE_FILTER_STOP if block_reason != "" else Control.MOUSE_FILTER_IGNORE
 	var was: String = l.text
 	l.text = t
 	var c: Color = UiTheme.TEXT_DIM
@@ -263,16 +344,18 @@ func _chip(text: String, side: int, dim: bool = false) -> PlayedCardChip:
 		c = c.darkened(0.35)
 	var pc := PlayedCardChip.new()
 	pc.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pc.custom_minimum_size.y = 36.0
 	pc.add_theme_stylebox_override("panel", UiTheme.box(Color(c.r * 0.15, c.g * 0.15, c.b * 0.15, 0.9), c, 2, 6, 5))
 	var l := VisualUtil.label(text, 16)
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	l.custom_minimum_size.x = minf(180.0, get_viewport_rect().size.x / 6.0 - 26.0) if text != "ПАС" else 40.0
 	l.add_theme_color_override("font_color", c.lightened(0.4))
 	pc.add_child(l)
-	pc.pivot_offset = Vector2(40, 14)
-	pc.scale = Vector2(0.4, 0.4)
-	pc.create_tween().tween_property(pc, "scale", Vector2.ONE, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	# Появление не двигает и не сжимает область наведения под курсором.
+	pc.modulate.a = 0.0
+	pc.create_tween().tween_property(pc, "modulate:a", 1.0, 0.2)
 	return pc
 
 

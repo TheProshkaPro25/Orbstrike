@@ -256,6 +256,7 @@ func take_arena(index: int) -> Arena:
 	arena.visible = true
 	if arena._motes != null:
 		arena._motes.emitting = true
+	preload("res://scenes/landscape_atmosphere.gd").active(arena,true)
 	return arena
 
 
@@ -276,6 +277,7 @@ func return_arena(arena: Arena) -> void:
 	arena.process_mode = Node.PROCESS_MODE_DISABLED
 	if arena._motes != null:
 		arena._motes.emitting = false
+	preload("res://scenes/landscape_atmosphere.gd").active(arena,false)
 	_arenas[arena.location_id] = arena
 
 

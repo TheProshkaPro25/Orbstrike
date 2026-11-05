@@ -45,6 +45,7 @@ var _decor: Node3D
 var _floaters: Array = []
 
 var _motes: GPUParticles3D
+var _landscape_effects: Array[GPUParticles3D] = []
 var _crystal_lights: Array[OmniLight3D] = []
 var _sanctuary_lights: Array[Light3D] = []
 var _sanctuary_shafts: Array[MeshInstance3D] = []
@@ -77,6 +78,7 @@ func apply_quality() -> void:
 		l.visible = bool(GraphicsSettings.param("lights"))
 	var low := GraphicsSettings.current() == GraphicsSettings.Level.LOW
 	var high := GraphicsSettings.current() == GraphicsSettings.Level.HIGH
+	preload("res://scenes/landscape_atmosphere.gd").quality(self,low)
 	_floor_mat.set_shader_parameter("max_quality", 1.0 if high else 0.0)
 	for l in _sanctuary_lights:
 		l.visible = l is SpotLight3D or bool(GraphicsSettings.param("lights"))
