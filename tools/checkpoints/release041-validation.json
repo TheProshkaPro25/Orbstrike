@@ -1,7 +1,7 @@
 {
   "release": "Orbstrike 0.4.1",
   "date": "2026-11-05",
-  "status": "validated; publication pending",
+  "status": "published and verified; client only",
   "authorization": "Explicit author request: обновление0.4.1сделай. Later author steering: defer server work until explicitly requested; publish CLIENT ONLY.",
   "version": "0.4.1",
   "rules_tag": "online-rules-11",
@@ -1111,5 +1111,105 @@
     "Online0.4.1 is incompatible with still-published server0.4.0; server release intentionally deferred",
     "Previously documented V9 strong conditional counter-matchups remain"
   ],
-  "publication": null
+  "publication": {
+    "status": "published;latest;all3remoteSHA256andsizesmatch;publicHTTP200",
+    "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.4.1",
+    "release_id": 434817135,
+    "tag": "v0.4.1",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2026-11-05T05:31:31Z",
+    "assets": [
+      {
+        "name": "Orbstrike_v0.4.1_win64.zip",
+        "size": 1031768343,
+        "digest": "sha256:41c54a7b68a63d8c36dbc303ea3165f56be9ca3ce6e099727022431387531569",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.1/Orbstrike_v0.4.1_win64.zip"
+      },
+      {
+        "name": "Orbstrike_v0.4.1_win64.zip.sha256",
+        "size": 93,
+        "digest": "sha256:0aad72aed1b65ebd3bcad996d7c4153db7f52c5b0d542bb58d6ba353d56c9d97",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.1/Orbstrike_v0.4.1_win64.zip.sha256"
+      },
+      {
+        "name": "SHA256SUMS",
+        "size": 93,
+        "digest": "sha256:0aad72aed1b65ebd3bcad996d7c4153db7f52c5b0d542bb58d6ba353d56c9d97",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.1/SHA256SUMS"
+      }
+    ],
+    "latest": true,
+    "release_commit": "61ed19cff19d02409d0614ce3a3a36304b28895d",
+    "public_availability": [
+      {
+        "name": "release",
+        "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/tag/v0.4.1",
+        "status": 200,
+        "content_length": null,
+        "authenticated": false
+      },
+      {
+        "name": "Orbstrike_v0.4.1_win64.zip",
+        "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.1/Orbstrike_v0.4.1_win64.zip",
+        "status": 200,
+        "content_length": "1031768343",
+        "authenticated": false
+      },
+      {
+        "name": "Orbstrike_v0.4.1_win64.zip.sha256",
+        "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.1/Orbstrike_v0.4.1_win64.zip.sha256",
+        "status": 200,
+        "content_length": "93",
+        "authenticated": false
+      },
+      {
+        "name": "SHA256SUMS",
+        "url": "https://github.com/TheProshkaPro25/sfery-stikhiy/releases/download/v0.4.1/SHA256SUMS",
+        "status": 200,
+        "content_length": "93",
+        "authenticated": false
+      }
+    ],
+    "remote_refs_before_publication_log_commit": [
+      "61ed19cff19d02409d0614ce3a3a36304b28895d\trefs/heads/codex/release-0.4.1",
+      "38d1daf5d64c59312f65097786045433c18d9618\trefs/heads/master",
+      "6209205a16cd3b331ec3b9a78c65ef277a226d75\trefs/tags/v0.4.0",
+      "80cf404d2a1e04570dd25d39170d39592a9386f2\trefs/tags/v0.4.1",
+      "61ed19cff19d02409d0614ce3a3a36304b28895d\trefs/tags/v0.4.1^{}"
+    ],
+    "master_changed": false,
+    "previous040_assets_and_tag_preserved": true,
+    "explicit_destination_authorization": "User answered разрешаю to publication of client and sources in TheProshkaPro25/sfery-stikhiy, creating release branch/tag/GitHubRelease",
+    "client_only": true
+  },
+  "release_code_commit": "61ed19cff19d02409d0614ce3a3a36304b28895d",
+  "publication_block_history": {
+    "status": "BLOCKED_BY_AUTOMATIC_APPROVAL_REVIEW",
+    "release_commit": "61ed19cff19d02409d0614ce3a3a36304b28895d",
+    "local_branch": "codex/release-0.4.1",
+    "destination": "https://github.com/TheProshkaPro25/sfery-stikhiy",
+    "no_remote_mutation_performed": true,
+    "tag_v041_created": false,
+    "attempts": [
+      {
+        "action": "Create tag; atomic push release branch,master,tag; create draft release",
+        "result": "Rejected before command execution",
+        "reason": "Combined remote repository/default branch/tag/release modification not authorized for explicit destination/scope"
+      },
+      {
+        "action": "Create tag and push only new release branch/tag, preserving master",
+        "result": "Rejected before command execution",
+        "reason": "User requested release0.4.1 but did not explicitly authorize publication of source code to this GitHub repository"
+      }
+    ],
+    "required_authorization": "Publish client Orbstrike0.4.1 and source code to https://github.com/TheProshkaPro25/sfery-stikhiy, creating codex/release-0.4.1, tagv0.4.1 and GitHubRelease. No server assets.",
+    "network_retries_stopped": true,
+    "package_still_validated": true,
+    "resolved": "Explicit destination authorization received; branch/tag/release publication and public verification completed successfully."
+  },
+  "publication_log_commit": "Documentation/checkpoint only after tagged release code; tag and3assets unchanged."
 }
