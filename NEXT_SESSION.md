@@ -1,3 +1,11 @@
+# Клиент0.4.2.5: пакет проверен, публикация ожидается — 8 ноября 2026
+
+По новым замечаниям автора исправлены oversized/focus-duplicate подсказки карт, белый фон49портретов (с кэшем до меню), тема турнирных кнопок/подтверждений и пересечение announcement с портретом. Source UI401/0+138/0, portrait649/0, независимые CODE/scoped ART GO. ИсходныеPNG98/GLB49/rest/bind/анимации и правила сохранены.
+Source/export version0.4.2.5; новый пакетbuild/release0425 прошёл actualPCK505/0/ERROR0: Boot98/3,49matte до меню и49послеwarm resize/style/getters,12backdrops, реальные hover/dialog/cancel/announcement. Независимый package PASS(12ZIPCRC/1563PCKMD5/157currentGDC), RUexitPNG лично приняты. Публикация ещё не выполнена; следующих тестов/featurefix нет. [Checkpoint](tools/checkpoints/release0425-validation.json), [source review](docs/audits/2026-11-08-ui-hover-portrait/independent-review.md).
+Последний опубликованный0.4.2 не перезаписывать. Онлайн публичного сервераrules10/client11 по-прежнему несовместим; сервер не обновляется. Wine0.4.2 не прошёл, нативнаяWindows не проверена; новый запускWine не назначен.
+
+---
+
 # Клиент0.4.2 опубликован — 8 ноября 2026
 
 По поручению автора завершены UI/карьера, собран новый Windows-клиент0.4.2. Исправлены перекрывающая цифры G полоса, deferred focus при перестройке карточек и XP за повторную ничью без участия; исторические сохранения совместимы. Source UI/domain checks и независимая scoped31PNG оценка пройдены.

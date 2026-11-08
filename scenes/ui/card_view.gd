@@ -32,6 +32,7 @@ var _dimmed := false
 var _card_size := Vector2(150, 210)
 var _lay: Dictionary = {}
 var _glow := Color.WHITE
+var _focus_generation := 0
 var _focus_disclosure: CanvasLayer
 
 
@@ -440,18 +441,19 @@ var _help: Array = []
 func _make_custom_tooltip(_for_text: String) -> Object:
 	if _help.is_empty():
 		return null
+	preload("res://scenes/ui/card_hover.gd").close_active()
 	return UiTheme.help_panel(_help)
 
 
 ## Карта способности или арены из CardDef.
-func for_card(def: CardDef, size_px: Vector2 = Vector2(150, 210), complete: bool = false) -> CardView:
+func for_card(def: CardDef, size_px: Vector2 = Vector2(150, 210), complete: bool = false, display_help: Array = []) -> CardView:
 	card_id = def.id
 	_help = UiTheme.card_help(def)
 	var cols: Array = UiTheme.card_colors(def)
 	setup(def.display_name, UiTheme.card_kind(def), "", "", cols[0], cols[1], size_px)
 	set_frame(UiTheme.card_frame(def), UiTheme.card_tier(def))
 	set_elements(UiTheme.card_elements(def))
-	_compose_card(def, size_px, complete or size_px.x >= 224.0)
+	_compose_card(def, size_px, complete or size_px.x >= 224.0, display_help)
 	return self
 
 
@@ -620,6 +622,13 @@ func _sync_selected() -> void:
 
 
 func _on_hover(on: bool) -> void:
+	# A retained mouse-click focus must not pin a second disclosure after exit.
+	_focus_generation += 1
+	if is_instance_valid(_focus_disclosure): _focus_disclosure.queue_free()
+	_focus_disclosure = null
+	_update_hover(on)
+
+func _update_hover(on: bool) -> void:
 	if _dimmed:
 		return
 	var active := on or has_focus()
@@ -629,16 +638,18 @@ func _on_hover(on: bool) -> void:
 
 
 func _focus_changed(on: bool) -> void:
+	_focus_generation += 1
 	queue_redraw()
-	_on_hover(on or is_hovered())
+	_update_hover(on or is_hovered())
 	if is_instance_valid(_focus_disclosure): _focus_disclosure.queue_free()
 	_focus_disclosure = null
-	if on: _show_focus_disclosure.call_deferred()
+	if on and not is_hovered(): _show_focus_disclosure.call_deferred(_focus_generation)
 
 
-func _show_focus_disclosure() -> void:
-	# Меню команды уже держит постоянный крупный предпросмотр справа.
-	if has_focus() and not tooltip_text.is_empty() and not _help.is_empty():
+func _show_focus_disclosure(generation: int) -> void:
+	# Ignore obsolete callbacks from focus cycles inside the same frame.
+	if generation != _focus_generation or not is_inside_tree() or is_queued_for_deletion(): return
+	if has_focus() and not is_hovered() and not tooltip_text.is_empty() and not _help.is_empty():
 		_focus_disclosure = preload("res://scenes/ui/card_hover.gd").open_on(self, _help)
 
 

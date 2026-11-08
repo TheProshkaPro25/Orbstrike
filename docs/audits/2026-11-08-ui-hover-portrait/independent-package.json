@@ -1,0 +1,54 @@
+{
+  "status": "PASS",
+  "reviewer": "independent Sol high",
+  "version": "0.4.2.5",
+  "package_report": "build/release0425-audit/report.json",
+  "zip_sha256": "2e4a805eab6046602f00f71fa9275bfe325740c1ccdd71f201e87d5679655a75",
+  "pck_sha256": "a9165536802a792c5677e2405380c3dae9b0a809577413f020ab5e02669651fb",
+  "exe_sha256": "b3b38db92f77d480452c7d0a1339b7105dc77b4905576f3f53cb78f6803c6e93",
+  "zip_files_crc_and_hash": 12,
+  "pck_entries_md5": 1563,
+  "current_source_gdc_byte_equal": 157,
+  "preserved_models": 49,
+  "preserved_original_portrait_pngs": 49,
+  "preserved_animation_and_skin_resources": 14,
+  "packed_ui": {
+    "checks": 505,
+    "failures": 0,
+    "exit_code": 0,
+    "errors": [],
+    "seconds": 93.16403928200452,
+    "boot": {
+      "actor_count": 98,
+      "arena_count": 3,
+      "backdrops": 12,
+      "portrait_generations": 49,
+      "portrait_generations_after_warm": 49,
+      "seconds": 73.459
+    },
+    "source_project_overlay": false,
+    "minimized_unfocusable_offscreen": true,
+    "max_fps": 60,
+    "scope": "Actual new PCK Boot/cache and targeted UI. Inherited report.scope source-only string belongs to base fixture; packed_boot/result command establish actual packed scope."
+  },
+  "visual_review": {
+    "personally_viewed_packed": [
+      "runtime/captures/tournament-exit-0.png",
+      "runtime/captures/tournament-exit-1.png"
+    ],
+    "verdict": "PASS targeted buttons/style/readability/Russian title and cancel; earlier source full49 matte/HUD/card art approved separately"
+  },
+  "limits": {
+    "native_windows_tested": false,
+    "wine_tested_this_release": false,
+    "previous_wine_pass": false,
+    "two_full_matches_repeated": false,
+    "audio_listened": false,
+    "server_built_tested_changed_published": false,
+    "public_server_rules": 10,
+    "client_rules": 11,
+    "online_compatible": false,
+    "publication_checked": false
+  },
+  "material_blockers": []
+}

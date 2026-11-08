@@ -2070,6 +2070,7 @@ func _register_tournament(creatures: Array[StringName], gates: Array[StringName]
 	var save_path := Campaign.SAVE_PATH if _campaign_registration else Tournament.SAVE_PATH
 	var invalid_save := FileAccess.file_exists(save_path) and not String((Campaign.load_file() if _campaign_registration else Tournament.load_file()).error).is_empty()
 	var confirm := ConfirmationDialog.new()
+	confirm.theme = UiTheme.get_theme()
 	confirm.title = "Кампания · три кубка" if _campaign_registration else "Регистрация на турнир"
 	confirm.dialog_text = "8 участников · 2 группы · полуфиналы и финал.\nКоманда, 3 карты ворот, 3 способности и сложность «%s»\nзакрепятся до конца турнира. Арены выбираются этапом.\nНезавершённый матч повторяется с начала с тем же начальным раскладом." % AIPlayer.difficulty_name(TeamMenu.difficulty)
 	if _campaign_registration:
@@ -2198,22 +2199,32 @@ func _play_tournament_match() -> void:
 	cam.snap_overview()
 	tournament_panel.hide()
 	hud.show()
-	_tournament_exit = Button.new()
-	_tournament_exit.text = "Выйти из турнира"
-	_tournament_exit.tooltip_text = "Этот незавершённый матч при продолжении начнётся заново"
-	_tournament_exit.position = Vector2(12, 74)
-	_tournament_exit.pressed.connect(func() -> void:
+	_tournament_exit = _make_tournament_exit_button()
+	ui_layer.add_child(_tournament_exit)
+	_preparing = true
+	_build_logic()
+	call_deferred("_start_game")
+
+
+func _make_tournament_exit_button() -> Button:
+	var button := Button.new()
+	button.theme = UiTheme.get_theme()
+	button.custom_minimum_size = Vector2(0, 36)
+	button.text = "Выйти из турнира"
+	button.tooltip_text = "Этот незавершённый матч при продолжении начнётся заново"
+	button.position = Vector2(12, 74)
+	button.pressed.connect(func() -> void:
 		var confirm := ConfirmationDialog.new()
+		confirm.theme = UiTheme.get_theme()
+		confirm.title = "Выход из турнира"
+		confirm.cancel_button_text = "Назад"
 		confirm.dialog_text = "Выйти в меню? Незавершённый матч начнётся заново\nс теми же участниками, первым ходом и начальным раскладом."
 		confirm.ok_button_text = "Выйти"
 		ui_layer.add_child(confirm)
 		confirm.confirmed.connect(_exit_tournament)
 		confirm.canceled.connect(confirm.queue_free)
 		confirm.popup_centered())
-	ui_layer.add_child(_tournament_exit)
-	_preparing = true
-	_build_logic()
-	call_deferred("_start_game")
+	return button
 
 
 func _accept_tournament_result() -> Error:

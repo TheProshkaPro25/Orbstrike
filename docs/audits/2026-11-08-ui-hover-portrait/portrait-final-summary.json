@@ -1,0 +1,478 @@
+{
+  "async_progress_count": 49,
+  "catalog_count": 49,
+  "catalog_stats": {
+    "creature_dragnar_fire": {
+      "background_pixels": 37317,
+      "interior_background_pixels": 0,
+      "prepare_ms": 120.788,
+      "retained_closed_white_pixels": 24,
+      "softened_edge_pixels": 849
+    },
+    "creature_dragnar_gale": {
+      "background_pixels": 34594,
+      "interior_background_pixels": 0,
+      "prepare_ms": 119.616,
+      "retained_closed_white_pixels": 2579,
+      "softened_edge_pixels": 968
+    },
+    "creature_dragnar_light": {
+      "background_pixels": 35044,
+      "interior_background_pixels": 0,
+      "prepare_ms": 126.291,
+      "retained_closed_white_pixels": 1247,
+      "softened_edge_pixels": 938
+    },
+    "creature_dragnar_shadow": {
+      "background_pixels": 37523,
+      "interior_background_pixels": 2572,
+      "prepare_ms": 122.788,
+      "retained_closed_white_pixels": 4,
+      "softened_edge_pixels": 967
+    },
+    "creature_dragnar_stone": {
+      "background_pixels": 37312,
+      "interior_background_pixels": 0,
+      "prepare_ms": 123.297,
+      "retained_closed_white_pixels": 478,
+      "softened_edge_pixels": 1011
+    },
+    "creature_dragnar_tide": {
+      "background_pixels": 36802,
+      "interior_background_pixels": 0,
+      "prepare_ms": 123.641,
+      "retained_closed_white_pixels": 508,
+      "softened_edge_pixels": 1005
+    },
+    "creature_gorgul_fire": {
+      "background_pixels": 40639,
+      "interior_background_pixels": 0,
+      "prepare_ms": 121.511,
+      "retained_closed_white_pixels": 1211,
+      "softened_edge_pixels": 679
+    },
+    "creature_gorgul_gale": {
+      "background_pixels": 40806,
+      "interior_background_pixels": 0,
+      "prepare_ms": 133.879,
+      "retained_closed_white_pixels": 233,
+      "softened_edge_pixels": 1225
+    },
+    "creature_gorgul_light": {
+      "background_pixels": 41608,
+      "interior_background_pixels": 0,
+      "prepare_ms": 129.527,
+      "retained_closed_white_pixels": 355,
+      "softened_edge_pixels": 879
+    },
+    "creature_gorgul_shadow": {
+      "background_pixels": 41920,
+      "interior_background_pixels": 0,
+      "prepare_ms": 128.874,
+      "retained_closed_white_pixels": 233,
+      "softened_edge_pixels": 762
+    },
+    "creature_gorgul_stone": {
+      "background_pixels": 41777,
+      "interior_background_pixels": 0,
+      "prepare_ms": 127.749,
+      "retained_closed_white_pixels": 196,
+      "softened_edge_pixels": 823
+    },
+    "creature_gorgul_tide": {
+      "background_pixels": 41864,
+      "interior_background_pixels": 0,
+      "prepare_ms": 125.908,
+      "retained_closed_white_pixels": 294,
+      "softened_edge_pixels": 810
+    },
+    "creature_grifalon_fire": {
+      "background_pixels": 41426,
+      "interior_background_pixels": 0,
+      "prepare_ms": 119.584,
+      "retained_closed_white_pixels": 620,
+      "softened_edge_pixels": 626
+    },
+    "creature_grifalon_gale": {
+      "background_pixels": 40332,
+      "interior_background_pixels": 0,
+      "prepare_ms": 127.234,
+      "retained_closed_white_pixels": 655,
+      "softened_edge_pixels": 929
+    },
+    "creature_grifalon_light": {
+      "background_pixels": 41327,
+      "interior_background_pixels": 0,
+      "prepare_ms": 122.564,
+      "retained_closed_white_pixels": 801,
+      "softened_edge_pixels": 643
+    },
+    "creature_grifalon_shadow": {
+      "background_pixels": 41186,
+      "interior_background_pixels": 0,
+      "prepare_ms": 120.214,
+      "retained_closed_white_pixels": 603,
+      "softened_edge_pixels": 673
+    },
+    "creature_grifalon_stone": {
+      "background_pixels": 41328,
+      "interior_background_pixels": 0,
+      "prepare_ms": 120.633,
+      "retained_closed_white_pixels": 638,
+      "softened_edge_pixels": 626
+    },
+    "creature_grifalon_tide": {
+      "background_pixels": 41555,
+      "interior_background_pixels": 0,
+      "prepare_ms": 122.351,
+      "retained_closed_white_pixels": 707,
+      "softened_edge_pixels": 672
+    },
+    "creature_klykar_fire": {
+      "background_pixels": 41424,
+      "interior_background_pixels": 0,
+      "prepare_ms": 124.949,
+      "retained_closed_white_pixels": 239,
+      "softened_edge_pixels": 648
+    },
+    "creature_klykar_gale": {
+      "background_pixels": 37209,
+      "interior_background_pixels": 0,
+      "prepare_ms": 134.661,
+      "retained_closed_white_pixels": 1719,
+      "softened_edge_pixels": 1360
+    },
+    "creature_klykar_light": {
+      "background_pixels": 39915,
+      "interior_background_pixels": 0,
+      "prepare_ms": 133.694,
+      "retained_closed_white_pixels": 1087,
+      "softened_edge_pixels": 876
+    },
+    "creature_klykar_shadow": {
+      "background_pixels": 38150,
+      "interior_background_pixels": 0,
+      "prepare_ms": 134.985,
+      "retained_closed_white_pixels": 247,
+      "softened_edge_pixels": 1334
+    },
+    "creature_klykar_stone": {
+      "background_pixels": 39845,
+      "interior_background_pixels": 0,
+      "prepare_ms": 125.208,
+      "retained_closed_white_pixels": 310,
+      "softened_edge_pixels": 811
+    },
+    "creature_klykar_tide": {
+      "background_pixels": 38639,
+      "interior_background_pixels": 0,
+      "prepare_ms": 130.345,
+      "retained_closed_white_pixels": 479,
+      "softened_edge_pixels": 897
+    },
+    "creature_kolossar_fire": {
+      "background_pixels": 32090,
+      "interior_background_pixels": 0,
+      "prepare_ms": 114.35,
+      "retained_closed_white_pixels": 1004,
+      "softened_edge_pixels": 675
+    },
+    "creature_kolossar_gale": {
+      "background_pixels": 32992,
+      "interior_background_pixels": 0,
+      "prepare_ms": 115.575,
+      "retained_closed_white_pixels": 153,
+      "softened_edge_pixels": 804
+    },
+    "creature_kolossar_light": {
+      "background_pixels": 31906,
+      "interior_background_pixels": 0,
+      "prepare_ms": 116.777,
+      "retained_closed_white_pixels": 17,
+      "softened_edge_pixels": 850
+    },
+    "creature_kolossar_shadow": {
+      "background_pixels": 33084,
+      "interior_background_pixels": 0,
+      "prepare_ms": 115.687,
+      "retained_closed_white_pixels": 56,
+      "softened_edge_pixels": 809
+    },
+    "creature_kolossar_stone": {
+      "background_pixels": 33085,
+      "interior_background_pixels": 0,
+      "prepare_ms": 114.919,
+      "retained_closed_white_pixels": 45,
+      "softened_edge_pixels": 800
+    },
+    "creature_kolossar_tide": {
+      "background_pixels": 32244,
+      "interior_background_pixels": 0,
+      "prepare_ms": 112.18,
+      "retained_closed_white_pixels": 1086,
+      "softened_edge_pixels": 677
+    },
+    "creature_levian_fire": {
+      "background_pixels": 33348,
+      "interior_background_pixels": 0,
+      "prepare_ms": 115.631,
+      "retained_closed_white_pixels": 1746,
+      "softened_edge_pixels": 739
+    },
+    "creature_levian_gale": {
+      "background_pixels": 31272,
+      "interior_background_pixels": 0,
+      "prepare_ms": 122.41,
+      "retained_closed_white_pixels": 2056,
+      "softened_edge_pixels": 1043
+    },
+    "creature_levian_light": {
+      "background_pixels": 33144,
+      "interior_background_pixels": 0,
+      "prepare_ms": 121.851,
+      "retained_closed_white_pixels": 842,
+      "softened_edge_pixels": 801
+    },
+    "creature_levian_shadow": {
+      "background_pixels": 33482,
+      "interior_background_pixels": 920,
+      "prepare_ms": 122.706,
+      "retained_closed_white_pixels": 76,
+      "softened_edge_pixels": 1085
+    },
+    "creature_levian_stone": {
+      "background_pixels": 35140,
+      "interior_background_pixels": 0,
+      "prepare_ms": 121.521,
+      "retained_closed_white_pixels": 25,
+      "softened_edge_pixels": 951
+    },
+    "creature_levian_tide": {
+      "background_pixels": 34691,
+      "interior_background_pixels": 0,
+      "prepare_ms": 119.393,
+      "retained_closed_white_pixels": 168,
+      "softened_edge_pixels": 841
+    },
+    "creature_likorez_shadow": {
+      "background_pixels": 36208,
+      "interior_background_pixels": 0,
+      "prepare_ms": 140.719,
+      "retained_closed_white_pixels": 270,
+      "softened_edge_pixels": 1675
+    },
+    "creature_ratnik_fire": {
+      "background_pixels": 38864,
+      "interior_background_pixels": 0,
+      "prepare_ms": 122.434,
+      "retained_closed_white_pixels": 256,
+      "softened_edge_pixels": 650
+    },
+    "creature_ratnik_gale": {
+      "background_pixels": 38910,
+      "interior_background_pixels": 0,
+      "prepare_ms": 120.362,
+      "retained_closed_white_pixels": 246,
+      "softened_edge_pixels": 669
+    },
+    "creature_ratnik_light": {
+      "background_pixels": 38548,
+      "interior_background_pixels": 0,
+      "prepare_ms": 123.037,
+      "retained_closed_white_pixels": 941,
+      "softened_edge_pixels": 636
+    },
+    "creature_ratnik_shadow": {
+      "background_pixels": 38852,
+      "interior_background_pixels": 0,
+      "prepare_ms": 122.348,
+      "retained_closed_white_pixels": 169,
+      "softened_edge_pixels": 630
+    },
+    "creature_ratnik_stone": {
+      "background_pixels": 39018,
+      "interior_background_pixels": 0,
+      "prepare_ms": 122.031,
+      "retained_closed_white_pixels": 293,
+      "softened_edge_pixels": 672
+    },
+    "creature_ratnik_tide": {
+      "background_pixels": 38997,
+      "interior_background_pixels": 0,
+      "prepare_ms": 119.878,
+      "retained_closed_white_pixels": 313,
+      "softened_edge_pixels": 649
+    },
+    "creature_rogozhuk_fire": {
+      "background_pixels": 39157,
+      "interior_background_pixels": 0,
+      "prepare_ms": 116.396,
+      "retained_closed_white_pixels": 411,
+      "softened_edge_pixels": 528
+    },
+    "creature_rogozhuk_gale": {
+      "background_pixels": 39116,
+      "interior_background_pixels": 0,
+      "prepare_ms": 120.256,
+      "retained_closed_white_pixels": 24,
+      "softened_edge_pixels": 771
+    },
+    "creature_rogozhuk_light": {
+      "background_pixels": 40124,
+      "interior_background_pixels": 0,
+      "prepare_ms": 119.746,
+      "retained_closed_white_pixels": 122,
+      "softened_edge_pixels": 627
+    },
+    "creature_rogozhuk_shadow": {
+      "background_pixels": 39487,
+      "interior_background_pixels": 0,
+      "prepare_ms": 116.451,
+      "retained_closed_white_pixels": 716,
+      "softened_edge_pixels": 595
+    },
+    "creature_rogozhuk_stone": {
+      "background_pixels": 38960,
+      "interior_background_pixels": 0,
+      "prepare_ms": 116.626,
+      "retained_closed_white_pixels": 720,
+      "softened_edge_pixels": 603
+    },
+    "creature_rogozhuk_tide": {
+      "background_pixels": 38629,
+      "interior_background_pixels": 0,
+      "prepare_ms": 115.185,
+      "retained_closed_white_pixels": 855,
+      "softened_edge_pixels": 554
+    }
+  },
+  "checks": 649,
+  "failures": 0,
+  "generation_count": 49,
+  "loading_frame_signals": 49,
+  "preparation_ms": 6036.073,
+  "production_enabled": true,
+  "sample_count": 2,
+  "samples": [
+    {
+      "id": "creature_dragnar_shadow",
+      "stats": {
+        "background_pixels": 37523,
+        "interior_background_pixels": 2572,
+        "prepare_ms": 122.788,
+        "retained_closed_white_pixels": 4,
+        "softened_edge_pixels": 967
+      }
+    },
+    {
+      "id": "creature_levian_shadow",
+      "stats": {
+        "background_pixels": 33482,
+        "interior_background_pixels": 920,
+        "prepare_ms": 122.706,
+        "retained_closed_white_pixels": 76,
+        "softened_edge_pixels": 1085
+      }
+    }
+  ],
+  "source_hashes_unchanged": {
+    "res://assets/portraits/creatures/dragnar_fire.png": "09bd795755cafe06dd9d8b8531ac47c0b518ffe28c1968673279481138d4d822",
+    "res://assets/portraits/creatures/dragnar_gale.png": "102f10019ad02c2df75d97f5a587ecbdf61fd352c12ec773bea37f275506a7ed",
+    "res://assets/portraits/creatures/dragnar_light.png": "6f332ab7b1c0c64000beb2fdbb8bb3082add49a60a7c6d66b0ceed8c4d653397",
+    "res://assets/portraits/creatures/dragnar_shadow.png": "59e198fc51757e62203a7cf044ba69672f53310479cd9c6de9aef912a779ed63",
+    "res://assets/portraits/creatures/dragnar_stone.png": "8fc7b5a6adde08dbc0822611361929673435448ff1f29213a459475ff29e1ab5",
+    "res://assets/portraits/creatures/dragnar_tide.png": "6f41b9d05cacd8d724a65dba3d330cb626e6a05f0e43e13a66183909f8f945dc",
+    "res://assets/portraits/creatures/gorgul_fire.png": "6db5c35491bfc38bcaaadf13dcb410a72af1da526913835cf691fcfef40e7e0c",
+    "res://assets/portraits/creatures/gorgul_gale.png": "11f3b30eb9b44dde4b26887ad38ca5aef41bec263026618164995d00ef790728",
+    "res://assets/portraits/creatures/gorgul_light.png": "d086ccdaee5a9162e6461691596d47b1316a5db91a882fb58f7e2a6f52f662c7",
+    "res://assets/portraits/creatures/gorgul_shadow.png": "11e4fcb689389cf8031ba97ba0e3613faed2ff89ff80961671239f54f49c8a1f",
+    "res://assets/portraits/creatures/gorgul_stone.png": "fc6aa5e5c0df54fe778a40eb7155e1bc0e3992574d14f04a0ff401ef2856ebe6",
+    "res://assets/portraits/creatures/gorgul_tide.png": "16676973ad8e906531ebac83cdadc1fbb65d33c52cd8c0096610989d280daa87",
+    "res://assets/portraits/creatures/grifalon_fire.png": "9ee3da379eab17b16b9fb4db966829d0ffa446b271621fece92894e769674022",
+    "res://assets/portraits/creatures/grifalon_gale.png": "cf615c72998423157ca99f6fc575565a9437a78e4433827ed280cd7de8e236a3",
+    "res://assets/portraits/creatures/grifalon_light.png": "ed3edb3d68d6c226f3432a9955a5cc534a73746ec98eb88ece1724e08b95c760",
+    "res://assets/portraits/creatures/grifalon_shadow.png": "cca05869ea5ec767a04928b883f741e6ec426f4d5cd51aed2298fe35a89cbe52",
+    "res://assets/portraits/creatures/grifalon_stone.png": "7397277f2d92dc312e356b3f31b5d1510bab99c4b195d9451de5005f0e3b91e8",
+    "res://assets/portraits/creatures/grifalon_tide.png": "20c75ef06ad075593046ffdd97c358ffbf3ad8ba793ed4abc72d291d7ada3934",
+    "res://assets/portraits/creatures/klykar_fire.png": "12c7f11c7272ad4abc72926287877009da1246577fedf607a2489bbeaa471ae6",
+    "res://assets/portraits/creatures/klykar_gale.png": "347d96df4d6838369cbd399375463776c7905727144404ad940d51744dad613f",
+    "res://assets/portraits/creatures/klykar_light.png": "146dae00a52221a222c43bc9da700d6789ffc38274c76c0634f214741cda0bf7",
+    "res://assets/portraits/creatures/klykar_shadow.png": "31431b731a43c4f58f04e45e1f4d219bbb23c18517058966b0e048b4fa846fa5",
+    "res://assets/portraits/creatures/klykar_stone.png": "da5c5f5153ae38b95046f7008868dd01799082f859b98908e23c819caef446fe",
+    "res://assets/portraits/creatures/klykar_tide.png": "b08890f5b258e4e746cdeb5788b1a5adc0d3e9045933fa0383fa68e3bc987d0f",
+    "res://assets/portraits/creatures/kolossar_fire.png": "8fd65b209cfe23c18a1565e451b16598ff590092b4ad1ec37db874e97fa4d1cc",
+    "res://assets/portraits/creatures/kolossar_gale.png": "076a1ef388e5c35d140d748521c60f2adbf6a88edc4c7540507834e86cd3e9f8",
+    "res://assets/portraits/creatures/kolossar_light.png": "d8c1baf0083d233dafe92988785b7a453246373708a1bb8128eb0a8645886433",
+    "res://assets/portraits/creatures/kolossar_shadow.png": "2272bf21b85a26a9a676fcbce668da953b0cb6ee434a72d59056f89a9fbdc371",
+    "res://assets/portraits/creatures/kolossar_stone.png": "d2159f76b766aa638ac07fb0a85141842d9843b32a7d3f2cb33b7876b9e4c8f3",
+    "res://assets/portraits/creatures/kolossar_tide.png": "8ee6878ca01e8e3b6c39ae152d98102632b54a943850d911ac2a0ce83a89262b",
+    "res://assets/portraits/creatures/levian_fire.png": "9415738cdae8f6bb7651a21ed610fe0ea3f15f25e2597ec42ea08b208dd3ca91",
+    "res://assets/portraits/creatures/levian_gale.png": "306afd3d489042aeaddbcdecf78b0ce3159ce75a8c68d000b3695129a706a8ab",
+    "res://assets/portraits/creatures/levian_light.png": "37033956290332be58ca67d98f7cc7667913fb884204ec28fee3d624bad63612",
+    "res://assets/portraits/creatures/levian_shadow.png": "fa9b6553d2a07675800dbd0985fe11c75802be8e6fed3069f01e5698c482a335",
+    "res://assets/portraits/creatures/levian_stone.png": "3853dcbbd5b9ad068e91f0f92d4b38771298bdd5d745edf4cc941dd7647970b4",
+    "res://assets/portraits/creatures/levian_tide.png": "da72dfadcc07f3ddd9c9508ade64fc9965374fe3fa235cb252cfcdd69cd00f1d",
+    "res://assets/portraits/creatures/likorez_shadow.png": "bc60dcbdeaebe6b4f6239a384020e96cc6d7f014f07a7e677b78d3a54bc4157e",
+    "res://assets/portraits/creatures/ratnik_fire.png": "eb2dce1c7e2d3b862b8857c60b39a92ef0087b94668d6be9e59f37695ba0625a",
+    "res://assets/portraits/creatures/ratnik_gale.png": "d28a6bab2af4531d19c6a5bde88797b5f104900695592c979b044224feda94f5",
+    "res://assets/portraits/creatures/ratnik_light.png": "1ea156c75cfc60f78d85710704c025bec0805c08e61a609b1e9d3666ac451601",
+    "res://assets/portraits/creatures/ratnik_shadow.png": "08f6487590108dc7d4d0fa1cf83b254be2d8c00c89491308f96e64c9de0dde85",
+    "res://assets/portraits/creatures/ratnik_stone.png": "07e895e129ffc1d034ae1c4fcb8576826b7d3986e7a688ab3b3f246aa68112a7",
+    "res://assets/portraits/creatures/ratnik_tide.png": "2bc41fe2a902f7c92b82f6912aca96685756d663ef708442c1d5c610dc2658d1",
+    "res://assets/portraits/creatures/rogozhuk_fire.png": "f94d8ea94dd07e82e2b5373146a0c48ff790561c05afd4bd3aced07366590b58",
+    "res://assets/portraits/creatures/rogozhuk_gale.png": "348364392439ce8082e1c4e3c3d306a75541607a61f70b22d6c656d7e007a861",
+    "res://assets/portraits/creatures/rogozhuk_light.png": "e17ddede4bd405ecb4425180c0db2cbc12379632bb42b2f3c7aa93a6cb1b4b42",
+    "res://assets/portraits/creatures/rogozhuk_shadow.png": "4936803fe2a50cb08c51ab14a5619dd7cc7c27fee9265f85d6ce5b4055eab306",
+    "res://assets/portraits/creatures/rogozhuk_stone.png": "47991d6815cedf4160d1c756a4bac3e44069e8e63ebc7991f6bdcfae4ae1e921",
+    "res://assets/portraits/creatures/rogozhuk_tide.png": "9178dfe6df5581fe43c3f6aa93fee383309828bf44e9e2ae1a71f8f1554b5f18",
+    "res://tools/ai_models/concepts/dragnar_fire.png": "a26acfda4318c88fc610db3aaae3c233e0a6bb8bcf9dd4b287106a683310f468",
+    "res://tools/ai_models/concepts/dragnar_gale.png": "18963ea5bf9310294d48e1e5af6eec560ab3fcb65cbf6804f77b763b2f0c1886",
+    "res://tools/ai_models/concepts/dragnar_light.png": "977b7fe4eae73d540e88933cc72e37c6f715a9545599d9f57a45205a06b5c162",
+    "res://tools/ai_models/concepts/dragnar_shadow.png": "3e587eb5fe20c6dd7509e8f191a6107e4184bbbb32636410ddaec2f0e4208724",
+    "res://tools/ai_models/concepts/dragnar_stone.png": "c4533b23964383a1dc6512ecdaf3b9af2952597b424a76fcc02f76f3b83dd542",
+    "res://tools/ai_models/concepts/dragnar_tide.png": "59aaf4e3f9d6f1c2aadd26771e8d5fbd84f0b1f59a7b5cc3a914f88260595464",
+    "res://tools/ai_models/concepts/gorgul_fire.png": "0786c89d8d245e439e05c7caffcf0b8178b5766ffad6c3788c516cc060810116",
+    "res://tools/ai_models/concepts/gorgul_gale.png": "04b768f5e06419c3c23562a70d44c5b895a8f20a753de841e8de059d36482c06",
+    "res://tools/ai_models/concepts/gorgul_light.png": "43625c94a6a38e0a8b58ad1e14b434010677ce6aa45b86ff2cf0bbca874eee0c",
+    "res://tools/ai_models/concepts/gorgul_shadow.png": "ab554f95ec607f5e81c0111f46a437e6e47abef24e84cb9c926b210cccc74e0c",
+    "res://tools/ai_models/concepts/gorgul_stone.png": "3743edb92a64890d2f9d60c040d4ad70d14e9ec039f92161a761d079e9fac4a9",
+    "res://tools/ai_models/concepts/gorgul_tide.png": "61a77ed7b0c699c32458260053572c88e2c055c0866131000a532497a1d24572",
+    "res://tools/ai_models/concepts/grifalon_fire.png": "31dd0812e4b7f310973a5b94ddb885619aefbac51cef6decfd9a896bde09ec70",
+    "res://tools/ai_models/concepts/grifalon_gale.png": "f4a7f99255d6976fc2863ea34bd7cb6ac9473b58e63a2189678454180c44c92d",
+    "res://tools/ai_models/concepts/grifalon_light.png": "1d9df2364d9b6ddf5ba1d57e19530eae072533158bce4e41b134c806d5d9c5b4",
+    "res://tools/ai_models/concepts/grifalon_shadow.png": "b63e16bff3079b6e42148ed2186ae2916f5e18fe73163afbe74fb325cab2ef37",
+    "res://tools/ai_models/concepts/grifalon_stone.png": "bbc6c87d702fb6bb6cf1073f5914f1050cbd0676de1606366f39112c086a4aea",
+    "res://tools/ai_models/concepts/grifalon_tide.png": "ab10169d11911afb78049c461681fcd41a61c190f6272bc49476e5c60ed2e58a",
+    "res://tools/ai_models/concepts/klykar_fire.png": "31558cfef22eda7369fb7d0866fbf82733451d160622ea048beea935fa4ce5f2",
+    "res://tools/ai_models/concepts/klykar_gale.png": "de5adcd0c9b94f851b96556ab6ab675eed733a0d6d533401fb364f9695da0950",
+    "res://tools/ai_models/concepts/klykar_light.png": "07ae191eb39584efafbcdea383e4119e6479a88ac237f3600542d9d6ac523989",
+    "res://tools/ai_models/concepts/klykar_shadow.png": "f4224ca554078072bfbbc1cfe2aac7e5adc256833ec068906d4fcc996650d40a",
+    "res://tools/ai_models/concepts/klykar_stone.png": "1ace6a4e3f858ae613b584cb085f6e007b89e1512d9bcb7f75742aa9fc719aac",
+    "res://tools/ai_models/concepts/klykar_tide.png": "2e3c3d0a3ffb020383beed4cfa3bd31adeb6590c01da7e1ffb2bb33f1f613314",
+    "res://tools/ai_models/concepts/kolossar_fire.png": "3d5608898fcd3306e9f43e691c526b49a65c60f34a807989fb8e2c55fa6911c5",
+    "res://tools/ai_models/concepts/kolossar_gale.png": "13702ece86d7c8f118a33b47f5f9d6d34ea6ee7286d1ff5300ec26f364d4bc86",
+    "res://tools/ai_models/concepts/kolossar_light.png": "5866cfcd7b3f6da9fd6862913c05ca37ad308e401ed96a0f061e713182be4a02",
+    "res://tools/ai_models/concepts/kolossar_shadow.png": "fc2f41a8cb27b4321fbc0d3fbbca096172356965e07e7275a22f39db2aecf834",
+    "res://tools/ai_models/concepts/kolossar_stone.png": "d5dbb6b008e1b16fff8963ff2f32c30f831dab1f5bccd13f352e2dceba7f1334",
+    "res://tools/ai_models/concepts/kolossar_tide.png": "d6ebabf43b32e5565488b657a71d1dc7285df7671fdcb3d5658657a61ec5dc42",
+    "res://tools/ai_models/concepts/levian_fire.png": "11473b546c5eaab3060189932de6538e4036aa5c9c56f65395194531a79fb0f8",
+    "res://tools/ai_models/concepts/levian_gale.png": "07e733a91d9d255f15225eaf67ee2e5fa6ff241c142606971b037c5468ff8d13",
+    "res://tools/ai_models/concepts/levian_light.png": "c907defbf8fee1dba35a7c5d5052488d9f0949662649d4428322411cac78b33a",
+    "res://tools/ai_models/concepts/levian_shadow.png": "69f2797e94cee2a88707a70979592c742d00bcee389daf6ce6c77e9e89884c54",
+    "res://tools/ai_models/concepts/levian_stone.png": "6d11a3c9b178d1c06be87b7a70cbe928f8bd3ffe823da5488605bc4121a30912",
+    "res://tools/ai_models/concepts/levian_tide.png": "bb1828398186c1883ae886e903013258f58acfd48647a107f0b07d14e46c562c",
+    "res://tools/ai_models/concepts/likorez_shadow.png": "9d72ef67cf799106c3dc2633f7402433d34d16db1f1b81377d042d70e54e5988",
+    "res://tools/ai_models/concepts/ratnik_fire.png": "a37ee0aebb57d7426bad2855c5ffa73ecd494db68697e1a8109005e18fdff4ee",
+    "res://tools/ai_models/concepts/ratnik_gale.png": "e15f04c4813a2c3b0daacf3966cff13010efc0c019e79fcdfc883b0975963437",
+    "res://tools/ai_models/concepts/ratnik_light.png": "25b61b51dc1531d29865e2868340629ba61f63ec1afe401cbf533c2e42d16011",
+    "res://tools/ai_models/concepts/ratnik_shadow.png": "e8fd5520e36d520747049d0178cf71c2b9ec7a8920e88707f8155df5e80edbc1",
+    "res://tools/ai_models/concepts/ratnik_stone.png": "9f8506d22e8a13479ce13ea02b63f115dd226f76a5f4802f32349b78ddb4c44a",
+    "res://tools/ai_models/concepts/ratnik_tide.png": "49fbad73bf04df2ceb2db8e8d9fbea52350d9a1d34b8d9d2ffb4e182604902ee",
+    "res://tools/ai_models/concepts/rogozhuk_fire.png": "e63e2d8e794eaeecd35ddb1e179939cd9f244b71156eed20402d92763afa71db",
+    "res://tools/ai_models/concepts/rogozhuk_gale.png": "56cafdddf156b705aaeb8c9cf9d83e59c471014d618a387975fdb142e13e6c4b",
+    "res://tools/ai_models/concepts/rogozhuk_light.png": "763d00f38dd211595e669e60e318223f13dd854692b929808fb3993ee37c14d2",
+    "res://tools/ai_models/concepts/rogozhuk_shadow.png": "c5b39c2f5419e48095d942f395fec67e881eb2572cd20040782848ccf28af66d",
+    "res://tools/ai_models/concepts/rogozhuk_stone.png": "7fd5213c5a2f2a2f5c4fe409962a1af7a4b317b7efa938dcac3e6ebcf011b365",
+    "res://tools/ai_models/concepts/rogozhuk_tide.png": "2fadb23aa88f629ea9ec537529f0741464fae130fbefd16a3e7db0bf78f04897"
+  }
+}

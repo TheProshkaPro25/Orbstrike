@@ -59,7 +59,7 @@ func _run() -> void:
 			clear()
 			for i in 2:
 				var idx: int = pair * 2 + i
-				var cv := UiTheme.help_panel(UiTheme.card_help(CardDB.card(ids[idx]))) as CardView
+				var cv := UiTheme.full_card_panel(UiTheme.card_help(CardDB.card(ids[idx]))) as CardView
 				cv.position = Vector2((extent.x - expected_w * 2 - 28) * .5 + i * (expected_w + 28), 20)
 				host.add_child(cv)
 			await process_frame

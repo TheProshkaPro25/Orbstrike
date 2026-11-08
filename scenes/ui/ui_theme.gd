@@ -572,25 +572,24 @@ static func creature_help(d: CreatureDef) -> Array:
 		"Бросается на карту ворот. Проиграв бой, выбывает; победив — уходит в зону использованных.", "", d.attribute]
 
 
+## Explicit full-card preview for catalog/readability checks; never used by passive hover.
+static func full_card_panel(lines: Array) -> CardView:
+	var def := CardDB.card(lines[7]["card_id"])
+	var tree := Engine.get_main_loop() as SceneTree
+	var available := Vector2(960, 540) if tree == null else tree.root.get_visible_rect().size
+	var width := minf(360.0, floorf((available.y - 64.0) / 1.4))
+	width = minf(width, available.x - 64.0)
+	var card := CardView.new().for_card(def, Vector2(width, roundf(width * 1.4)), true, lines)
+	card.tooltip_text = ""
+	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.focus_mode = Control.FOCUS_NONE
+	return card
+
+
 ## Панель подсказки (используется в CardView._make_custom_tooltip).
 static func help_panel(lines: Array) -> Control:
-	# Полное раскрытие руки и сыгранных карт: та же карта с эмалью, все правила
-	# и ограничения, без обрезки. Ширина подбирается по доступной высоте экрана.
 	if lines.size() > 7 and lines[7] is Dictionary and lines[7].has("card_id"):
-		var def := CardDB.card(lines[7]["card_id"])
-		if def != null:
-			var tree := Engine.get_main_loop() as SceneTree
-			var available := Vector2(960, 540) if tree == null else Vector2(tree.root.size)
-			# Один размер для всего каталога и любого контекста в этом окне.
-			var width := minf(360, floorf((available.y - 64) / 1.4))
-			width = minf(width, available.x - 64)
-			var fixed_size := Vector2(width, roundf(width * 1.4))
-			var cv := CardView.new().for_card(def, fixed_size, true)
-			cv._compose_card(def,fixed_size,true,lines)
-
-			cv.tooltip_text = ""
-			cv.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			return cv
+		return preload("res://scenes/ui/card_hint.gd").new().configure(lines)
 
 	var small_screen := false
 	var tree := Engine.get_main_loop() as SceneTree

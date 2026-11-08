@@ -1,0 +1,10 @@
+{
+  "baseline_tag": "v0.4.2",
+  "files": {
+    "scenes/ui/card_view.gd": "c7ad3c7e5d831a6d033b986f825df285c50390ab6023a677e2008922cb65b8da",
+    "scenes/ui/card_hover.gd": "b25cd4bc3bb0bd312a4594b298bb69fdc88210911fcb2c6ed4b7c8f840ee8b3b",
+    "scenes/ui/ui_theme.gd": "a690f02b749a36394705d0c2fe89c73da7ae07e4d770cacc5bb1efec6d655656",
+    "scenes/ui/hud.gd": "ff59add23ee76d5992fc464571cc2dda9fc7ce8310d4fa4ccd517a177f9ca967"
+  },
+  "scope": "Immutable published-source provenance for before focus-growth/hint-overlap reproduction; not modified production files."
+}

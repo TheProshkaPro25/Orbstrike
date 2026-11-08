@@ -82,7 +82,7 @@ func editorial_examples(stage: String) -> void:
 	root.content_scale_size = root.size
 	var samples := [&"ability_stone_copy", &"arena_mute", &"ability_gale_swap", &"ability_fire_assault"]
 	for i in samples.size():
-		var cv := UiTheme.help_panel(UiTheme.card_help(CardDB.card(samples[i]))) as CardView
+		var cv := UiTheme.full_card_panel(UiTheme.card_help(CardDB.card(samples[i]))) as CardView
 		cv.position = Vector2(22 + i * 394,95)
 		host.add_child(cv)
 		var caption := VisualUtil.label("%s · текст %dpx" % [CardDB.card(samples[i]).display_name, cv._text.get_theme_font_size("font_size")],14)
@@ -202,7 +202,7 @@ func _run() -> void:
 		root.content_scale_size = vp
 		var reference_size := Vector2.ZERO
 		for id in ids:
-			var cv := UiTheme.help_panel(UiTheme.card_help(CardDB.card(id))) as CardView
+			var cv := UiTheme.full_card_panel(UiTheme.card_help(CardDB.card(id))) as CardView
 			host.add_child(cv)
 			cv.position = Vector2(18, 14)
 			await process_frame
@@ -218,7 +218,7 @@ func _run() -> void:
 		for id in [&"ability_fire_counter", &"ability_stone_copy", &"arena_mute"]:
 			var help := UiTheme.card_help(CardDB.card(id))
 			help[6] = "Защитник. Карта отменена или подавлена; её эффект сейчас не действует. Нельзя сыграть: достигнут общий лимит трёх карт в этом бою."
-			var cv := UiTheme.help_panel(help) as CardView
+			var cv := UiTheme.full_card_panel(help) as CardView
 			host.add_child(cv)
 			await process_frame
 			inspect_card(cv, true)
@@ -234,7 +234,7 @@ func _run() -> void:
 		closed[1] = "Ваша закрытая карта ворот"
 		closed[5] = "Соперник не видит эту карту до боя."
 		closed[6] = str(closed[6]) + "\nНа воротах: Драгнар Пламени."
-		var closed_view := UiTheme.help_panel(closed) as CardView
+		var closed_view := UiTheme.full_card_panel(closed) as CardView
 		host.add_child(closed_view)
 		await process_frame
 		check(closed_view._kind.text == str(closed[1]), "закрытые ворота сохраняют особый заголовок")
@@ -287,7 +287,7 @@ func _run() -> void:
 	root.content_scale_size = root.size
 	for i in 3:
 		var id = [&"arena_field_fire", &"ability_stone_copy", &"arena_mute"][i]
-		var cv := UiTheme.help_panel(UiTheme.card_help(CardDB.card(id))) as CardView
+		var cv := UiTheme.full_card_panel(UiTheme.card_help(CardDB.card(id))) as CardView
 		cv.position = Vector2(24 + i * 412, 64)
 		host.add_child(cv)
 		var caption := VisualUtil.label("%s · текст %dpx · %.0f×%.0f" % [id,cv._text.get_theme_font_size("font_size"),cv._card_size.x,cv._card_size.y],12)

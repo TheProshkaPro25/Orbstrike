@@ -1,0 +1,35 @@
+{
+  "scope": "Actual production CardView focus lifecycle, headless; no visual or physical mouse claim",
+  "states": [
+    {
+      "elapsed_us": 32099,
+      "focused": true,
+      "live_canvas_layers": 1,
+      "node_count": 25,
+      "state": "focused_after_batch0"
+    },
+    {
+      "elapsed_us": 33399,
+      "focused": true,
+      "live_canvas_layers": 1,
+      "node_count": 25,
+      "state": "focused_after_batch1"
+    },
+    {
+      "elapsed_us": 33291,
+      "focused": true,
+      "live_canvas_layers": 1,
+      "node_count": 25,
+      "state": "focused_after_batch2"
+    },
+    {
+      "live_canvas_layers": 0,
+      "node_count": 12,
+      "state": "after_blur"
+    }
+  ],
+  "window": {
+    "display": "headless",
+    "max_fps": 60
+  }
+}

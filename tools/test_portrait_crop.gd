@@ -56,6 +56,7 @@ func _run() -> void:
 		if not decisions.has(key): continue
 		var decision: Dictionary = decisions[key]
 		var source := CreaturePortrait.reference_texture(id)
+		var presentation := CreaturePortrait.presentation_texture(id)
 		var hud := CreaturePortrait.hud_reference_texture(id)
 		var expected_path := "res://assets/portraits/creatures/" + key.trim_prefix("creature_") + ".png"
 		check(source != null and source.resource_path == expected_path, "exact full-body source remains public reference: " + key)
@@ -69,22 +70,22 @@ func _run() -> void:
 				var atlas := hud as AtlasTexture
 				var values: Array = decision["region"]
 				var expected := Rect2(float(values[0]), float(values[1]), float(values[2]), float(values[3]))
-				check(atlas.atlas == source, "crop samples exact original pixels: " + key)
+				check(atlas.atlas == presentation, "crop samples source-preserving prepared matte: " + key)
 				check(atlas.region == expected and CROPS.REGIONS[id] == expected, "runtime region exactly matches manual manifest: " + key)
 				check(Rect2(Vector2.ZERO, source.get_size()).encloses(atlas.region) and atlas.region.size.x == atlas.region.size.y, "crop is square and inside original bounds: " + key)
 				check(atlas.margin == Rect2() and atlas.filter_clip, "crop has no added pixels and filters inside region: " + key)
 				check(atlas.get_size() == expected.size, "resource aspect matches72px square composition: " + key)
 		else:
 			kept += 1
-			check(hud == source, "reviewed fullbody choice returns exact source without wrapping: " + key)
+			check(hud == presentation, "reviewed fullbody choice keeps full prepared silhouette without wrapping: " + key)
 		check(CreaturePortrait.hud_reference_texture(id) == hud, "repeat lookup reuses same resource: " + key)
 		portrait.set_hud_crop_enabled(false)
 		portrait.set_definition(definition, 7)
-		check(portrait._fallback.texture == source, "default/full-reference consumer retains fullbody: " + key)
+		check(portrait._fallback.texture == presentation, "default/full-reference consumer retains full prepared silhouette: " + key)
 		portrait.set_hud_crop_enabled(true)
 		check(portrait._fallback.texture == hud and portrait._reference_texture == source, "small-HUD opt-in selects composition without altering reference: " + key)
 		portrait.set_hud_crop_enabled(false)
-		check(portrait._fallback.texture == source, "turning crop off restores exact source immediately: " + key)
+		check(portrait._fallback.texture == presentation, "turning crop off restores full prepared silhouette immediately: " + key)
 		for panel: OpponentPanel in [own, opponent]:
 			panel.present(definition, 7, 420)
 			check(panel._portrait._hud_crop_enabled and panel._portrait._fallback.texture == hud, "real panel opts into same exact HUD ID on side" + str(panel.player_side) + ": " + key)

@@ -6,6 +6,10 @@ const DEVICE := preload("res://scenes/ui/device_settings.gd")
 const ART := preload("res://scenes/ui/card_artwork.gd")
 const ELEMENT_ICON := preload("res://scenes/element_icon.gd")
 const HUD_CROPS := preload("res://scenes/ui/creature_portrait_crops.gd")
+const MATTE := preload("res://scenes/ui/portrait_matte.gd")
+const INTERIOR_BACKGROUND := preload("res://scenes/ui/portrait_background_regions.gd")
+const BACKDROP := preload("res://scenes/ui/portrait_backdrop.gdshader")
+const ELEMENT_BACKDROPS := [Color("c96229"), Color("39a58d"), Color("cfb05f"), Color("97816a"), Color("9560c6"), Color("3686b8")]
 const PORTRAIT_LAYER := 1 << 20
 const FRAME_INTERVAL := 1.0 / 15.0
 ## Exact original concept filenames. Preloads share Boot resources and perform no match-time lookup.
@@ -65,6 +69,7 @@ var _viewport: SubViewport
 var _camera: Camera3D
 var _image: TextureRect
 var _fallback: TextureRect
+var _backdrop: ColorRect
 var _actor: CreatureBall
 var _definition: CreatureDef
 var _uid := -1
@@ -74,15 +79,67 @@ var _active := false
 var _reference_texture: Texture2D
 var _hud_crop_enabled := false
 static var _hud_reference_textures: Dictionary = {}
+static var _presentation_textures: Dictionary = {}
+static var _presentation_stats: Dictionary = {}
+static var _background_materials: Dictionary = {}
 
 
-## Boot may prepare these small resources before the menu; the cache never holds Nodes.
+## Explicit preparation is the only path that performs segmentation.
+## Texture getters/present/style/resize only reuse resources, never Nodes.
 static func preload_catalog() -> int:
-	# Resource-only AtlasTexture cache, prepared with the exact references before the menu.
+	for definition_id: StringName in REFERENCE_TEXTURES:
+		_prepare_reference(definition_id)
 	for definition_id: StringName in HUD_CROPS.REGIONS:
 		hud_reference_texture(definition_id)
+	for element in ELEMENT_BACKDROPS.size():
+		_background_material(element, false)
+		_background_material(element, true)
 	return REFERENCE_TEXTURES.size()
 
+
+## Boot keeps rendering its loading screen between the bounded per-image tasks.
+static func preload_catalog_async(tree: SceneTree, progress: Callable = Callable()) -> int:
+	var done := 0
+	for definition_id: StringName in REFERENCE_TEXTURES:
+		var preparing := not _presentation_textures.has(definition_id)
+		_prepare_reference(definition_id)
+		done += 1
+		if progress.is_valid():
+			progress.call(done, REFERENCE_TEXTURES.size())
+		if preparing and tree != null:
+			await tree.process_frame
+	return preload_catalog()
+
+
+static func _prepare_reference(definition_id: StringName) -> void:
+	if _presentation_textures.has(definition_id):
+		return
+	var begin := Time.get_ticks_usec()
+	var prepared: Dictionary = MATTE.prepare(reference_texture(definition_id), false, INTERIOR_BACKGROUND.REGIONS.get(definition_id, {}))
+	if prepared.is_empty():
+		push_error("Could not prepare exact portrait: " + String(definition_id))
+		return
+	_presentation_textures[definition_id] = prepared.texture
+	_presentation_stats[definition_id] = {"background_pixels": prepared.background_pixels, "interior_background_pixels": prepared.interior_background_pixels, "retained_closed_white_pixels": prepared.retained_closed_white_pixels, "softened_edge_pixels": prepared.softened_edge_pixels, "prepare_ms": (Time.get_ticks_usec() - begin) / 1000.0}
+	_hud_reference_textures.erase(definition_id)
+
+
+## A missing explicit preparation honestly falls back to the source, without
+## triggering expensive work from a UI event or touching an original bitmap.
+static func presentation_texture(definition_id: StringName) -> Texture2D:
+	return _presentation_textures.get(definition_id, reference_texture(definition_id)) as Texture2D
+
+
+static func _background_material(element: int, device_style: bool) -> ShaderMaterial:
+	var key := "%d/%d" % [element, int(device_style)]
+	if _background_materials.has(key):
+		return _background_materials[key] as ShaderMaterial
+	var material := ShaderMaterial.new()
+	material.shader = BACKDROP
+	material.set_shader_parameter("element_color", ELEMENT_BACKDROPS[clampi(element, 0, ELEMENT_BACKDROPS.size() - 1)])
+	material.set_shader_parameter("device_style", 1.0 if device_style else 0.0)
+	_background_materials[key] = material
+	return material
 
 static func reference_texture(definition_id: StringName) -> Texture2D:
 	return REFERENCE_TEXTURES.get(definition_id) as Texture2D
@@ -90,7 +147,7 @@ static func reference_texture(definition_id: StringName) -> Texture2D:
 
 ## Only explicitly reviewed IDs crop; every other exact source remains full-body.
 static func hud_reference_texture(definition_id: StringName) -> Texture2D:
-	var source := reference_texture(definition_id)
+	var source := presentation_texture(definition_id)
 	if source == null or not HUD_CROPS.REGIONS.has(definition_id): return source
 	if _hud_reference_textures.has(definition_id): return _hud_reference_textures[definition_id] as Texture2D
 	var base_region: Rect2 = HUD_CROPS.REGIONS[definition_id]
@@ -125,6 +182,12 @@ func _resume() -> void:
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_backdrop = ColorRect.new()
+	_backdrop.name = "ElementPortraitBackdrop"
+	_backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_backdrop.hide()
+	add_child(_backdrop)
 	_image = _texture()
 	_image.name = "ResidentFigureImage"
 	_image.hide()
@@ -216,6 +279,7 @@ func _actor_exiting() -> void:
 
 
 func _style_changed(_style: int) -> void:
+	_update_fallback()
 	_sync()
 
 
@@ -313,7 +377,7 @@ func _texture() -> TextureRect:
 func _update_fallback() -> void:
 	_reference_texture = reference_texture(_definition.id) if _definition != null else null
 	if is_instance_valid(_fallback):
-		var texture: Texture2D = _reference_texture
+		var texture: Texture2D = presentation_texture(_definition.id) if _definition != null else null
 		if _hud_crop_enabled and _definition != null and _reference_texture != null:
 			texture = hud_reference_texture(_definition.id)
 		if texture == null and _definition != null:
@@ -322,6 +386,10 @@ func _update_fallback() -> void:
 			texture = ELEMENT_ICON.badge(_definition.attribute)
 		_fallback.texture = texture
 		_fallback.visible = not _active and _definition != null
+	if is_instance_valid(_backdrop):
+		_backdrop.visible = _definition != null
+		if _definition != null:
+			_backdrop.material = _background_material(_definition.attribute, DEVICE.is_device())
 	queue_redraw()
 
 

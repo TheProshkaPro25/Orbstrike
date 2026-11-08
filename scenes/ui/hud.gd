@@ -28,6 +28,7 @@ var _creature_box: HBoxContainer
 var _cancel_btn: Button
 var _help_btn: Button
 var _tempo: OptionButton
+var _hint_layout_pending := false
 var _hint_tw: Tween
 var _battle := false
 var _built := false
@@ -67,6 +68,7 @@ func _build() -> void:
 		fp.visible = false
 		add_child(fp)
 		_plates.append(fp)
+		fp.resized.connect(_queue_hint_layout)
 
 	# плашка хода по центру: текст «проезжает» справа налево и замирает
 	_turn_clip = Control.new()
@@ -105,7 +107,9 @@ func _build() -> void:
 
 	_hint_plate = PanelContainer.new()
 	_hint_plate.add_theme_stylebox_override("panel", UiTheme.box(Color(0.05, 0.05, 0.09, 0.78), UiTheme.GOLD, 1, 18, 8))
-	VisualUtil.place(_hint_plate, 0.5, 0.0, 0.0, 74.0)
+	_hint_plate.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	_hint_plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_hint_plate.minimum_size_changed.connect(_queue_hint_layout)
 	add_child(_hint_plate)
 	_hint = VisualUtil.label("", 18)
 	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -224,6 +228,7 @@ func _opponent_style_changed(_style: int) -> void:
 
 
 func _layout_owned_context() -> void:
+	_queue_hint_layout()
 	if _log_box == null: return
 	var offset := own_panel.position.x + own_panel.size.x + 14.0 if _own_context_visible() else 16.0
 	VisualUtil.place(_log_box,0.0,0.0,offset,108.0)
@@ -245,6 +250,7 @@ func _settle_turn_text() -> void:
 
 
 func _layout_opponent_toolbar() -> void:
+	_queue_hint_layout()
 	if DeviceSettings.is_device(): _settle_turn_text()
 	if _tempo == null: return
 	VisualUtil.place(_tempo,1.0,0.0,-66.0 if DeviceSettings.is_device() else -16.0,10.0 if DeviceSettings.is_device() else 114.0)
@@ -332,9 +338,46 @@ func set_status(turn: int, active: int, _alive0: int, _alive1: int) -> void:
 func set_hint(text: String) -> void:
 	_build()
 	_hint.text = text
-	_hint.custom_minimum_size.x = minf(680.0, get_viewport_rect().size.x * 0.60)
+	_queue_hint_layout()
 	_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_hint_plate.visible = text != ""
+
+
+func _queue_hint_layout() -> void:
+	if _hint_layout_pending or not is_inside_tree(): return
+	_hint_layout_pending = true
+	_layout_hint.call_deferred()
+
+
+func _layout_hint() -> void:
+	_hint_layout_pending = false
+	if not is_instance_valid(_hint_plate) or not _hint_plate.visible: return
+	var viewport := get_viewport_rect().size
+	var left := 16.0
+	var right := viewport.x - 16.0
+	var bottom := 74.0
+	var blockers: Array[Control] = []
+	for plate in _plates: blockers.append(plate)
+	for panel in [own_panel, opponent_panel]:
+		if is_instance_valid(panel): blockers.append(panel)
+	for control in blockers:
+		if not control.is_visible_in_tree(): continue
+		var rect := control.get_global_rect()
+		bottom = maxf(bottom, rect.end.y + 10.0)
+		if rect.get_center().x < viewport.x * .5: left = maxf(left, rect.end.x + 12.0)
+		else: right = minf(right, rect.position.x - 12.0)
+	var width := minf(680.0, right - left - 24.0)
+	var y := 74.0
+	var center := (left + right) * .5
+	if width < 280.0:
+		# Long names can exhaust the top corridor: move below the actual portraits.
+		width = minf(680.0, viewport.x - 48.0)
+		center = viewport.x * .5
+		y = bottom
+	if not is_equal_approx(_hint.custom_minimum_size.x, width):
+		_hint.custom_minimum_size.x = width
+	_hint_plate.reset_size()
+	_hint_plate.position = Vector2(center - _hint_plate.size.x * .5, y)
 
 
 func reject_action(reason: String) -> void:

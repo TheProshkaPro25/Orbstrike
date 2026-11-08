@@ -1,0 +1,127 @@
+{
+  "status": "SOURCE_CODE_SCOPED_ART_PASS",
+  "reviewer": "Sol high, independent",
+  "scope": "Local source bugfix after published 0.4.2, no package/release claim",
+  "own_runs": {
+    "focus_batches_before": [
+      31,
+      60,
+      89
+    ],
+    "focus_batches_after": [
+      1,
+      1,
+      1
+    ],
+    "node_counts_before": [
+      353,
+      672,
+      991
+    ],
+    "node_counts_after": [
+      25,
+      25,
+      25
+    ],
+    "layers_after_blur": 0,
+    "hint_enemy_overlap_before_logical_px2": {
+      "classic": 690,
+      "device": 3480
+    },
+    "hint_enemy_overlap_after_logical_px2": 0,
+    "physical_sizes": [
+      "960x540",
+      "1280x720"
+    ],
+    "max_fps": 60,
+    "display": "headless",
+    "errors": 0
+  },
+  "visual_review": {
+    "personally_viewed": [
+      "representatives7-before-edge-matte.png",
+      "representatives7.png",
+      "catalog49-full-1.png",
+      "catalog49-full-2.png",
+      "catalog49-hud72-device.png",
+      "classic-960-false.png",
+      "classic-960-true.png",
+      "classic-1280-false.png",
+      "classic-1280-true.png",
+      "device-960-false.png",
+      "device-960-true.png",
+      "device-1280-false.png",
+      "device-1280-true.png",
+      "changed2-source-matte-alpha-hud.png",
+      "chain-overflow-pagedown.png",
+      "selected-ui-card-access-card-hover/tournament-entry-0.png",
+      "selected-ui-card-access-card-hover/tournament-exit-0.png",
+      "selected-ui-card-access-card-hover/tournament-entry-1.png",
+      "selected-ui-card-access-card-hover/tournament-exit-1.png",
+      "selected-ui-card-access-card-hover/chain-overflow-pagedown.png",
+      "selected-ui-card-access-card-hover/classic-960-false.png",
+      "selected-ui-card-access-card-hover/device-1280-false.png"
+    ],
+    "verdict": "Final49 portraits scoped ART GO. Compact card rules readable, hint avoids top portraits in inspected layouts. Four actual Main tournament dialog images have consistent gold/cyan button styles. Final synthetic-overflow chain is readable and PgDn tested; repeated pointer/native dwell/lifecycle401/0."
+  },
+  "open_findings": [],
+  "limits": [
+    "Not a proof of permanent game freeze; accumulated disclosure windows proven instead",
+    "No match, native Windows, audio listening, package or publication test",
+    "Headless fixture geometry is not visual proof; eight actual GPU images independently viewed",
+    "Old zero-size-headless error run explicitly invalid, not a product defect"
+  ],
+  "portrait_final": {
+    "status": "SCOPED_ART_CODE_PASS",
+    "checks": 649,
+    "failures": 0,
+    "errors": 0,
+    "generation_count": 49,
+    "loading_frame_signals": 49,
+    "original_files_unchanged": 98,
+    "preparation_ms": 6036.073,
+    "changed_interior_background_pixels": {
+      "dragnar_shadow": 2572,
+      "levian_shadow": 920
+    },
+    "guard": "per-source RGBA SHA256 plus exact connected-component sizes",
+    "warm_events_no_generation": true,
+    "limits": "Some fine antialias edge speckling remains at full256px; source art details preserved,72px acceptable"
+  },
+  "source_tests": {
+    "card_hover": {
+      "checks": 401,
+      "failures": 0,
+      "error_count": 0,
+      "report": "build/checks/presentation/selected-ui-card-access-card-hover/card-hover/report.json"
+    },
+    "ui_card_access": {
+      "checks": 138,
+      "failures": 0
+    },
+    "portrait_background": {
+      "checks": 649,
+      "failures": 0,
+      "report": "build/checks/presentation/selected-portrait-background/portrait-background/summary.json"
+    }
+  },
+  "late_label_change": {
+    "finding": "English Please Confirm / Cancel in actual exit dialog",
+    "source_resolution": "Main factory now sets Выход из турнира / Назад; independent GDC current-source equality includes fix",
+    "packed_visual_verification": "PASS: personally viewed actual newPCK classic/device exit images; Russian title/cancel correct"
+  },
+  "shipping_code_sha256": {
+    "scenes/ui/card_view.gd": "feb6241a1441bf7e54d6747112cbbf2a1315dfab63a5998077d0a1eeb8d85401",
+    "scenes/ui/card_hover.gd": "780aed8e100b6ac866e0eebf233fdcf220762b621a92e010a4a25da7a3b3ba5c",
+    "scenes/ui/card_hint.gd": "840afacd8a09f53002077771d6bfe41528a8f437f3a0a2ebcafb480f9a330990",
+    "scenes/ui/ui_theme.gd": "6e81d6cce59055806d39418c4c9211cc3f49a0ce7e8c148b2a5f022786034860",
+    "scenes/ui/hud.gd": "efe19e746d779dfeb702d1abbeaec7b53d976fb5a8629580a082bb6267aceca8",
+    "scenes/ui/battle_hud.gd": "31faa72c565ba871d74f3eff5b2ad08fa575827cb02a9129c5a8291ad3aebfcc",
+    "scenes/ui/creature_portrait.gd": "a04fdc043891aecdae89371251ddbb53ffc36c01ee4787186b938626b1b8710a",
+    "scenes/ui/portrait_matte.gd": "acbbd4b041840808381bf01c2e144997e0aacf2a31763f2de20f07c72bea227e",
+    "scenes/ui/portrait_background_regions.gd": "85b4aa766e22c65d5d1f41509f9dfae8377cf83f3cd80dedb4012aedcf4fe9b6",
+    "scenes/ui/portrait_backdrop.gdshader": "e047d06ed914c2bb085caaf7b7fa4653278d6f8bc0221d697d42ab524ea8b694",
+    "scenes/main.gd": "c24bc78a227fd807dcd8ec822af8d5df2174f5bc5966741806ae7fc90f54e8f8",
+    "scenes/loading/game_loading.gd": "5306b286846ba2e195f8272998465882811e7477aed3afc25e718779f2106419"
+  }
+}

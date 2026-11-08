@@ -52,7 +52,8 @@ func prepare(progress: Callable = Callable()) -> void:
 	resources = await StartupCatalog.preload_resources(func(done: int, total: int, _path: String) -> void:
 		_report(progress, .22 * float(done) / total, "Загрузка ресурсов · %d / %d" % [done, total]))
 	SoundFx.i().preload_catalog()
-	preload("res://scenes/ui/creature_portrait.gd").preload_catalog()
+	await preload("res://scenes/ui/creature_portrait.gd").preload_catalog_async(get_tree(), func(done: int, total: int) -> void:
+		_report(progress, .22 + .02 * float(done) / total, "Подготовка портретов · %d / %d" % [done, total]))
 	CreatureModels.preload_all_catalog()
 	# The accepted six-way set is required: do not silently publish legacy actors.
 	if not CreatureModels.GrifalonMotion.preload_required() or not CreatureModels.GrifalonGaleSkin.preload_required():

@@ -1,3 +1,11 @@
+## Hotfix0.4.2.5 — 8 ноября 2026
+
+- [x] Устранить накопление focus-подсказок/oversized hover, проверить быстрые указатель/focus/cancel/resize и полный текст:401/0+138/0, независимыйCODE/ART.
+- [x] Прозрачные source-preserving портреты49/стихийные фоны, подготовка до меню, warm getters без генераций:649/0, независимыйART.
+- [x] Общая тема входа/выхода турнира и announcement без пересечения портретов; tinyRUexit labels внесены.
+- [x] ActualPCKBoot/UI/cache49:505/0/ERROR0, independent package PASS12CRC/1563MD5/157GDC и packedRUexitART.
+- [ ] Опубликовать клиент0.4.2.5/3assets и проверить публичные SHA/HTTP. Старый0.4.2/сервер не перезаписывать.
+
 ## Клиент0.4.2 — 8 ноября 2026
 
 - [x] Довести читаемость normal/reduced HUD и карьерные экраны; исправить deferred-focus lifecycle, награду за ничью без участия и объяснения Progress. Независимый scoped31PNG review, domain/UI проверки.

@@ -79,10 +79,6 @@ func _process(delta: float) -> void:
 	if not _open or not _chain.visible:
 		_clear_chain_help()
 		return
-	if not _keyboard_help and _chain_help != null and _chain_help.get_global_rect().has_point(_mouse_position):
-		# Видимое раскрытие имеет приоритет над скрытой под ним надписью.
-		_help_lost = 0.0
-		return
 	var hovered := get_viewport().gui_get_hovered_control()
 	var focused := get_viewport().gui_get_focus_owner()
 	if _keyboard_help and focused is PlayedCardChip and focused.get_parent() == _chain:
@@ -98,15 +94,12 @@ func _process(delta: float) -> void:
 			# под ней UI, иначе его подсказка возникает поверх раскрытия.
 			_chain_help = PanelContainer.new()
 			_chain_help.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
-			_chain_help.mouse_filter = Control.MOUSE_FILTER_STOP
+			_chain_help.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			_chain_help.add_child(UiTheme.help_panel(_help_chip.help))
 			_chain_help.z_index = 100
 			add_child(_chain_help)
 		if _chain_help != null:
 			_place_chain_help()
-	elif _chain_help != null and _chain_help.get_global_rect().has_point(_mouse_position):
-		# Можно перевести мышь на крупную карту и дочитать.
-		_help_lost = 0.0
 	else:
 		_help_lost += delta
 		if _help_lost > .14: _clear_chain_help()
