@@ -1,6 +1,6 @@
 # Клиент0.4.2: доводка UI/карьеры и пакетная приёмка
 
-Подготовлен только Windows-клиент; независимая пакетная приёмка PASS, публикация ожидается. [Release checkpoint](../../../tools/checkpoints/release042-validation.json), [точные source/49model SHA](../../../tools/checkpoints/release042-sources.json).
+Опубликован только Windows-клиент0.4.2/latest; независимые пакетная и публичная приёмки PASS. Публичные размеры/SHA256/HTTP200 всех3файлов проверены полным скачиванием без авторизации. [Release checkpoint](../../../tools/checkpoints/release042-validation.json), [точные source/49model SHA](../../../tools/checkpoints/release042-sources.json).
 
 ## Исправлено в этом проходе
 
@@ -17,3 +17,7 @@ Power scan рисуется по периметру счётчика G вмес�
 Первый PCK выявил дополнительные deferred-focus ошибки — отклонён и сохранён в `build/release042/failed-first-candidate/`. Следующая ошибка была в старом fixture, ожидавшем арену1 в свободном pool, хотя она уже принадлежала parkedMain после прошлого выбора; теперь начальная тестовая арена явно0, затем выполняются1/2. Отдельно regex parser научен принимать ничью winner−1; чистые завершённые матчи повторно не запускались. Это диагностические ограничения стенда, не скрытые ошибки продукта.
 
 Реальный Windows не запускался; Wine при выполнении отмечается отдельно. Техническая проверка7WAV (clipping0), маршрутизации/громкости/mute не является субъективным прослушиванием. Сервер не проверялся и не обновлялся. Прежние модели/анимации и индивидуальные ограничения сохранены; новые полные комплекты остальных видов не входят в обещание0.4.2.
+
+## Подтверждённая публикация
+
+[Выпуск](https://github.com/TheProshkaPro25/Orbstrike/releases/tag/v0.4.2), [Windows ZIP](https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.2/Orbstrike_v0.4.2_win64.zip). Release ID438055629; время2026-11-08T05:37:25Z. Release commit `dcb3ed71bfaad7b8f88c48514e8066577f00d7b4`, annotatedv0.4.2 не перемещается. ZIP SHA256`6c6319a5098bb7a52cbd509d24f3b59f34a19e77e7cd5c68ae0377b6ab8aab30`; полный безопасный API/download evidence — в tracked release checkpoint. Отдельная запись фактов публикации не меняет PCK/EXE/ZIP и закрытые проверки не повторяет.

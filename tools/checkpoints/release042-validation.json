@@ -1,7 +1,7 @@
 {
   "release": "Orbstrike 0.4.2",
   "date": "2026-11-08",
-  "status": "validated client; independent package PASS; publication pending",
+  "status": "published client; public downloads SHA256/size/HTTP and independent public review PASS",
   "authorization": "Author explicitly requested finishing UI and career and publishing client0.4.2",
   "scope": "Windows client only; no server build/test/publication",
   "version": "0.4.2",
@@ -13,7 +13,64 @@
     "Independent package and visual review before publication"
   ],
   "source_visual_summary": "build/checks/presentation/selected-career-ui-device-ui-hud-gdelta/summary.json",
-  "publication": null,
+  "publication": {
+    "status": "publicly published; unauthenticated downloads SHA256 verified",
+    "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/tag/v0.4.2",
+    "release_id": 438055629,
+    "tag": "v0.4.2",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2026-11-08T05:37:25Z",
+    "verified_at_utc": "2026-11-08T05:38:45.207414+00:00",
+    "latest": true,
+    "release_commit": "dcb3ed71bfaad7b8f88c48514e8066577f00d7b4",
+    "release_page_http_status": 200,
+    "client_only": true,
+    "assets": [
+      {
+        "id": 723011775,
+        "name": "Orbstrike_v0.4.2_win64.zip",
+        "size": 1035636918,
+        "digest": "sha256:6c6319a5098bb7a52cbd509d24f3b59f34a19e77e7cd5c68ae0377b6ab8aab30",
+        "browser_download_url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.2/Orbstrike_v0.4.2_win64.zip",
+        "http_status": 200,
+        "downloaded_bytes": 1035636918,
+        "download_sha256": "6c6319a5098bb7a52cbd509d24f3b59f34a19e77e7cd5c68ae0377b6ab8aab30",
+        "match": true,
+        "seconds": 45.069,
+        "authentication": "none; urllib public URL, no Authorization header"
+      },
+      {
+        "id": 723011774,
+        "name": "Orbstrike_v0.4.2_win64.zip.sha256",
+        "size": 93,
+        "digest": "sha256:6d113f7189d3d0e64c8ba54ab73864a521b03c21348c492c6d41edff143447dd",
+        "browser_download_url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.2/Orbstrike_v0.4.2_win64.zip.sha256",
+        "http_status": 200,
+        "downloaded_bytes": 93,
+        "download_sha256": "6d113f7189d3d0e64c8ba54ab73864a521b03c21348c492c6d41edff143447dd",
+        "match": true,
+        "seconds": 0.771,
+        "authentication": "none; urllib public URL, no Authorization header"
+      },
+      {
+        "id": 723011776,
+        "name": "SHA256SUMS",
+        "size": 93,
+        "digest": "sha256:6d113f7189d3d0e64c8ba54ab73864a521b03c21348c492c6d41edff143447dd",
+        "browser_download_url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.2/SHA256SUMS",
+        "http_status": 200,
+        "downloaded_bytes": 93,
+        "download_sha256": "6d113f7189d3d0e64c8ba54ab73864a521b03c21348c492c6d41edff143447dd",
+        "match": true,
+        "seconds": 0.607,
+        "authentication": "none; urllib public URL, no Authorization header"
+      }
+    ],
+    "draft_verification": "build/release042/draft-remote-verification.json",
+    "independent_public_review": "build/release042-audit/public-review.json",
+    "tag_immutable": true
+  },
   "artifact": {
     "archive": "/home/loq/Документы/game/sfery_stikhiy/build/Orbstrike_v0.4.2_win64.zip",
     "bytes": 1035636918,
@@ -1372,5 +1429,93 @@
     "server_built_tested_or_published": false
   },
   "packed_visual_scope": "Independent7usablePNG reviewed; early dark menu fade excluded; career-shop named shot actually completedTeamTab, shop purchase proven by clean53/0flow and sourceUI179/0; no new render",
-  "independent_package_report": "build/release042-audit/report.json"
+  "independent_package_report": "build/release042-audit/report.json",
+  "independent_public_verification": {
+    "scope": "Read-only public API+HEAD+two tiny checksums; no second ZIP download or server execution",
+    "latest": {
+      "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/tag/v0.4.2",
+      "tag": "v0.4.2",
+      "id": 438055629,
+      "draft": false,
+      "prerelease": false,
+      "published_at": "2026-11-08T05:37:25Z"
+    },
+    "assets": [
+      {
+        "id": 723011775,
+        "name": "Orbstrike_v0.4.2_win64.zip",
+        "size": 1035636918,
+        "digest": "sha256:6c6319a5098bb7a52cbd509d24f3b59f34a19e77e7cd5c68ae0377b6ab8aab30",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.2/Orbstrike_v0.4.2_win64.zip",
+        "size_and_digest_match": true,
+        "public_unauthenticated_head": {
+          "status": 200,
+          "content_length": "1035636918",
+          "final_host": "release-assets.githubusercontent.com"
+        }
+      },
+      {
+        "id": 723011774,
+        "name": "Orbstrike_v0.4.2_win64.zip.sha256",
+        "size": 93,
+        "digest": "sha256:6d113f7189d3d0e64c8ba54ab73864a521b03c21348c492c6d41edff143447dd",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.2/Orbstrike_v0.4.2_win64.zip.sha256",
+        "size_and_digest_match": true,
+        "public_unauthenticated_head": {
+          "status": 200,
+          "content_length": "93",
+          "final_host": "release-assets.githubusercontent.com"
+        },
+        "tiny_public_body_sha256": "sha256:6d113f7189d3d0e64c8ba54ab73864a521b03c21348c492c6d41edff143447dd",
+        "tiny_checksum_content": "6c6319a5098bb7a52cbd509d24f3b59f34a19e77e7cd5c68ae0377b6ab8aab30  Orbstrike_v0.4.2_win64.zip",
+        "tiny_body_matches_api": true
+      },
+      {
+        "id": 723011776,
+        "name": "SHA256SUMS",
+        "size": 93,
+        "digest": "sha256:6d113f7189d3d0e64c8ba54ab73864a521b03c21348c492c6d41edff143447dd",
+        "state": "uploaded",
+        "browser_download_url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.2/SHA256SUMS",
+        "size_and_digest_match": true,
+        "public_unauthenticated_head": {
+          "status": 200,
+          "content_length": "93",
+          "final_host": "release-assets.githubusercontent.com"
+        },
+        "tiny_public_body_sha256": "sha256:6d113f7189d3d0e64c8ba54ab73864a521b03c21348c492c6d41edff143447dd",
+        "tiny_checksum_content": "6c6319a5098bb7a52cbd509d24f3b59f34a19e77e7cd5c68ae0377b6ab8aab30  Orbstrike_v0.4.2_win64.zip",
+        "tiny_body_matches_api": true
+      }
+    ],
+    "failures": [],
+    "old_server_release_metadata": {
+      "tag": "v0.4.0",
+      "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/tag/v0.4.0",
+      "all_six_asset_names_sizes_digests_unchanged": true,
+      "server_archive": {
+        "name": "Orbstrike_v0.4.0_online-server.tar.gz",
+        "size": 74109,
+        "digest": "sha256:bee0e5f765f6e236c42d75b9bec0e3220281b673eb3b7bafd72f621659849000"
+      }
+    },
+    "release_body": "## Карьера, новый интерфейс и движения существ\n\n- Отдельная карьера: коллекция, покупки, кредиты, опыт и уровни, три лиги с сохранением прогресса.\n- Дополнительное оформление «Наручный прибор», компактные панели существ, новые портреты, видимые изменения силы и уменьшение анимации по желанию.\n- Улучшены подсказки, магазин, навигация с клавиатуры и читаемость карт/имён.\n- Полные новые анимации всех шести Грифалонов и Колоссаров; мечевой удар всех Ратников.\n- Исправлены отдельные элементы четырёх моделей и свечение деформируемого плаща.\n\nВыпуск только клиентский. Онлайн с текущим публичным сервером пока несовместим: сервер использует online-rules-10, клиент — online-rules-11. Это ограничение унаследовано от0.4.1; сервер не обновлялся. Карьера и обычные одиночные режимы доступны.\n\nНовый пакет проверен на Linux/Vulkan: Boot49×2/три арены, два физических матча с настоящим повтором и20/20попаданий; карьерный путь, покупка, сохранение и следующая лига. Интерфейс960/1280 лично оценён независимым проверяющим.\n\nНовый PCK прошёл игровые проверки на Linux/Vulkan; Windows EXE проверен по метаданным/составу. Нативная Windows не проверена, попытка Wine не прошла (ограничения экспортного template и Compatibility-renderer). Субъективное прослушивание не заявляется. У исходных моделей сохраняются отдельные ранее описанные ограничения. Подробные правила и лицензии находятся в архиве.\n",
+    "body_limit_lines": [
+      "Выпуск только клиентский. Онлайн с текущим публичным сервером пока несовместим: сервер использует online-rules-10, клиент — online-rules-11. Это ограничение унаследовано от0.4.1; сервер не обновлялся. Карьера и обычные одиночные режимы доступны.",
+      "Новый PCK прошёл игровые проверки на Linux/Vulkan; Windows EXE проверен по метаданным/составу. Нативная Windows не проверена, попытка Wine не прошла (ограничения экспортного template и Compatibility-renderer). Субъективное прослушивание не заявляется. У исходных моделей сохраняются отдельные ранее описанные ограничения. Подробные правила и лицензии находятся в архиве."
+    ],
+    "status": "PASS",
+    "release_notes_independently_read": {
+      "client_only_scope_explicit": true,
+      "wine_not_pass_explicit": true,
+      "native_windows_not_tested_explicit": true,
+      "server_online_rules_10_client_11_incompatibility_explicit": true,
+      "server_not_updated_explicit": true,
+      "subjective_listening_not_claimed": true
+    }
+  },
+  "release_source_commit": "dcb3ed71bfaad7b8f88c48514e8066577f00d7b4",
+  "postpublication_docs_policy": "Subsequent docs-evidence commit records publication; annotated v0.4.2 remains at immutable release source commit."
 }

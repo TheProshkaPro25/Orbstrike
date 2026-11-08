@@ -3,7 +3,7 @@
 - [x] Довести читаемость normal/reduced HUD и карьерные экраны; исправить deferred-focus lifecycle, награду за ничью без участия и объяснения Progress. Независимый scoped31PNG review, domain/UI проверки.
 - [x] Собрать новый Windows-клиент; actualPCK Boot49×2/3арены,2физматча/настоящийrepeat и physicalcareer53/0 без ERROR.
 - [x] Независимый финальный package audit PASS. Wine попытка NOT PASS/ограничена (внешнийwrapper не достигнут/Compatibility ошибки), nativeWindows не проверена; новые попытки не назначены.
-- [ ] Опубликовать только клиент0.4.2 и сверить удалённые SHA/размеры/HTTP; checkpoint tools/checkpoints/release042-validation.json. Сервер не обновлять.
+- [x] Опубликован только клиент0.4.2/latest:3remote digests/размера и3полных публичных downloadSHA/HTTP200 совпали; independent public review PASS. Checkpoint tools/checkpoints/release042-validation.json. Сервер не обновлялся.
 
 ## Новый комплект Колоссара — 8 ноября 2026
 

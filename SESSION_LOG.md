@@ -5444,3 +5444,12 @@ Astra medium создала V3 master/шесть библиотек и3012-row L
 Независимый package audit0.4.2: PASS12ZIPCRC/12memberSHA,1556PCKMD5,154актуальныхGDC,49GLB/imports/14res/49portraits/7audio/лицензии/проверки приватных строк. Публикация ещё ожидается; Wine отмечается отдельно.
 
 Wine smoke0.4.2 NOT PASS: exported-path override запрещён; auto-sibling PCK попытка CompatibilityOpenGL не достигла внешнегоwrapper,4096shader-instance errors/45сtimeout, собственные Wine процессы остановлены. NativeWindows/WindowsVulkan не проверены. Основной actualPCKLinux/Vulkan2matches+career PASS не отменён. Clientprotocol1/rules11 неизменен от0.4.1; карьерные snapshots толькоoffline, сервер0.4.0/rules10 не тронут (прежняя несовместимость).
+
+
+## 8 ноября 2026 — клиент0.4.2 опубликован и публично сверен
+
+По уже полученному поручению автора опубликован [Orbstrike0.4.2](https://github.com/TheProshkaPro25/Orbstrike/releases/tag/v0.4.2) как latest, только клиент. Release ID438055629, published_at2026-11-08T05:37:25Z; annotatedv0.4.2 закреплён на `dcb3ed71bfaad7b8f88c48514e8066577f00d7b4`. Один атомарный push без force обновил master/releasebranch/tag; исходники и252runtime+49GLB SHA связаны с проверенным PCK. В коммит вошли только462 явных пути; локальные oldmusic/references/эксперименты/.codex/build не добавлялись и сохранены. Единственная дополнительная whitespace-правка — лишняя EOF-пустая строка неисполняемого model support script; runtime pin не изменился.
+
+Draft до открытия: ровно3clientassets, все GitHub digests/размеры совпали с локальными. После публикации все3полностью скачаны публичными URL без Authorization: ZIP1035636918байт, SHA256`6c6319a5098bb7a52cbd509d24f3b59f34a19e77e7cd5c68ae0377b6ab8aab30`; оба93-байтных SHA-файла совпали, страница и файлы HTTP200. Независимый public review подтвердил API/latest/3HEAD/3digests/checksumGET и неизменность прежних0.4.0assets. Факты/ID/URL/time — release042-validation.json; локальный полный evidence build/release042/publication.json. После этого отдельный docs-evidence commit обычным FF, release tag не передвигался.
+
+Новый PCK Linux/Vulkan:2физматча/restart+career53/0/PASS; package/UI независимая приёмка PASS. Wine NOT PASS и nativeWindows/WindowsVulkan/субъективное прослушивание не проверены. Online-rules-11 унаследован от0.4.1; текущий публичный серверrules10 несовместим, сервер не читался/не тестировался/не собирался/не обновлялся/не публиковался.
