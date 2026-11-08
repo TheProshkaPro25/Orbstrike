@@ -1,0 +1,52 @@
+{
+  "ok": true,
+  "release_page": {
+    "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/tag/v0.4.2.6",
+    "status": 200,
+    "final_url": "https://github.com/TheProshkaPro25/Orbstrike/releases/tag/v0.4.2.6"
+  },
+  "assets": [
+    {
+      "name": "Orbstrike_v0.4.2.6_win64.zip",
+      "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.2.6/Orbstrike_v0.4.2.6_win64.zip",
+      "head": {
+        "status": 200,
+        "bytes": 1035655235
+      },
+      "status": 200,
+      "bytes": 1035655235,
+      "sha256": "9cbf7f1c8ad35d8b4df94dfe625933710f440f009d1d044a1df88b9c75e42cde",
+      "matches_local": true,
+      "authorization_used": false
+    },
+    {
+      "name": "Orbstrike_v0.4.2.6_win64.zip.sha256",
+      "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.2.6/Orbstrike_v0.4.2.6_win64.zip.sha256",
+      "head": {
+        "status": 200,
+        "bytes": 95
+      },
+      "status": 200,
+      "bytes": 95,
+      "sha256": "8137228c2fc47b87f2e2aa7c9c139e8454d0208a364046e618fda80f07e43a4a",
+      "matches_local": true,
+      "authorization_used": false
+    },
+    {
+      "name": "SHA256SUMS",
+      "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.2.6/SHA256SUMS",
+      "head": {
+        "status": 200,
+        "bytes": 95
+      },
+      "status": 200,
+      "bytes": 95,
+      "sha256": "8137228c2fc47b87f2e2aa7c9c139e8454d0208a364046e618fda80f07e43a4a",
+      "matches_local": true,
+      "authorization_used": false
+    }
+  ],
+  "seconds": 49.19883338499949,
+  "timestamp_utc": "2026-11-08T15:34:33.275347+00:00",
+  "authorization_used": false
+}

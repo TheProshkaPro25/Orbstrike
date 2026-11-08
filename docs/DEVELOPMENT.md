@@ -1,4 +1,4 @@
-> Автор принял исправления интерфейса и портретов8ноября: текущая клиентская версия0.4.2.6 в project.godot и Windows export preset. По отдельному поручению готовится новый клиентский выпуск; старый draft0.4.2.5/tag не изменяется. Сервер не обновляется.
+> [Клиент 0.4.2.6 опубликован 8 ноября](https://github.com/TheProshkaPro25/Orbstrike/releases/tag/v0.4.2.6) как latest после авторской приёмки UI/портретов. Windows client export, actualPCK 505/0 + 270/0 + 58/0, независимый package PASS и полные SHA/HTTP 200 всех 3 публичных файлов подтверждены в [release0426 checkpoint](../tools/checkpoints/release0426-validation.json). Версия проекта и Windows export — 0.4.2.6. Native Windows и прослушивание не проверялись; сервер и старый draft 0.4.2.5/tag сохранены. Ниже — история прежних выпусков.
 
 > Hotfix0.4.2.5: карточные подсказки/focus lifecycle, стихийные UI-портреты без белой подложки и турнирные кнопки/announcement. Подготовка пакета/публикация — [release0425 checkpoint](../tools/checkpoints/release0425-validation.json). Исходные модели/PNG/анимации и сервер не меняются.
 

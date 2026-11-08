@@ -5504,3 +5504,12 @@ Sol лично просмотрел9свежихPNG: оба базовых ге�
 Windows client export exit0/ERROR0,11.64с; настоящий новый PCK без game source overlays: Boot/cache/UI505/0/93.63с,portrait270/0/13.39с,battleUI58/0/10.33с; всеexit0/ERROR0,штатный wrapper/minimized/unfocusable/offscreen/60FPS. Sol лично просмотрел19PNG(9портреты/49монстров,8exitlayouts,2RUdialogs). Полные матчи/Wine/nativeWindows/прослушивание не повторялись.
 
 IndependentSol PACKAGEPASS:12ZIPCRC/exactstagingSHA,1563PCKMD5/privacy0/forbidden0,AMD64PE/ECFG0.4.2.6,155currentclientGDC+2immutable0425serverGDC,49GLB/imports/49PNG/14res/68pdat+manifest/9docs-license. Серверные исходники исключены из scripts-only reference; сервер не запускался/не собирался/не обновлялся. ZIP1035655235байт,SHA9cbf7f1c8ad35d8b4df94dfe625933710f440f009d1d044a1df88b9c75e42cde;публикация ещё ожидается. Checkpoint tools/checkpoints/release0426-validation.json;старыйdraft/tag/dirty сохранены.
+
+
+## 8 ноября 2026 — клиент 0.4.2.6 опубликован и публично сверен
+
+Release commit `78bd715b6346d0623083db601e556d76c27a8098` зафиксировал 52 явных UI/source/docs пути; локальные references, oldmusic, эксперименты, .codex и build не включались. Один atomic push без force обновил master, новую releasebranch и тег v0.4.2.6. Перед публикацией ровно 3 файла сверены по remote SHA/size/state; неизменяемый тег указывает на release commit. Старые v0.4.2.5/a5cc, draft 438072604 и его 3 файла сохранены.
+
+[Выпуск 0.4.2.6/latest](https://github.com/TheProshkaPro25/Orbstrike/releases/tag/v0.4.2.6), ID 438335438, опубликован 2026-11-08T15:33:17Z. Без Authorization проверены страница, 3 HEAD и 3 полных GET: HTTP 200, все SHA256/размеры совпали. ZIP: 1035655235 байт, SHA256 `9cbf7f1c8ad35d8b4df94dfe625933710f440f009d1d044a1df88b9c75e42cde`; оба 95-байтных checksum совпали. Evidence: build/release0426/publication-*.json и docs/audits/2026-11-08-release0426/; checkpoint release0426-validation.json обновлён фактами.
+
+После публикации изменены только ссылки и документальные факты; пакет и тег не менялись. Native Windows, Windows Vulkan, прослушивание и новые полные матчи не проверялись. Сервер не проверялся, не собирался, не обновлялся и не публиковался; protocol1/rules11 клиента прежний, публичный сервер rules10 несовместим. Delta, исходные GLB, анимации, .codex и оставшиеся локальные артефакты сохранены.
