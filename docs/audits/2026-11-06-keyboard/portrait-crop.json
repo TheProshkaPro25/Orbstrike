@@ -1,0 +1,8 @@
+{
+	"checks": 905,
+	"cropped": 42,
+	"display": "headless",
+	"failures": 0,
+	"gpu_acceptance": false,
+	"kept_fullbody": 7
+}

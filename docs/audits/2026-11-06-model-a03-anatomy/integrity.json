@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "candidate_sha256": "69b159a0e8763ef85c1e78b951255deb5e75d3939643af71c1abb8357d7e9a5c",
+  "material_source_sha256": "ca2580a32b502635b15193141c6b71b388ebdde75c04ac10e1646c733c8b4e0f",
+  "original_sha256": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+  "source_BIN_and_all_accessors_exact": true,
+  "retained_source_faces_exact": 135753,
+  "removed_whitelisted_source_faces": 14241,
+  "new_triangles": 35403,
+  "new_vertices": 17797,
+  "exact_collar_vertices": 185,
+  "closed_mesh_boundary_edges": 0,
+  "new_degenerate_faces": 0,
+  "raw_new_nonadjacent_intersections": 0,
+  "source_rig_rest_bind_UV8weights_images_materials_clips_exact": true,
+  "scope": "Raw contract and local BVH only; actual poses, source frame guard and independent art are separate required gates."
+}

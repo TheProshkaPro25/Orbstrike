@@ -9,6 +9,7 @@ var city: MenuCity
 var _built := false
 var _first: Control
 var _last_preview := 0
+var _panel: PanelContainer
 
 
 func _ready() -> void:
@@ -20,6 +21,7 @@ func open() -> void:
 	visible = true
 	modulate.a = 0.0
 	create_tween().tween_property(self, "modulate:a", 1.0, 0.18)
+	_center_panel.call_deferred()
 	_first.grab_focus()
 
 
@@ -43,13 +45,14 @@ func _build() -> void:
 	add_child(dim)
 
 	var panel := PanelContainer.new()
+	_panel = panel
 	panel.set_anchors_preset(Control.PRESET_CENTER)
 	panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	panel.grow_vertical = Control.GROW_DIRECTION_BOTH
 	panel.custom_minimum_size = Vector2(540, 0)
 	add_child(panel)
 	var vb := VBoxContainer.new()
-	vb.add_theme_constant_override("separation", 14)
+	vb.add_theme_constant_override("separation", 9)
 	panel.add_child(vb)
 	var t := VisualUtil.label("Настройки", 28)
 	t.add_theme_color_override("font_color", UiTheme.GOLD)
@@ -58,7 +61,7 @@ func _build() -> void:
 	var grid := GridContainer.new()
 	grid.columns = 2
 	grid.add_theme_constant_override("h_separation", 24)
-	grid.add_theme_constant_override("v_separation", 12)
+	grid.add_theme_constant_override("v_separation", 6)
 	vb.add_child(grid)
 
 	var gfx := OptionButton.new()
@@ -79,10 +82,38 @@ func _build() -> void:
 	fps.item_selected.connect(func(i: int) -> void: GraphicsSettings.set_fps(GraphicsSettings.FPS_OPTIONS[i]))
 	_row(grid, "Лимит кадров", fps)
 
+	var style := OptionButton.new()
+	for title in DeviceSettings.NAMES:
+		style.add_item(title)
+	style.select(DeviceSettings.current())
+	style.item_selected.connect(func(value: int) -> void:
+		var error := DeviceSettings.set_style(value)
+		if error != OK:
+			style.select(DeviceSettings.current())
+			style.tooltip_text = "Не удалось сохранить настройку: " + error_string(error)
+		else:
+			style.tooltip_text = ""
+			SoundFx.i().play("ui_click", -4.0, 0.0))
+	_row(grid, "Интерфейс", style)
+	var reduced_motion := CheckButton.new()
+	reduced_motion.text = "Уменьшить"
+	reduced_motion.name = "ReduceInterfaceMotion"
+	reduced_motion.tooltip_text = "Электронный HUD появляется сразу, без сдвигов и анимации счётчика силы."
+	reduced_motion.button_pressed = DeviceSettings.reduce_motion()
+	reduced_motion.toggled.connect(func(value: bool) -> void:
+		if DeviceSettings.set_reduce_motion(value) != OK:
+			reduced_motion.set_pressed_no_signal(DeviceSettings.reduce_motion()))
+	_row(grid, "Анимация интерфейса", reduced_motion)
 	_row(grid, "Звуки", _slider(AudioSettings.sfx, "SFX"))
 	_row(grid, "Музыка", _slider(AudioSettings.music, "Music"))
+	_row(grid, "Звуки интерфейса", _slider(AudioSettings.interface_volume, "Interface"))
+	var muted := CheckButton.new()
+	muted.text = "Включить"
+	muted.button_pressed = AudioSettings.interface_muted
+	muted.toggled.connect(AudioSettings.set_interface_muted)
+	_row(grid, "Тихий интерфейс", muted)
 
-	var note := VisualUtil.label("Уровень графики действует и в бою. «Низкие» — без теней и свечения.", 14)
+	var note := VisualUtil.label("Стиль применяется сразу, включая команду и бой. Громкость интерфейса настраивается отдельно.", 14)
 	note.add_theme_color_override("font_color", UiTheme.TEXT_DIM)
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	note.custom_minimum_size = Vector2(500, 0)
@@ -94,6 +125,17 @@ func _build() -> void:
 	done.size_flags_horizontal = Control.SIZE_SHRINK_END
 	done.pressed.connect(close)
 	vb.add_child(done)
+	get_viewport().size_changed.connect(_center_panel)
+	_center_panel.call_deferred()
+
+
+func _center_panel() -> void:
+	if not is_instance_valid(_panel): return
+	var available := get_viewport_rect().size
+	var natural := _panel.get_combined_minimum_size()
+	var factor := minf(1.0, minf((available.x-28.0)/natural.x, (available.y-28.0)/natural.y))
+	_panel.scale = Vector2.ONE * maxf(0.1, factor)
+	_panel.position = (available-natural*_panel.scale) * 0.5
 
 
 func _row(grid: GridContainer, title: String, ctrl: Control) -> void:
@@ -114,7 +156,7 @@ func _slider(v: float, bus_name: String) -> HSlider:
 	s.value_changed.connect(func(x: float) -> void:
 		AudioSettings.set_volume(bus_name, x / 100.0)
 		# короткий щелчок для пробы громкости эффектов (не чаще 4 раз в секунду)
-		if bus_name == "SFX" and Time.get_ticks_msec() - _last_preview > 250:
+		if bus_name in ["SFX", "Interface"] and Time.get_ticks_msec() - _last_preview > 250:
 			_last_preview = Time.get_ticks_msec()
-			SoundFx.i().play("ui_click", -4.0))
+			SoundFx.i().play("ui_click" if bus_name == "Interface" else "card_select", -4.0))
 	return s

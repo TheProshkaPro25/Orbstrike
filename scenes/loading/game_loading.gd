@@ -52,7 +52,21 @@ func prepare(progress: Callable = Callable()) -> void:
 	resources = await StartupCatalog.preload_resources(func(done: int, total: int, _path: String) -> void:
 		_report(progress, .22 * float(done) / total, "Загрузка ресурсов · %d / %d" % [done, total]))
 	SoundFx.i().preload_catalog()
+	preload("res://scenes/ui/creature_portrait.gd").preload_catalog()
 	CreatureModels.preload_all_catalog()
+	# The accepted six-way set is required: do not silently publish legacy actors.
+	if not CreatureModels.GrifalonMotion.preload_required() or not CreatureModels.GrifalonGaleSkin.preload_required():
+		preparing = false
+		CreatureModels.resident_catalog = false
+		_report(progress, .22, "Не удалось загрузить анимации Грифалона. Проверьте файлы игры.")
+		_stop_warm_draw()
+		return
+	if not CreatureModels.KolossarMotion.preload_required() or not CreatureModels.KolossarLightSkin.preload_required():
+		preparing = false
+		CreatureModels.resident_catalog = false
+		_report(progress, .22, "Не удалось загрузить анимации Колоссара. Проверьте файлы игры.")
+		_stop_warm_draw()
+		return
 	_viewport = SubViewport.new()
 	_viewport.size = Vector2i(256, 256)
 	_viewport.own_world_3d = true
@@ -82,6 +96,13 @@ func prepare(progress: Callable = Callable()) -> void:
 			var ball := ball_scene.instantiate() as CreatureBall
 			_storage.add_child(ball)
 			ball.setup(d, -1)
+			if d.species in [&"grifalon", &"kolossar"] and (ball._anim == null or not ball._anim._authored_fullset):
+				preparing = false
+				CreatureModels.resident_catalog = false
+				_report(progress, .22, "Не удалось подготовить анимации существ. Проверьте файлы игры.")
+				_stop_warm_draw()
+				preload("res://scenes/model_lifetime.gd").release(ball, get_tree())
+				return
 			ball.freeze_at(Vector3(0, CreatureBall.RADIUS, 0))
 			ball._apply_owner_marks()
 			ball._make_halves()
@@ -157,7 +178,8 @@ func prepare_fighters(parent: Node3D) -> void:
 			fighter.sample_motion(.9)
 			fighter_build_count += 1
 			await get_tree().process_frame
-			await RenderingServer.frame_post_draw
+			if DisplayServer.get_name() != "headless":
+				await RenderingServer.frame_post_draw
 			fighter.reset_motion()
 			fighter.hide()
 			fighter.process_mode = Node.PROCESS_MODE_DISABLED
@@ -202,6 +224,7 @@ func take_ball(id: StringName, uid: int, origin: Vector3) -> CreatureBall:
 	ball.set_process(true)
 	ball.set_physics_process(true)
 	ball.uid = uid
+	ball.set_presentation_definition(CardDB.creature(id))
 	ball._home_set = false
 	ball.freeze_at(origin)
 	ball._shape.disabled = false

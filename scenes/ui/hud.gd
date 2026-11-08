@@ -8,12 +8,14 @@ signal creature_cancelled
 signal battle_mode_changed(on: bool)
 
 const LOG_LINES := 3
+const DEVICE_MOTION := preload("res://scenes/ui/device_motion.gd")
 
 var _hint: Label
 var _hint_plate: PanelContainer
 var _turn_clip: Control
 var _turn_label: Label
 var _turn_key := ""
+var _turn_tween: Tween
 var _final_tag: Label
 var _phase_label: Label
 var _plates: Array[FighterPlate] = []
@@ -31,11 +33,24 @@ var _battle := false
 var _built := false
 var _reading := 0
 var _skip_flag := false
+var opponent_panel: OpponentPanel
+var own_panel: OpponentPanel
+var _interface_watchers: Array[Node] = []
+var _teams_ready := false
+var _match_intro_started := false
 var _skip_hint: Label
 
 
 func _ready() -> void:
 	_build()
+	UiTheme.apply_device_frame(self, "")
+	DeviceSettings.events().changed.connect(_opponent_style_changed)
+	DeviceSettings.events().motion_changed.connect(_device_motion_changed)
+	get_viewport().size_changed.connect(_layout_opponent_toolbar)
+	_opponent_style_changed(DeviceSettings.current())
+	_turn_clip.set_meta("device_reveal_region",true)
+	_log_box.set_meta("device_reveal_region",true)
+	register_interface(self)
 
 
 func _build() -> void:
@@ -139,6 +154,14 @@ func _build() -> void:
 	_tempo.item_selected.connect(BattleTempo.set_tempo)
 	add_child(_tempo)
 
+	own_panel = OpponentPanel.new()
+	if own_panel.has_method("configure_side"): own_panel.call("configure_side",0)
+	add_child(own_panel)
+	own_panel.visibility_changed.connect(_layout_owned_context)
+	opponent_panel = OpponentPanel.new()
+	if opponent_panel.has_method("configure_side"): opponent_panel.call("configure_side",1)
+	add_child(opponent_panel)
+
 	_creature_panel = PanelContainer.new()
 	_creature_panel.visible = false
 	VisualUtil.place(_creature_panel, 0.5, 1.0, 0.0, -92.0)  # над опущенной рукой способностей
@@ -162,13 +185,80 @@ func _build() -> void:
 	vb.add_child(_cancel_btn)
 
 
+## Called once after Main exposes both hands. It never waits or changes input.
+func begin_match_interface(hands: Array[Control] = []) -> void:
+	if _match_intro_started: return
+	_match_intro_started = true
+	UiTheme.begin_hud_intro(self)
+	for hand in hands: UiTheme.begin_hud_intro(hand)
+	if DeviceSettings.is_device():
+		SoundFx.i().play("device_power", -10.0, 0.0)
+		_start_boot_motion.call_deferred(hands)
+
+
+## Registers late-show/rebuilt controls too. Main can attach its menu/score toolbar.
+func register_interface(control: Control) -> void:
+	if not is_instance_valid(control): return
+	var watcher := DEVICE_MOTION.watch_tree(control,false)
+	if not _interface_watchers.has(watcher): _interface_watchers.append(watcher)
+	if _match_intro_started: watcher.call("start")
+
+
+func _start_boot_motion(hands: Array[Control]) -> void:
+	if not is_inside_tree(): return
+	for hand in hands: register_interface(hand)
+	if not DeviceSettings.is_device() or DeviceSettings.reduce_motion(): return
+	DEVICE_MOTION.stop_on(_turn_clip,"turn")
+	for watcher in _interface_watchers:
+		if is_instance_valid(watcher): watcher.call("start")
+
+
+func _opponent_style_changed(_style: int) -> void:
+	_settle_turn_text()
+	if _plates.size() == 2:
+		# Это публичная сводка человека и матча, а не временная карточка существа.
+		_plates[1].visible = _teams_ready
+		VisualUtil.place(_plates[1], 1.0, 0.0, -266.0 if DeviceSettings.is_device() else -66.0, 8.0)
+	_layout_opponent_toolbar()
+	_layout_owned_context()
+
+
+func _layout_owned_context() -> void:
+	if _log_box == null: return
+	var offset := own_panel.position.x + own_panel.size.x + 14.0 if _own_context_visible() else 16.0
+	VisualUtil.place(_log_box,0.0,0.0,offset,108.0)
+	_place_coach()
+
+
+func _own_context_visible() -> bool:
+	return DeviceSettings.is_device() and is_instance_valid(own_panel) and own_panel.is_visible_in_tree()
+
+
+func _device_motion_changed(_reduced: bool) -> void:
+	if DeviceSettings.is_device(): _settle_turn_text()
+
+
+func _settle_turn_text() -> void:
+	if _turn_tween != null and _turn_tween.is_valid(): _turn_tween.kill()
+	_turn_tween = null
+	if _turn_label != null: _turn_label.position.x = 0.0
+
+
+func _layout_opponent_toolbar() -> void:
+	if DeviceSettings.is_device(): _settle_turn_text()
+	if _tempo == null: return
+	VisualUtil.place(_tempo,1.0,0.0,-66.0 if DeviceSettings.is_device() else -16.0,10.0 if DeviceSettings.is_device() else 114.0)
+
+
 ## Имена и цвета стихий существ бойцов: colors0/colors1 — по существу в порядке колоды; elems — их стихии (значки).
 func setup_plates(colors0: Array, colors1: Array, elems: Array = [[], []]) -> void:
 	_build()
 	_plates[0].set_team(colors0, elems[0])
 	_plates[1].set_team(colors1, elems[1])
+	_teams_ready = true
 	for p in _plates:
 		p.visible = true
+	_opponent_style_changed(DeviceSettings.current())
 
 
 func set_names(n0: String, n1: String) -> void:
@@ -225,11 +315,18 @@ func set_status(turn: int, active: int, _alive0: int, _alive1: int) -> void:
 	_turn_key = key
 	var mine: bool = active == 0
 	_turn_label.text = "ХОД %d  ·  %s" % [turn, "ВАШ ХОД" if mine else "ХОД СОПЕРНИКА"]
-	_turn_label.add_theme_color_override("font_color", UiTheme.GOLD if mine else Color(1.0, 0.6, 0.55))
+	_turn_label.add_theme_color_override("font_color", UiTheme.accent() if mine else Color(1.0, 0.6, 0.55))
 	_turn_clip.visible = true
+	_settle_turn_text()
+	if DeviceSettings.is_device():
+		# Text is already current and clickable targets never move. Only light travels.
+		var overlay := DEVICE_MOTION.reveal_on(_turn_clip,0.0,Vector2(32 if mine else -32,0),"turn")
+		if overlay != null: overlay.set("direction",1.0 if mine else -1.0)
+		return
 	_turn_label.position.x = 360.0
-	var tw := create_tween()
-	tw.tween_property(_turn_label, "position:x", 0.0, 0.42).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	_turn_tween = create_tween()
+	_turn_tween.tween_property(_turn_label, "position:x", 0.0, 0.42).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	_turn_tween.finished.connect(func() -> void: _turn_tween = null)
 
 
 func set_hint(text: String) -> void:
@@ -285,6 +382,10 @@ func wait_read(sec: float) -> void:
 
 
 func _unhandled_input(e: InputEvent) -> void:
+	if e is InputEventKey and e.pressed and not e.echo and e.keycode == KEY_ESCAPE and _creature_panel.visible and _cancel_btn.visible:
+		get_viewport().set_input_as_handled()
+		creature_cancelled.emit()
+		return
 	var pressed := false
 	var is_key := false
 	if e is InputEventKey:
@@ -399,6 +500,8 @@ func show_creatures(entries: Array, title: String = "Выберите сущес
 	_cancel_btn.visible = can_cancel
 	_creature_panel.visible = true
 	_creature_panel.call_deferred("reset_size")
+	var watcher := get_node_or_null("DeviceRevealWatcher")
+	if watcher != null: watcher.call("request",_creature_panel)
 
 
 func hide_creatures() -> void:
@@ -415,7 +518,11 @@ func _on_creature_pressed(uid: int) -> void:
 func set_battle_mode(on: bool) -> void:
 	_build()
 	_battle = on
+	var reveal_watcher := get_node_or_null("DeviceRevealWatcher")
+	if on and reveal_watcher != null: reveal_watcher.call("_settle")
 	if on:
+		for region in [_plates[0],_plates[1],_turn_clip,_hint_plate]: DEVICE_MOTION.stop_on(region)
+		_settle_turn_text()
 		# Недочитанные советы постановки/прикрепления уже не относятся к бою
 		# и занимали место компактного блока ответа на невысоком экране.
 		_coach_queue.clear()
@@ -427,8 +534,10 @@ func set_battle_mode(on: bool) -> void:
 	_final_tag.modulate.a = a
 	_hint_plate.modulate.a = a
 	_log_box.modulate.a = a
+	# Battle changes opacity rather than visibility; explicitly reveal the restored regions.
+	if not on and _match_intro_started and reveal_watcher != null: reveal_watcher.call("start")
 	VisualUtil.place(_flash, 0.5, 0.42 if on else 0.0, 0.0, 0.0 if on else 128.0)
-	_place_coach()
+	_layout_owned_context()
 	battle_mode_changed.emit(on)
 
 
@@ -453,9 +562,11 @@ func _place_coach() -> void:
 	if _coach == null or not is_instance_valid(_coach):
 		return
 	if _battle:
-		VisualUtil.place(_coach, 0.0, 0.0, 16.0, 232.0)
+		var x := own_panel.position.x + own_panel.size.x + 14.0 if _own_context_visible() else 16.0
+		VisualUtil.place(_coach, 0.0, 0.0, x, 232.0)
 	else:
-		VisualUtil.place(_coach, 0.0, 0.0, 12.0, 116.0)
+		var x := own_panel.position.x + own_panel.size.x + 14.0 if _own_context_visible() else 12.0
+		VisualUtil.place(_coach, 0.0, 0.0, x, 116.0)
 
 
 ## Подсказка-наставник: один раз за запуск для каждого ключа. Компактная карточка в левом нижнем углу.

@@ -1,0 +1,63 @@
+{
+  "kind": "Uninstalled A04 CPU/source candidate; GPU/cloth/runtime pending",
+  "source_sha256": "454e8442b83fe7fd618d0bc0338dfc8b51b1daabaa49b4a5237dcb669598f727",
+  "candidate_sha256": "9bb9ad9d1313da698a0eec96782da0cf40d2db1e4cf3513645f5fbf13fef6f2f",
+  "script_sha256": "861a77a99c3af44ff2ebad3a69bf92ab08548b926b0e2781ecfad57c65ec7bc9",
+  "removed_triangles": 1335,
+  "retained_triangles": 114060,
+  "cap_triangles": 193,
+  "cap_loops": 4,
+  "ring_triangles": 2304,
+  "ring_vertices": 1152,
+  "ring_center": [
+    0.043,
+    0.442,
+    0.086
+  ],
+  "ring_normal": [
+    0.0,
+    0.9199705614130446,
+    0.3919874566020799
+  ],
+  "major_radius": 0.078,
+  "tube_radius": 0.0038,
+  "ring_head_joint": 11,
+  "original_binary_bytes_preserved": 23369004,
+  "original_boundaries_preserved": true,
+  "source_vertices_moved": 0,
+  "scope": "Only appended buffers/accessors/material, main primitive attribute/index references and additional halo primitive. All original source arrays, CapeGPU, nodes, skeleton/rest/binds, clips, source materials/images retained exactly.",
+  "status": "CPU candidate; art follow-up required; not installed",
+  "art_reviewer": "Sol high",
+  "personally_inspected": [
+    "original 2D concept",
+    "source full front/right/back/left/above/below",
+    "source head front/right/back/left/above/below",
+    "final exact mask head six views",
+    "final candidate head six views",
+    "final candidate full front"
+  ],
+  "art_blocker": "Baked halo disc and helmet rim share one mesh, with no separate original helmet-crown surface under the disc. Conservative closure after removing the disc leaves a broad flat golden crown and a visibly uneven retained rim seam in head close-ups. Thin ring and open center are demonstrated; this is not a finished faithful helmet/halo redesign.",
+  "next_step": "Independent six-view review of this candidate, then explicit local helmet-crown reconstruction if the broad cap is rejected. Actual minimized/nonfocusable60FPS Godot import/idle/attack cloth+rim and lighting remain pending; do not install on CPU evidence alone.",
+  "source_path": "assets/creatures_hd/ratnik_light.glb",
+  "candidate_path": "build/model_candidates/2026-11-06-a04/ratnik_light.glb",
+  "manifest_path": "build/model_candidates/2026-11-06-a04/ratnik_light.manifest.json",
+  "integrity_report": "docs/audits/2026-11-06-model-a04/integrity.json",
+  "cap_intersections_report": "docs/audits/2026-11-06-model-a04/cap-intersections.json",
+  "normalization_scale_delta": 0.0,
+  "normalization_position_delta": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "fresh_checks": [
+    "Python compile four scripts",
+    "Source-preservation integrity PASS",
+    "New cap vs retained body nonshared noncoplanar segment-triangle raw-rest intersections:0"
+  ],
+  "commands": [
+    "python tools/models/repair_ratnik_light_halo.py --source assets/creatures_hd/ratnik_light.glb --output build/model_candidates/2026-11-06-a04/ratnik_light.glb",
+    "python tests/ratnik_light_halo_integrity.py assets/creatures_hd/ratnik_light.glb build/model_candidates/2026-11-06-a04/ratnik_light.glb build/model_candidates/2026-11-06-a04/ratnik_light.manifest.json docs/audits/2026-11-06-model-a04/integrity.json",
+    "python tools/models/audit_ratnik_light_halo_caps.py build/model_candidates/2026-11-06-a04/ratnik_light.glb docs/audits/2026-11-06-model-a04/cap-intersections.json",
+    "python tools/models/review_ratnik_light_halo.py --source assets/creatures_hd/ratnik_light.glb --candidate build/model_candidates/2026-11-06-a04/ratnik_light.glb --output docs/audits/2026-11-06-model-a04"
+  ]
+}

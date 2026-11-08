@@ -1,0 +1,608 @@
+{
+	"checks": 2084,
+	"display": "headless",
+	"failures": 0,
+	"rows": [
+		{
+			"buttons": 5,
+			"column_scale": 1.0,
+			"font_physical": 18.0,
+			"level": "home",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				960,
+				540
+			],
+			"style": 0
+		},
+		{
+			"buttons": 6,
+			"column_scale": 1.0,
+			"font_physical": 18.0,
+			"level": "modes-0",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				960,
+				540
+			],
+			"style": 0
+		},
+		{
+			"buttons": 7,
+			"column_scale": 1.0,
+			"font_physical": 18.0,
+			"level": "modes-1",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				960,
+				540
+			],
+			"style": 0
+		},
+		{
+			"buttons": 7,
+			"column_scale": 1.0,
+			"font_physical": 18.0,
+			"level": "modes-2",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				960,
+				540
+			],
+			"style": 0
+		},
+		{
+			"buttons": 8,
+			"column_scale": 1.0,
+			"font_physical": 18.0,
+			"level": "modes-3",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				960,
+				540
+			],
+			"style": 0
+		},
+		{
+			"buttons": 5,
+			"column_scale": 1.0,
+			"font_physical": 24.0,
+			"level": "home",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1280,
+				720
+			],
+			"style": 0
+		},
+		{
+			"buttons": 6,
+			"column_scale": 1.0,
+			"font_physical": 24.0,
+			"level": "modes-0",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1280,
+				720
+			],
+			"style": 0
+		},
+		{
+			"buttons": 7,
+			"column_scale": 1.0,
+			"font_physical": 24.0,
+			"level": "modes-1",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1280,
+				720
+			],
+			"style": 0
+		},
+		{
+			"buttons": 7,
+			"column_scale": 1.0,
+			"font_physical": 24.0,
+			"level": "modes-2",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1280,
+				720
+			],
+			"style": 0
+		},
+		{
+			"buttons": 8,
+			"column_scale": 1.0,
+			"font_physical": 24.0,
+			"level": "modes-3",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1280,
+				720
+			],
+			"style": 0
+		},
+		{
+			"buttons": 5,
+			"column_scale": 1.0,
+			"font_physical": 36.0,
+			"level": "home",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1920,
+				1080
+			],
+			"style": 0
+		},
+		{
+			"buttons": 6,
+			"column_scale": 1.0,
+			"font_physical": 36.0,
+			"level": "modes-0",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1920,
+				1080
+			],
+			"style": 0
+		},
+		{
+			"buttons": 7,
+			"column_scale": 1.0,
+			"font_physical": 36.0,
+			"level": "modes-1",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1920,
+				1080
+			],
+			"style": 0
+		},
+		{
+			"buttons": 7,
+			"column_scale": 1.0,
+			"font_physical": 36.0,
+			"level": "modes-2",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1920,
+				1080
+			],
+			"style": 0
+		},
+		{
+			"buttons": 8,
+			"column_scale": 1.0,
+			"font_physical": 36.0,
+			"level": "modes-3",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1920,
+				1080
+			],
+			"style": 0
+		},
+		{
+			"buttons": 5,
+			"column_scale": 1.0,
+			"font_physical": 19.2,
+			"level": "home",
+			"logical": [
+				1280.0,
+				960.0
+			],
+			"physical": [
+				1024,
+				768
+			],
+			"style": 0
+		},
+		{
+			"buttons": 6,
+			"column_scale": 1.0,
+			"font_physical": 19.2,
+			"level": "modes-0",
+			"logical": [
+				1280.0,
+				960.0
+			],
+			"physical": [
+				1024,
+				768
+			],
+			"style": 0
+		},
+		{
+			"buttons": 7,
+			"column_scale": 1.0,
+			"font_physical": 19.2,
+			"level": "modes-1",
+			"logical": [
+				1280.0,
+				960.0
+			],
+			"physical": [
+				1024,
+				768
+			],
+			"style": 0
+		},
+		{
+			"buttons": 7,
+			"column_scale": 1.0,
+			"font_physical": 19.2,
+			"level": "modes-2",
+			"logical": [
+				1280.0,
+				960.0
+			],
+			"physical": [
+				1024,
+				768
+			],
+			"style": 0
+		},
+		{
+			"buttons": 8,
+			"column_scale": 1.0,
+			"font_physical": 19.2,
+			"level": "modes-3",
+			"logical": [
+				1280.0,
+				960.0
+			],
+			"physical": [
+				1024,
+				768
+			],
+			"style": 0
+		},
+		{
+			"buttons": 5,
+			"column_scale": 1.0,
+			"font_physical": 18.0,
+			"level": "home",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				960,
+				540
+			],
+			"style": 1
+		},
+		{
+			"buttons": 6,
+			"column_scale": 1.0,
+			"font_physical": 18.0,
+			"level": "modes-0",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				960,
+				540
+			],
+			"style": 1
+		},
+		{
+			"buttons": 7,
+			"column_scale": 1.0,
+			"font_physical": 18.0,
+			"level": "modes-1",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				960,
+				540
+			],
+			"style": 1
+		},
+		{
+			"buttons": 7,
+			"column_scale": 1.0,
+			"font_physical": 18.0,
+			"level": "modes-2",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				960,
+				540
+			],
+			"style": 1
+		},
+		{
+			"buttons": 8,
+			"column_scale": 1.0,
+			"font_physical": 18.0,
+			"level": "modes-3",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				960,
+				540
+			],
+			"style": 1
+		},
+		{
+			"buttons": 5,
+			"column_scale": 1.0,
+			"font_physical": 24.0,
+			"level": "home",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1280,
+				720
+			],
+			"style": 1
+		},
+		{
+			"buttons": 6,
+			"column_scale": 1.0,
+			"font_physical": 24.0,
+			"level": "modes-0",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1280,
+				720
+			],
+			"style": 1
+		},
+		{
+			"buttons": 7,
+			"column_scale": 1.0,
+			"font_physical": 24.0,
+			"level": "modes-1",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1280,
+				720
+			],
+			"style": 1
+		},
+		{
+			"buttons": 7,
+			"column_scale": 1.0,
+			"font_physical": 24.0,
+			"level": "modes-2",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1280,
+				720
+			],
+			"style": 1
+		},
+		{
+			"buttons": 8,
+			"column_scale": 1.0,
+			"font_physical": 24.0,
+			"level": "modes-3",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1280,
+				720
+			],
+			"style": 1
+		},
+		{
+			"buttons": 5,
+			"column_scale": 1.0,
+			"font_physical": 36.0,
+			"level": "home",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1920,
+				1080
+			],
+			"style": 1
+		},
+		{
+			"buttons": 6,
+			"column_scale": 1.0,
+			"font_physical": 36.0,
+			"level": "modes-0",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1920,
+				1080
+			],
+			"style": 1
+		},
+		{
+			"buttons": 7,
+			"column_scale": 1.0,
+			"font_physical": 36.0,
+			"level": "modes-1",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1920,
+				1080
+			],
+			"style": 1
+		},
+		{
+			"buttons": 7,
+			"column_scale": 1.0,
+			"font_physical": 36.0,
+			"level": "modes-2",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1920,
+				1080
+			],
+			"style": 1
+		},
+		{
+			"buttons": 8,
+			"column_scale": 1.0,
+			"font_physical": 36.0,
+			"level": "modes-3",
+			"logical": [
+				1280.0,
+				720.0
+			],
+			"physical": [
+				1920,
+				1080
+			],
+			"style": 1
+		},
+		{
+			"buttons": 5,
+			"column_scale": 1.0,
+			"font_physical": 19.2,
+			"level": "home",
+			"logical": [
+				1280.0,
+				960.0
+			],
+			"physical": [
+				1024,
+				768
+			],
+			"style": 1
+		},
+		{
+			"buttons": 6,
+			"column_scale": 1.0,
+			"font_physical": 19.2,
+			"level": "modes-0",
+			"logical": [
+				1280.0,
+				960.0
+			],
+			"physical": [
+				1024,
+				768
+			],
+			"style": 1
+		},
+		{
+			"buttons": 7,
+			"column_scale": 1.0,
+			"font_physical": 19.2,
+			"level": "modes-1",
+			"logical": [
+				1280.0,
+				960.0
+			],
+			"physical": [
+				1024,
+				768
+			],
+			"style": 1
+		},
+		{
+			"buttons": 7,
+			"column_scale": 1.0,
+			"font_physical": 19.2,
+			"level": "modes-2",
+			"logical": [
+				1280.0,
+				960.0
+			],
+			"physical": [
+				1024,
+				768
+			],
+			"style": 1
+		},
+		{
+			"buttons": 8,
+			"column_scale": 1.0,
+			"font_physical": 19.2,
+			"level": "modes-3",
+			"logical": [
+				1280.0,
+				960.0
+			],
+			"physical": [
+				1024,
+				768
+			],
+			"style": 1
+		}
+	],
+	"visual_acceptance": false
+}

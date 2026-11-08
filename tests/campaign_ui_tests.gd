@@ -20,15 +20,15 @@ func _run() -> void:
 	var menu := preload("res://scenes/menu/main_menu.tscn").instantiate()
 	root.add_child(menu)
 	await create_timer(2.2).timeout
-	check(menu._buttons.size()==10,"десять режимов и действий главного меню")
-	for button in menu._buttons:
+	check(menu._home_buttons.size()==5 and menu._home_buttons[0].text=="Играть","главный уровень: играть и четыре действия")
+	for button in menu._visible_buttons():
 		check(button.get_global_rect().position.y>=0 and button.get_global_rect().end.y<=720,"кнопка меню в экране: "+button.text)
 	await shot("menu-1280")
 	root.size=Vector2i(960,540)
-	root.content_scale_size=root.size
+	root.content_scale_size=Vector2i(1280,720)
 	await settle()
-	for button in menu._buttons:
-		check(button.get_global_rect().position.y>=0 and button.get_global_rect().end.y<=540,"узкая кнопка меню в экране: "+button.text)
+	for button in menu._visible_buttons():
+		check(root.get_visible_rect().encloses(button.get_global_rect()),"узкая кнопка меню в штатном stretch: "+button.text)
 	await shot("menu-960")
 	menu.queue_free()
 	await settle()

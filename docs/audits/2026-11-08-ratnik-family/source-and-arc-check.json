@@ -1,0 +1,35 @@
+{
+  "all_six_source_glb_sha256_unchanged": true,
+  "actual_surface_metrics": [
+    {
+      "id": "creature_ratnik_fire",
+      "actual_blade_angle_windup_to_contact_deg": 107.43108026397917,
+      "windup_frame": 16,
+      "contact_frame": 28
+    },
+    {
+      "id": "creature_ratnik_gale",
+      "actual_blade_angle_windup_to_contact_deg": 112.08996689419732,
+      "windup_frame": 12,
+      "contact_frame": 24
+    },
+    {
+      "id": "creature_ratnik_stone",
+      "actual_blade_angle_windup_to_contact_deg": 113.97221748573826,
+      "windup_frame": 16,
+      "contact_frame": 32
+    },
+    {
+      "id": "creature_ratnik_shadow",
+      "actual_blade_angle_windup_to_contact_deg": 117.02950468453618,
+      "windup_frame": 16,
+      "contact_frame": 28
+    },
+    {
+      "id": "creature_ratnik_tide",
+      "actual_blade_angle_windup_to_contact_deg": 112.75257519280422,
+      "windup_frame": 16,
+      "contact_frame": 28
+    }
+  ]
+}

@@ -65,8 +65,31 @@ func _init(side: int = 0, title: String = "") -> void:
 		row.add_child(_gates)
 
 
+func _ready() -> void:
+	DeviceSettings.events().changed.connect(_device_style_changed)
+	_device_style_changed(DeviceSettings.current())
+
+
+func _device_style_changed(_style: int) -> void:
+	_name.custom_minimum_size.x = 120.0 if DeviceSettings.is_device() else 140.0
+	_name.add_theme_font_size_override("font_size", 18 if DeviceSettings.is_device() else 20)
+	_portrait.custom_minimum_size = Vector2(48,56) if DeviceSettings.is_device() else Vector2(64,72)
+	_apply_style(_active)
+	_gates.add_theme_color_override("font_color", UiTheme.accent())
+	_pips.queue_redraw()
+
+
 func _apply_style(active: bool) -> void:
 	var c: Color = _accent
+	if DeviceSettings.is_device():
+		var device := UiTheme.box(UiTheme.DEVICE_INK, c if active else c.darkened(0.5), 1, 4, 10)
+		device.border_width_top = 3 if active else 1
+		device.content_margin_left = 12
+		device.content_margin_right = 12
+		device.content_margin_top = 6
+		device.content_margin_bottom = 8
+		add_theme_stylebox_override("panel", device)
+		return
 	var sb := UiTheme.box(Color(0.03, 0.03, 0.06, 0.88), c if active else c.darkened(0.45), 0, 0, 10)
 	sb.border_width_left = 5 if _side == 0 else 0
 	sb.border_width_right = 5 if _side == 1 else 0
@@ -193,7 +216,7 @@ class _Pips extends Control:
 					var g: Texture2D = ElementIcon.glyph(int(elems[i]))
 					draw_texture_rect(g, Rect2(c - Vector2(10, 9), Vector2(20, 20)), false, Color(0, 0, 0, 0.55))
 					draw_texture_rect(g, Rect2(c - Vector2(10, 10), Vector2(20, 20)), false, Color(1.0, 0.98, 0.92, 0.95))
-				draw_arc(c, 12.0, 0.0, TAU, 24, UiTheme.GOLD_DIM, 1.5, true)
+				draw_arc(c, 12.0, 0.0, TAU, 24, UiTheme.accent_dim(), 1.5, true)
 
 
 class _Flames extends Control:

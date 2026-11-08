@@ -1,0 +1,22 @@
+{
+  "status": "PASS_MODELS_CLOTH_RIM_SCOPED_HUD_LIMITATION",
+  "reviewer": "Sol gpt-6.1-sol high; existing user-run artifacts only, no rerun",
+  "finished_utc": "2026-11-06T19:56:11.120286+00:00",
+  "renderer": "Vulkan1.4.351 / Forward+ / NVIDIA GeForce RTX4070 Laptop GPU / X11",
+  "checks": 70004,
+  "failures": 0,
+  "duration_seconds": 30.88,
+  "report_sha256": "82665f5752a67154eabce45ee0a7b1611ef2ccac4fa0f4e05e55010a9e52b11b",
+  "source_manifest_sha256": "33c53ff9a74cc9650c9519e3de0b10c6db77d7f2a5e413f08e1d43b6f075c68f",
+  "identity": "All4 current GLB, SCN and sidecar hashes and all37PNG hashes verified against frozen manifest/report",
+  "log": "No ERROR, WARNING, shader compile failure or leak messages in hardware-engine.log",
+  "pass_findings": [
+    "A03 quarter idle/attack: former shoulder sheets absent; low rounded shoulders stay clear of face/horns, no visible major gap or penetration in captured views",
+    "A04 closeup: current d51 helmet roof, separate horns and thin halo; no former broad pancake",
+    "Actual GPU cape motion and rim sampled in idle/attack/hit/reuse; no separate stale native cape outline or major floor penetration visible in inspected rear captures",
+    "A01/A02 inspected front/quarter retain readable forms without the removed large wind fragments",
+    "Settled HUD six cards, representative portraits, reduced-motion simultaneous G delta and4:3 composition remain readable without overlap"
+  ],
+  "hud_normal_motion_limit": "hud-sixcards-reducedfalse-simultaneous-gdelta.png shows delta labels with the rest of HUD absent. Capture code calls battle.close only after saving; cause not established by this single frame. Normal-motion simultaneous-delta visual acceptance remains OPEN. No full UI PASS or product-cause assertion. No rerun or broader investigation per author scope.",
+  "scope_limit": "Scripted four-model/cloth/HUD harness, not complete physical match, all49catalog art review, Windows, sound or performance benchmark."
+}

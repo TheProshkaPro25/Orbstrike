@@ -25,6 +25,41 @@ void vertex() {
 }
 """
 static var _shader: Shader
+static var _rim_shader: Shader
+const RIM_META := &"creature_cloth_rim"
+const GPU_PARAMETERS := ["gpu_driven", "positions_tex", "normals_tex", "welded_index_tex", "tex_width", "render_tex_width", "skel_to_mesh_transform", "render_offset"]
+
+## A next_pass is a separate draw: it must read the same simulated cape as
+## the base material. Only the shader is shared; uniforms belong to this cape.
+static func rim_for_surface(source: Material, rim: Material) -> Material:
+ if not source is ShaderMaterial or not rim is ShaderMaterial: return rim
+ var cloth := source as ShaderMaterial
+ if cloth.get_shader_parameter("gpu_driven") != true: return rim
+ if _rim_shader == null:
+  _rim_shader = Shader.new()
+  _rim_shader.code = (rim as ShaderMaterial).shader.code.replace("void fragment()", GPU_VERTEX + "\nvoid fragment()")
+ var result: ShaderMaterial = cloth.get_meta(RIM_META) if cloth.has_meta(RIM_META) else null
+ if result == null:
+  result = ShaderMaterial.new()
+  result.shader = _rim_shader
+  cloth.set_meta(RIM_META, result)
+ for parameter in GPU_PARAMETERS:
+  result.set_shader_parameter(parameter, cloth.get_shader_parameter(parameter))
+ for parameter in ["col", "strength"]:
+  result.set_shader_parameter(parameter, (rim as ShaderMaterial).get_shader_parameter(parameter))
+ return result
+
+## Release path keeps materials alive until end of frame; stop the old pass
+## advertising RD textures while the solver tears down its own wrappers.
+static func clear_rim(source: Material) -> ShaderMaterial:
+ if source == null or not source.has_meta(RIM_META): return null
+ var rim: ShaderMaterial = source.get_meta(RIM_META)
+ rim.set_shader_parameter("gpu_driven", false)
+ for parameter in ["positions_tex", "normals_tex", "welded_index_tex"]:
+  rim.set_shader_parameter(parameter, null)
+ if source.next_pass == rim: source.next_pass = null
+ source.remove_meta(RIM_META)
+ return rim
 
 static func attach(model: Node3D) -> Node3D:
  if RenderingServer.get_rendering_device() == null: return null

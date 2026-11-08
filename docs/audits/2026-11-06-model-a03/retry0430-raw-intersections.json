@@ -1,0 +1,11 @@
+{
+  "kind": "Blender mathutils CPU BVH raw-rest only",
+  "candidate_sha256": "34ea6493acc74c1ae30c2473bd0db116a109f47db89a5df03c777a8a7172a260",
+  "new_cap_triangles": 4509,
+  "nonadjacent_pairs_touching_caps": 0,
+  "body_cap_pairs": 0,
+  "cap_cap_pairs": 0,
+  "accepted_geometry": true,
+  "pairs": [],
+  "scope": "Adjacent geometric vertices excluded. Raw rest only; no skinned/runtime/GPU acceptance."
+}

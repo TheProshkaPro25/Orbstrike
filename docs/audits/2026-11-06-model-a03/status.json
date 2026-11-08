@@ -1,0 +1,853 @@
+{
+  "status": "PARTIAL_MATERIAL_SELECTED_EXACT_GEOMETRY_IMPORT_PENDING",
+  "production_changed": false,
+  "production_sha256": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+  "planar_prototype": {
+    "source_sha256": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+    "candidate_sha256": "db71c6a103e80826fcce5fcd4b1730bb637e3d22f156430bece96fd08a135e05",
+    "preservation_contract": "PASS",
+    "unchanged_source_accessors_byte_exact": 270,
+    "source_binary_prefix_exact": true,
+    "source_nodes_rest_binds_skin_clips_uv_images_materials_extras_exact": true,
+    "retained_original_triangles": 134825,
+    "removed_original_triangles": 15169,
+    "new_cap_triangles": 387,
+    "new_cap_vertices": 413,
+    "cap_boundary_positions_and_8_weights_exact": true,
+    "boundary_edges": 0,
+    "maximum_welded_edge_face_count": 4,
+    "active_components": 1,
+    "source_nonmanifold_edges": 3,
+    "candidate_nonmanifold_edges": 26,
+    "new_nonmanifold_edges": 23,
+    "new_cap_degenerate_triangles": 0,
+    "all_accessor_bounds_exact": true,
+    "geometry_safety": "REJECTED",
+    "new_nonadjacent_cap_intersections": 48,
+    "approved_for_installation": false,
+    "runtime_import_animation_gpu_executed": false,
+    "note": "Preservation PASS cannot override intersecting reconstructed caps. This is a rejected prototype."
+  },
+  "harmonic_prototype": {
+    "kind": "Blender mathutils CPU BVH raw-rest only",
+    "candidate_sha256": "9e1f09609b6c8dc4df2cb8172352773a6f1ffed4c2ea10749000278529bc8c93",
+    "new_cap_triangles": 15169,
+    "nonadjacent_pairs_touching_caps": 174,
+    "body_cap_pairs": 64,
+    "cap_cap_pairs": 110,
+    "accepted_geometry": false,
+    "pairs": [
+      [
+        16734,
+        140232
+      ],
+      [
+        16734,
+        140189
+      ],
+      [
+        16751,
+        140189
+      ],
+      [
+        19456,
+        141115
+      ],
+      [
+        19455,
+        141115
+      ],
+      [
+        19456,
+        141235
+      ],
+      [
+        19457,
+        141236
+      ],
+      [
+        20001,
+        141236
+      ],
+      [
+        19456,
+        141236
+      ],
+      [
+        20001,
+        141740
+      ],
+      [
+        20193,
+        141740
+      ],
+      [
+        20196,
+        141739
+      ],
+      [
+        20193,
+        141739
+      ],
+      [
+        18830,
+        140796
+      ],
+      [
+        19455,
+        140796
+      ],
+      [
+        18830,
+        140797
+      ],
+      [
+        18829,
+        140801
+      ],
+      [
+        18828,
+        140801
+      ],
+      [
+        18249,
+        140801
+      ],
+      [
+        18829,
+        140802
+      ],
+      [
+        18829,
+        140795
+      ],
+      [
+        18831,
+        140795
+      ],
+      [
+        18830,
+        140795
+      ],
+      [
+        20868,
+        142098
+      ],
+      [
+        20868,
+        141913
+      ],
+      [
+        20868,
+        142301
+      ],
+      [
+        20868,
+        142302
+      ],
+      [
+        20196,
+        141823
+      ],
+      [
+        20358,
+        141823
+      ],
+      [
+        20358,
+        141923
+      ],
+      [
+        20359,
+        141923
+      ],
+      [
+        20359,
+        142016
+      ],
+      [
+        20356,
+        142996
+      ],
+      [
+        20356,
+        143095
+      ],
+      [
+        20356,
+        143096
+      ],
+      [
+        20357,
+        142378
+      ],
+      [
+        20357,
+        142376
+      ],
+      [
+        20357,
+        143064
+      ],
+      [
+        20357,
+        143063
+      ],
+      [
+        20357,
+        143317
+      ],
+      [
+        21509,
+        142071
+      ],
+      [
+        21508,
+        142071
+      ],
+      [
+        20357,
+        143148
+      ],
+      [
+        21509,
+        143318
+      ],
+      [
+        21507,
+        143614
+      ],
+      [
+        21509,
+        143614
+      ],
+      [
+        21507,
+        143960
+      ],
+      [
+        21509,
+        142072
+      ],
+      [
+        21509,
+        143535
+      ],
+      [
+        21509,
+        143613
+      ],
+      [
+        19829,
+        141070
+      ],
+      [
+        123395,
+        148268
+      ],
+      [
+        122790,
+        148144
+      ],
+      [
+        122790,
+        148143
+      ],
+      [
+        123395,
+        148146
+      ],
+      [
+        122790,
+        148146
+      ],
+      [
+        122790,
+        148145
+      ],
+      [
+        122790,
+        148147
+      ],
+      [
+        123395,
+        148270
+      ],
+      [
+        122787,
+        147865
+      ],
+      [
+        122789,
+        147865
+      ],
+      [
+        122790,
+        148137
+      ],
+      [
+        122790,
+        148139
+      ],
+      [
+        122787,
+        147733
+      ],
+      [
+        140189,
+        140288
+      ],
+      [
+        141231,
+        141494
+      ],
+      [
+        141231,
+        141260
+      ],
+      [
+        141230,
+        141494
+      ],
+      [
+        141260,
+        141492
+      ],
+      [
+        141260,
+        141753
+      ],
+      [
+        141260,
+        141612
+      ],
+      [
+        141260,
+        141600
+      ],
+      [
+        141258,
+        141350
+      ],
+      [
+        141258,
+        141612
+      ],
+      [
+        141258,
+        141347
+      ],
+      [
+        141259,
+        141347
+      ],
+      [
+        141331,
+        141927
+      ],
+      [
+        141331,
+        141928
+      ],
+      [
+        141336,
+        141922
+      ],
+      [
+        141336,
+        141928
+      ],
+      [
+        141476,
+        141923
+      ],
+      [
+        141476,
+        141922
+      ],
+      [
+        141476,
+        142016
+      ],
+      [
+        141225,
+        141494
+      ],
+      [
+        141225,
+        141495
+      ],
+      [
+        141227,
+        141494
+      ],
+      [
+        141227,
+        141495
+      ],
+      [
+        141226,
+        141494
+      ],
+      [
+        141226,
+        141495
+      ],
+      [
+        141226,
+        141826
+      ],
+      [
+        141226,
+        141927
+      ],
+      [
+        141903,
+        142302
+      ],
+      [
+        141903,
+        142648
+      ],
+      [
+        141902,
+        142640
+      ],
+      [
+        141902,
+        142641
+      ],
+      [
+        141902,
+        142648
+      ],
+      [
+        141902,
+        142996
+      ],
+      [
+        141718,
+        143070
+      ],
+      [
+        141718,
+        143095
+      ],
+      [
+        141718,
+        143071
+      ],
+      [
+        141718,
+        143476
+      ],
+      [
+        141718,
+        143475
+      ],
+      [
+        141718,
+        143317
+      ],
+      [
+        142378,
+        143319
+      ],
+      [
+        142379,
+        143319
+      ],
+      [
+        142379,
+        143318
+      ],
+      [
+        142376,
+        143064
+      ],
+      [
+        142376,
+        143317
+      ],
+      [
+        142376,
+        143319
+      ],
+      [
+        142380,
+        143064
+      ],
+      [
+        142380,
+        143063
+      ],
+      [
+        142166,
+        142376
+      ],
+      [
+        142166,
+        143148
+      ],
+      [
+        142166,
+        142264
+      ],
+      [
+        142377,
+        143318
+      ],
+      [
+        141987,
+        144401
+      ],
+      [
+        141987,
+        144400
+      ],
+      [
+        142076,
+        144401
+      ],
+      [
+        141881,
+        143148
+      ],
+      [
+        141881,
+        142264
+      ],
+      [
+        141881,
+        142265
+      ],
+      [
+        141986,
+        144400
+      ],
+      [
+        142077,
+        144401
+      ],
+      [
+        142077,
+        144400
+      ],
+      [
+        142165,
+        143319
+      ],
+      [
+        142165,
+        143318
+      ],
+      [
+        141882,
+        143148
+      ],
+      [
+        141882,
+        143318
+      ],
+      [
+        141882,
+        143149
+      ],
+      [
+        141882,
+        142264
+      ],
+      [
+        141882,
+        142072
+      ],
+      [
+        141882,
+        142265
+      ],
+      [
+        142164,
+        143960
+      ],
+      [
+        142164,
+        144053
+      ],
+      [
+        142164,
+        144400
+      ],
+      [
+        142071,
+        143319
+      ],
+      [
+        142071,
+        143540
+      ],
+      [
+        142071,
+        143614
+      ],
+      [
+        142071,
+        143960
+      ],
+      [
+        142071,
+        144053
+      ],
+      [
+        142071,
+        144400
+      ],
+      [
+        142675,
+        142679
+      ],
+      [
+        141070,
+        141284
+      ],
+      [
+        141070,
+        141283
+      ],
+      [
+        141284,
+        141291
+      ],
+      [
+        147868,
+        148143
+      ],
+      [
+        147868,
+        148146
+      ],
+      [
+        147868,
+        148145
+      ],
+      [
+        147868,
+        148147
+      ],
+      [
+        147615,
+        148143
+      ],
+      [
+        147615,
+        148259
+      ],
+      [
+        147615,
+        148136
+      ],
+      [
+        147738,
+        148145
+      ],
+      [
+        147738,
+        148535
+      ],
+      [
+        147738,
+        148391
+      ],
+      [
+        147738,
+        148536
+      ],
+      [
+        147973,
+        148146
+      ],
+      [
+        147973,
+        148145
+      ],
+      [
+        147973,
+        148147
+      ],
+      [
+        147739,
+        148399
+      ],
+      [
+        147739,
+        148536
+      ],
+      [
+        147618,
+        147867
+      ],
+      [
+        147618,
+        147865
+      ],
+      [
+        147618,
+        148139
+      ],
+      [
+        147393,
+        147866
+      ],
+      [
+        147393,
+        147864
+      ],
+      [
+        147613,
+        148137
+      ],
+      [
+        147613,
+        148139
+      ],
+      [
+        147613,
+        147866
+      ],
+      [
+        147613,
+        148135
+      ],
+      [
+        147613,
+        147969
+      ],
+      [
+        147613,
+        148136
+      ],
+      [
+        147395,
+        147866
+      ],
+      [
+        147473,
+        147864
+      ]
+    ],
+    "scope": "Adjacent geometric vertices excluded. Raw rest only; no skinned/runtime/GPU acceptance."
+  },
+  "reviewed_personally": "Sol high: reference, source, spatial/color masks, four-view result and harmonic result",
+  "runtime_gpu_import_animation_executed": false,
+  "final_report": "FINAL_REPORT.md",
+  "posed_scope_845daf": {
+    "report": "posed-scope.json",
+    "status": "FAIL_NEW_OR_UNRESOLVED_INTERSECTIONS",
+    "genuinely_new_pair_instances": 443,
+    "inherited_pair_instances": 607
+  },
+  "posed_trials": {
+    "845daf": {
+      "new_pair_instances": 443,
+      "inherited_pairs": 607,
+      "status": "FAIL"
+    },
+    "plane0430": {
+      "new_pair_instances": 53,
+      "inherited_pairs": 2,
+      "status": "FAIL"
+    },
+    "plane0415": {
+      "new_pair_instances": 127,
+      "inherited_pairs": 0,
+      "status": "FAIL"
+    },
+    "plane0430_steiner_bulge002": {
+      "status": "FAIL",
+      "candidate_sha256": "349ca48f0e57ced0660fb7d0f52607c89c41e3540e5df91b97b8f363a7beb03b",
+      "new_pair_instances": 690,
+      "inherited_pairs": 2
+    }
+  },
+  "current_report": "MATERIAL_REPORT.md",
+  "material_candidate": {
+    "status": "PASS_EXACT_GEOMETRY_UV_SKIN_MATERIAL_ONLY_PARTIAL",
+    "source_sha256": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+    "candidate_sha256": "ca2580a32b502635b15193141c6b71b388ebdde75c04ac10e1646c733c8b4e0f",
+    "palette": "muted_violet",
+    "tint_rgb": [
+      0.38,
+      0.22,
+      0.52
+    ],
+    "source_accessor_count_byte_exact": 270,
+    "source_binary_prefix_exact": true,
+    "only_appended_binary": "two original-face index streams; no vertex/image/clip data added or modified",
+    "strict_complete_json_whitelist_exact": true,
+    "both_primitives_share_all_original_attribute_accessors": true,
+    "every_original_triangle_present_exactly_once": true,
+    "total_triangles": 149994,
+    "unchanged_original_material_triangles": 139551,
+    "tinted_effect_material_triangles": 10443,
+    "original_material_and_all_maps_pbr_alpha_doubleSided_exact": true,
+    "new_material_only_name_and_baseColorFactorRGB_differ": true,
+    "positions_normals_uv_joints_8weights_nodes_rest_bind_clips_images_exact": true,
+    "all_geometry_bounds_and_pose_deformation_identical_for_identical_bone_matrices": true,
+    "new_geometry_intersections_mathematically_impossible": true,
+    "form_repair_claimed": false,
+    "scope": "Only10443confirmed pale shoulder-effect faces use a violet duplicate material;139551armor/neck/head/body faces keep original white tint. Source angular effect form and pre-existing source contacts remain."
+  },
+  "material_posed_identity": {
+    "status": "PASS_NO_NEW_INTERSECTIONS",
+    "candidate_sha256": "ca2580a32b502635b15193141c6b71b388ebdde75c04ac10e1646c733c8b4e0f",
+    "new_intersection_pairs": 0,
+    "proof_type": "EXACT_SOURCE_GEOMETRY_UV_SKIN_IDENTITY",
+    "source_triangles": 149994,
+    "every_source_face_once_exact": true,
+    "all270source_accessors_byte_exact": true,
+    "inherited_pairs": "All original source contact pairs remain identical for identical bone palettes; counts not repeated. No geometry/BVH threshold is relaxed.",
+    "adjacency_exclusions": "None added. No new geometric pairs are possible because the full indexed triangles and skin are exactly the source, only material assignment differs.",
+    "strict_contract_report": "integrity.json",
+    "form_repair_claimed": false,
+    "runtime_new_BVH_executed": false,
+    "scope": "Mathematical identity proof, not a fresh engine/GPU run."
+  },
+  "rejected_geometry_candidate_845daf": {
+    "status": "PASS_CPU_GEOMETRY_AND_PRESERVATION",
+    "source_sha256": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+    "candidate_sha256": "845dafef53e0cb4476de6a9561a28a903f6bb4692dcf1569c93c19d1971c05a2",
+    "source_accessor_count_byte_exact": 270,
+    "source_binary_prefix_exact": true,
+    "nodes_rest_skin_binds_clips_images_materials_extras_exact": true,
+    "outside_whitelist_faces_attributes_exact": true,
+    "retained_source_triangles": 134261,
+    "new_surface_triangles": 5055,
+    "clipped_source_triangles": 623,
+    "caps": 412,
+    "recolored_root_triangles_geometry_normals_8weights_exact": 4020,
+    "root_change": "UV only, dark local armor sample; no texture image modified",
+    "boundary_edges": 0,
+    "active_components": 1,
+    "original_nonmanifold_edges": 3,
+    "new_nonmanifold_edges": 0,
+    "maximum_welded_edge_face_count": 4,
+    "new_degenerate_triangles": 0,
+    "new_nonadjacent_intersections": 0,
+    "body_new_seam_max_skin_weight_delta": 0.0,
+    "all_accessor_bounds_exact": true,
+    "runtime_import_support_animation_gpu_executed": false,
+    "scope": "CPU raw-rest proof only. Animation/support acceptance is a separate required check."
+  },
+  "fixed_seam_witness": {
+    "report": "boundary-witness0430.json",
+    "attack24_strict_boundary_body_crossings": 1,
+    "segment_t": 0.5826394959642198,
+    "body_barycentric": [
+      0.10269220151312042,
+      0.3035522081232374,
+      0.5937555903636422
+    ],
+    "conclusion": "Interior-only cap repair with this fixed boundary has no solution."
+  },
+  "integration_status": "INSTALLED_MATERIAL_ONLY_PARTIAL_ORDINARY_IMPORT_VERIFIED",
+  "integration_report": "../2026-11-06-model-sculpt-runtime/material-installed.json"
+}

@@ -503,9 +503,8 @@ func _best_ability_target(view: MatchState, id: StringName, owner: int, targets:
 	for target in targets:
 		var score := 0.0
 		if target.has("target_uid"):
-			var ally: CreatureState = view.creatures[int(target.target_uid)]
 			# Сильного союзника выгоднее оставить защищать ворота; слабого вывести из риска.
-			score = -float(CardDB.creature(ally.def_id).base_power)
+			score = -float(PowerCalc.base_power(view, int(target.target_uid)))
 		elif target.has("target_card"):
 			var card := CardDB.card(StringName(target.target_card))
 			score = float(view.players[owner].ability_cooldown.get(StringName(target.target_card), 0)) * 100.0
@@ -709,7 +708,7 @@ func _forecast_legal(view: MatchState, r: BattleResult, id: StringName, side: in
 		return false
 	if c.effect_id in [&"gale_call", &"light_reserve"] and _ability_targets(view, r, id, view.creatures[fighter].owner).is_empty():
 		return false
-	if c.effect_id == &"tide_wash" and r.powers[side] >= d.base_power:
+	if c.effect_id == &"tide_wash" and r.powers[side] >= PowerCalc.base_power(view, fighter):
 		return false
 	var last: StringName = &""
 	for pl in r.plays:
@@ -1126,10 +1125,10 @@ func _trap_bait_score(view: MatchState, uid: int, card: CardDef) -> float:
 	match String(card.effect_id):
 		"mirror", "clash", "limit":
 			var rank: int = 0
-			var bp: int = CardDB.creature(view.creatures[uid].def_id).base_power
+			var bp: int = PowerCalc.base_power(view, uid)
 			for u in ps_uids(view):
 				var o: CreatureState = view.creatures[u]
-				if o.alive and u != uid and CardDB.creature(o.def_id).base_power < bp:
+				if o.alive and u != uid and PowerCalc.base_power(view, u) < bp:
 					rank += 1
 			return 860.0 - rank * 150.0
 		"mute":

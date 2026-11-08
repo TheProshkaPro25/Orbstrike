@@ -11,6 +11,15 @@ var city: MenuCity
 var ui: Control
 var _column: VBoxContainer
 var _buttons: Array[Button] = []
+var _home_buttons: Array[Button] = []
+var _mode_buttons: Array[Button] = []
+var _brand: VBoxContainer
+var _mode_title: Label
+var _home_actions: VBoxContainer
+var _mode_actions: VBoxContainer
+var _modes_open := false
+var _campaign_continue: Button
+var _tournament_continue: Button
 var _fade: ColorRect
 var _clock: Label
 var _settings: MenuSettings
@@ -48,14 +57,17 @@ func _unhandled_input(e: InputEvent) -> void:
 		elif _settings != null and _settings.visible:
 			_settings.close()
 			get_viewport().set_input_as_handled()
+		elif _modes_open and not _leaving:
+			_show_home()
+			get_viewport().set_input_as_handled()
 	elif e is InputEventMouseMotion:
 		_mouse_hover = true
 	elif e is InputEventKey or e is InputEventJoypadButton or e is InputEventJoypadMotion:
 		_mouse_hover = false
-		# первый нажатый «вниз/вверх» без фокуса — встать на «Играть»
+		# Первый ввод без фокуса выбирает начало текущего уровня.
 		if get_viewport().gui_get_focus_owner() == null and not _buttons.is_empty() and not _leaving:
 			if e.is_action_pressed("ui_down") or e.is_action_pressed("ui_up") or e.is_action_pressed("ui_accept"):
-				_buttons[0].grab_focus()
+				_visible_buttons()[0].grab_focus()
 				get_viewport().set_input_as_handled()
 
 
@@ -98,6 +110,9 @@ void fragment() {
 	_column.alignment = BoxContainer.ALIGNMENT_CENTER
 	_column.add_theme_constant_override("separation", 6)
 	ui.add_child(_column)
+	_brand = VBoxContainer.new()
+	_brand.add_theme_constant_override("separation", 6)
+	_column.add_child(_brand)
 
 	var logo := VisualUtil.label("Orbstrike", LOGO_SIZE)
 	logo.add_theme_color_override("font_color", UiTheme.GOLD)
@@ -107,7 +122,7 @@ void fragment() {
 	logo.add_theme_constant_override("shadow_offset_x", 0)
 	logo.add_theme_constant_override("shadow_offset_y", 5)
 	logo.add_theme_constant_override("shadow_outline_size", 18)
-	_column.add_child(logo)
+	_brand.add_child(logo)
 
 	# шесть стихий — цветные точки под логотипом, подзаголовок — отдельной строкой ниже (в одном ряду с точками
 	# он налезал на них при другой ширине шрифта/окна)
@@ -117,7 +132,7 @@ void fragment() {
 	row_pad.add_theme_constant_override("margin_left", 6)
 	row_pad.add_theme_constant_override("margin_top", 2)
 	row_pad.add_child(row)
-	_column.add_child(row_pad)
+	_brand.add_child(row_pad)
 	for a in range(6):
 		var dot := Panel.new()
 		dot.custom_minimum_size = Vector2(14, 14)
@@ -134,11 +149,15 @@ void fragment() {
 	var sub_pad := MarginContainer.new()
 	sub_pad.add_theme_constant_override("margin_left", 6)
 	sub_pad.add_child(sub)
-	_column.add_child(sub_pad)
+	_brand.add_child(sub_pad)
 
 	var gap := Control.new()
 	gap.custom_minimum_size = Vector2(0, 10)
-	_column.add_child(gap)
+	_brand.add_child(gap)
+	_mode_title = VisualUtil.label("Играть · выбор режима", 32)
+	_mode_title.add_theme_color_override("font_color", UiTheme.GOLD)
+	_mode_title.hide()
+	_column.add_child(_mode_title)
 
 	var panel := PanelContainer.new()
 	var pst := UiTheme.box(Color(0.05, 0.05, 0.09, 0.72), UiTheme.GOLD_DIM, 2, 14, 18)
@@ -150,20 +169,22 @@ void fragment() {
 	var vb := VBoxContainer.new()
 	vb.add_theme_constant_override("separation", 6)
 	panel.add_child(vb)
-	for spec in [["Дуэль", _on_play], ["Игра через интернет", _on_online], ["Новая кампания", _on_new_campaign], ["Продолжить кампанию", _on_continue_campaign], ["Новый турнир", _on_new_tournament], ["Продолжить турнир", _on_continue_tournament], ["Мой персонаж", _on_character], ["Как играть", _on_help], ["Настройки", _on_settings], ["Выход", _on_quit]]:
-		var b := Button.new()
-		b.text = spec[0]
-		b.custom_minimum_size = Vector2(330, 38)
-		b.add_theme_font_size_override("font_size", 22)
-		b.pressed.connect(spec[1])
-		b.mouse_entered.connect(b.grab_focus)
-		b.focus_entered.connect(_on_focus.bind(b))
-		vb.add_child(b)
-		_buttons.append(b)
+	_home_actions = VBoxContainer.new()
+	_home_actions.add_theme_constant_override("separation", 6)
+	vb.add_child(_home_actions)
+	_mode_actions = VBoxContainer.new()
+	_mode_actions.add_theme_constant_override("separation", 6)
+	_mode_actions.hide()
+	vb.add_child(_mode_actions)
+	for spec in [["Играть", _show_modes], ["Мой персонаж", _on_character], ["Как играть", _on_help], ["Настройки", _on_settings], ["Выход", _on_quit]]:
+		_home_buttons.append(_add_action(_home_actions, spec[0], spec[1]))
+	for spec in [["Карьера", _on_career], ["Дуэль", _on_play], ["Игра через интернет", _on_online], ["Новая кампания", _on_new_campaign], ["Продолжить кампанию", _on_continue_campaign], ["Новый турнир", _on_new_tournament], ["Продолжить турнир", _on_continue_tournament], ["Назад", _show_home]]:
+		var button := _add_action(_mode_actions, spec[0], spec[1])
+		_mode_buttons.append(button)
+		if button.text == "Продолжить кампанию": _campaign_continue = button
+		if button.text == "Продолжить турнир": _tournament_continue = button
 	_buttons[0].add_theme_color_override("font_color", UiTheme.GOLD)
-	# по кругу: с «Выхода» вниз — на «Играть»
-	_buttons[0].focus_neighbor_top = _buttons[-1].get_path()
-	_buttons[-1].focus_neighbor_bottom = _buttons[0].get_path()
+	_link_focus(_home_buttons)
 
 	var hint := VisualUtil.label("↑ ↓ — выбор   Enter — подтвердить   Esc — назад", 14)
 	hint.add_theme_color_override("font_color", Color(UiTheme.TEXT_DIM, 0.8))
@@ -199,7 +220,7 @@ void fragment() {
 	_settings = MenuSettings.new()
 	_settings.city = city
 	_settings.visible = false
-	_settings.closed.connect(func() -> void: _buttons[8].grab_focus())
+	_settings.closed.connect(func() -> void: _focus_button("Настройки"))
 	ui.add_child(_settings)
 
 	_fade = ColorRect.new()
@@ -207,6 +228,67 @@ void fragment() {
 	_fade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ui.add_child(_fade)
+	UiTheme.apply_device_frame(ui, "ГЛАВНОЕ МЕНЮ")
+
+
+func _add_action(parent: VBoxContainer, title: String, action: Callable) -> Button:
+	var button := Button.new()
+	button.text = title
+	button.custom_minimum_size = Vector2(380, 48)
+	button.add_theme_font_size_override("font_size", 24)
+	button.pressed.connect(action)
+	button.mouse_entered.connect(button.grab_focus)
+	button.focus_entered.connect(_on_focus.bind(button))
+	parent.add_child(button)
+	_buttons.append(button)
+	return button
+
+
+func _visible_buttons() -> Array[Button]:
+	var result: Array[Button] = []
+	for button in (_mode_buttons if _modes_open else _home_buttons):
+		if button.visible and not button.disabled: result.append(button)
+	return result
+
+
+func _link_focus(buttons: Array[Button]) -> void:
+	for i in buttons.size():
+		var button := buttons[i]
+		button.focus_neighbor_top = buttons[(i - 1 + buttons.size()) % buttons.size()].get_path()
+		button.focus_neighbor_bottom = buttons[(i + 1) % buttons.size()].get_path()
+		button.focus_previous = button.focus_neighbor_top
+		button.focus_next = button.focus_neighbor_bottom
+
+
+func _has_saved_run(path: String) -> bool:
+	# Существующее, в том числе повреждённое, сохранение открывает прежний путь
+	# продолжения: его проверка и объяснение ошибки остаются в Main.
+	return FileAccess.file_exists(path)
+
+
+func _show_modes() -> void:
+	if _leaving: return
+	_modes_open = true
+	_home_actions.hide()
+	_brand.hide()
+	_mode_title.show()
+	_campaign_continue.visible = _has_saved_run(Campaign.SAVE_PATH)
+	_tournament_continue.visible = _has_saved_run(Tournament.SAVE_PATH)
+	_mode_actions.show()
+	_link_focus(_visible_buttons())
+	_fit_column()
+	_mode_buttons[0].grab_focus()
+
+
+func _show_home() -> void:
+	if _leaving: return
+	_modes_open = false
+	_mode_actions.hide()
+	_mode_title.hide()
+	_brand.show()
+	_home_actions.show()
+	_fit_column()
+	_home_buttons[0].grab_focus()
 
 
 ## Появление: из чёрного, логотип и кнопки по очереди.
@@ -221,14 +303,14 @@ func _appear() -> void:
 	tc.tween_property(_column, "modulate:a", 1.0, 0.9).set_delay(0.35)
 	tc.tween_property(_column, "offset_left", x0, 1.0).set_delay(0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tc.tween_property(_column, "offset_right", x0 + 520, 1.0).set_delay(0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	for i in range(_buttons.size()):
-		var b := _buttons[i]
+	for i in range(_home_buttons.size()):
+		var b := _home_buttons[i]
 		b.modulate.a = 0.0
 		tc.tween_property(b, "modulate:a", 1.0, 0.45).set_delay(0.7 + 0.1 * i)
 	tc.chain().tween_callback(func() -> void:
-		if get_viewport().gui_get_focus_owner() == null:
+		if not _leaving and get_viewport().gui_get_focus_owner() == null:
 			_mouse_hover = true   # первый фокус — без звука
-			_buttons[0].grab_focus())
+			_visible_buttons()[0].grab_focus())
 
 
 func _on_focus(b: Button) -> void:
@@ -238,6 +320,17 @@ func _on_focus(b: Button) -> void:
 
 
 # ---------------------------------------------------------------- кнопки
+
+func _focus_button(title: String) -> void:
+	for button in _buttons:
+		if button.text == title:
+			button.grab_focus()
+			return
+
+
+func _on_career() -> void:
+	_enter_game("career")
+
 
 func _on_play() -> void:
 	_enter_game("")
@@ -275,7 +368,7 @@ func _on_help() -> void:
 		break
 	_help.tree_exited.connect(func() -> void:
 		if is_inside_tree() and not _leaving:
-			_buttons[7].grab_focus())
+			_focus_button("Как играть"))
 
 
 func _on_settings() -> void:
@@ -296,7 +389,7 @@ func _on_character() -> void:
 	_column.hide()
 	_character_editor.closed.connect(func() -> void:
 		_column.show()
-		_buttons[6].grab_focus())
+		_focus_button("Мой персонаж"))
 
 
 func _on_new_campaign() -> void:
@@ -309,11 +402,14 @@ func _on_continue_campaign() -> void:
 func _fit_column() -> void:
 	if not is_instance_valid(_column): return
 	var viewport := get_viewport().get_visible_rect().size
-	var natural_height := maxf(620.0,_column.get_combined_minimum_size().y)
-	var factor := minf(1.0,(viewport.y-112.0)/natural_height)
-	_column.scale = Vector2.ONE * factor
-	_column.offset_top = -natural_height*factor*.5-12.0
-	_column.offset_bottom = _column.offset_top+natural_height
+	# Два коротких уровня помещаются в штатный logical1280×720 без уменьшения
+	# текста. Размер окна меняет stretch, а не кегль/масштаб всей колонки.
+	var natural_height := _column.get_combined_minimum_size().y
+	_column.scale = Vector2.ONE
+	_column.offset_top = -natural_height * .5 - 12.0
+	_column.offset_bottom = _column.offset_top + natural_height
+	_column.offset_left = clampf(viewport.x * .0625, 32.0, 80.0)
+	_column.offset_right = _column.offset_left + 520.0
 
 
 func _on_online() -> void:

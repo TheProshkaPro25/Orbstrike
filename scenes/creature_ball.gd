@@ -251,6 +251,16 @@ func setup(d: CreatureDef, u: int) -> void:
 	_foot_ring.scale = Vector3(rr, 1.0, rr)
 
 
+## Меняет только подпись и данные экземпляра уже подготовленного вида.
+## Никаких setup/build/reparent: скелет, cloth и GPU-ресурсы сохраняются.
+func set_presentation_definition(definition: CreatureDef) -> void:
+	if definition == null or def == null or definition.id != def.id:
+		return
+	def = definition
+	_label.text = "%s\n%s %d" % [def.display_name, VisualUtil.attr_name(def.attribute), def.base_power]
+	_sync_icon()
+
+
 ## Значок стихии слева от текста подписи, с тем же сдвигом подписи на экране (set_label_shift).
 func _sync_icon() -> void:
 	if _icon == null or _icon.texture == null:
@@ -300,8 +310,9 @@ static func _set_rim(n: Node, rim: Material) -> void:
 					continue
 				m = src.duplicate()
 				mi.set_surface_override_material(i, m)
-			if m.next_pass != rim:
-				m.next_pass = rim
+			var surface_rim := CreatureCloth.rim_for_surface(m, rim)
+			if m.next_pass != surface_rim:
+				m.next_pass = surface_rim
 	for c in n.get_children():
 		_set_rim(c, rim)
 

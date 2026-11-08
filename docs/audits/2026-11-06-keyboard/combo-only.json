@@ -1,0 +1,84 @@
+{
+	"checks": 54,
+	"combo": {
+		"actions": [
+			[
+				"start",
+				[
+					0
+				]
+			],
+			[
+				"throw_with_gate",
+				[
+					0,
+					"arena_field_fire",
+					0,
+					0
+				]
+			],
+			[
+				"report_landing",
+				[
+					0,
+					0
+				]
+			]
+		],
+		"landings": [
+			{
+				"slot": 0,
+				"uid": 0
+			}
+		]
+	},
+	"failures": 0,
+	"physics_acceptance": false,
+	"prethrow": {
+		"actions": [
+			[
+				"start",
+				[
+					0
+				]
+			],
+			[
+				"place_arena_card",
+				[
+					0,
+					"arena_field_fire",
+					0
+				]
+			],
+			[
+				"select_creature",
+				[
+					0,
+					0
+				]
+			],
+			[
+				"play_ability",
+				[
+					0,
+					"ability_fire_assault",
+					{}
+				]
+			],
+			[
+				"report_landing",
+				[
+					0,
+					0
+				]
+			]
+		],
+		"landings": [
+			{
+				"slot": 0,
+				"uid": 0
+			}
+		]
+	},
+	"visual_acceptance": false
+}

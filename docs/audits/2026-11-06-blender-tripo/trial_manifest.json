@@ -1,0 +1,98 @@
+{
+  "date": "2026-11-06",
+  "user_request": "Кстати вторым вариантом попробуй blender + tripo для тестовой модели и сравни старое и новое для меня",
+  "reference": {
+    "path": "tools/ai_models/concepts/levian_gale.png",
+    "sha256": "07e733a91d9d255f15225eaf67ee2e5fa6ff241c142606971b037c5468ff8d13",
+    "bytes": 1156867
+  },
+  "old_model": {
+    "path": "assets/creatures_hd/levian_gale.glb",
+    "sha256": "fe5c04377285353b7a95bdb723612464824aaaed05f9b499acb732e858db2ddc",
+    "immutable_trial_snapshot": "build/blender-tripo-2026-11-06/source/levian_gale.glb"
+  },
+  "requested_provider": "tripo",
+  "provider_type": "cloud Tripo via MCP for Blender Premium; not local TripoSR",
+  "requested_parameters": {
+    "provider": "tripo",
+    "image": "/home/loq/Документы/game/sfery_stikhiy/tools/ai_models/concepts/levian_gale.png",
+    "name": "Orbstrike_Tripo_LevianGale_Trial_20261106",
+    "quality": "not explicitly set; addon uses high for Tripo image input",
+    "seed": "not exposed by MCP generate_3d"
+  },
+  "status": "blocked: Blender MCP unresponsive/Premium unconfigured; Studio browser surface unavailable",
+  "environment_key_presence": {
+    "TRIPO_API_KEY": false,
+    "TRIPO_API_TOKEN": false,
+    "BLENDERMCP_PREMIUM_LICENSE_KEY": false,
+    "BLENDERMCP_PREMIUM_INSTANCE_ID": false,
+    "COMFY_API_KEY": false
+  },
+  "plugin_search": {
+    "query": "Tripo Blender",
+    "plugins": []
+  },
+  "production_modified": false,
+  "new_glb_created": false,
+  "local_blender_preferences": {
+    "addon_loaded": true,
+    "generation_source": "BYOK",
+    "premium_key_present": false,
+    "premium_instance_present": false,
+    "tripo_enabled_in_startup_scene": false
+  },
+  "baseline_complete": true,
+  "baseline_scene": "comparison_scene.blend",
+  "render_manifest": "render_manifest.json",
+  "live_blender_mcp": {
+    "get_addon_status": "no response after 363.9 seconds; read-only call interrupted",
+    "get_scene_info_called": false,
+    "generate_3d_called": false
+  },
+  "official_studio_url": "https://studio.tripo3d.ai/",
+  "official_documentation_url": "https://www.tripo3d.ai/product-doc",
+  "studio_browser_check": {
+    "apps": [],
+    "browsers": [],
+    "open_error": "Browser is not available: iab",
+    "login_verified": false,
+    "balance_verified": false
+  },
+  "checks": {
+    "script_ast": "PASS",
+    "four_pngs_640x640": "PASS",
+    "production_source_unchanged": true,
+    "reference_unchanged": true,
+    "blend_reopen": "PASS: model mesh, 19 bones, camera, three packed 2048x2048 textures",
+    "source_snapshot_sha256": "fe5c04377285353b7a95bdb723612464824aaaed05f9b499acb732e858db2ddc"
+  },
+  "artifacts": {
+    "old_front.png": {
+      "bytes": 796785
+    },
+    "old_three_quarter.png": {
+      "bytes": 791256
+    },
+    "old_side.png": {
+      "bytes": 790048
+    },
+    "old_back.png": {
+      "bytes": 772182
+    },
+    "render_manifest.json": {
+      "bytes": 1647
+    },
+    "reference.png": {
+      "bytes": 1156867
+    },
+    "trial_manifest.json": {
+      "bytes": 2437
+    },
+    "comparison_scene.blend": {
+      "bytes": 21152143
+    },
+    "baseline_reference_four_views.png": {
+      "bytes": 1490262
+    }
+  }
+}

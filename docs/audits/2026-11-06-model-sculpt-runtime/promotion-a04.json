@@ -1,0 +1,17 @@
+{
+  "status": "Source GLB and ordinary imported CreatureBall resource verified",
+  "gpu_cloth_review": false,
+  "release_or_server": false,
+  "models": [
+    {
+      "issue": "a04",
+      "id": "ratnik_light",
+      "source": "build/model_candidates/2026-11-06-sculpt/source/ratnik_light.glb",
+      "candidate": "build/model_candidates/2026-11-06-sculpt/candidate/ratnik_light.glb",
+      "production": "assets/creatures_hd/ratnik_light.glb",
+      "source_sha256": "454e8442b83fe7fd618d0bc0338dfc8b51b1daabaa49b4a5237dcb669598f727",
+      "installed_sha256": "b209b4bad3ec5e2a4b02104993b7de1adbbdd1b59dba565c7f1e14270fe13df8"
+    }
+  ],
+  "runtime_report": "installed-a04.json"
+}

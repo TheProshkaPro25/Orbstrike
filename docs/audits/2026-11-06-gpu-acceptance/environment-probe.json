@@ -1,0 +1,31 @@
+{
+  "result": "BLOCKED_BEFORE_SCENE",
+  "hardware_gpu_accepted": false,
+  "display": ":0",
+  "wayland": "wayland-1",
+  "device_paths_absent": [
+    "/dev/dri",
+    "/dev/nvidia0",
+    "/dev/nvidiactl",
+    "/dev/nvidia-uvm"
+  ],
+  "x11_socket_probes": {
+    "/tmp/.X11-unix/X0": "EPERM errno1",
+    "/tmp/.X11-unix/X1": "EPERM errno1"
+  },
+  "nvidia_smi_exit": 9,
+  "godot_cli": "4.7.2.stable.arch_linux.ed1daf0bf",
+  "blender_cli": "5.2.3 LTS",
+  "godot_connector": {
+    "version_call": "mcp__godot__get_godot_version({})",
+    "result": "No response; interrupted after326.4s; not retried",
+    "run_project_arguments": [
+      "projectPath",
+      "scene (optional)"
+    ],
+    "supports_cli_flags": false,
+    "project_started": false
+  },
+  "blender_connector": "Not retried after prior documented363s timeout",
+  "notes": "No alternate socket/network APIs, host shell, visible game, headless/software substitute, server or publication."
+}

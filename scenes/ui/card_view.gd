@@ -32,15 +32,18 @@ var _dimmed := false
 var _card_size := Vector2(150, 210)
 var _lay: Dictionary = {}
 var _glow := Color.WHITE
+var _focus_disclosure: CanvasLayer
 
 
 func _init() -> void:
-	focus_mode = Control.FOCUS_NONE
+	focus_mode = Control.FOCUS_ALL
 	for st in ["normal", "hover", "pressed", "hover_pressed", "disabled", "focus"]:
 		add_theme_stylebox_override(st, StyleBoxEmpty.new())
 	_build()
 	mouse_entered.connect(_on_hover.bind(true))
 	mouse_exited.connect(_on_hover.bind(false))
+	focus_entered.connect(_focus_changed.bind(true))
+	focus_exited.connect(_focus_changed.bind(false))
 	toggled.connect(func(_on: bool) -> void: _sync_selected())
 
 
@@ -619,9 +622,29 @@ func _sync_selected() -> void:
 func _on_hover(on: bool) -> void:
 	if _dimmed:
 		return
-	_set_hover(1.0 if on else 0.0)
+	var active := on or has_focus()
+	_set_hover(1.0 if active else 0.0)
 	if not button_pressed:
-		_lift(-8.0 if on else 0.0)
+		_lift(-8.0 if active else 0.0)
+
+
+func _focus_changed(on: bool) -> void:
+	queue_redraw()
+	_on_hover(on or is_hovered())
+	if is_instance_valid(_focus_disclosure): _focus_disclosure.queue_free()
+	_focus_disclosure = null
+	if on: _show_focus_disclosure.call_deferred()
+
+
+func _show_focus_disclosure() -> void:
+	# Меню команды уже держит постоянный крупный предпросмотр справа.
+	if has_focus() and not tooltip_text.is_empty() and not _help.is_empty():
+		_focus_disclosure = preload("res://scenes/ui/card_hover.gd").open_on(self, _help)
+
+
+func _draw() -> void:
+	if has_focus():
+		draw_rect(Rect2(Vector2(-5, -5), size + Vector2(10, 10)), Color(1.0, .95, .65), false, 3.0)
 
 
 ## Плавное наведение (свет кромки и перелив разгораются за ~0.15 с).

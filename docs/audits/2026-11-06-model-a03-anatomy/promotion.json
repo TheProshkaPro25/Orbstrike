@@ -1,0 +1,28 @@
+{
+  "status": "INSTALLED_ORDINARY_PROOF_15448_0",
+  "installed_sha256": "69b159a0e8763ef85c1e78b951255deb5e75d3939643af71c1abb8357d7e9a5c",
+  "previous_sha256": "ca2580a32b502635b15193141c6b71b388ebdde75c04ac10e1646c733c8b4e0f",
+  "source_backup": "build/model_candidates/2026-11-06-a03-anatomy/source/kolossar_shadow.glb",
+  "candidate": "build/model_candidates/2026-11-06-a03-anatomy/rounded_smoke22.glb",
+  "production": "assets/creatures_hd/kolossar_shadow.glb",
+  "scope": "Accepted practical shoulder shape, exact retained body/rig and moving source/candidate CPU proof; no full posed-BVH or GPU PASS",
+  "pre_promotion_test": {
+    "assertions": 11499,
+    "failures": 2,
+    "known_failed_criterion": "old ordinary SCN optimized animation compared with direct GLTF; preserved explicitly",
+    "source_candidate_palette_delta": 0,
+    "source_candidate_world_delta": 0,
+    "actual_pose_motion_delta": 1.07040774822235
+  },
+  "critical_pose_image": "actual-critical-game.png",
+  "gates": {
+    "integrity.json": "a48d5533d6a2c0ce4917d42fd2cc231ea1b38686fcd9810463fcd2591bc5d886",
+    "independent-art-review.json": "0bfba7f41c995173ca02d9f1d084b1c7b881765dbd51db26f07d7139ea23239e",
+    "reproduction.json": "1fdc0a05b57110f814291c75fb4870df39fefb160363f2581de4c4db3748d1c9",
+    "actual-import.json": "b354a94e7d19a40e640f130f46308fb11fdda10fc686e755865eabb6bde0daa7"
+  },
+  "gpu_accepted": false,
+  "server_build_release": false,
+  "ordinary_proof": "installed.json",
+  "ordinary_scn_sha256": "a826d34443f075b8c5804323c5a9de13d5fba9c03d478e45fd9653dbe9af0e56"
+}

@@ -46,10 +46,13 @@ var _mode := Mode.IDLE
 var _info: Dictionary = {}
 var _hovered: CardView = null
 var _built := false
+var _pending_focus_id: StringName = &""
+var _pending_focus_index := -1
 
 
 func _ready() -> void:
 	_build()
+	UiTheme.apply_device_frame(self, "СПОСОБНОСТИ", false)
 
 
 ## Размер карт зависит от высоты окна: в 1080p крупнее, в 768p компактнее.
@@ -136,6 +139,7 @@ func _build() -> void:
 	_previous.text = "‹"
 	_previous.custom_minimum_size = Vector2(40, 36)
 	_previous.pressed.connect(_change_page.bind(-1))
+	_previous.gui_input.connect(_page_input)
 	_pager.add_child(_previous)
 	_page_label = VisualUtil.label("", 13)
 	_page_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -144,8 +148,9 @@ func _build() -> void:
 	_next.text = "›"
 	_next.custom_minimum_size = Vector2(40, 36)
 	_next.pressed.connect(_change_page.bind(1))
+	_next.gui_input.connect(_page_input)
 	_pager.add_child(_next)
-	_pager.tooltip_text = "Страницы руки: кнопки, ← / → или колёсико над картой. Наведение — полный текст."
+	_pager.tooltip_text = "Страницы способностей: кнопки, ← / → при фокусе в этой руке или колёсико над картой. Tab — сменить руку. Фокус / наведение — полный текст."
 	_pager.visible = false
 	get_viewport().size_changed.connect(_on_resized)
 
@@ -207,7 +212,15 @@ func show_options(entries: Array, header: String = "Окно способнос�
 	_panel.visible = true
 	_place_panel()
 	_fan.visible = true
-	_rebuild()
+	# Отмена выбора цели не тратит карту в контроллере: show_options получает
+	# её снова. Старый CardView уже анимирован/удалён, поэтому возвращаемся по ID.
+	var restore_id := _pending_focus_id if _legal.has(_pending_focus_id) else &""
+	if restore_id != &"" and _pending_focus_index >= 0:
+		_hand.erase(restore_id)
+		_hand.insert(mini(_pending_focus_index, _hand.size()), restore_id)
+	_pending_focus_id = &""
+	_pending_focus_index = -1
+	_rebuild(restore_id)
 
 
 ## Счётчик карт: сыгранные закрашены, оставшиеся — пустые кружки (лимит 3 на бой).
@@ -240,6 +253,9 @@ func hide_panel() -> void:
 ## Показать или скрыть руку целиком (меню, конец игры).
 func set_dock_visible(on: bool) -> void:
 	_build()
+	if not on:
+		_pending_focus_id = &""
+		_pending_focus_index = -1
 	_fan.visible = on
 	_pager.visible = on and not _hand.is_empty()
 
@@ -252,12 +268,22 @@ func show_played(card_id: StringName, by_opponent: bool) -> void:
 	_build()
 	var cv := CardView.new().for_card(def, _card)
 	cv.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cv.focus_mode = Control.FOCUS_NONE
 	add_child(cv)
 	var vp := get_viewport_rect().size
 	cv.pivot_offset = _card * 0.5
 	cv.position = Vector2(vp.x * 0.5 - _card.x * 0.5, -_card.y)
 	cv.scale = Vector2(0.8, 0.8)
+	if DeviceSettings.is_device() and DeviceSettings.reduce_motion():
+		cv.position = Vector2(vp.x*.5-_card.x*.5,vp.y*.32)
+		cv.scale = Vector2.ONE
+		var hold := cv.create_tween().set_ignore_time_scale(true)
+		hold.tween_interval(.9)
+		hold.tween_callback(cv.queue_free)
+		return
 	var tw := cv.create_tween()
+	if DeviceSettings.is_device() and not DeviceSettings.reduce_motion():
+		preload("res://scenes/ui/device_motion.gd").play_on(cv,"activation",UiTheme.DEVICE_ACCENT,.12)
 	tw.tween_property(cv, "position:y", vp.y * 0.32, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tw.parallel().tween_property(cv, "scale", Vector2(1.25, 1.25), 0.35)
 	tw.tween_interval(0.9)
@@ -265,7 +291,8 @@ func show_played(card_id: StringName, by_opponent: bool) -> void:
 	tw.tween_callback(cv.queue_free)
 
 
-func _rebuild() -> void:
+func _rebuild(focus_id: StringName = &"") -> void:
+	var restore_focus := _owns_focus()
 	for tw in _layout_tweens.values():
 		if tw.is_valid():
 			tw.kill()
@@ -283,11 +310,15 @@ func _rebuild() -> void:
 		if not ordered.has(cid):
 			ordered.append(cid)
 	var pages := maxi(1, ceili(float(ordered.size()) / _capacity))
+	if focus_id != &"" and ordered.has(focus_id):
+		_page = int(ordered.find(focus_id) / _capacity)
 	_page = clampi(_page, 0, pages - 1)
 	_pager.visible = _fan.visible and not _hand.is_empty()
 	_page_label.text = "  %d карт · %d/%d  " % [_hand.size(), _page + 1, pages]
 	_previous.disabled = _page == 0
 	_next.disabled = _page >= pages - 1
+	_previous.focus_mode = Control.FOCUS_NONE if _previous.disabled else Control.FOCUS_ALL
+	_next.focus_mode = Control.FOCUS_NONE if _next.disabled else Control.FOCUS_ALL
 	for cid in ordered.slice(_page * _capacity, (_page + 1) * _capacity):
 		var def: CardDef = CardDB.card(cid)
 		if def == null:
@@ -296,12 +327,10 @@ func _rebuild() -> void:
 		cv.pivot_offset = Vector2(_card.x * 0.5, _card.y)
 		cv.mouse_entered.connect(_on_hover.bind(cv, true))
 		cv.mouse_exited.connect(_on_hover.bind(cv, false))
+		cv.focus_entered.connect(_on_hover.bind(cv, true))
+		cv.focus_exited.connect(func() -> void: _on_hover(cv, cv.is_hovered()))
 		cv.pressed.connect(_on_card_pressed.bind(cv))
-		cv.gui_input.connect(func(event: InputEvent) -> void:
-			if event is InputEventMouseButton and event.pressed:
-				if event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
-					_change_page(-1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1)
-					get_viewport().set_input_as_handled())
+		cv.gui_input.connect(_page_input)
 		var reason := str(reason_for_card.call(cid)) if reason_for_card.is_valid() else "Сейчас эта карта недоступна"
 		cv._help[6] = reason if not _legal.has(cid) else _playable_help(cid)
 		cv.set_meta("silent_select", not _legal.has(cid) or _mode == Mode.IDLE)
@@ -314,6 +343,11 @@ func _rebuild() -> void:
 		if _mode != Mode.IDLE and _legal.has(cid):
 			cv.set_playable(true)
 	_layout(false)
+	if focus_id != &"":
+		for cv in _cards:
+			if cv.card_id == focus_id: VisualUtil.focus_if_present.call_deferred(cv)
+	elif restore_focus and not _cards.is_empty():
+		VisualUtil.focus_if_present.call_deferred(_cards[0])
 
 
 ## Раскладка веером. Опущенная рука показывает только верх карт; в окне играбельные карты приподняты выше.
@@ -356,7 +390,7 @@ func _on_hover(cv: CardView, on: bool) -> void:
 			cv._help[6] = str(reason_for_card.call(cv.card_id)) if _mode == Mode.IDLE or not _legal.has(cv.card_id) else _playable_help(cv.card_id)
 		_hovered = cv
 	elif _hovered == cv:
-		_hovered = null
+		_hovered = cv if cv.has_focus() else null
 	var warning := _warning(cv.card_id) if on and _mode != Mode.IDLE and _legal.has(cv.card_id) else ""
 	_title.text = _warning_title(cv.card_id) if warning != "" else str(_info.get("header", ""))
 	_title.tooltip_text = warning
@@ -385,6 +419,8 @@ func _on_card_pressed(cv: CardView) -> void:
 	if _mode == Mode.IDLE or not _legal.has(cid):
 		unavailable.emit(str(reason_for_card.call(cid)) if reason_for_card.is_valid() else "Сейчас эта карта недоступна")
 		return
+	_pending_focus_id = cid if cv.has_focus() else &""
+	_pending_focus_index = _hand.find(cid) if cv.has_focus() else -1
 	_mode = Mode.IDLE
 	_panel.visible = false
 	# сыгранная карта вылетает к центру экрана и гаснет, остальные опускаются
@@ -402,6 +438,7 @@ func _on_card_pressed(cv: CardView) -> void:
 	cv.z_index = 20
 	cv.set_playable(false)
 	cv.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cv.focus_mode = Control.FOCUS_NONE
 	var vp := get_viewport_rect().size
 	var tw := cv.create_tween()
 	tw.tween_property(cv, "position", Vector2(vp.x * 0.5 - _card.x * 0.5, vp.y * 0.28), 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
@@ -430,8 +467,23 @@ func _change_page(delta: int) -> void:
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if not _fan.visible or not event is InputEventKey or not event.pressed or event.echo:
-		return
-	if event.keycode in [KEY_LEFT, KEY_RIGHT]:
-		_change_page(-1 if event.keycode == KEY_LEFT else 1)
+	if _owns_focus(): _page_input(event)
+
+
+func _owns_focus() -> bool:
+	var owner := get_viewport().gui_get_focus_owner()
+	return owner != null and (_fan.is_ancestor_of(owner) or _pager.is_ancestor_of(owner) or _panel.is_ancestor_of(owner))
+
+
+func _page_input(event: InputEvent) -> void:
+	if not is_visible_in_tree() or not _fan.visible: return
+	var delta := 0
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP: delta = -1
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN: delta = 1
+	elif event is InputEventKey and event.pressed and not event.echo and _owns_focus():
+		if event.keycode == KEY_LEFT: delta = -1
+		elif event.keycode == KEY_RIGHT: delta = 1
+	if delta != 0:
+		_change_page(delta)
 		get_viewport().set_input_as_handled()

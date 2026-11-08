@@ -5,34 +5,54 @@ extends RefCounted
 
 const SECTION := "audio"
 
+static var settings_path := GraphicsSettings.PATH
 static var sfx := -1.0
 static var music := -1.0
+static var interface_volume := -1.0
+static var interface_muted := false
 
 
 static func load_and_apply() -> void:
 	var cfg := ConfigFile.new()
-	cfg.load(GraphicsSettings.PATH)
+	cfg.load(settings_path)
 	sfx = clampf(float(cfg.get_value(SECTION, "sfx", 1.0)), 0.0, 1.0)
 	music = clampf(float(cfg.get_value(SECTION, "music", 1.0)), 0.0, 1.0)
+	interface_volume = clampf(float(cfg.get_value(SECTION, "interface", sfx)), 0.0, 1.0)
+	interface_muted = bool(cfg.get_value(SECTION, "interface_muted", false))
 	apply()
 
 
 static func apply() -> void:
 	_set_bus("SFX", SoundFx.SFX_DB, sfx)
 	_set_bus("Music", SoundFx.MUSIC_DB, music)
+	_set_bus("Interface", SoundFx.SFX_DB, 0.0 if interface_muted else interface_volume)
 
 
 static func set_volume(bus_name: String, v: float) -> void:
 	if bus_name == "SFX":
 		sfx = clampf(v, 0.0, 1.0)
+	elif bus_name == "Interface":
+		interface_volume = clampf(v, 0.0, 1.0)
 	else:
 		music = clampf(v, 0.0, 1.0)
 	apply()
+	_save()
+
+
+static func set_interface_muted(muted: bool) -> void:
+	interface_muted = muted
+	apply()
+	_save()
+
+
+static func _save() -> void:
 	var cfg := ConfigFile.new()
-	cfg.load(GraphicsSettings.PATH)  # сохранить раздел [graphics]
+	cfg.load(settings_path)  # сохранить другие разделы
 	cfg.set_value(SECTION, "sfx", sfx)
 	cfg.set_value(SECTION, "music", music)
-	cfg.save(GraphicsSettings.PATH)
+	cfg.set_value(SECTION, "interface", interface_volume)
+	cfg.set_value(SECTION, "interface_muted", interface_muted)
+	cfg.save(settings_path)
 
 
 static func _set_bus(bus_name: String, base_db: float, v: float) -> void:
@@ -41,5 +61,5 @@ static func _set_bus(bus_name: String, base_db: float, v: float) -> void:
 		return
 	AudioServer.set_bus_volume_db(i, base_db + linear_to_db(maxf(v, 0.0001)))
 	# музыку SoundFx может глушить клавишей M — тогда её mute не трогаем
-	if bus_name == "SFX" or not SoundFx.i().music_muted:
+	if bus_name != "Music" or not SoundFx.i().music_muted:
 		AudioServer.set_bus_mute(i, v <= 0.001)

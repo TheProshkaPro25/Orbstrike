@@ -1,0 +1,12 @@
+{
+  "production_sha256": "d51ab2dc59b810d39e2b7346fab0101256f44f421fdaa8ed4a538eb97cbf5a70",
+  "production_md5": "2f3f4f9131ab3ff4ad577f56742b69e4",
+  "scn_path": ".godot/imported/ratnik_light.glb-559ce27f86912ebc93217943c08965f3.scn",
+  "scn_sha256": "24573d2225da65c99690f8bd90ad0fb49c70651ba07986251d80d640af5d3b0a",
+  "import_md5_metadata": "source_md5=\"2f3f4f9131ab3ff4ad577f56742b69e4\"\ndest_md5=\"9f3c72752aecd74870e10eb6a7d6ce33\"\n\n",
+  "editor_engine_log": "build/checks/models/selected-import/import-engine.log",
+  "editor_formal_check": "FAIL: sandboxTCP listen ERR_CANT_CREATE",
+  "actual_asset_reimport": "ratnik_light.glb scene Importing/Saving/DONE in engine log",
+  "ordinary_runtime_report": "docs/audits/2026-11-06-model-a04-reopen-runtime/installed.json",
+  "ordinary_runtime_result": "PASS:27745/0, exit0, no ERROR/leaks"
+}

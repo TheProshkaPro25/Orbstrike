@@ -1,0 +1,10 @@
+[
+  {
+    "name": "review-state",
+    "profile": "models",
+    "ok": false,
+    "exit_code": 1,
+    "seconds": 0.08,
+    "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/models/selected-review-state/review-state.log"
+  }
+]

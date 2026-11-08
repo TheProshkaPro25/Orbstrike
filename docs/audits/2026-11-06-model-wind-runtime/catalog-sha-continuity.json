@@ -1,0 +1,303 @@
+{
+  "unchanged": 47,
+  "changed": [
+    "klykar_gale",
+    "levian_gale"
+  ],
+  "models": [
+    {
+      "id": "dragnar_fire",
+      "original_sha256": "2d759d92cc19566c5228e0ba913a7663fff934131b63f9295c4a84d92f47c6aa",
+      "current_sha256": "2d759d92cc19566c5228e0ba913a7663fff934131b63f9295c4a84d92f47c6aa",
+      "changed": false
+    },
+    {
+      "id": "dragnar_gale",
+      "original_sha256": "d02f3a67084a9e3464716897c2ef5b24f5a53c7ce596c10bf007049d2c97b830",
+      "current_sha256": "d02f3a67084a9e3464716897c2ef5b24f5a53c7ce596c10bf007049d2c97b830",
+      "changed": false
+    },
+    {
+      "id": "dragnar_light",
+      "original_sha256": "8a82bcf7f89287daefd65baa25e96a5b1e1c4503b73ea3fa8817c83fcdd81f96",
+      "current_sha256": "8a82bcf7f89287daefd65baa25e96a5b1e1c4503b73ea3fa8817c83fcdd81f96",
+      "changed": false
+    },
+    {
+      "id": "dragnar_shadow",
+      "original_sha256": "ec28cf12618f5a739fc7b9604d384cf560d23b5590f64491a1ec320de39b8470",
+      "current_sha256": "ec28cf12618f5a739fc7b9604d384cf560d23b5590f64491a1ec320de39b8470",
+      "changed": false
+    },
+    {
+      "id": "dragnar_stone",
+      "original_sha256": "1db9f2a935fc8731ad7bd274364c749e1622a965deacdfaf9c3e4285f5b2a72d",
+      "current_sha256": "1db9f2a935fc8731ad7bd274364c749e1622a965deacdfaf9c3e4285f5b2a72d",
+      "changed": false
+    },
+    {
+      "id": "dragnar_tide",
+      "original_sha256": "fc95ce7731cf5331c84bfee312f69d7e3e6019c33e04ba011b878fa8adea8b6b",
+      "current_sha256": "fc95ce7731cf5331c84bfee312f69d7e3e6019c33e04ba011b878fa8adea8b6b",
+      "changed": false
+    },
+    {
+      "id": "gorgul_fire",
+      "original_sha256": "128eb7948519337b63fb3349447194910d0cc82e44d2efe22fc0ca0d20a7f3b6",
+      "current_sha256": "128eb7948519337b63fb3349447194910d0cc82e44d2efe22fc0ca0d20a7f3b6",
+      "changed": false
+    },
+    {
+      "id": "gorgul_gale",
+      "original_sha256": "55d82a572aec50ffffcc3912b2fc448dec5db1176c819dd4e7b189d2611bd073",
+      "current_sha256": "55d82a572aec50ffffcc3912b2fc448dec5db1176c819dd4e7b189d2611bd073",
+      "changed": false
+    },
+    {
+      "id": "gorgul_light",
+      "original_sha256": "799f7c1f34ee27382315e42ef71a7625c2491648e45a02d6be611cb712b86e5c",
+      "current_sha256": "799f7c1f34ee27382315e42ef71a7625c2491648e45a02d6be611cb712b86e5c",
+      "changed": false
+    },
+    {
+      "id": "gorgul_shadow",
+      "original_sha256": "d31399c990f0148444c0082bf2bcc5d362d43f0a5516e3e70285beeec9b6ed86",
+      "current_sha256": "d31399c990f0148444c0082bf2bcc5d362d43f0a5516e3e70285beeec9b6ed86",
+      "changed": false
+    },
+    {
+      "id": "gorgul_stone",
+      "original_sha256": "e1fd5c9a9c8fd8ff1b01cc670b7a004689f6051484443e7d0518c5fc788d9bca",
+      "current_sha256": "e1fd5c9a9c8fd8ff1b01cc670b7a004689f6051484443e7d0518c5fc788d9bca",
+      "changed": false
+    },
+    {
+      "id": "gorgul_tide",
+      "original_sha256": "10cde043d74620940f53baff371f27631cf50ecff07bb888ef46255baa017d8a",
+      "current_sha256": "10cde043d74620940f53baff371f27631cf50ecff07bb888ef46255baa017d8a",
+      "changed": false
+    },
+    {
+      "id": "grifalon_fire",
+      "original_sha256": "295aaa4752b85e3febeb01dc36570b9845c3f05eea37188cc4c5c453b40f5954",
+      "current_sha256": "295aaa4752b85e3febeb01dc36570b9845c3f05eea37188cc4c5c453b40f5954",
+      "changed": false
+    },
+    {
+      "id": "grifalon_gale",
+      "original_sha256": "0329fff5f70f53e6c14fbfaaf293c93860ff86cf5be79ef0f1e85f1c7d02bd79",
+      "current_sha256": "0329fff5f70f53e6c14fbfaaf293c93860ff86cf5be79ef0f1e85f1c7d02bd79",
+      "changed": false
+    },
+    {
+      "id": "grifalon_light",
+      "original_sha256": "0437c2014c5c0e87801a0acc7b25a4f957acf3a8028dbb699b5e6672d9574481",
+      "current_sha256": "0437c2014c5c0e87801a0acc7b25a4f957acf3a8028dbb699b5e6672d9574481",
+      "changed": false
+    },
+    {
+      "id": "grifalon_shadow",
+      "original_sha256": "15da6c635d6aa002e11049082ece86d2f0124570d0da5a71f41091b07765b0b3",
+      "current_sha256": "15da6c635d6aa002e11049082ece86d2f0124570d0da5a71f41091b07765b0b3",
+      "changed": false
+    },
+    {
+      "id": "grifalon_stone",
+      "original_sha256": "376640d70ecbdc35c0da1f3dec334118f9037b1b10f80364d973992310b3f540",
+      "current_sha256": "376640d70ecbdc35c0da1f3dec334118f9037b1b10f80364d973992310b3f540",
+      "changed": false
+    },
+    {
+      "id": "grifalon_tide",
+      "original_sha256": "9695d09298d8daeddb55c8908e7181b7e3503c7a30c1d3b402bf730c87b22413",
+      "current_sha256": "9695d09298d8daeddb55c8908e7181b7e3503c7a30c1d3b402bf730c87b22413",
+      "changed": false
+    },
+    {
+      "id": "klykar_fire",
+      "original_sha256": "73fcda1b1a9466e5cfc8860de7df4c5beb9f2b2440e4a34bb7a2a17b4622a160",
+      "current_sha256": "73fcda1b1a9466e5cfc8860de7df4c5beb9f2b2440e4a34bb7a2a17b4622a160",
+      "changed": false
+    },
+    {
+      "id": "klykar_gale",
+      "original_sha256": "f16e61d615e7897ed513d3abb73aa941cb335827d7f43c07961fd8e277ab4c28",
+      "current_sha256": "1c2855cee29711dc61eaedd108a0368158ca5d488f03e15796257eaf63dff0cc",
+      "changed": true
+    },
+    {
+      "id": "klykar_light",
+      "original_sha256": "57c8b87a62361796eaf7dc647762950065d8bef84d41d5d824c96f0d554cd4e0",
+      "current_sha256": "57c8b87a62361796eaf7dc647762950065d8bef84d41d5d824c96f0d554cd4e0",
+      "changed": false
+    },
+    {
+      "id": "klykar_shadow",
+      "original_sha256": "30d7873a5bb6e83f906a44be7fa4cf7706dc919a1ecdee7667763d875c87963b",
+      "current_sha256": "30d7873a5bb6e83f906a44be7fa4cf7706dc919a1ecdee7667763d875c87963b",
+      "changed": false
+    },
+    {
+      "id": "klykar_stone",
+      "original_sha256": "bafa3a230c96e8799a061e81c58a058f1a43363d2c114858239fa3c109508027",
+      "current_sha256": "bafa3a230c96e8799a061e81c58a058f1a43363d2c114858239fa3c109508027",
+      "changed": false
+    },
+    {
+      "id": "klykar_tide",
+      "original_sha256": "f5e70149c8408ecbc5a00bb3e11238a2d43e75fea021a8001ce3098dee697b2e",
+      "current_sha256": "f5e70149c8408ecbc5a00bb3e11238a2d43e75fea021a8001ce3098dee697b2e",
+      "changed": false
+    },
+    {
+      "id": "kolossar_fire",
+      "original_sha256": "30cae0eb02ec6073300d1e2ed34aa65a3f8d6e64941612f8fd1555294ba60657",
+      "current_sha256": "30cae0eb02ec6073300d1e2ed34aa65a3f8d6e64941612f8fd1555294ba60657",
+      "changed": false
+    },
+    {
+      "id": "kolossar_gale",
+      "original_sha256": "dbbabf794f6a5acf4d64463d80a253757d51ce24990814759ec6bc587f7f54fd",
+      "current_sha256": "dbbabf794f6a5acf4d64463d80a253757d51ce24990814759ec6bc587f7f54fd",
+      "changed": false
+    },
+    {
+      "id": "kolossar_light",
+      "original_sha256": "e103137b0e52c6ba2a9673dda69e519c0034ac8eccba4b5e32194d1b1c93ef71",
+      "current_sha256": "e103137b0e52c6ba2a9673dda69e519c0034ac8eccba4b5e32194d1b1c93ef71",
+      "changed": false
+    },
+    {
+      "id": "kolossar_shadow",
+      "original_sha256": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+      "current_sha256": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+      "changed": false
+    },
+    {
+      "id": "kolossar_stone",
+      "original_sha256": "efbfa17fa96fbc5cbdf6acb36666f6595c4cfb9b5551f23ffea8f1d9576d5070",
+      "current_sha256": "efbfa17fa96fbc5cbdf6acb36666f6595c4cfb9b5551f23ffea8f1d9576d5070",
+      "changed": false
+    },
+    {
+      "id": "kolossar_tide",
+      "original_sha256": "c212690db15deaf3e63e4aa44f312c657ebb2c2b8441650094ba837d38e1de56",
+      "current_sha256": "c212690db15deaf3e63e4aa44f312c657ebb2c2b8441650094ba837d38e1de56",
+      "changed": false
+    },
+    {
+      "id": "levian_fire",
+      "original_sha256": "ded936ce93435d9651078a26276a025aff627f150454a08a0d830bd5d2280310",
+      "current_sha256": "ded936ce93435d9651078a26276a025aff627f150454a08a0d830bd5d2280310",
+      "changed": false
+    },
+    {
+      "id": "levian_gale",
+      "original_sha256": "fe5c04377285353b7a95bdb723612464824aaaed05f9b499acb732e858db2ddc",
+      "current_sha256": "c4359efccb27e465c6bd2be8bec3badf567dff0f8991e700a2ddfbf4539fbfb9",
+      "changed": true
+    },
+    {
+      "id": "levian_light",
+      "original_sha256": "8e15e3d6bc72489f271d0d16f1c6270158fd7d2b113ec96a358ba3ebaba2669a",
+      "current_sha256": "8e15e3d6bc72489f271d0d16f1c6270158fd7d2b113ec96a358ba3ebaba2669a",
+      "changed": false
+    },
+    {
+      "id": "levian_shadow",
+      "original_sha256": "c8f42fa47c27e6a0d06dfa6fa5d570031601de9e52cb0c7f184979ea78d8a90e",
+      "current_sha256": "c8f42fa47c27e6a0d06dfa6fa5d570031601de9e52cb0c7f184979ea78d8a90e",
+      "changed": false
+    },
+    {
+      "id": "levian_stone",
+      "original_sha256": "070f9616426759b58ebd39b7d64c312fafb7597ef7e333ad6baef8402e188dcf",
+      "current_sha256": "070f9616426759b58ebd39b7d64c312fafb7597ef7e333ad6baef8402e188dcf",
+      "changed": false
+    },
+    {
+      "id": "levian_tide",
+      "original_sha256": "7eade977ce428ce052690b7bbf235740a002a91140b0677e92e5b0d7a2bf63d8",
+      "current_sha256": "7eade977ce428ce052690b7bbf235740a002a91140b0677e92e5b0d7a2bf63d8",
+      "changed": false
+    },
+    {
+      "id": "likorez_shadow",
+      "original_sha256": "5874835226b02bce3dba194313d07ed1631f7b0fabf5b6d65ef38dc1b97d7b09",
+      "current_sha256": "5874835226b02bce3dba194313d07ed1631f7b0fabf5b6d65ef38dc1b97d7b09",
+      "changed": false
+    },
+    {
+      "id": "ratnik_fire",
+      "original_sha256": "7824f01282e239912f40c3eafbf26dfa2ffd0c8b551c325ac75f3725242a81dd",
+      "current_sha256": "7824f01282e239912f40c3eafbf26dfa2ffd0c8b551c325ac75f3725242a81dd",
+      "changed": false
+    },
+    {
+      "id": "ratnik_gale",
+      "original_sha256": "6e40647983c1e9fb8c0c5f79513a6e5e97fe496f2ac5562f34999cf5769a1103",
+      "current_sha256": "6e40647983c1e9fb8c0c5f79513a6e5e97fe496f2ac5562f34999cf5769a1103",
+      "changed": false
+    },
+    {
+      "id": "ratnik_light",
+      "original_sha256": "454e8442b83fe7fd618d0bc0338dfc8b51b1daabaa49b4a5237dcb669598f727",
+      "current_sha256": "454e8442b83fe7fd618d0bc0338dfc8b51b1daabaa49b4a5237dcb669598f727",
+      "changed": false
+    },
+    {
+      "id": "ratnik_shadow",
+      "original_sha256": "5be558ea4208a92f4b1b2684847935fa5b0ad9ebc2cb4b1f35a8329f19f5789b",
+      "current_sha256": "5be558ea4208a92f4b1b2684847935fa5b0ad9ebc2cb4b1f35a8329f19f5789b",
+      "changed": false
+    },
+    {
+      "id": "ratnik_stone",
+      "original_sha256": "0c7909c072cca08b68536d94df80915358b3052e8979eff39614a94cee753db6",
+      "current_sha256": "0c7909c072cca08b68536d94df80915358b3052e8979eff39614a94cee753db6",
+      "changed": false
+    },
+    {
+      "id": "ratnik_tide",
+      "original_sha256": "1092ec4c85963fe869274d5555a881921e46b51327809cbaee385c70f38e37ce",
+      "current_sha256": "1092ec4c85963fe869274d5555a881921e46b51327809cbaee385c70f38e37ce",
+      "changed": false
+    },
+    {
+      "id": "rogozhuk_fire",
+      "original_sha256": "1ff332d623750f53cbefb3c557cbe4ec80fe1341394f033910aca90d5848c61e",
+      "current_sha256": "1ff332d623750f53cbefb3c557cbe4ec80fe1341394f033910aca90d5848c61e",
+      "changed": false
+    },
+    {
+      "id": "rogozhuk_gale",
+      "original_sha256": "025b3c5488c18b8dc978afb5851e76db4b24534736d7d48c4dd0eafe8984aae5",
+      "current_sha256": "025b3c5488c18b8dc978afb5851e76db4b24534736d7d48c4dd0eafe8984aae5",
+      "changed": false
+    },
+    {
+      "id": "rogozhuk_light",
+      "original_sha256": "8dcffa2a2981714c5255403fb7b9ac337b4c709913384b845874cafc006ce21f",
+      "current_sha256": "8dcffa2a2981714c5255403fb7b9ac337b4c709913384b845874cafc006ce21f",
+      "changed": false
+    },
+    {
+      "id": "rogozhuk_shadow",
+      "original_sha256": "51af8c75076d54f083c502156fe8e9a8dba737d819b7fdf86aacf1c7c36bc62f",
+      "current_sha256": "51af8c75076d54f083c502156fe8e9a8dba737d819b7fdf86aacf1c7c36bc62f",
+      "changed": false
+    },
+    {
+      "id": "rogozhuk_stone",
+      "original_sha256": "e5e198539f5d6ed892a9f0b553dc9d46892a66696b5d7b808acfafa2bd6f1a39",
+      "current_sha256": "e5e198539f5d6ed892a9f0b553dc9d46892a66696b5d7b808acfafa2bd6f1a39",
+      "changed": false
+    },
+    {
+      "id": "rogozhuk_tide",
+      "original_sha256": "4ff3f18af1934d271c019e2301f8b914f33d14746da550eb9ddb885094eba2a9",
+      "current_sha256": "4ff3f18af1934d271c019e2301f8b914f33d14746da550eb9ddb885094eba2a9",
+      "changed": false
+    }
+  ]
+}

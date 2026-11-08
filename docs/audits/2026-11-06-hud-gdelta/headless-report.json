@@ -1,0 +1,520 @@
+{
+  "captures": [],
+  "checks": 95,
+  "display": "headless",
+  "failures": 0,
+  "rendered": false,
+  "scope": "UI only; no model or match run",
+  "states": [
+    {
+      "controls": [
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@66",
+          "rect": [
+            14.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@71",
+          "rect": [
+            1110.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@HFlowContainer@20",
+          "rect": [
+            184.0,
+            234.0,
+            912.0,
+            76.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@Label@19",
+          "rect": [
+            540.0,
+            86.0,
+            200.0,
+            80.0
+          ],
+          "visible": true
+        }
+      ],
+      "enemy_power": "510 G",
+      "label": "reducedfalse-settled",
+      "own_power": "420 G"
+    },
+    {
+      "controls": [
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@66",
+          "rect": [
+            14.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@71",
+          "rect": [
+            1110.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@HFlowContainer@20",
+          "rect": [
+            184.0,
+            234.0,
+            912.0,
+            76.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@Label@19",
+          "rect": [
+            540.0,
+            86.0,
+            200.0,
+            80.0
+          ],
+          "visible": true
+        }
+      ],
+      "enemy_power": "499 G",
+      "label": "reducedfalse-delta-frame1",
+      "own_power": "445 G"
+    },
+    {
+      "controls": [
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@66",
+          "rect": [
+            14.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@71",
+          "rect": [
+            1110.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@HFlowContainer@20",
+          "rect": [
+            184.0,
+            234.0,
+            912.0,
+            76.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@Label@19",
+          "rect": [
+            540.0,
+            86.0,
+            200.0,
+            80.0
+          ],
+          "visible": true
+        }
+      ],
+      "enemy_power": "459 G",
+      "label": "reducedfalse-delta-frame8",
+      "own_power": "531 G"
+    },
+    {
+      "controls": [
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@66",
+          "rect": [
+            14.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@71",
+          "rect": [
+            1110.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@HFlowContainer@20",
+          "rect": [
+            184.0,
+            234.0,
+            912.0,
+            76.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@Label@19",
+          "rect": [
+            540.0,
+            86.0,
+            200.0,
+            80.0
+          ],
+          "visible": true
+        }
+      ],
+      "enemy_power": "436 G",
+      "label": "reducedfalse-delta-frame12",
+      "own_power": "581 G"
+    },
+    {
+      "controls": [
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@66",
+          "rect": [
+            14.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@71",
+          "rect": [
+            1110.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@HFlowContainer@20",
+          "rect": [
+            184.0,
+            234.0,
+            912.0,
+            76.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@Label@19",
+          "rect": [
+            540.0,
+            86.0,
+            200.0,
+            80.0
+          ],
+          "visible": true
+        }
+      ],
+      "enemy_power": "390 G",
+      "label": "reducedfalse-delta-frame24",
+      "own_power": "680 G"
+    },
+    {
+      "controls": [
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@66",
+          "rect": [
+            14.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@71",
+          "rect": [
+            1110.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@HFlowContainer@20",
+          "rect": [
+            184.0,
+            234.0,
+            912.0,
+            76.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@Label@19",
+          "rect": [
+            540.0,
+            86.0,
+            200.0,
+            80.0
+          ],
+          "visible": true
+        }
+      ],
+      "enemy_power": "510 G",
+      "label": "reducedtrue-settled",
+      "own_power": "420 G"
+    },
+    {
+      "controls": [
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@66",
+          "rect": [
+            14.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@71",
+          "rect": [
+            1110.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@HFlowContainer@20",
+          "rect": [
+            184.0,
+            234.0,
+            912.0,
+            76.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@Label@19",
+          "rect": [
+            540.0,
+            86.0,
+            200.0,
+            80.0
+          ],
+          "visible": true
+        }
+      ],
+      "enemy_power": "390 G",
+      "label": "reducedtrue-delta-frame1",
+      "own_power": "680 G"
+    },
+    {
+      "controls": [
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@66",
+          "rect": [
+            14.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@71",
+          "rect": [
+            1110.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@HFlowContainer@20",
+          "rect": [
+            184.0,
+            234.0,
+            912.0,
+            76.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@Label@19",
+          "rect": [
+            540.0,
+            86.0,
+            200.0,
+            80.0
+          ],
+          "visible": true
+        }
+      ],
+      "enemy_power": "390 G",
+      "label": "reducedtrue-delta-frame8",
+      "own_power": "680 G"
+    },
+    {
+      "controls": [
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@66",
+          "rect": [
+            14.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@71",
+          "rect": [
+            1110.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@HFlowContainer@20",
+          "rect": [
+            184.0,
+            234.0,
+            912.0,
+            76.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@Label@19",
+          "rect": [
+            540.0,
+            86.0,
+            200.0,
+            80.0
+          ],
+          "visible": true
+        }
+      ],
+      "enemy_power": "390 G",
+      "label": "reducedtrue-delta-frame12",
+      "own_power": "680 G"
+    },
+    {
+      "controls": [
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@66",
+          "rect": [
+            14.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@PanelContainer@71",
+          "rect": [
+            1110.0,
+            110.0,
+            156.0,
+            156.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@HFlowContainer@20",
+          "rect": [
+            184.0,
+            234.0,
+            912.0,
+            76.0
+          ],
+          "visible": true
+        },
+        {
+          "alpha": 1.0,
+          "node": "@Label@19",
+          "rect": [
+            540.0,
+            86.0,
+            200.0,
+            80.0
+          ],
+          "visible": true
+        }
+      ],
+      "enemy_power": "390 G",
+      "label": "reducedtrue-delta-frame24",
+      "own_power": "680 G"
+    }
+  ]
+}

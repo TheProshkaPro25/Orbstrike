@@ -1,0 +1,22 @@
+{
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "status": "PASS visual PNG scope",
+  "candidate_sha256": "d51ab2dc59b810d39e2b7346fab0101256f44f421fdaa8ed4a538eb97cbf5a70",
+  "views": [
+    "front",
+    "quarter",
+    "side",
+    "top",
+    "game"
+  ],
+  "finding": "The pancake/open cup and dark detached wedge are gone. Readable helmet volume and separate tapering horns; no new visible holes or black seams in supplied views.",
+  "nonblocking": [
+    "Lighter upper-horn gold",
+    "Slightly faceted transitions"
+  ],
+  "limits": [
+    "CPU PNG visual scope only",
+    "Not a GPU/runtime or zero-BVH assertion"
+  ]
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "name": "match-keyboard",
+    "profile": "presentation",
+    "ok": true,
+    "exit_code": 0,
+    "seconds": 15.5,
+    "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/selected-match-keyboard/match-keyboard.log"
+  }
+]

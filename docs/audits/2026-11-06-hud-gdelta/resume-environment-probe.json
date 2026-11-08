@@ -1,0 +1,33 @@
+{
+  "observed_at_utc": "2026-11-06T20:10:15.668862+00:00",
+  "display_environment": {
+    "DISPLAY": ":0",
+    "WAYLAND_DISPLAY": "wayland-1",
+    "XDG_RUNTIME_DIR": "/run/user/1000"
+  },
+  "device_nodes": {
+    "/dev/dri": false,
+    "/dev/nvidia0": false,
+    "/dev/nvidiactl": false
+  },
+  "x11_connections": [
+    {
+      "socket": "/tmp/.X11-unix/X0",
+      "exists": true,
+      "connected": false,
+      "errno": 1,
+      "error": "[Errno 1] Operation not permitted"
+    },
+    {
+      "socket": "/tmp/.X11-unix/X1",
+      "exists": true,
+      "connected": false,
+      "errno": 1,
+      "error": "[Errno 1] Operation not permitted"
+    }
+  ],
+  "godot_connector": "run_project accepts only projectPath and optional scene; no check.py/CLI wrapper execution, not launched",
+  "host_terminal_read": "mcp__codex_app__read_thread_terminal failed: Codex app tool request failed",
+  "cause_of_different_user_terminal_access": "UNKNOWN",
+  "sandbox_bypass": false
+}

@@ -1,0 +1,19 @@
+{
+  "formal_check": {
+    "name": "import",
+    "profile": "models",
+    "ok": false,
+    "exit_code": 0,
+    "seconds": 11.33,
+    "log": "/home/loq/\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u044b/game/sfery_stikhiy/build/checks/models/selected-import/import.log"
+  },
+  "source_sha256": "69b159a0e8763ef85c1e78b951255deb5e75d3939643af71c1abb8357d7e9a5c",
+  "source_md5": "125f219d64bbe67fb8b54cfa3620a281",
+  "import_md5": "source_md5=\"125f219d64bbe67fb8b54cfa3620a281\"\ndest_md5=\"97e7dfb9cbad571aa5604e4be62cd4a6\"\n\n",
+  "ordinary_scn": ".godot/imported/kolossar_shadow.glb-008b00160cdca708a263e6591dbdff5e.scn",
+  "ordinary_scn_sha256": "a826d34443f075b8c5804323c5a9de13d5fba9c03d478e45fd9653dbe9af0e56",
+  "ordinary_scn_bytes": 5721792,
+  "actual_source_md5_matches": true,
+  "actual_import_log_mentions_kolossar": true,
+  "limit": "Formal editor check FAIL due sandbox TCP socket creation; sourceMD5/newSCN prove actual import separately; ordinary CreatureBall proof follows"
+}

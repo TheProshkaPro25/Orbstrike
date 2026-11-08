@@ -12,15 +12,19 @@ var power: int = 0
 var note: String = ""
 var _hover := 0.0
 var _tw: Tween
+var _help: Array = []
+var _focus_disclosure: CanvasLayer
 
 
 func _init() -> void:
-	focus_mode = Control.FOCUS_NONE
+	focus_mode = Control.FOCUS_ALL
 	for st in ["normal", "hover", "pressed", "hover_pressed", "disabled", "focus"]:
 		add_theme_stylebox_override(st, StyleBoxEmpty.new())
 	custom_minimum_size = Vector2(118, 158)
 	mouse_entered.connect(_set_hover.bind(1.0))
 	mouse_exited.connect(_set_hover.bind(0.0))
+	focus_entered.connect(_focus_changed.bind(true))
+	focus_exited.connect(_focus_changed.bind(false))
 
 
 ## Заполнить из определения существа.
@@ -30,20 +34,47 @@ func for_creature(def: CreatureDef, p_uid: int, p_note: String = "") -> OrbButto
 	title = def.display_name
 	power = def.base_power
 	note = p_note
-	var help: Array = UiTheme.creature_help(def)
-	tooltip_text = "%s\n%s\n%s" % [help[0], help[1], help[4]]
+	_help = UiTheme.creature_help(def)
+	tooltip_text = "%s\n%s\n%s" % [_help[0], _help[1], _help[4]]
 	pivot_offset = Vector2(custom_minimum_size.x * 0.5, 54.0)
 	return self
 
 
 func _set_hover(to: float) -> void:
+	if has_focus(): to = 1.0
 	if _tw != null:
 		_tw.kill()
+	if not is_inside_tree():
+		_hover = to
+		queue_redraw()
+		return
 	_tw = create_tween().set_parallel(true)
 	_tw.tween_method(func(v: float) -> void:
 		_hover = v
 		queue_redraw(), _hover, to, 0.14)
-	_tw.tween_property(self, "scale", Vector2.ONE * (1.14 if to > 0.5 else 1.0), 0.14).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	# Геометрия кнопки и подписи остаётся в своей колонке даже при фокусе.
+
+
+func _focus_changed(on: bool) -> void:
+	_set_hover(1.0 if on or is_hovered() else 0.0)
+	queue_redraw()
+	if is_instance_valid(_focus_disclosure): _focus_disclosure.queue_free()
+	_focus_disclosure = null
+	if on: _focus_disclosure = preload("res://scenes/ui/card_hover.gd").open_on(self, _help)
+
+
+## Две полные строки: вид / стихия. Все 49 имён сохраняются без сокращения.
+func name_layout() -> Dictionary:
+	var words := title.split(" ", false, 1)
+	var lines: PackedStringArray = words if words.size() > 1 else PackedStringArray([title])
+	var font := get_theme_default_font()
+	var fs := 17
+	while fs > 13:
+		var widest := 0.0
+		for line in lines: widest = maxf(widest, font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x)
+		if widest <= size.x - 12.0: break
+		fs -= 1
+	return {"lines": lines, "font_size": fs}
 
 
 func _draw() -> void:
@@ -60,6 +91,8 @@ func _draw() -> void:
 		draw_circle(c + hl * t, rad, col)
 	draw_circle(c + hl * 1.05, R * 0.2, Color(1, 1, 1, 0.45))
 	draw_arc(c, R, 0.0, TAU, 56, UiTheme.GOLD if _hover > 0.5 else UiTheme.GOLD_DIM, 3.0 if _hover > 0.5 else 2.0, true)
+	if has_focus():
+		draw_style_box(UiTheme.box(Color.TRANSPARENT, Color(1.0, .95, .65), 3, 8, 0), Rect2(Vector2.ZERO, size))
 	var font: Font = get_theme_default_font()
 	# сила в центре
 	var ps := str(power)
@@ -67,14 +100,15 @@ func _draw() -> void:
 	draw_string_outline(font, c + Vector2(-psz.x * 0.5, 9.0), ps, HORIZONTAL_ALIGNMENT_LEFT, -1, 26, 6, Color(0, 0, 0, 0.8))
 	draw_string(font, c + Vector2(-psz.x * 0.5, 9.0), ps, HORIZONTAL_ALIGNMENT_LEFT, -1, 26, Color.WHITE)
 	# имя
-	var ty: float = c.y + R + 26.0
-	var nsz: Vector2 = font.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, 17)
-	var fs := 17
-	if nsz.x > size.x:
-		fs = 14
-		nsz = font.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, fs)
-	draw_string_outline(font, Vector2((size.x - nsz.x) * 0.5, ty), title, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, 5, Color(0, 0, 0, 0.85))
-	draw_string(font, Vector2((size.x - nsz.x) * 0.5, ty), title, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, UiTheme.TEXT)
+	var fitted := name_layout()
+	var fs := int(fitted.font_size)
+	var lines: PackedStringArray = fitted.lines
+	for i in lines.size():
+		var line := lines[i]
+		var width := font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+		var pos := Vector2((size.x - width) * .5, 117.0 + i * 20.0)
+		draw_string_outline(font, pos, line, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, 3, Color(0, 0, 0, .85))
+		draw_string(font, pos, line, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, UiTheme.TEXT)
 	if note != "":
 		var zsz: Vector2 = font.get_string_size(note, HORIZONTAL_ALIGNMENT_LEFT, -1, 13)
-		draw_string(font, Vector2((size.x - zsz.x) * 0.5, ty + 18.0), note, HORIZONTAL_ALIGNMENT_LEFT, -1, 13, UiTheme.TEXT_DIM)
+		draw_string(font, Vector2((size.x - zsz.x) * 0.5, 154.0), note, HORIZONTAL_ALIGNMENT_LEFT, -1, 13, UiTheme.TEXT_DIM)

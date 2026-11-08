@@ -1,0 +1,291 @@
+{
+  "adapter": "NVIDIA GeForce RTX 4070 Laptop GPU",
+  "captures": [
+    {
+      "name": "klykar_gale-dark-owner0-idle-front",
+      "sha256": "d07fb1b5db38f7d4761e681f15d0b80f7f5f6296f0033ff1c1cbd66a6a3251b4"
+    },
+    {
+      "name": "klykar_gale-dark-owner0-idle-quarter",
+      "sha256": "55c7a08d6ffd44a8d8b09aab490c9fa1e14de4e881842bf731ad91c4a5758f46"
+    },
+    {
+      "name": "klykar_gale-dark-owner0-idle-back",
+      "sha256": "3ce79e2bbe67a7e82c582e14e7c6d86890c21b7b8aba1c9ffa179b58c0a1121a"
+    },
+    {
+      "name": "klykar_gale-attack-quarter",
+      "sha256": "365ca910c9a064430ea95bae0a983d04d4acadb03b939d12d376390e89bb1c50"
+    },
+    {
+      "name": "klykar_gale-hit-quarter",
+      "sha256": "02eb11391a37c24df59bf5475a146ed52f0e0a3d7ed66016657f4fe5f95a375f"
+    },
+    {
+      "name": "levian_gale-dark-owner0-idle-front",
+      "sha256": "55d75f4ff23237b7e20731ce7179a9ca984d81a40661f47b1788104dfe894bde"
+    },
+    {
+      "name": "levian_gale-dark-owner0-idle-quarter",
+      "sha256": "3abc575a62372a2689af47365ca7cbe4ad89ecd5788b0c31242efcc44ab18366"
+    },
+    {
+      "name": "levian_gale-dark-owner0-idle-back",
+      "sha256": "eac3245def71254b89cdb2dfcb6c4982705728c986cae76ef401ebb520363d5d"
+    },
+    {
+      "name": "levian_gale-attack-quarter",
+      "sha256": "84021385401edaba47ddcbd3cd15cf3936734b4f719396589de2cab185c773f3"
+    },
+    {
+      "name": "levian_gale-hit-quarter",
+      "sha256": "1a41925846d74408498f90f13e52334e4fe7d950053b28df701e42bb1624c49a"
+    },
+    {
+      "name": "kolossar_shadow-dark-owner0-idle-front",
+      "sha256": "0f10a3d6e80a0ce71d46a1105aeb7479df53b3921db54736090fcd91c5cd70e9"
+    },
+    {
+      "name": "kolossar_shadow-dark-owner0-idle-quarter",
+      "sha256": "e8594566af8c73efc24369541c4fb2eab79f438792cce5f6ef6695e4061fc629"
+    },
+    {
+      "name": "kolossar_shadow-dark-owner0-idle-back",
+      "sha256": "2bc52de02e94d99125a1ba4d0f874d45e5aaef8a17f66a3186923c73359ff893"
+    },
+    {
+      "name": "kolossar_shadow-attack-quarter",
+      "sha256": "1266536e24b98892c5e307e6b54409930cbc4cc4ca87721b8145e51feb6217f1"
+    },
+    {
+      "name": "kolossar_shadow-hit-quarter",
+      "sha256": "ac43e5ac0a22af660def240dc7071b125ce0a45915d9134225a27c54f0f05c12"
+    },
+    {
+      "name": "ratnik_light-light-owner0-idle-side",
+      "sha256": "9a701b6ce0548628ce0e852e23d1d48833367cdc645230f6bd6e43164db9fad2"
+    },
+    {
+      "name": "ratnik_light-light-owner0-idle-back",
+      "sha256": "77d1f6da53a16607c9094cf9b19eef811a1ae0ebb8fc009b24bede61b907bb6a"
+    },
+    {
+      "name": "ratnik_light-light-owner1-idle-side",
+      "sha256": "354f3a3fd2fb7ed54cf40b596e7be76184bff4df5de4cd063f4093dc07f72fea"
+    },
+    {
+      "name": "ratnik_light-light-owner1-idle-back",
+      "sha256": "62a64a29798a2fea29d7c13037fdc46be4ef4dbc2ac282a218ad17f5bd67786b"
+    },
+    {
+      "name": "ratnik_light-dark-owner0-idle-side",
+      "sha256": "46808e657eaa20195ccb30433fbee5cbc602e7e84ea9a7fe06434887d7895ebf"
+    },
+    {
+      "name": "ratnik_light-dark-owner0-idle-back",
+      "sha256": "4317ee0602f4f137a639dc931609ac9c04ad9e89e262b6cb4335f070b2dc4826"
+    },
+    {
+      "name": "ratnik_light-dark-owner1-idle-side",
+      "sha256": "d1bc36bc14636aa769a31ba2a15605026713a9288f73b5ef301783e4d01a6c92"
+    },
+    {
+      "name": "ratnik_light-dark-owner1-idle-back",
+      "sha256": "014aa7005bff498f4d780cf97a191f9721a0aff3357ff00556c9c954bd38f67d"
+    },
+    {
+      "name": "ratnik-light-head-closeup",
+      "sha256": "562cb005d4f6136667375b5843d3fe261adae178977bdafc731b9d851d055724"
+    },
+    {
+      "name": "ratnik_light-attack-quarter",
+      "sha256": "96d3c306e7b00ff80b30ce91e0c3dc347bf9d8553455885be25ba038b1412158"
+    },
+    {
+      "name": "ratnik_light-hit-quarter",
+      "sha256": "cd4c8a10dae5109dffdfe3343e9c81858a6ec4ae0bc36b652d0918d3564f7b95"
+    },
+    {
+      "name": "ratnik-rim-cloth-attack-back",
+      "sha256": "e2d13cbac2acd50db4de4a27a1ab53b007db2065f9438ac07a60eebd6cd3fb15"
+    },
+    {
+      "name": "ratnik-rim-cloth-hit-back",
+      "sha256": "f45e823bcdaa89c2291880ec93142e85989134decb838cd868527f84c42d6ff2"
+    },
+    {
+      "name": "ratnik-pool-reuse-back",
+      "sha256": "e2df3b8b4d04c8388b15e1914adc5c824a7f956bd5ba276995e6a5b7736119d8"
+    },
+    {
+      "name": "hud-portraits-0",
+      "sha256": "2b523c3260fb8330a8363195f7f712410d0cd1685ad9bc7e800138fb35a9b12a"
+    },
+    {
+      "name": "hud-portraits-2",
+      "sha256": "5a308318cc4135a4a05fe3f897a303278b8e1322886f2e01752f09a38ca1528f"
+    },
+    {
+      "name": "hud-portraits-4",
+      "sha256": "503057aa2fed9f1ba9dc27919d175e4e85acc2afc824e70b501422a5d05d0131"
+    },
+    {
+      "name": "hud-sixcards-reducedfalse",
+      "sha256": "8d0c61d4222152f4fd425796f5c3fe1c962aae998eb9cc95d54cc5732d1c87c7"
+    },
+    {
+      "name": "hud-sixcards-reducedfalse-simultaneous-gdelta",
+      "sha256": "5a025e323b57b3e91eac56826eeb2d81ba81990dd5d371530ad7a85c46a85733"
+    },
+    {
+      "name": "hud-sixcards-reducedtrue",
+      "sha256": "990b1867b626d857ae5b0216dc702bc9add62c644fb118d186328d9953adeef7"
+    },
+    {
+      "name": "hud-sixcards-reducedtrue-simultaneous-gdelta",
+      "sha256": "26356571a1f8db8e3182e3c8fbaa93b01cb345f058cb67356940b3061b1909a3"
+    },
+    {
+      "name": "hud-sixcards-4x3-logical1280x960",
+      "sha256": "53fc62a80f099540b4192fbf9ec06253b2e217f8ded0f130fb3bbd660844a2b4"
+    }
+  ],
+  "checks": 70004,
+  "device_type": 2,
+  "display": "X11",
+  "engine": {
+    "build": "arch_linux",
+    "hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+    "hex": 263938,
+    "major": 4,
+    "minor": 7,
+    "patch": 2,
+    "status": "stable",
+    "string": "4.7.2-stable (arch_linux)",
+    "timestamp": 1786929518
+  },
+  "failures": 0,
+  "gpu_samples": [
+    {
+      "label": "ratnik-idle",
+      "max_displacement": 0.0278875529766083,
+      "minimum_world_y": 0.710832834243774,
+      "particles": 17458,
+      "pin_error": 0.0
+    },
+    {
+      "label": "ratnik-attack",
+      "max_displacement": 0.100000023841858,
+      "minimum_world_y": 0.642704010009766,
+      "particles": 17458,
+      "pin_error": 0.0
+    },
+    {
+      "label": "ratnik-hit",
+      "max_displacement": 0.0994190946221352,
+      "minimum_world_y": 0.00000095367431640625,
+      "particles": 17458,
+      "pin_error": 0.0
+    },
+    {
+      "label": "ratnik-pool-reuse",
+      "max_displacement": 0.0303659923374653,
+      "minimum_world_y": 0.941357851028442,
+      "particles": 17458,
+      "pin_error": 0.0
+    }
+  ],
+  "hardware_gpu_accepted": true,
+  "models": [
+    {
+      "key": "klykar_gale",
+      "ordinary_scn_sha256": "afc692933d537efdff4e84fca52050a56944a3dc17d192b840186d98f4d5aa69",
+      "source_sha256": "1c2855cee29711dc61eaedd108a0368158ca5d488f03e15796257eaf63dff0cc",
+      "surfaces": [
+        {
+          "mesh": "Mesh_0",
+          "oriented_geometry_sha256": "5554f0e802892812de7d136b59871f9f71328ffdadd269a494f71cac64984d74",
+          "surface": 0,
+          "triangles": 132146
+        }
+      ],
+      "triangles": 132146
+    },
+    {
+      "key": "levian_gale",
+      "ordinary_scn_sha256": "bcf0c2de6cb520f1b4cb836cfbfc3b99b0ca81153630c7305e2cd4eb4403cc4b",
+      "source_sha256": "c4359efccb27e465c6bd2be8bec3badf567dff0f8991e700a2ddfbf4539fbfb9",
+      "surfaces": [
+        {
+          "mesh": "Mesh_0",
+          "oriented_geometry_sha256": "9afb35a8da63a973b8e5a6ddc80b2389553b822453e7943c9f334d41ceff7540",
+          "surface": 0,
+          "triangles": 141826
+        },
+        {
+          "mesh": "Mesh_0",
+          "oriented_geometry_sha256": "dc4000ebc631d31d343d47ff44709083f99a1a3b3efa77290be00b35bcff6dec",
+          "surface": 1,
+          "triangles": 530
+        }
+      ],
+      "triangles": 142356
+    },
+    {
+      "key": "kolossar_shadow",
+      "ordinary_scn_sha256": "a826d34443f075b8c5804323c5a9de13d5fba9c03d478e45fd9653dbe9af0e56",
+      "source_sha256": "69b159a0e8763ef85c1e78b951255deb5e75d3939643af71c1abb8357d7e9a5c",
+      "surfaces": [
+        {
+          "mesh": "Mesh_0",
+          "oriented_geometry_sha256": "0627016f8a2f488f276e32846ae1b1b7ef6f789930e72a656c068b83df99c730",
+          "surface": 0,
+          "triangles": 135723
+        },
+        {
+          "mesh": "Mesh_0",
+          "oriented_geometry_sha256": "06dadd0bf5cc708fd088f54faf42d4ad09befa8d8d0e13934269d0a293cc0e7b",
+          "surface": 1,
+          "triangles": 30
+        },
+        {
+          "mesh": "Mesh_0",
+          "oriented_geometry_sha256": "93b974b39e1f91f33b7711e83363b103c4418a6e88dccdfe95d9b4c6c998bde7",
+          "surface": 2,
+          "triangles": 35403
+        }
+      ],
+      "triangles": 171156
+    },
+    {
+      "key": "ratnik_light",
+      "ordinary_scn_sha256": "24573d2225da65c99690f8bd90ad0fb49c70651ba07986251d80d640af5d3b0a",
+      "source_sha256": "d51ab2dc59b810d39e2b7346fab0101256f44f421fdaa8ed4a538eb97cbf5a70",
+      "surfaces": [
+        {
+          "mesh": "CapeGPU",
+          "oriented_geometry_sha256": "e03bd535f19e1b622013d9e538da301b34c087890c9c4b0f961f39e3f386e2d0",
+          "surface": 0,
+          "triangles": 34599
+        },
+        {
+          "mesh": "Mesh_0",
+          "oriented_geometry_sha256": "e316e4bb9c1c5ab8a403d28c2e471d121f7c4ad7f598cd1d4b7c7e1921255987",
+          "surface": 0,
+          "triangles": 116729
+        },
+        {
+          "mesh": "Mesh_0",
+          "oriented_geometry_sha256": "db01534b140ac119feccc3e4f382cc65ea6792f02cb7a7b33eaa17504ac9712c",
+          "surface": 1,
+          "triangles": 2304
+        }
+      ],
+      "triangles": 153632
+    }
+  ],
+  "source_manifest_sha256": "33c53ff9a74cc9650c9519e3de0b10c6db77d7f2a5e413f08e1d43b6f075c68f",
+  "status": "MACHINE_PASS_VISUAL_OPEN",
+  "vendor": "NVIDIA",
+  "visual_review": "OPEN: saved PNGs require Sol review"
+}

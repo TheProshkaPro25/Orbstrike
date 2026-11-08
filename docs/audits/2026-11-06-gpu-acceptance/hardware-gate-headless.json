@@ -1,0 +1,24 @@
+{
+  "blocker": "No windowed hardware RenderingDevice; no models/PNG allocated",
+  "captures": [],
+  "checks": 0,
+  "display": "headless",
+  "engine": {
+    "build": "arch_linux",
+    "hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+    "hex": 263938,
+    "major": 4,
+    "minor": 7,
+    "patch": 2,
+    "status": "stable",
+    "string": "4.7.2-stable (arch_linux)",
+    "timestamp": 1786929518
+  },
+  "failures": 0,
+  "gpu_samples": [],
+  "hardware_gpu_accepted": false,
+  "models": [],
+  "source_manifest_sha256": "3c880cd904ee28a9e3e278464809dc98aedae0268d523da5abdec0488da77df3",
+  "status": "BLOCKED_NO_HARDWARE_GPU",
+  "visual_review": "OPEN: saved PNGs require Sol review"
+}

@@ -1,0 +1,351 @@
+{
+	"display": "headless",
+	"rows": [
+		{
+			"button_count": 11,
+			"first": [
+				89.9922180175781,
+				141.701690673828,
+				183.190658569336,
+				26.0907917022705
+			],
+			"font_effective": 12.2127106189728,
+			"last": [
+				89.9922180175781,
+				435.9169921875,
+				183.190658569336,
+				26.0907917022705
+			],
+			"resolution": [
+				960,
+				540
+			],
+			"scale": 0.555123209953308,
+			"scenario": "menu"
+		},
+		{
+			"rect": [
+				229.110702514648,
+				14.0,
+				501.778594970703,
+				512.0
+			],
+			"resolution": [
+				960,
+				540
+			],
+			"scale": 0.929219603538513,
+			"scenario": "settings"
+		},
+		{
+			"button_count": 11,
+			"first": [
+				94.1945495605469,
+				182.791168212891,
+				260.233459472656,
+				37.0635528564453
+			],
+			"font_effective": 17.3488976955414,
+			"last": [
+				94.1945495605469,
+				600.741882324219,
+				260.233459472656,
+				37.0635528564453
+			],
+			"resolution": [
+				1280,
+				720
+			],
+			"scale": 0.788586258888245,
+			"scenario": "menu"
+		},
+		{
+			"rect": [
+				370.0,
+				84.5,
+				540.0,
+				551.0
+			],
+			"resolution": [
+				1280,
+				720
+			],
+			"scale": 1.0,
+			"scenario": "settings"
+		},
+		{
+			"button_count": 11,
+			"first": [
+				98.0,
+				318.5,
+				330.0,
+				47.0
+			],
+			"font_effective": 22.0,
+			"last": [
+				98.0,
+				848.5,
+				330.0,
+				47.0
+			],
+			"resolution": [
+				1920,
+				1080
+			],
+			"scale": 1.0,
+			"scenario": "menu"
+		},
+		{
+			"rect": [
+				690.0,
+				264.5,
+				540.0,
+				551.0
+			],
+			"resolution": [
+				1920,
+				1080
+			],
+			"scale": 1.0,
+			"scenario": "settings"
+		},
+		{
+			"button_logical": [
+				94.1945495605469,
+				182.791168212891,
+				260.233459472656,
+				37.0635528564453
+			],
+			"font_physical": 13.011673271656,
+			"logical_size": "(1280.0, 720.0)",
+			"physical_resolution": [
+				960,
+				540
+			],
+			"scale": 0.788586258888245,
+			"scenario": "production-menu"
+		},
+		{
+			"button_logical": [
+				94.1945495605469,
+				182.791168212891,
+				260.233459472656,
+				37.0635528564453
+			],
+			"font_physical": 17.3488976955414,
+			"logical_size": "(1280.0, 720.0)",
+			"physical_resolution": [
+				1280,
+				720
+			],
+			"scale": 0.788586258888245,
+			"scenario": "production-menu"
+		},
+		{
+			"button_logical": [
+				94.1945495605469,
+				182.791168212891,
+				260.233459472656,
+				37.0635528564453
+			],
+			"font_physical": 26.0233465433121,
+			"logical_size": "(1280.0, 720.0)",
+			"physical_resolution": [
+				1920,
+				1080
+			],
+			"scale": 0.788586258888245,
+			"scenario": "production-menu"
+		},
+		{
+			"focus_owner": "<Object#null>",
+			"inside": true,
+			"panel": [
+				204.0,
+				9.0,
+				552.0,
+				522.0
+			],
+			"resolution": [
+				960,
+				540
+			],
+			"restart": [
+				272.0,
+				465.0,
+				200.0,
+				50.0
+			],
+			"scenario": "game-over-six-battles"
+		},
+		{
+			"focus_owner": "<Object#null>",
+			"inside": true,
+			"panel": [
+				364.0,
+				99.0,
+				552.0,
+				522.0
+			],
+			"resolution": [
+				1280,
+				720
+			],
+			"restart": [
+				432.0,
+				555.0,
+				200.0,
+				50.0
+			],
+			"scenario": "game-over-six-battles"
+		},
+		{
+			"focus_owner": "<Object#null>",
+			"inside": true,
+			"panel": [
+				684.0,
+				279.0,
+				552.0,
+				522.0
+			],
+			"resolution": [
+				1920,
+				1080
+			],
+			"restart": [
+				752.0,
+				735.0,
+				200.0,
+				50.0
+			],
+			"scenario": "game-over-six-battles"
+		},
+		{
+			"button_width": 118.0,
+			"font": 14,
+			"id": "creature_dragnar_fire",
+			"name": "Драгнар Пламени",
+			"overflow_each_side": 5.0,
+			"scenario": "orb-name-overflow",
+			"text_width": 128.0
+		},
+		{
+			"button_width": 118.0,
+			"font": 14,
+			"id": "creature_dragnar_tide",
+			"name": "Драгнар Прилива",
+			"overflow_each_side": 4.0,
+			"scenario": "orb-name-overflow",
+			"text_width": 126.0
+		},
+		{
+			"button_width": 118.0,
+			"font": 14,
+			"id": "creature_klykar_fire",
+			"name": "Клыкарь Пламени",
+			"overflow_each_side": 6.5,
+			"scenario": "orb-name-overflow",
+			"text_width": 131.0
+		},
+		{
+			"button_width": 118.0,
+			"font": 14,
+			"id": "creature_klykar_tide",
+			"name": "Клыкарь Прилива",
+			"overflow_each_side": 5.5,
+			"scenario": "orb-name-overflow",
+			"text_width": 129.0
+		},
+		{
+			"button_width": 118.0,
+			"font": 14,
+			"id": "creature_grifalon_fire",
+			"name": "Грифалон Пламени",
+			"overflow_each_side": 11.0,
+			"scenario": "orb-name-overflow",
+			"text_width": 140.0
+		},
+		{
+			"button_width": 118.0,
+			"font": 14,
+			"id": "creature_grifalon_stone",
+			"name": "Грифалон Камня",
+			"overflow_each_side": 1.0,
+			"scenario": "orb-name-overflow",
+			"text_width": 120.0
+		},
+		{
+			"button_width": 118.0,
+			"font": 14,
+			"id": "creature_grifalon_tide",
+			"name": "Грифалон Прилива",
+			"overflow_each_side": 10.0,
+			"scenario": "orb-name-overflow",
+			"text_width": 138.0
+		},
+		{
+			"button_width": 118.0,
+			"font": 14,
+			"id": "creature_kolossar_fire",
+			"name": "Колоссар Пламени",
+			"overflow_each_side": 8.0,
+			"scenario": "orb-name-overflow",
+			"text_width": 134.0
+		},
+		{
+			"button_width": 118.0,
+			"font": 14,
+			"id": "creature_kolossar_tide",
+			"name": "Колоссар Прилива",
+			"overflow_each_side": 7.5,
+			"scenario": "orb-name-overflow",
+			"text_width": 133.0
+		},
+		{
+			"button_width": 118.0,
+			"font": 14,
+			"id": "creature_rogozhuk_fire",
+			"name": "Рогожук Пламени",
+			"overflow_each_side": 5.0,
+			"scenario": "orb-name-overflow",
+			"text_width": 128.0
+		},
+		{
+			"button_width": 118.0,
+			"font": 14,
+			"id": "creature_rogozhuk_tide",
+			"name": "Рогожук Прилива",
+			"overflow_each_side": 4.0,
+			"scenario": "orb-name-overflow",
+			"text_width": 126.0
+		},
+		{
+			"button_width": 118.0,
+			"font": 14,
+			"id": "creature_levian_fire",
+			"name": "Левиан Пламени",
+			"overflow_each_side": 2.0,
+			"scenario": "orb-name-overflow",
+			"text_width": 122.0
+		},
+		{
+			"button_width": 118.0,
+			"font": 14,
+			"id": "creature_levian_tide",
+			"name": "Левиан Прилива",
+			"overflow_each_side": 1.5,
+			"scenario": "orb-name-overflow",
+			"text_width": 121.0
+		},
+		{
+			"button_width": 118.0,
+			"font": 14,
+			"id": "creature_ratnik_fire",
+			"name": "Ратник Пламени",
+			"overflow_each_side": 0.5,
+			"scenario": "orb-name-overflow",
+			"text_width": 119.0
+		}
+	],
+	"visual_acceptance": false
+}

@@ -1,0 +1,22 @@
+{
+  "failures": 0,
+  "source_sha256": "fe5c04377285353b7a95bdb723612464824aaaed05f9b499acb732e858db2ddc",
+  "candidate_sha256": "c4359efccb27e465c6bd2be8bec3badf567dff0f8991e700a2ddfbf4539fbfb9",
+  "source_main_triangles": 144364,
+  "removed_wind_triangles": 2538,
+  "retained_main_triangles": 141826,
+  "tail_repair_triangles_exact": 530,
+  "unchanged_accessors_byte_exact": 224,
+  "all_original_attributes_byte_exact": true,
+  "all_non_index_binary_bytes_exact": true,
+  "only_json_change": "/accessors/218/count:433092->425478",
+  "nodes_rest_skin_binds_clips_uv_images_materials_extras_exact": true,
+  "retained_faces_exact_original_order": true,
+  "retained_body_plus_tail_repair_boundary_edges": 0,
+  "caps": 0,
+  "retained_nondegenerate_triangles": 141826,
+  "retained_degenerate_triangles_unchanged": 0,
+  "finite_positions": true,
+  "runtime_gpu_or_animation_execution": false,
+  "mathematical_scope": "Identical retained triangles, vertex attributes, skeleton/binds and animation imply identical retained skin surface for identical bone matrices; actual runtime/support/cloth not executed."
+}

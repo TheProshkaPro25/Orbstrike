@@ -1,0 +1,21 @@
+{
+  "status": "HISTORICAL_MOTION_CLAIMS_UNVERIFIED_NO_RERUN_AUTHORIZED",
+  "reason": "tools/test_model_wind_import.gd actor() left CreatureBall._figure hidden after setup. CreatureAnim._process returns immediately when not is_visible_in_tree(), including a direct manual call. Old repeated samples could therefore remain at rest.",
+  "affected_claims": [
+    "model-wind-import24602/0: A01/A02 15 moving poses, moving source/candidate/ordinary palettes and world-point equality are UNVERIFIED",
+    "a03-material-import11473/0 and historical sculpt-import31408/0: inherited hidden actor means moving-pose claims are UNVERIFIED; old A03 material-only geometry has since been superseded",
+    "ratnik-crown-reopen27745/0 and18080/0: 20 moving poses, 12 witness head-relative delta0/onebitdigest and moving ordinary-witness equality are UNVERIFIED"
+  ],
+  "still_supported_scope": [
+    "Frozen source/candidate hashes, original BIN/accessor/rig/rest/bind/UV/skin byte contracts and topology facts do not depend on test actor visibility",
+    "Ordinary SCN geometry/count/resource path proof remains geometry evidence, not motion evidence",
+    "Head-relative delta0 from a static fixture cannot establish witness stability in real animation; no corrected value is claimed"
+  ],
+  "separate_deformation_audit": "tools/deformation_audit.gd creates CreatureAnim directly under root, visible by default, rather than under a hidden CreatureBall._figure. This specific visibility defect does not invalidate its earlier exported actual poses or rejected-candidate BVH conclusions. No rerun was performed.",
+  "saved_fixes_unexecuted": [
+    "tools/test_model_wind_import.gd actor shows figure/hides shell; pose asserts effective visibility and clock advancement; wind run asserts and records nonzero within-action palette variation",
+    "tools/test_ratnik_crown_reopen.gd appear path asserts visibility/clock; A04 run asserts and records nonzero within-action palette variation"
+  ],
+  "historical_runtime_reruns_this_followup": 0,
+  "limits": "Author narrowed scope before any wind/A04 launch. Saved validation changes have not been executed. Current A03 real-motion proof belongs to its author; no A03 files changed here. GPU acceptance remains OPEN."
+}

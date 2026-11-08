@@ -10,19 +10,26 @@ static func play_ai_ability(ctrl: MatchController, bot: AIPlayer, player: int, i
 	var target := bot.choose_ability_target(ctrl.get_view(player), ctrl.get_battle_preview(), id, ctrl.legal_ability_targets(player, id))
 	return ctrl.play_ability(player, id, target)
 
-static func simulate(deck_a: DeckDef, deck_b: DeckDef, match_seed: int, first_player: int, difficulty: int, step_limit: int = STEP_LIMIT, personalities: Array = []) -> Dictionary:
+static func simulate(deck_a: DeckDef, deck_b: DeckDef, match_seed: int, first_player: int, difficulty: int, step_limit: int = STEP_LIMIT, personalities: Array = [], power_snapshots: Array = []) -> Dictionary:
 	if deck_a == null or deck_b == null or not [0, 1].has(first_player) or difficulty < 0 or difficulty > 2:
 		return {"error": "Некорректные параметры симуляции NPC"}
-	for deck in [deck_a, deck_b]:
+	if not power_snapshots.is_empty() and power_snapshots.size() != 2:
+		return {"error": "Некорректный снимок силы NPC"}
+	var decks: Array[DeckDef] = [deck_a, deck_b]
+	for side in range(2):
+		var deck: DeckDef = decks[side]
 		var ids: Array = [[], [], []]
 		for pair in [[deck.creatures, 0], [deck.arena, 1], [deck.abilities, 2]]:
 			for definition in pair[0]:
 				if definition == null:
 					return {"error": "Некорректная колода NPC"}
 				ids[pair[1]].append(String(definition.id))
-		if not CardDB.deck_error(ids[0], ids[1], ids[2]).is_empty():
+		var valid: bool = CardDB.deck_error(ids[0], ids[1], ids[2]).is_empty() if power_snapshots.is_empty() else _snapshot_deck_valid(ids, power_snapshots[side])
+		if not valid:
 			return {"error": "Колода NPC не соответствует правилам"}
 	var ctrl := MatchController.new(deck_a, deck_b, match_seed)
+	for side in range(power_snapshots.size()):
+		PowerCalc.apply_power_snapshot(ctrl.state, side, power_snapshots[side])
 	ctrl.landing_window = true
 	var bots: Array = [AIPlayer.new(0, match_seed ^ 0x157a, 0.0, difficulty), AIPlayer.new(1, match_seed ^ 0x3a61, 0.0, difficulty)]
 	for side in range(mini(personalities.size(), 2)):
@@ -73,3 +80,46 @@ static func simulate(deck_a: DeckDef, deck_b: DeckDef, match_seed: int, first_pl
 		if code != OK:
 			return {"error": "Действие NPC отклонено: %d" % code, "seed": match_seed, "steps": steps}
 	return {"error": "", "winner": ctrl.winner, "alive": [ctrl.state.alive_count(0), ctrl.state.alive_count(1)], "reason": String(ctrl.game_over_reason), "steps": steps, "trace": ctrl.debug_snapshot()}
+
+
+## Карьерная команда сохраняет ограничения каталога, но лимит проверяется по БС снимка.
+static func _snapshot_deck_valid(ids: Array, powers: Variant) -> bool:
+	if not powers is Dictionary or powers.size() != 3 or ids[0].size() != 3:
+		return false
+	var seen: Dictionary = {}
+	var element := -1
+	var total := 0
+	for id in ids[0]:
+		var definition := CardDB.creature(StringName(id))
+		if definition == null or seen.has(String(id)) or (element >= 0 and element != definition.attribute):
+			return false
+		seen[String(id)] = true
+		element = definition.attribute
+		var value: Variant = powers.get(String(id), powers.get(StringName(id), -1))
+		if not (value is int or value is float) or not is_finite(float(value)) or float(value) < 190.0 or float(value) > 420.0 or float(value) != floorf(float(value)):
+			return false
+		total += int(value)
+	if total > GameData.TEAM_POWER_LIMIT:
+		return false
+	var species := CardDB.team_species(ids[0])
+	for pair in [[ids[1], CardDB.GATE_CLASSES, CardDef.Kind.ARENA], [ids[2], CardDB.ABILITY_CLASSES, CardDef.Kind.ABILITY]]:
+		if pair[0].size() != 3:
+			return false
+		var classes: Array = []
+		for id in pair[0]:
+			var card := CardDB.card(StringName(id))
+			if card == null or card.kind != pair[2]:
+				return false
+			classes.append(CardDB.card_class(card))
+			var attr := CardEffects.lock_attr(card)
+			if attr < 0:
+				attr = CardEffects.field_attr(card)
+			if attr >= 0 and attr != element:
+				return false
+			var required_species := CardEffects.species_lock(card)
+			if required_species != &"" and not species.has(required_species):
+				return false
+		for card_class in pair[1]:
+			if not classes.has(card_class):
+				return false
+	return true

@@ -28,6 +28,8 @@ const SFX_NAMES: Array[String] = [
 ## Суффиксы стихий по Attr.A (как GameData.ATTR_KEYS): имя способности и файлов криков.
 const ATTR_KEYS: Array[String] = ["fire", "gale", "light", "stone", "shadow", "tide"]
 
+const DEVICE_SFX_NAMES: Array[String] = ["device_hover", "device_click", "device_denied", "device_power", "device_power_up", "device_power_down", "device_turn"]
+
 const VARIANTS := ["card_select", "card_place", "ball_throw", "clash"]
 var _last_variant: Dictionary = {}
 var _cache: Dictionary = {}
@@ -63,6 +65,7 @@ func _init() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_ensure_bus("Music", MUSIC_DB)
 	_ensure_bus("SFX", SFX_DB)
+	_ensure_bus("Interface", SFX_DB)
 	for i in range(POOL):
 		var p := AudioStreamPlayer.new()
 		p.bus = "SFX"
@@ -87,7 +90,7 @@ func _ready() -> void:
 
 
 func _preload_effects() -> void:
-	for n in SFX_NAMES:
+	for n in SFX_NAMES + DEVICE_SFX_NAMES:
 		_load(SFX_DIR + n)
 	for n in VARIANTS:
 		for v in [2, 3]:
@@ -148,16 +151,17 @@ func has_sfx(sfx_name: String) -> bool:
 	return _load(SFX_DIR + sfx_name) != null
 
 
-func _play_stream(s: AudioStream, db: float, pitch: float) -> void:
+func _play_stream(s: AudioStream, db: float, pitch: float, bus_name: String = "SFX") -> void:
 	if s == null:
 		return
 	if not is_inside_tree():
 		# экземпляр только что создан и ещё не добавлен в корень (add_child отложен) — играем на следующем кадре
-		_play_stream.call_deferred(s, db, pitch)
+		_play_stream.call_deferred(s, db, pitch, bus_name)
 		return
 	var p := _pool[_next]
 	_next = (_next + 1) % POOL
 	p.stream = s
+	p.bus = bus_name
 	p.volume_db = db
 	p.pitch_scale = pitch
 	p.play()
@@ -165,17 +169,45 @@ func _play_stream(s: AudioStream, db: float, pitch: float) -> void:
 
 ## Короткий эффект. jitter - случайный разброс высоты (доля).
 func play(sfx_name: String, db: float = 0.0, jitter: float = 0.04, pitch: float = 1.0) -> void:
-	var now := Time.get_ticks_msec()
-	if now - int(_last_play.get(sfx_name, -1000)) < 40:
+	var interface_sound := sfx_name.begins_with("ui_") or sfx_name.begins_with("device_")
+	var mapped := sfx_name
+	if DeviceSettings.is_device():
+		match sfx_name:
+			"ui_hover": mapped = "device_hover"
+			"ui_click": mapped = "device_click"
+			"ui_denied": mapped = "device_denied"
+			"turn_yours": mapped = "device_turn"
+			"turn_opponent":
+				mapped = "device_turn"
+				pitch *= 0.87
+	interface_sound = interface_sound or mapped.begins_with("device_")
+	# Digital UI cues are fixed recordings at a fixed pitch. Battle/physical
+	# variants and classic presentation keep their previous variation.
+	if mapped.begins_with("device_"):
+		jitter = 0.0
+		if mapped in ["device_click", "device_hover", "device_denied"] or mapped.begins_with("device_power"): pitch = 1.0
+	if interface_sound and (AudioSettings.interface_muted or is_zero_approx(AudioSettings.interface_volume)):
 		return
-	_last_play[sfx_name] = now
-	var file_name := sfx_name
+	var now := Time.get_ticks_msec()
+	# Одна пара изменений силы не накладывает два сигнала; рост/падение делят160мс.
+	var throttle_key := "device_power" if mapped.begins_with("device_power") else mapped
+	var interval := 110 if mapped == "device_hover" else (160 if throttle_key == "device_power" else 40)
+	if now - int(_last_play.get(throttle_key, -1000)) < interval:
+		return
+	_last_play[throttle_key] = now
+	var file_name := mapped
 	if VARIANTS.has(sfx_name):
 		var previous := int(_last_variant.get(sfx_name, -1))
 		var variant := (previous + randi_range(1, 2)) % 3 if previous >= 0 else randi_range(0, 2)
 		_last_variant[sfx_name] = variant
 		file_name = sfx_name if variant == 0 else sfx_name + "_v%d" % (variant + 1)
-	_play_stream(_load(SFX_DIR + file_name), db, pitch * (1.0 + randf_range(-jitter, jitter)))
+	_play_stream(_load(SFX_DIR + file_name), db, pitch * (1.0 + randf_range(-jitter, jitter)), "Interface" if interface_sound else "SFX")
+
+
+## Короткий фиксированный сигнал изменения силы: кэш, шина Interface и её настройки.
+func play_device_power(delta: int) -> void:
+	if delta == 0 or not DeviceSettings.is_device(): return
+	play("device_power_up" if delta > 0 else "device_power_down", -10.0, 0.0, 1.0)
 
 
 ## Остановить хвост уже загруженного эффекта, не загружая новых ресурсов.
@@ -371,18 +403,20 @@ func _unhandled_key_input(e: InputEvent) -> void:
 # ---------------------------------------------------------------- кнопки интерфейса
 
 func _on_node_added(n: Node) -> void:
+	if not n is BaseButton or n.get_meta("orbstrike_sound_hooked", false):
+		return
+	n.set_meta("orbstrike_sound_hooked", true)
 	if n is CardView:
 		var cv := n as CardView
-		if not cv.mouse_entered.is_connected(_ui_hover):
-			cv.mouse_entered.connect(_ui_hover.bind(cv))
-			cv.pressed.connect(func() -> void:
-				if not cv.get_meta("silent_select", false):
-					play("card_select", -3.0))
+		cv.mouse_entered.connect(_ui_hover.bind(cv))
+		cv.pressed.connect(func() -> void:
+			if not cv.get_meta("silent_select", false):
+				if DeviceSettings.is_device(): _ui_click()
+				else: play("card_select", -3.0))
 	elif n is BaseButton:
 		var b := n as BaseButton
-		if not b.pressed.is_connected(_ui_click):
-			b.pressed.connect(_ui_click)
-			b.mouse_entered.connect(_ui_hover.bind(b))
+		b.pressed.connect(_ui_click)
+		b.mouse_entered.connect(_ui_hover.bind(b))
 
 
 func _ui_click() -> void:
@@ -390,5 +424,5 @@ func _ui_click() -> void:
 
 
 func _ui_hover(b: BaseButton) -> void:
-	if not b.disabled:
+	if not b.disabled and not b.get_meta("silent_hover", false):
 		play("ui_hover", -10.0, 0.06)

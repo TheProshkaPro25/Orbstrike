@@ -1,0 +1,58 @@
+{
+  "kind": "CPU raw-rest only",
+  "source_sha256": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+  "candidate_sha256": "db71c6a103e80826fcce5fcd4b1730bb637e3d22f156430bece96fd08a135e05",
+  "selected_triangles": 15169,
+  "mask_method": "two shoulder-bound connected neutral regions, enclosed flecks filled; not a global color mask",
+  "bounds": {
+    "source_all_accessor_bbox": [
+      [
+        -0.3991594910621643,
+        -0.415763258934021,
+        -0.35553279519081116
+      ],
+      [
+        0.4183255136013031,
+        0.4319955110549927,
+        0.3114355504512787
+      ]
+    ],
+    "candidate_all_accessor_bbox": [
+      [
+        -0.3991594910621643,
+        -0.415763258934021,
+        -0.35553279519081116
+      ],
+      [
+        0.4183255136013031,
+        0.4319955110549927,
+        0.3114355504512787
+      ]
+    ],
+    "source_active_bbox": [
+      [
+        -0.3991594910621643,
+        -0.415763258934021,
+        -0.35553279519081116
+      ],
+      [
+        0.4183255136013031,
+        0.4319955110549927,
+        0.3114355504512787
+      ]
+    ],
+    "candidate_active_bbox": [
+      [
+        -0.3991594910621643,
+        -0.415763258934021,
+        -0.35553279519081116
+      ],
+      [
+        0.4183255136013031,
+        0.41055041551589966,
+        0.3114355504512787
+      ]
+    ]
+  },
+  "runtime_import_animation_or_gpu_executed": false
+}

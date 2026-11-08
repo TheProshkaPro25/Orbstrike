@@ -14,7 +14,10 @@ static func release(node: Node, tree: SceneTree) -> void:
 			if mesh.mesh != null:
 				for i in mesh.mesh.get_surface_count():
 					var material := mesh.get_active_material(i)
-					if material != null: held.append(material)
+					if material != null:
+						var cloth_rim := CreatureCloth.clear_rim(material)
+						if cloth_rim != null: held.append(cloth_rim)
+						held.append(material)
 		for child in current.get_children(): pending.append(child)
 	node.free()
 	if DisplayServer.get_name() == "headless":

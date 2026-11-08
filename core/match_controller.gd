@@ -125,8 +125,18 @@ func _trace(action: String, args: Array = []) -> void:
 
 
 func debug_snapshot() -> Dictionary:
-	return {"version": 1, "seed": match_seed, "ruleset": state.ruleset, "landing_window": landing_window, "manual_gates": state.manual_gates,
+	var snapshot := {"version": 1, "seed": match_seed, "ruleset": state.ruleset, "landing_window": landing_window, "manual_gates": state.manual_gates,
 		"decks": _debug_decks, "actions": action_trace.duplicate(true), "turn": state.turn, "phase": state.phase}
+	var power_snapshots: Array = [{}, {}]
+	for creature: CreatureState in state.creatures.values():
+		if creature.base_power_override >= 0:
+			power_snapshots[creature.owner][String(creature.def_id)] = creature.base_power_override
+	if not power_snapshots[0].is_empty() or not power_snapshots[1].is_empty():
+		# Реплей фиксирует все шесть эффективных БС, включая fallback частичного снимка.
+		for creature: CreatureState in state.creatures.values():
+			power_snapshots[creature.owner][String(creature.def_id)] = PowerCalc.base_power(state, creature.uid)
+		snapshot["power_snapshots"] = power_snapshots
+	return snapshot
 
 
 func save_debug_trace(path: String = "user://replays/last_match.json") -> Error:
@@ -388,7 +398,7 @@ func _ability_requirement_reason(uid: int, id: StringName, own: Array, mom: Stri
 		var foe: int = _b_def if uid == _b_atk else _b_atk
 		var fdef: CreatureDef = CardDB.creature(state.creatures[foe].def_id)
 		var ctx := {"attack": uid == _b_atk, "own_gate": state.slots[_b_slot].card_owner == owner,
-			"my_base": cdef.base_power, "foe_base": fdef.base_power, "foe_beats": Attr.beats(fdef.attribute, cdef.attribute),
+			"my_base": PowerCalc.base_power(state, uid), "foe_base": PowerCalc.base_power(state, foe), "foe_beats": Attr.beats(fdef.attribute, cdef.attribute),
 			"alive_own": state.alive_count(owner), "alive_foe": state.alive_count(1 - owner), "dead_own": state.dead_count(owner)}
 		if not CardEffects.boost_cond_ok(c, ctx):
 			var reasons := {"attack": "Только для атакующего", "defense": "Только для защитника", "own_gate": "Нужны ваши ворота",
@@ -404,7 +414,7 @@ func _ability_requirement_reason(uid: int, id: StringName, own: Array, mom: Stri
 				return "Нет синей способности, отдыхающей после прошлого боя"
 		"tide_wash":
 			var pre := get_battle_preview()
-			if pre == null or pre.powers[0 if uid == _b_atk else 1] >= cdef.base_power:
+			if pre == null or pre.powers[0 if uid == _b_atk else 1] >= PowerCalc.base_power(state, uid):
 				return "Текущая сила должна быть ниже базовой"
 		"swap_fighter":
 			if PowerCalc.swap_candidate(state, owner, [_b_atk, _b_def]) < 0:
@@ -947,7 +957,7 @@ func _strongest_standing(player: int) -> int:
 	var best_power: int = -1
 	for uid in state.players[player].creature_uids:
 		var c: CreatureState = state.creatures[uid]
-		var pw: int = CardDB.creature(c.def_id).base_power
+		var pw: int = PowerCalc.base_power(state, uid)
 		if c.alive and c.slot >= 0 and pw > best_power:
 			best = uid
 			best_power = pw
@@ -1310,7 +1320,7 @@ func _alive_power(player: int) -> int:
 	for uid in state.players[player].creature_uids:
 		var c: CreatureState = state.creatures[uid]
 		if c.alive:
-			total += CardDB.creature(c.def_id).base_power
+			total += PowerCalc.base_power(state, uid)
 	return total
 
 

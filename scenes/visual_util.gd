@@ -324,3 +324,9 @@ static func dome(parent: Node3D, world_pos: Vector3, c: Color, radius: float, du
 	tw.tween_interval(dur * 0.5)
 	tw.tween_method(func(v: float) -> void: m.set_shader_parameter("fade", v), 1.0, 0.0, dur * 0.4)
 	tw.tween_callback(mi.queue_free)
+
+
+## Deferred focus must re-check the target after page/card rebuilds or immediate selection.
+static func focus_if_present(control: Control) -> void:
+	if is_instance_valid(control) and not control.is_queued_for_deletion() and control.is_inside_tree() and control.is_visible_in_tree():
+		control.grab_focus()

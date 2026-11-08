@@ -1,3 +1,54 @@
+# Текущая адресная ветка конвейера — 6 ноября2026
+
+Создание новой модели (concept → TRELLIS/Hunyuan/Pixal → rig → upgrade/personality/
+smooth/skin) и ремонт принятой модели — разные ветки существующего конвейера.
+Для адресного ремонта030–035 не запускать заново массовую генерацию/ICP/rig:
+сохранить immutableисходник/SHA, сделать отдельный GLB-кандидат, whitelistизменений,
+маски нескольких ракурсов и integrity. Проверить затронутые реальные Godotimport/
+позы/support, для новых поверхностей — локальный BVH/стык; затем сохранить backup
+и атомарно установить, обновитьимпорт и проверить обычный CreatureModels/CreatureBall.
+CPUgeometry/pose не выдавать за GPU, но отсутствие дисплея само по себе не запрещает
+авторизованное обратимое исправление с достаточными доказательствами безопасности.
+Неоднозначную анатомию или плохую поверхность не ставить.
+
+A01/A02установлены: remove_klykar_gale_wind.py / remove_levian_gale_wind.py принимают
+только точные исходныеSHA, сохраняют non-indexbytes/rig/UV/clips, выводят отдельного
+кандидата. Оригиналы послеустановки — build/model_candidates/2026-11-06-a0{1,2}/source/;
+повторно подавать productionкакsource нельзя. Установка — promote_wind_candidates.py
+после pre-promotion.json, ordinarypathконтроль —
+`python3 tools/check.py --profile models --checks model-wind-import --logic-only`.
+Этот opt-inтест не входит в массовый профиль; buildsource/candidateнужны дляповтора.
+Клыкарь требует сохранения старой normalizationframe: реальный importerуплотняет
+unusedvertices. Guardkey/activeAABB/triangles и worldpoints защищены тестом.
+Отчёт/границы/команды: [MODEL_REPAIRS_2026-11-06.md](../../docs/MODEL_REPAIRS_2026-11-06.md).
+Доказательства в docs/audits имеют .gdignore и не импортируются как игровыеassets.
+
+A04установлен после repair_ratnik_light_halo.py: локальная FEMмакушка/узкийcollar,
+тонкое кольцо, sourceCape/rig/UV/skinконтракты. Итоговые normals-only значения
+следуют отдельному normal-equivalence контракту; исторический d389 не выдан за b209.
+Проверки A03/A04opt-in: `sculpt-import`, `sculpt-source-poses`,
+`sculpt-candidate-poses`; при изменении толькоA03 — `a03-candidate-poses`,
+все через check.py --profile models --checks … --logic-only. Экспортёр пишет
+имена мешей и normalizationframe. Новый режим `posed_surface_intersections.py`
+`ROOT REPORT sculpt BASELINE [ids=creature_kolossar_shadow]` исключает CapeGPU
+по имени и проверяет body/новое кольцо, не прежние «первые2поверхности».
+A03clip-пары проверять actualsourceface mapping в тех же реальных позах;
+происхождение от sourceface само по себе не оправдывает новое пересечение.
+Установкаадресныхsculpt-кандидатов — promote_sculpt_candidates.py --only a03|a04,
+с обязательным соответствующим PASS контрактом; unsafeкандидаты сохранять отдельно.
+A03geometrygraftвариантыотклоненыstrictboundarywitness; productionсодержиттолько
+material-onlymutedviolet. `tint_kolossar_shadow_smoke.py` сохраняетallgeometry/UV/skin
+и10443подтверждённымpaleeffectfacesназначаетcloneматериала;139551armorнеперекрашены.
+Узкий `a03-material-import` проверяет ordinarysplit/tint/позы/worldpoints,безповтора
+доказанноидентичной46poseBVHгеометрии. ФормаA03остаётсяоткрыта; неустанавливать
+старый845daf. Общийактуальный4SHAcheckpoint: model-repairs-2026-11-06.json.
+
+
+Ниже — исторические рецепты; приёмку каждого этапа читать по его актуальному
+checkpoint, а не по прежней общей формулировке.
+
+---
+
 > **Актуальный статус 2026-10-30:** общая приёмка ремонта029 отозвана. См. последний раздел SESSION_LOG.md и tools/checkpoints/model-repairs030.json. Сейчас приняты только устранение второго сгиба Горгула в CreatureSupport и удаление остаточных задних пластин Light через repair_light_rear_plates.py. Остальные замечания открыты; старые описания ниже не подтверждают готовность.
 
 `repair_light_rear_plates.py` читает tools/_tmp/repair030/base и пишет только отдельного кандидата. После проверки установленного кандидата актуальный asset находится в assets/creatures_hd/rogozhuk_light.glb.
@@ -359,3 +410,17 @@ wing/body/leg seeds задают плавную геодезическую гр�
 Компактный checkpoint с численным контрактом и границами проверки:
 `tools/checkpoints/grifalon-gale-tail-2026-10-31.json`. Gale — flyer без sole/cloth
 подготовки, отдельный prepared-cache для этой модели не пересоздаётся.
+
+
+### Ратник Света: повторный A04 после замечания о лепёшке — 6 ноября 2026
+
+`build_ratnik_light_helmet.py --source B209_BACKUP --original PRE_A04_454 --output CANDIDATE`
+точно воспроизводит установленный d51ab2dc… и пишет отдельные geometry/smooth stages.
+Helper `ratnik_light_helmet_patch.py` использует одну и ту же простую проекцию для
+триангуляции/FEM/подъёма. Три участка — крыша и две сужающиеся верхние ветви рогов.
+Прежние большие102/93контуры не используются как форма крыши. Исходные84900vertex
+streams/rig/CapeGPU/UV/skin точны;22palette seamtri — точные geometry/8weight копии.
+Контракт: `tests/ratnik_light_helmet_integrity.py BASE CANDIDATE GEOMETRY MANIFEST OUTPUT`.
+Raw0self/3capbody — неzeroPASS; witness и actual20poseheadrelativebound сохраняются
+в docs/audits/2026-11-06-model-a04-reopen/. GPUcloth/rim не приняты.
+Узкий runtime: check.py --profile models --checks ratnik-crown-reopen --logic-only.

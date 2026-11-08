@@ -1,0 +1,112 @@
+{
+  "status": "client_runtime_complete_scoped_review_pass",
+  "date": "2026-11-08",
+  "authors": {
+    "keys_retarget_weights": "Astra medium",
+    "runtime_code_tests_docs": "Sol high",
+    "independent_review": "Sol high"
+  },
+  "libraries": [
+    {
+      "path": "assets/animations/grifalon/fire.res",
+      "bytes": 67286,
+      "sha256": "3c4d9221cbc17a6895ac527dc04f2b7538396966f2f41b9c5913c8870441483f",
+      "master_motion_source_sha256": "f323ba537d5ca35b58d56c857de427111f9f729c19208f89b30ea099c26d342c",
+      "keys_timing_interpolation_digest": "548e74795831c41b965de9873b12e925c9bfbe717228b1dab4b62e012e0dbeed",
+      "metadata_only_save": true
+    },
+    {
+      "path": "assets/animations/grifalon/gale.res",
+      "bytes": 67361,
+      "sha256": "5ea4bc28365b495a17e28bc9673d95c00b81af8f85ee17ef2e59fdaff339230b",
+      "master_motion_source_sha256": "f323ba537d5ca35b58d56c857de427111f9f729c19208f89b30ea099c26d342c",
+      "keys_timing_interpolation_digest": "afa71ede66c1de9111c3bb7e6c1e0471870504f4554167aaa4a47593b181473a",
+      "metadata_only_save": true
+    },
+    {
+      "path": "assets/animations/grifalon/light.res",
+      "bytes": 67399,
+      "sha256": "ce2edac3269e4c60b4a91bcb7a7e61abd360bd750dd1a7a7a0a13ec60d9ce475",
+      "master_motion_source_sha256": "f323ba537d5ca35b58d56c857de427111f9f729c19208f89b30ea099c26d342c",
+      "keys_timing_interpolation_digest": "01e71322faab7f1e7e542715676d4013c33e7da287813ce3341a38cf11bb97e1",
+      "metadata_only_save": true
+    },
+    {
+      "path": "assets/animations/grifalon/shadow.res",
+      "bytes": 67302,
+      "sha256": "b4eb5b7ce428d8a3dbeac6760b4240ae562c98207f497935c9a46f0a16e5d029",
+      "master_motion_source_sha256": "f323ba537d5ca35b58d56c857de427111f9f729c19208f89b30ea099c26d342c",
+      "keys_timing_interpolation_digest": "3a304deaaf0d25be6ad44ede52cb27a2062a680b74482d4f592c35d26e51c2d8",
+      "metadata_only_save": true
+    },
+    {
+      "path": "assets/animations/grifalon/stone.res",
+      "bytes": 67511,
+      "sha256": "8e1dc1cab5208aeb3a248bf4c3fb8d8125f8eb241bea487a04d11565caabe81b",
+      "master_motion_source_sha256": "f323ba537d5ca35b58d56c857de427111f9f729c19208f89b30ea099c26d342c",
+      "keys_timing_interpolation_digest": "088a57fe21f25b92501fa5800222295e91892187c088b8e6dbea27485b7af479",
+      "metadata_only_save": true
+    },
+    {
+      "path": "assets/animations/grifalon/tide.res",
+      "bytes": 67341,
+      "sha256": "964c27b92710d0f50fd769bdbb57f54e9f706930df3eb4f60a436166185c68a8",
+      "master_motion_source_sha256": "f323ba537d5ca35b58d56c857de427111f9f729c19208f89b30ea099c26d342c",
+      "keys_timing_interpolation_digest": "42177134b7161563737724f7fe50d60bda94a623e3799b920d35b869ee80a2d6",
+      "metadata_only_save": true
+    }
+  ],
+  "gale_skin_overlay": {
+    "path": "assets/animations/grifalon/gale-wing-skin.res",
+    "bytes": 152485,
+    "sha256": "f6ae3843ab060a5483c691db1acfb381e84b6c08fed3dd37a34c6b6c9a1ecb3a",
+    "payload_digest": "300a8dc7106a7d8bb27560e2f50321ca0bd4e0dfa51bd988e348ff12190b396f",
+    "vertices": 9873,
+    "source_imported_vertices": 97837,
+    "outside_and_nonwing_changed": 0,
+    "source_glb_mesh_unchanged": true
+  },
+  "source_variants_producer_evidence": [
+    {
+      "source": "assets/creatures_hd/grifalon_light.glb",
+      "source_sha256": "0437c2014c5c0e87801a0acc7b25a4f957acf3a8028dbb699b5e6672d9574481",
+      "source_unchanged": true
+    },
+    {
+      "source": "assets/creatures_hd/grifalon_fire.glb",
+      "source_sha256": "295aaa4752b85e3febeb01dc36570b9845c3f05eea37188cc4c5c453b40f5954",
+      "source_unchanged": true
+    },
+    {
+      "source": "assets/creatures_hd/grifalon_gale.glb",
+      "source_sha256": "0329fff5f70f53e6c14fbfaaf293c93860ff86cf5be79ef0f1e85f1c7d02bd79",
+      "source_unchanged": true
+    },
+    {
+      "source": "assets/creatures_hd/grifalon_shadow.glb",
+      "source_sha256": "15da6c635d6aa002e11049082ece86d2f0124570d0da5a71f41091b07765b0b3",
+      "source_unchanged": true
+    },
+    {
+      "source": "assets/creatures_hd/grifalon_stone.glb",
+      "source_sha256": "376640d70ecbdc35c0da1f3dec334118f9037b1b10f80364d973992310b3f540",
+      "source_unchanged": true
+    },
+    {
+      "source": "assets/creatures_hd/grifalon_tide.glb",
+      "source_sha256": "9695d09298d8daeddb55c8908e7181b7e3503c7a30c1d3b402bf730c87b22413",
+      "source_unchanged": true
+    }
+  ],
+  "last_light_source_read_sha256": "0437c2014c5c0e87801a0acc7b25a4f957acf3a8028dbb699b5e6672d9574481",
+  "checks": {
+    "six_runtime": "13188/0",
+    "gale_overlay_runtime": "2210/0",
+    "actual_skin_bounds": "0 failures",
+    "required_overlay_boot_pool": "0 failures / 1 contact",
+    "common_master_actual_resources_timing": "62/0"
+  },
+  "common_master_limits": "Canonical motion/timing shared; raw joint-proportion residual6.5–29.3%height is NOT a passed5%physical-path/pixel similarity bound.",
+  "independent_review": "independent-review.json",
+  "release_windows_server_codex_actions": false
+}

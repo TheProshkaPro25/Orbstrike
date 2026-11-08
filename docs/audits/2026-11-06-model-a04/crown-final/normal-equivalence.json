@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "baseline_sha256": "d389eafd5e6d59ae77b853e3c2cd5e713e4561906e7a48a6bee131bd895546ee",
+  "final_sha256": "b209b4bad3ec5e2a4b02104993b7de1adbbdd1b59dba565c7f1e14270fe13df8",
+  "json_exact": true,
+  "binary_outside_main_normal_accessor_exact": true,
+  "all_positions_indices_joints_weights_UV_CapeGPU_exact": true,
+  "changed_NORMAL_vertices": 920,
+  "changed_NORMAL_first_id": 86783,
+  "changed_NORMAL_last_id": 87702,
+  "new_underside_crown_normals_only": true,
+  "body_motion_and_BVH_geometry_equivalence": true
+}

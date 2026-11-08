@@ -1,0 +1,34 @@
+{
+  "status": "PASS_UI_TEST_CONTRACT_GPU_OPEN",
+  "reviewer": "Independent Sol high",
+  "scope": "Read-only review of tools/test_hud_gdelta.gd, tools/test_gpu_acceptance.gd capture/Gdelta fixture, check.py wrapper routing and matching Main/BattleHud/OpponentPanel calls. No test, model or GPU launch by reviewer.",
+  "findings": [
+    {
+      "area": "capture ordering",
+      "verdict": "CONFIRMED_TEST_CONTRACT_FIX",
+      "detail": "SceneTree.process_frame is not a completed-draw barrier. Awaiting RenderingServer.frame_post_draw before SubViewport.get_texture().get_image() corrects the readback ordering contract. This review does not establish that ordering was the actual cause of a previous black/incomplete raster frame; that causal claim remains unexecuted on GPU."
+    },
+    {
+      "area": "public power fixture",
+      "verdict": "CORRECTED_DURING_REVIEW",
+      "detail": "BattleHud.set_powers updates battle presentation; Main separately presents powers to public panels. Initial added conditional mapping in gpu-acceptance was reversed. Reviewer reported it; owner confirmed correction to own390 if reduced else680 and enemy680 if reduced else390, matching opponent battle side0 if reduced else1. hud-gdelta fixed side1 uses own680/enemy390 correctly. This was a test fixture issue, not a demonstrated product UI bug."
+    },
+    {
+      "area": "narrow headless evidence",
+      "verdict": "PASS_EXISTING_RUN_REVIEWED",
+      "detail": "Read completed hud-gdelta log and summary:95checks/0failures,exit0,renderedfalse,4.27s. Actual advancing normal/reduced tweens, visible/alpha/rect contracts, six ability chips plus two pass chips, two simultaneous deltas and final public680/390 are covered. The earlier six-versus-eight child expectation was a test error. Headless result does not validate pixels or GPU compositing."
+    },
+    {
+      "area": "test safety and scope",
+      "verdict": "PASS_SOURCE_REVIEW",
+      "detail": "hud-gdelta is explicit opt-in presentation only. check.py uses existing test_window wrapper before test initialization, with minimized/unfocusable/offscreen behavior,60FPS and graphical position-20000,-20000. No Boot, models, physical match or product UI edits in this change. Graphical branch saves four post-draw PNGs and checks portrait luminance anchors; that branch remains unexecuted here."
+    }
+  ],
+  "remaining_blockers": [],
+  "remaining_limits": [
+    "GPU raster/black-frame cause and final visual acceptance OPEN",
+    "rendered=true alone would establish an active graphical path, not hardware GPU identity; adapter evidence is still required for a hardware claim",
+    "No repeated GPU/model/headless runtime checks were performed by this reviewer",
+    "Session owner confirmed final mapping correction; no additional checks followed the instruction to finish"
+  ]
+}

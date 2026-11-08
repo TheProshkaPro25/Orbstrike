@@ -150,7 +150,10 @@ func _copy_material(original: ShaderMaterial) -> ShaderMaterial:
 func _hold_materials_until_draw() -> void:
 	# Same-frame model switches can outlive renderer dependency updates.
 	var held := local_materials.duplicate()
-	if not held.is_empty() and not RenderingServer.frame_post_draw.is_connected(held.clear):
+	if held.is_empty(): return
+	if DisplayServer.get_name() == "headless":
+		get_tree().process_frame.connect(held.clear,CONNECT_ONE_SHOT)
+	elif not RenderingServer.frame_post_draw.is_connected(held.clear):
 		RenderingServer.frame_post_draw.connect(held.clear,CONNECT_ONE_SHOT)
 
 func _exit_tree() -> void:

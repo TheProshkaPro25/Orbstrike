@@ -1,0 +1,30 @@
+{
+  "kind": "Blender CPU raw-rest BVH, common geometric vertices excluded; not actual Godot poses/cloth/GPU acceptance",
+  "source_sha256": "454e8442b83fe7fd618d0bc0338dfc8b51b1daabaa49b4a5237dcb669598f727",
+  "candidate_sha256": "d51ab2dc59b810d39e2b7346fab0101256f44f421fdaa8ed4a538eb97cbf5a70",
+  "caps": 3387,
+  "nearby_retained_source_triangles": 3034,
+  "collar_source_triangles": 0,
+  "cap_body_nonshared_intersections": 3,
+  "cap_self_nonshared_intersections": 0,
+  "collar_body_current": 0,
+  "collar_body_baseline": 0,
+  "collar_body_introduced": 0,
+  "cap_body_pairs": [
+    [
+      195,
+      82610
+    ],
+    [
+      195,
+      103333
+    ],
+    [
+      199,
+      104024
+    ]
+  ],
+  "cap_self_pairs": [],
+  "collar_introduced_source_face_pairs": [],
+  "status": "FAIL"
+}

@@ -1,0 +1,70 @@
+{
+  "date": "2026-11-06",
+  "scope": "local client sources only; no export or release",
+  "checks": {
+    "career": 220,
+    "career-power": 99,
+    "career-ui": 168,
+    "device-ui": 95,
+    "career-flow": 48
+  },
+  "runs": [
+    {
+      "name": "career",
+      "profile": "gameplay",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 0.7,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/selected-career/career.log"
+    },
+    {
+      "name": "career-power",
+      "profile": "gameplay",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 0.45,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/selected-career-power/career-power.log"
+    },
+    {
+      "name": "career-ui",
+      "profile": "presentation",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 1.48,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/selected-career-ui/career-ui.log"
+    },
+    {
+      "name": "device-ui",
+      "profile": "presentation",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 12.81,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/selected-device-ui/device-ui.log"
+    },
+    {
+      "name": "career-flow",
+      "profile": "gameplay",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 55.54,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/gameplay/selected-career-flow/career-flow.log"
+    }
+  ],
+  "rendering": "headless logic only; no visual acceptance or screenshots",
+  "physical_matches": 1,
+  "remaining_cup_matches": "explicit result fixtures to verify completion/next league",
+  "limitations": [
+    "X11/Wayland inaccessible; Xvfb absent",
+    "editor import local TCP listen denied by sandbox; later runtime scripts compiled and executed",
+    "no listening, Windows, graphics/GPU cloth, performance or global balance acceptance",
+    "no EXE/PCK export, publication or server work"
+  ],
+  "preserved_untracked": "assets/music/battle(old).mp3",
+  "independent_review": "Sol high read actual diff and logs; findings fixed; final log separately available",
+  "source_sha256": {
+    "core/career.gd": "53973b674cd25d394d88ca1d4c0c1dc8d3cb540c9551c0d9ab796ca4fd139ed6",
+    "scenes/ui/career_panel.gd": "d6356d8a5115ffe41572525df3c44405c6794bf61b3128e2e348b08361ff2172",
+    "scenes/ui/device_settings.gd": "5cee3294e900cbd891d0779866a551e3185da0ade9c293d6434d9ed98ea4a3a1",
+    "scenes/main.gd": "26d315b7e213412df421fd295d0ba575a9a6011cca95b378ade15ac7d996570e"
+  }
+}

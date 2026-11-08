@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-06",
+  "scope": "electronic right opponent portrait/power; removal of corner/header decorations",
+  "check": {
+    "name": "opponent-panel",
+    "profile": "presentation",
+    "ok": true,
+    "exit_code": 0,
+    "seconds": 4.11,
+    "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/selected-opponent-panel/opponent-panel.log"
+  },
+  "assertions": 38,
+  "failures": 0,
+  "art_review": "Sol viewed existing dragnar/gorgul SVGs for fallback selection; no runtime image quality acceptance",
+  "limitations": [
+    "headless only; no GPU portrait/frame/crop visual acceptance",
+    "no listening/Windows/performance/fullBoot orcareerflow",
+    "no rules/career/server/GLB/.codex changes; no export/release"
+  ],
+  "independent_review": "Sol high reviewed layers/viewport lifecycle,public information and final full log; no blocking findings",
+  "source_sha256": {
+    "scenes/ui/opponent_panel.gd": "bc89fdb9e35d8e2e0c046eacde223c268ddaa7f929f4ec56d20678477ee51d20",
+    "scenes/ui/creature_portrait.gd": "5df981105a8f10f580f7588e9907f74449523dda4a516205c84dcf115c9184ee",
+    "scenes/main.gd": "6d5294776692af2d75ec2ef130ffcdbd3732b845c9024f1f36c6b975db721458",
+    "scenes/ui/hud.gd": "780c5a19f526d8757b677e9639e570f0c7d480915f7e63b7d28d2013226253dc",
+    "scenes/ui/ui_theme.gd": "a690f02b749a36394705d0c2fe89c73da7ae07e4d770cacc5bb1efec6d655656",
+    "scenes/ui/battle_hud.gd": "f5d47f5454948e90f2e286e48ac1a341d7136c86c8d94697f773bed392a69d6e",
+    "scenes/presentation/arena_director.gd": "adc37571184fe148b1524581120aad65c1f079b857a7fb6d2928c0813ef14796",
+    "tools/test_opponent_panel.gd": "f5aa5fab11b15829f68d3ca5a9f785267bd9194a18a8fe18572083ae02803134"
+  }
+}

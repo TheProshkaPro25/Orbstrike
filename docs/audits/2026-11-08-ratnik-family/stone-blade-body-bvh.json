@@ -1,0 +1,47 @@
+{
+  "scope": "Only rigid distal blade (localY>.12, swordweight>.90) against body (<.10 swordweight); three exported runtime attack poses each old/new. Not all armor/cloth/continuous collision audit.",
+  "poses": [
+    {
+      "stage": "before",
+      "frame": 12,
+      "blade_body_pairs": 0,
+      "blade_triangles": 2727,
+      "body_triangles": 99393
+    },
+    {
+      "stage": "before",
+      "frame": 28,
+      "blade_body_pairs": 0,
+      "blade_triangles": 2727,
+      "body_triangles": 99393
+    },
+    {
+      "stage": "before",
+      "frame": 44,
+      "blade_body_pairs": 0,
+      "blade_triangles": 2727,
+      "body_triangles": 99393
+    },
+    {
+      "stage": "after",
+      "frame": 12,
+      "blade_body_pairs": 0,
+      "blade_triangles": 2727,
+      "body_triangles": 99393
+    },
+    {
+      "stage": "after",
+      "frame": 28,
+      "blade_body_pairs": 0,
+      "blade_triangles": 2727,
+      "body_triangles": 99393
+    },
+    {
+      "stage": "after",
+      "frame": 44,
+      "blade_body_pairs": 0,
+      "blade_triangles": 2727,
+      "body_triangles": 99393
+    }
+  ]
+}

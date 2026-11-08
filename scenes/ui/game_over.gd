@@ -13,6 +13,7 @@ var _battles: VBoxContainer
 var _built := false
 var _restart_button: Button
 var _battle_title: Label
+var _menu_button: Button
 
 
 func _ready() -> void:
@@ -74,10 +75,20 @@ func _build() -> void:
 	b.pressed.connect(func() -> void: restart_requested.emit())
 	row.add_child(b)
 	var m := Button.new()
+	_menu_button = m
 	m.text = "В меню"
 	m.custom_minimum_size = Vector2(200, 50)
 	m.pressed.connect(func() -> void: get_tree().change_scene_to_file("res://scenes/menu/main_menu.tscn"))
 	row.add_child(m)
+	b.focus_next = b.get_path_to(m)
+	b.focus_previous = b.focus_next
+	m.focus_next = m.get_path_to(b)
+	m.focus_previous = m.focus_next
+	for button in [b, m]:
+		button.focus_neighbor_left = button.focus_next
+		button.focus_neighbor_right = button.focus_next
+		button.focus_neighbor_top = button.get_path_to(button)
+		button.focus_neighbor_bottom = button.focus_neighbor_top
 
 
 ## stats: {turns:int, alive:[a,b], captures:[a,b], wins:[a,b], abilities:[a,b], traps:int,
@@ -121,6 +132,7 @@ func show_result(winner: int, reason: String, stats: Dictionary = {}) -> void:
 	_panel.visible = true
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_panel.call_deferred("reset_size")
+	focus_primary.call_deferred()
 	var tree := get_tree()
 	await tree.process_frame
 	await tree.process_frame
@@ -134,6 +146,13 @@ func show_result(winner: int, reason: String, stats: Dictionary = {}) -> void:
 func set_restart_text(text: String) -> void:
 	_build()
 	_restart_button.text = text
+
+
+func focus_primary() -> void:
+	if not _panel.visible: return
+	for sibling in get_parent().get_children():
+		if sibling != self and ((sibling is HelpOverlay and sibling.is_visible_in_tree()) or (sibling is Window and sibling.visible)): return
+	_restart_button.grab_focus()
 
 
 func _row(name: String, a: String, b: String, head: bool = false) -> void:

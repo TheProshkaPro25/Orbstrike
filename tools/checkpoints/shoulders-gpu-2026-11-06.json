@@ -1,0 +1,74 @@
+{
+  "date": "2026-11-06",
+  "instruction": "Author requested shoulder reconstruction and actual GPU acceptance",
+  "status": "INSTALLED_AND_REAL_GPU_SCOPED_PASS",
+  "a03": {
+    "production_sha256": "69b159a0e8763ef85c1e78b951255deb5e75d3939643af71c1abb8357d7e9a5c",
+    "installed_scope": "Low rounded shoulder reconstruction atomically installed; ordinary resource proof15448/0",
+    "workspace": "build/model_candidates/2026-11-06-a03-anatomy",
+    "evidence": "docs/audits/2026-11-06-model-a03-anatomy",
+    "approach": "New semantic smoke/root mask, minimum cut along exact source edges, small rounded collar; old Boolean/fixed-boundary cap attempts are not reused",
+    "semantic_mask_candidate_removed_source_faces": 14241,
+    "semantic_mask_candidate_retained_source_faces": 135753,
+    "rejected_current_experiments": "Vertical/spatial compression retains angular sheets; early rounded collars have self-contact or a broad lid silhouette. None were promoted.",
+    "candidate_sha256": "69b159a0e8763ef85c1e78b951255deb5e75d3939643af71c1abb8357d7e9a5c",
+    "candidate": "build/model_candidates/2026-11-06-a03-anatomy/rounded_smoke22.glb",
+    "candidate_triangles": 171156,
+    "retained_source_faces": 135753,
+    "new_triangles": 35403,
+    "exact_source_boundary_vertices": 185,
+    "raw_body_cap_intersections": 0,
+    "raw_cap_self_intersections": 0,
+    "art_gate": "PASS practical silhouette, independent Sol five-view review plus integration review; current rounded_smoke22 only",
+    "contract": "docs/audits/2026-11-06-model-a03-anatomy/integrity.json",
+    "pre_promotion_import": "Corrected moving source/candidate palette/world0; whole11499/2 report preserved because oldSCN/direct animation comparison was an invalid production criterion",
+    "before_after": "docs/audits/2026-11-06-model-a03-anatomy/before-after-game.png",
+    "next_gate": "No further model work from this task; normal-motion HUD frame remains open separately",
+    "ordinary_runtime": {
+      "assertions": 15448,
+      "failures": 0,
+      "report": "docs/audits/2026-11-06-model-a03-anatomy/installed.json",
+      "actual_pose_motion_delta": 1.07040774822235,
+      "source_candidate_palette_delta": 0,
+      "source_candidate_world_delta": 0,
+      "new_ordinary_vs_previous_ordinary_palette_delta": 0,
+      "new_ordinary_vs_previous_ordinary_world_delta": 0,
+      "triangles": 171156
+    },
+    "pose_scope": "Actual moving palette/export and personally inspected CPU-skinned idle0/attack24. Corrected full46posed BVH NOT run after author narrowed scope. Static-bind526contact report is not a moving result."
+  },
+  "a04": {
+    "production_sha256": "d51ab2dc59b810d39e2b7346fab0101256f44f421fdaa8ed4a538eb97cbf5a70",
+    "status": "Previously accepted current helmet retained; no geometry changes in this session"
+  },
+  "r01": {
+    "code_contract": "PASS",
+    "test": "python tools/check.py --profile models --checks cloth-rim-contract --logic-only",
+    "assertions": 29,
+    "failures": 0,
+    "fix": "Per-cape owner next_pass uses exact primary GPU vertex hook and its eight parameters; native owner rim unchanged",
+    "review": "docs/audits/2026-11-06-gpu-acceptance/independent-rim-review.json",
+    "gpu_visual": "PASS in captured actualGPUcape idle/attack/hit/reuse scope"
+  },
+  "gpu": {
+    "status": "USER_RUN_HARDWARE_MACHINE_PASS_SCOPED_VISUAL_PASS",
+    "evidence": "docs/audits/2026-11-06-gpu-acceptance/environment-probe.json",
+    "fresh_graphical_probe": "check.py models review-state --visual fails X11/Wayland before scene",
+    "boundary": "X0/X1 EPERM; no /dev/dri or NVIDIA device nodes; nvidia-smi exit9",
+    "host_metadata": "Read-only get_godot_version did not respond and was interrupted; no project launched and no retry",
+    "hardware_renderer_accepted": true,
+    "reproducer": "python3 tools/gpu_acceptance_sources.py then python3 tools/check.py --profile models --checks gpu-acceptance --visual; prepared, hardware branch not executed",
+    "actual_report": "docs/audits/2026-11-06-gpu-acceptance/hardware-report.json",
+    "visual_review": "docs/audits/2026-11-06-gpu-acceptance/hardware-visual-review.json",
+    "checks": 70004,
+    "failures": 0
+  },
+  "scope_guards": {
+    "input_49_glb_hashes": "build/model_candidates/2026-11-06-a03-anatomy/session-input-shas.json",
+    "server_changed_or_tested": false,
+    "release_build_commit_publication": false,
+    "codex_changed": false,
+    "visible_test_window_started": false
+  },
+  "historical_motion_claims": "docs/audits/2026-11-06-gpu-acceptance/motion-claims-revoked.json"
+}

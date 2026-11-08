@@ -1,0 +1,143 @@
+{
+  "reviewer": "Sol high / independent read-only reviewer",
+  "status": "CODE_PASS_SCOPED_ART_PASS_SIX_VARIANT_RUNTIME_COMPLETE_WITH_LIMITS",
+  "code_findings_open": [],
+  "code_scope": [
+    "KolossarMotion: strict five/63 unique21xTRS validation, common master fingerprint, immutable resource remap cache, install before preparation.",
+    "CreatureAnim: newset successful-install flag only; element tempo1; legacy body FX skipped only authored path; grounded late sole pass keeps ankleXZ/kneeplane/footbasis without autostep/crouch/sway.",
+    "Light skin clone: named binds, source fingerprints, raw surface storage preserved except skin_data/bone_aabbs; original mesh retained; content/source/bind cache without Nodes.",
+    "Boot required six libraries plus Light overlay; actor install gate; StartupCatalog and all_resources export preset include new dependencies.",
+    "Light sole samples invalidate on payload digest, bypass old disk weights synchronously; helper signature map capped by preparation_cache_limit and cleared with model caches."
+  ],
+  "resolved_review_risks": [
+    "Encoded sparse/nonpair preservation checked after Godot encoding, not only before.",
+    "Light sole sampler uses actual overlay signature, not stale original-source disk samples.",
+    "Auxiliary strong-source signature map now capped."
+  ],
+  "runtime_results_read": {
+    "report": "build/checks/kolossar-fullset/report.json",
+    "checks": 13658,
+    "failures": 0,
+    "variant_count": 6,
+    "samples_per_variant": 25,
+    "actual_capture_states": 30,
+    "changed_during_draw": 0,
+    "sampling": "fixed _process 1/120 from live idle; former one-shot blended snapshots invalid",
+    "accepted_native_signature": [
+      {
+        "actual_time": 0.0,
+        "body_angle_from_up": 15.8473280726354,
+        "clip_time": 0.0,
+        "foot_L_forward_of_hips": 0.148710500448942,
+        "foot_R_forward_of_hips": 0.103771265596151,
+        "hand_R_ahead_of_chest": 0.0816897749900818,
+        "hand_R_ahead_of_head": -0.00927010178565979,
+        "max_root_relative_error": 3.47871122130528e-07,
+        "root_world_displacement_error_source": 0.0
+      },
+      {
+        "actual_time": 0.299999995529652,
+        "body_angle_from_up": 13.4217136011787,
+        "clip_time": 0.3,
+        "foot_L_forward_of_hips": 0.174867756664753,
+        "foot_R_forward_of_hips": 0.124954216182232,
+        "hand_R_ahead_of_chest": -0.178023271262646,
+        "hand_R_ahead_of_head": -0.229988485574722,
+        "max_root_relative_error": 1.45704098031274e-06,
+        "root_world_displacement_error_source": 1.86264514923096e-08
+      },
+      {
+        "actual_time": 0.399999994039536,
+        "body_angle_from_up": 21.2431519037361,
+        "clip_time": 0.4,
+        "foot_L_forward_of_hips": 0.109867781400681,
+        "foot_R_forward_of_hips": 0.0599542260169983,
+        "hand_R_ahead_of_chest": 0.299957439303398,
+        "hand_R_ahead_of_head": 0.172955840826035,
+        "max_root_relative_error": 1.78813934326172e-07,
+        "root_world_displacement_error_source": 7.50856266051869e-09
+      },
+      {
+        "actual_time": 0.5,
+        "body_angle_from_up": 21.9472095109283,
+        "clip_time": 0.5,
+        "foot_L_forward_of_hips": 0.105148360133171,
+        "foot_R_forward_of_hips": 0.05523481965065,
+        "hand_R_ahead_of_chest": 0.305576682090759,
+        "hand_R_ahead_of_head": 0.177910566329956,
+        "max_root_relative_error": 2.3853496600168e-07,
+        "root_world_displacement_error_source": 1.53597650154325e-08
+      },
+      {
+        "actual_time": 1.2,
+        "body_angle_from_up": 15.8473280726354,
+        "clip_time": 1.2,
+        "foot_L_forward_of_hips": 0.148710500448942,
+        "foot_R_forward_of_hips": 0.103771265596151,
+        "hand_R_ahead_of_chest": 0.0816897749900818,
+        "hand_R_ahead_of_head": -0.00927010178565979,
+        "max_root_relative_error": 1.81891849138083e-07,
+        "root_world_displacement_error_source": 0.0
+      }
+    ]
+  },
+  "art_scope": {
+    "personally_viewed": "Actual30PNG six-variant five-clip grid, individual Light hit/attack; native Light5views and enlarged heel crops; full154 paired old/new chronological samples.",
+    "conclusion": "Common grounded guard/open-arm roar/coil-and-punch/recoil choreography remains readable across all six. No critical limb collapse, new visible heel sheet or floor cut in viewed images.",
+    "limitations": [
+      "Review is phase-based, not full continuous gameplay/collision certification.",
+      "Light heel ROI edge stretch increased to4.55x attack/3.36x hit; retained source boot cavities and plate geometry are not remodelled.",
+      "Source asymmetric arms, compact waist-height windup and no jaw articulation remain.",
+      "Quarter-view punch is foreshortened; physical lead is confirmed by actual Stone joint matrices and earlier native SIDE."
+    ]
+  },
+  "old_new": {
+    "video": "build/experiments/kolossar-fullset-2026-11-08/old-new-comparison/kolossar-stone-old-vs-new-five.mp4",
+    "gif": "build/experiments/kolossar-fullset-2026-11-08/old-new-comparison/kolossar-stone-old-vs-new-five.gif",
+    "scope": "Native source vs native authored, no runtime FX; identical sourceframe/scale/camera/light/floor;154frames20FPS7.7sec, explicit shorter-clip endpoint holds."
+  },
+  "actual_skin_bounds_read": {
+    "path": "build/checks/kolossar-fullset/bounds-report.json",
+    "failures": [],
+    "sampled_poses": 150,
+    "min_floor_world": 5.59913651141386e-05,
+    "cropped_vertex_samples": 0,
+    "all_top_within_envelope": true,
+    "scope": "Actual exported runtime skins, 25 sampled poses per variant; not continuous collision validation"
+  },
+  "actual_common_master_read": {
+    "path": "build/experiments/kolossar-fullset-2026-11-08/retarget-six/actual-godot-common-master-proof.json",
+    "samples_per_variant": 203,
+    "bones": 21,
+    "variants": 6,
+    "max_rotation_degrees": 3.229385945827951e-05,
+    "max_root_source_units": 1.6581652432714428e-08,
+    "input_dump": {
+      "path": "build/checks/kolossar-fullset/common-master-runtime.json",
+      "sha256": "d6870d1dc295caace78f78983f9abc08e67cfc9fe69227027a11bdf601d2d687",
+      "rest_source": "actual imported Skeleton3D rest_local"
+    },
+    "method_review": "Actual loaded interpolation + actual Godot rest; one fixed anatomical yaw/spine scale and constant floor adapter. No framewise fitting. Shared choreography, not95%raw mesh/joint worldpaths.",
+    "headless_runtime_timing": "62/0; real loaded interpolation/rest dump; shared durations/contact/clash and legacy controls unchanged"
+  },
+  "boot_pool_read": {
+    "path": "build/checks/models/selected-kolossar-runtime-pool/kolossar-runtime-pool.json",
+    "exit_code": 0,
+    "failures": 0,
+    "kolossar_mode": true,
+    "actual_light_contacts": 1,
+    "historical_contact_field": "grifalon_contacts reused by fixture; kolossar_mode=true",
+    "startup_seconds": 19.714,
+    "borrow_return_cycles": 12,
+    "uids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "code_assertions_read": "No model/arena setup, animation loads, overlay load or mesh rebuild after menu; one Light overlay clone; actual Light Ball attack event then12borrow/returns. Not a complete match."
+  },
+  "scoped_diff_check": "git diff --check on modified tracked runtime/loading files passed"
+}

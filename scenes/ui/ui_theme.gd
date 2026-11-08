@@ -16,6 +16,182 @@ const ARENA_NEUTRAL := Color(0.55, 0.47, 0.33)
 static var _theme: Theme
 static var _body_font: FontFile
 static var _heading_font: FontFile
+const DEVICE_ACCENT := Color(0.40, 0.94, 0.93)
+const DEVICE_DIM := Color(0.20, 0.48, 0.53)
+const DEVICE_INK := Color(0.018, 0.045, 0.065, 0.97)
+
+
+static func accent() -> Color:
+	return DEVICE_ACCENT if DeviceSettings.is_device() else GOLD
+
+
+static func accent_dim() -> Color:
+	return DEVICE_DIM if DeviceSettings.is_device() else GOLD_DIM
+
+
+static func panel_color() -> Color:
+	return DEVICE_INK if DeviceSettings.is_device() else INK
+
+
+static func _refresh_theme(_style: int) -> void:
+	# Keep the shared Theme identity: Boot's resident screens already reference it.
+	_theme.clear()
+	_theme.merge_with(_make_device() if DeviceSettings.is_device() else _make())
+	_theme.default_font = body_font()
+	_theme.default_font_size = 18
+
+
+static func _make_device() -> Theme:
+	var t := _make()
+	var panel := box(DEVICE_INK, DEVICE_DIM, 1, 3, 16)
+	panel.border_width_top = 3
+	panel.shadow_color = Color(0.05, 0.50, 0.56, 0.12)
+	panel.shadow_size = 6
+	t.set_stylebox("panel", "PanelContainer", panel)
+	t.set_stylebox("panel", "Panel", panel)
+	t.set_stylebox("panel", "TooltipPanel", box(DEVICE_INK, DEVICE_ACCENT, 1, 3, 10))
+	var states := {
+		"normal": [Color(0.035, 0.09, 0.12, 0.98), DEVICE_DIM],
+		"hover": [Color(0.055, 0.18, 0.22), DEVICE_ACCENT],
+		"pressed": [Color(0.065, 0.28, 0.31), DEVICE_ACCENT],
+		"hover_pressed": [Color(0.065, 0.28, 0.31), DEVICE_ACCENT],
+		"disabled": [Color(0.04, 0.065, 0.08, 0.80), Color(0.18, 0.26, 0.29)],
+	}
+	for state: String in states:
+		var style := box(states[state][0], states[state][1], 1, 3, 10)
+		style.border_width_left = 3
+		t.set_stylebox(state, "Button", style)
+	var focus := box(Color.TRANSPARENT, DEVICE_ACCENT.lightened(0.25), 2, 3, 10)
+	focus.draw_center = false
+	t.set_stylebox("focus", "Button", focus)
+	for type: String in ["Button", "OptionButton", "CheckButton", "CheckBox"]:
+		t.set_color("font_color", type, Color(0.86, 0.96, 0.97))
+		t.set_color("font_pressed_color", type, DEVICE_ACCENT)
+		t.set_color("font_hover_color", type, Color.WHITE)
+	t.set_color("font_color", "Label", Color(0.86, 0.96, 0.97))
+	t.set_stylebox("slider", "HSlider", box(Color(0.04, 0.11, 0.14), DEVICE_DIM, 1, 2, 0))
+	t.set_stylebox("grabber_area", "HSlider", box(DEVICE_DIM, DEVICE_ACCENT, 0, 2, 0))
+	return t
+
+
+## Shared style/lifecycle helper. It never draws decoration or covers input.
+static func apply_device_frame(root: Control, caption: String = "ORBSTRIKE", decoration: bool = true) -> void:
+	if root.has_node("DeviceFrame"):
+		return
+	root.theme = get_theme()
+	var frame := DeviceFrame.new()
+	frame.name = "DeviceFrame"
+	frame.caption = caption
+	frame.decoration = decoration
+	root.add_child(frame)
+
+
+## Reuses the resident UI with one short opacity fade.
+## Controls keep their layout, input and processing for the entire animation.
+static func begin_hud_intro(root: Control) -> void:
+	if root.has_node("DeviceFrame"):
+		(root.get_node("DeviceFrame") as DeviceFrame).play_intro()
+
+
+class DeviceFrame extends Control:
+	var caption := "ORBSTRIKE"
+	var decoration := true
+	var intro_tween: Tween
+	var _pending := false
+
+	func _ready() -> void:
+		set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		z_index = 15
+		resized.connect(_stop_intro)
+
+	func _enter_tree() -> void:
+		# Resident menus leave and re-enter the tree when GameLoading parks them.
+		# _ready runs only once, so subscriptions belong to the enter/exit pair.
+		if not DeviceSettings.events().changed.is_connected(_changed):
+			DeviceSettings.events().changed.connect(_changed)
+		if not get_tree().node_added.is_connected(_node_added):
+			get_tree().node_added.connect(_node_added)
+		if not DeviceSettings.events().motion_changed.is_connected(_motion_changed):
+			DeviceSettings.events().motion_changed.connect(_motion_changed)
+		_changed(DeviceSettings.current())
+
+	func _exit_tree() -> void:
+		_stop_intro()
+		if DeviceSettings.events().motion_changed.is_connected(_motion_changed):
+			DeviceSettings.events().motion_changed.disconnect(_motion_changed)
+		if DeviceSettings.events().changed.is_connected(_changed):
+			DeviceSettings.events().changed.disconnect(_changed)
+		if get_tree().node_added.is_connected(_node_added):
+			get_tree().node_added.disconnect(_node_added)
+
+	func _node_added(node: Node) -> void:
+		if get_parent().is_ancestor_of(node) and not _pending:
+			_pending = true
+			_refresh.call_deferred()
+
+	func _changed(_style: int) -> void:
+		_stop_intro()
+		visible = DeviceSettings.is_device()
+		_refresh.call_deferred()
+
+	func _refresh() -> void:
+		_pending = false
+		if is_inside_tree():
+			_restyle(get_parent())
+
+	func _restyle(node: Node) -> void:
+		# Accepted card artwork, fonts and proportions remain their own presentation.
+		if node is CardView or node == self:
+			return
+		if node is Control:
+			var control := node as Control
+			for key: String in ["panel", "normal", "hover", "pressed", "hover_pressed", "disabled", "focus"]:
+				if not control.has_theme_stylebox_override(key):
+					continue
+				var current_style := control.get_theme_stylebox(key)
+				if not current_style is StyleBoxFlat:
+					continue
+				var original: StyleBoxFlat = current_style.get_meta("device_original", current_style)
+				if not DeviceSettings.is_device():
+					control.add_theme_stylebox_override(key, original)
+					continue
+				var style: StyleBoxFlat = original.duplicate()
+				style.set_meta("device_original", original)
+				style.set_corner_radius_all(3)
+				style.skew = Vector2.ZERO
+				if original.bg_color.get_luminance() < 0.10:
+					style.bg_color = Color(DEVICE_INK, original.bg_color.a)
+				if original.border_color.is_equal_approx(GOLD) or original.border_color.is_equal_approx(GOLD_DIM):
+					style.border_color = DEVICE_ACCENT if original.border_color.is_equal_approx(GOLD) else DEVICE_DIM
+				control.add_theme_stylebox_override(key, style)
+			if control.has_theme_color_override("font_color"):
+				var color := control.get_theme_color("font_color")
+				if DeviceSettings.is_device():
+					if color.is_equal_approx(GOLD): control.add_theme_color_override("font_color", DEVICE_ACCENT)
+					elif color.is_equal_approx(GOLD_DIM): control.add_theme_color_override("font_color", DEVICE_DIM)
+				else:
+					if color.is_equal_approx(DEVICE_ACCENT): control.add_theme_color_override("font_color", GOLD)
+					elif color.is_equal_approx(DEVICE_DIM): control.add_theme_color_override("font_color", GOLD_DIM)
+		for child in node.get_children():
+			_restyle(child)
+
+	func _motion_changed(reduced: bool) -> void:
+		if reduced: _stop_intro()
+
+	func _stop_intro() -> void:
+		if intro_tween != null and intro_tween.is_valid(): intro_tween.kill()
+		intro_tween = null
+		if is_instance_valid(get_parent()): get_parent().modulate.a = 1.0
+
+	func play_intro() -> void:
+		_stop_intro()
+		if not DeviceSettings.is_device() or DeviceSettings.reduce_motion(): return
+		get_parent().modulate.a = 0.18
+		intro_tween = create_tween().set_parallel(true).set_ignore_time_scale(true)
+		intro_tween.tween_property(get_parent(), "modulate:a", 1.0, 0.32).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		intro_tween.finished.connect(func() -> void: intro_tween = null)
+
 
 
 static func body_font() -> Font:
@@ -32,7 +208,8 @@ static func heading_font() -> Font:
 
 static func get_theme() -> Theme:
 	if _theme == null:
-		_theme = _make()
+		_theme = _make_device() if DeviceSettings.is_device() else _make()
+		DeviceSettings.events().changed.connect(_refresh_theme)
 	return _theme
 
 

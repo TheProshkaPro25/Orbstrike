@@ -1,0 +1,63 @@
+{
+  "kind": "CPU static impact scope from real imported mesh arrays; not GPU cloth execution",
+  "model": "ratnik_light",
+  "source_sha256": "454e8442b83fe7fd618d0bc0338dfc8b51b1daabaa49b4a5237dcb669598f727",
+  "candidate_sha256": "b209b4bad3ec5e2a4b02104993b7de1adbbdd1b59dba565c7f1e14270fe13df8",
+  "data": [
+    {
+      "variant": "source",
+      "body_bbox_min": [
+        -0.30986055731773376,
+        -0.4236454963684082,
+        -0.30733808875083923
+      ],
+      "body_bbox_max": [
+        0.32174772024154663,
+        0.435552716255188,
+        0.4315739572048187
+      ],
+      "body_voxel_resolution": 10,
+      "body_voxel_step": 0.0859198197722435,
+      "cape_bbox_min": [
+        -0.4845844507217407,
+        -0.3444344699382782,
+        -0.49471211433410645
+      ],
+      "cape_bbox_max": [
+        0.1909012496471405,
+        0.3272576332092285,
+        0.0655360221862793
+      ]
+    },
+    {
+      "variant": "candidate",
+      "body_bbox_min": [
+        -0.30986055731773376,
+        -0.4236454963684082,
+        -0.30733808875083923
+      ],
+      "body_bbox_max": [
+        0.32174772024154663,
+        0.47634732723236084,
+        0.4315739572048187
+      ],
+      "body_voxel_resolution": 10,
+      "body_voxel_step": 0.08999928086996078,
+      "cape_bbox_min": [
+        -0.4845844507217407,
+        -0.3444344699382782,
+        -0.49471211433410645
+      ],
+      "cape_bbox_max": [
+        0.1909012496471405,
+        0.3272576332092285,
+        0.0655360221862793
+      ]
+    }
+  ],
+  "cape_geometry_skin_unchanged": true,
+  "collider_proxy_is_unchanged": false,
+  "reason": "Vendor collider extracts Mesh_0 only, excluding CapeGPU; its longest body axis grows with new crown/halo, changing voxel step. No claim of unchanged collision proxy or cloth dynamics.",
+  "prepared_cache_review": "PreparationStore.source_key includes current raw GLB SHA256/.import/artifact stamp; ResidentClothSolver._body_signature includes actual body geometry/binds/rest. Old source cache is invalidated. No mass regeneration performed.",
+  "gpu_cloth_rim_status": "R01 OPEN; no live simulation/rendered-rim acceptance; no observed new cloth failure asserted"
+}

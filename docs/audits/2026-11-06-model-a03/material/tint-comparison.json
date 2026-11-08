@@ -1,0 +1,39 @@
+{
+  "source_sha256": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+  "scope": "CPU raw-rest material comparison; not Godot/GPU",
+  "material_mask_faces": 10443,
+  "original_material_faces": 139551,
+  "form_repair_claimed": false,
+  "variants": [
+    {
+      "file": "build/model_candidates/2026-11-06-a03/material/soft_lavender.glb",
+      "sha256": "2145503718cd32cdd1148f465c9440f522dee6a492a7be285f4e2caf2b4b67b0",
+      "palette": "soft_lavender",
+      "tint_rgb": [
+        0.58,
+        0.38,
+        0.72
+      ]
+    },
+    {
+      "file": "build/model_candidates/2026-11-06-a03/material/muted_violet.glb",
+      "sha256": "ca2580a32b502635b15193141c6b71b388ebdde75c04ac10e1646c733c8b4e0f",
+      "palette": "muted_violet",
+      "tint_rgb": [
+        0.38,
+        0.22,
+        0.52
+      ]
+    },
+    {
+      "file": "build/model_candidates/2026-11-06-a03/material/smoky_violet.glb",
+      "sha256": "4dfbef1466c64b6f090b8aac42da232c3aa9f7af70a3a98786dda26744de84a8",
+      "palette": "smoky_violet",
+      "tint_rgb": [
+        0.24,
+        0.14,
+        0.34
+      ]
+    }
+  ]
+}

@@ -1,0 +1,581 @@
+{
+  "code_status": "SCOPED_CODE_PASS_CURRENT_SIX_RESOURCES",
+  "art_status": "SCOPED_RUNTIME_KEYPOSE_PASS_ALL_SIX_WITH_GALE_OVERLAY_CONCERN_CLOSED; NOT_FULL_RIG_COLLISION_OR_SILHOUETTE_IDENTITY_PASS",
+  "reviewer": "Independent Sol high; read-only code/results/image review. No duplicate tests/renders, no code/bone/key/weight/geometry edits.",
+  "snapshot_sha256": {
+    "scenes/grifalon_motion.gd": "0e929cff6b423a9478c6cd8b1303beb6495eae4624d52f7ea4a5c22632104166",
+    "scenes/creature_anim.gd": "8cced5592ba868efd32231a749b4ed6ae03fa39ee0543fb7b1534a26f00f95b5",
+    "scenes/creature_models.gd": "25b43e5bc30d9e07ffabdc3e8755a7a3f854c241ce97c2f4d9cb4c3e3225218f",
+    "scenes/loading/startup_catalog.gd": "064a6b51b9d2fc3632fc5a6781479e1fc89e54d50becf35f5b9968de21853518",
+    "scenes/loading/game_loading.gd": "7fa98881b500ab2e97a9993dede390823621da2bd47c0bd5233c49596eeca98f",
+    "scenes/loading/boot.gd": "a6d7c0567fb9111e6f385f7877f3a7a701a4157780f7f53bbaa7e836d97509bd",
+    "export_presets.cfg": "cf23ad36e11e69b5835fbda971c7dd092e093b68286a28483756ab0ea4fd53a9",
+    "scenes/grifalon_gale_skin.gd": "ddf2419b34c751d3d9223eafa455c7b658593f6c75e9f0ef586e7304184f80a5"
+  },
+  "resolved_findings": {
+    "P1_required_six_before_menu": {
+      "status": "resolved",
+      "evidence": [
+        "scenes/grifalon_motion.gd:36 preload_required",
+        "scenes/loading/game_loading.gd:58 failure returns before actor preparation/ready publication",
+        "scenes/loading/boot.gd:44 does not show menu if !ready_to_play"
+      ]
+    },
+    "P2_complete_five_clips": {
+      "status": "resolved",
+      "evidence": [
+        "scenes/grifalon_motion.gd:44 validation_error validates exact5, target/version/contact/envelope,63unique21x3 bonechannels,start0/endlength,finite keys",
+        "tools/test_grifalon_fullset.gd negativefixtures include missingroot/empty/wrongtarget/incomplete"
+      ]
+    },
+    "P3_camera_label_envelope": {
+      "status": "resolved for sampled fixture",
+      "evidence": [
+        "scenes/creature_models.gd:190 normalization_scale/floor metadata",
+        "scenes/creature_anim.gd:84 install then sourcebound->world envelope",
+        "scenes/creature_anim.gd:227 get_hover_height returns authored envelope for newset",
+        "final bounds-report.json actual skinned25posesx6,0croppedvertexsamples/top<=envelope"
+      ],
+      "limit": "Fixture camera frustum proof is not an actualArenaDirector battlecamera sweep test."
+    }
+  },
+  "code_checks": [
+    "Successful newset installation occurs before preparation/sharedcache; preparation_source remains original PackedScene.",
+    "Mappedsharedlibraries retain resource refs and NodePath strings only. No targetNodes cached; peractorAnimationPlayer state is separate.",
+    "Only copied trackpaths/playbackflags are changed by runtime. Authoredkey values/interpolation are preserved; old legacytorso/tail/support/flight and additivehover/lunge disabled only when successfulGrifalonnewset flag istrue.",
+    "Contactnormalized1/3/.07warp,tempo,hitstop,flash/eventpath and RatnikHumanoidStrike/othercreatures remain in common code.",
+    "StartupCatalog six.res paths and preload_match cover eager load; residentwarm actors do not install/load aftermenu in observedBoot/pooltest.",
+    "export_presets.cfg export_filter=all_resources and no assets/animations exclusion covers dynamicallyloaded.res in a futureclientexport; export/build not run."
+  ],
+  "test_results_reviewed_not_rerun": {
+    "six_fullset": {
+      "checks": 13188,
+      "failures": 0,
+      "captures": 30,
+      "sampling": "fixed _process 1/120 from live idle; former one-shot blended snapshots invalid"
+    },
+    "actual_skin_bounds": {
+      "scope": "Actual exported runtime skins, 25 sampled poses per variant; not continuous collision validation",
+      "failures": [],
+      "min_floor_world": 2.440121899658366,
+      "cropped_vertex_samples": 0,
+      "variants": [
+        {
+          "id": "creature_grifalon_fire",
+          "min_y": 3.7153682682984623,
+          "max_y": 15.436163990666774,
+          "envelope_top": 16.2087707961639,
+          "cropped_vertex_samples": 0
+        },
+        {
+          "id": "creature_grifalon_gale",
+          "min_y": 2.440121899658366,
+          "max_y": 11.537194810348634,
+          "envelope_top": 12.3529367801261,
+          "cropped_vertex_samples": 0
+        },
+        {
+          "id": "creature_grifalon_stone",
+          "min_y": 2.8677310793376343,
+          "max_y": 11.5255391969021,
+          "envelope_top": 12.1256290135595,
+          "cropped_vertex_samples": 0
+        },
+        {
+          "id": "creature_grifalon_light",
+          "min_y": 3.1062296434277794,
+          "max_y": 12.624192719550637,
+          "envelope_top": 13.2449928566152,
+          "cropped_vertex_samples": 0
+        },
+        {
+          "id": "creature_grifalon_shadow",
+          "min_y": 3.461069036631609,
+          "max_y": 13.96564591200358,
+          "envelope_top": 14.6692043575445,
+          "cropped_vertex_samples": 0
+        },
+        {
+          "id": "creature_grifalon_tide",
+          "min_y": 3.0984841825617937,
+          "max_y": 13.763188831573693,
+          "envelope_top": 14.3918153661613,
+          "cropped_vertex_samples": 0
+        }
+      ]
+    },
+    "light_native_equivalence": {
+      "checks": 575,
+      "failures": 0,
+      "max_root_world_displacement_error_source": 1.53597650154325e-08,
+      "max_root_relative_joint_matrix_error": 9.42550002491771e-07
+    },
+    "boot_pool": {
+      "failures": 0,
+      "grifalon_contacts": 1,
+      "startup_seconds": 22.567,
+      "timings": [
+        {
+          "activate_ms": 0.2,
+          "prepare_ms": 2.682,
+          "repeat": 0,
+          "uid": 0
+        },
+        {
+          "activate_ms": 0.219,
+          "prepare_ms": 2.682,
+          "repeat": 1,
+          "uid": 0
+        },
+        {
+          "activate_ms": 0.197,
+          "prepare_ms": 1.851,
+          "repeat": 0,
+          "uid": 1
+        },
+        {
+          "activate_ms": 0.208,
+          "prepare_ms": 1.851,
+          "repeat": 1,
+          "uid": 1
+        },
+        {
+          "activate_ms": 0.191,
+          "prepare_ms": 3.301,
+          "repeat": 0,
+          "uid": 2
+        },
+        {
+          "activate_ms": 0.186,
+          "prepare_ms": 3.301,
+          "repeat": 1,
+          "uid": 2
+        },
+        {
+          "activate_ms": 0.199,
+          "prepare_ms": 1.418,
+          "repeat": 0,
+          "uid": 3
+        },
+        {
+          "activate_ms": 0.187,
+          "prepare_ms": 1.418,
+          "repeat": 1,
+          "uid": 3
+        },
+        {
+          "activate_ms": 0.275,
+          "prepare_ms": 1.855,
+          "repeat": 0,
+          "uid": 4
+        },
+        {
+          "activate_ms": 0.179,
+          "prepare_ms": 1.855,
+          "repeat": 1,
+          "uid": 4
+        },
+        {
+          "activate_ms": 0.271,
+          "prepare_ms": 2.682,
+          "repeat": 0,
+          "uid": 5
+        },
+        {
+          "activate_ms": 0.186,
+          "prepare_ms": 2.682,
+          "repeat": 1,
+          "uid": 5
+        }
+      ]
+    },
+    "prior_boot_pool_before_overlay": {
+      "failures": 0,
+      "grifalon_contacts": 1,
+      "startup_seconds": 22.567,
+      "timings": [
+        {
+          "activate_ms": 0.2,
+          "prepare_ms": 2.682,
+          "repeat": 0,
+          "uid": 0
+        },
+        {
+          "activate_ms": 0.219,
+          "prepare_ms": 2.682,
+          "repeat": 1,
+          "uid": 0
+        },
+        {
+          "activate_ms": 0.197,
+          "prepare_ms": 1.851,
+          "repeat": 0,
+          "uid": 1
+        },
+        {
+          "activate_ms": 0.208,
+          "prepare_ms": 1.851,
+          "repeat": 1,
+          "uid": 1
+        },
+        {
+          "activate_ms": 0.191,
+          "prepare_ms": 3.301,
+          "repeat": 0,
+          "uid": 2
+        },
+        {
+          "activate_ms": 0.186,
+          "prepare_ms": 3.301,
+          "repeat": 1,
+          "uid": 2
+        },
+        {
+          "activate_ms": 0.199,
+          "prepare_ms": 1.418,
+          "repeat": 0,
+          "uid": 3
+        },
+        {
+          "activate_ms": 0.187,
+          "prepare_ms": 1.418,
+          "repeat": 1,
+          "uid": 3
+        },
+        {
+          "activate_ms": 0.275,
+          "prepare_ms": 1.855,
+          "repeat": 0,
+          "uid": 4
+        },
+        {
+          "activate_ms": 0.179,
+          "prepare_ms": 1.855,
+          "repeat": 1,
+          "uid": 4
+        },
+        {
+          "activate_ms": 0.271,
+          "prepare_ms": 2.682,
+          "repeat": 0,
+          "uid": 5
+        },
+        {
+          "activate_ms": 0.186,
+          "prepare_ms": 2.682,
+          "repeat": 1,
+          "uid": 5
+        }
+      ]
+    },
+    "boot_pool_after_required_overlay": {
+      "failures": 0,
+      "grifalon_contacts": 1,
+      "startup_seconds": 17.121,
+      "timings": [
+        {
+          "activate_ms": 0.159,
+          "prepare_ms": 1.885,
+          "repeat": 0,
+          "uid": 0
+        },
+        {
+          "activate_ms": 0.158,
+          "prepare_ms": 1.885,
+          "repeat": 1,
+          "uid": 0
+        },
+        {
+          "activate_ms": 0.195,
+          "prepare_ms": 1.796,
+          "repeat": 0,
+          "uid": 1
+        },
+        {
+          "activate_ms": 0.194,
+          "prepare_ms": 1.796,
+          "repeat": 1,
+          "uid": 1
+        },
+        {
+          "activate_ms": 0.228,
+          "prepare_ms": 2.172,
+          "repeat": 0,
+          "uid": 2
+        },
+        {
+          "activate_ms": 0.232,
+          "prepare_ms": 2.172,
+          "repeat": 1,
+          "uid": 2
+        },
+        {
+          "activate_ms": 0.211,
+          "prepare_ms": 1.723,
+          "repeat": 0,
+          "uid": 3
+        },
+        {
+          "activate_ms": 0.195,
+          "prepare_ms": 1.723,
+          "repeat": 1,
+          "uid": 3
+        },
+        {
+          "activate_ms": 0.199,
+          "prepare_ms": 1.852,
+          "repeat": 0,
+          "uid": 4
+        },
+        {
+          "activate_ms": 0.186,
+          "prepare_ms": 1.852,
+          "repeat": 1,
+          "uid": 4
+        },
+        {
+          "activate_ms": 0.229,
+          "prepare_ms": 1.885,
+          "repeat": 0,
+          "uid": 5
+        },
+        {
+          "activate_ms": 0.196,
+          "prepare_ms": 1.885,
+          "repeat": 1,
+          "uid": 5
+        }
+      ]
+    },
+    "gale_overlay_runtime": {
+      "checks": 2210,
+      "failures": 0,
+      "sampling": "fixed _process 1/120 from live idle; former one-shot blended snapshots invalid",
+      "scope": "Galeonly5clips, sharedwarmclone, immutableoriginal/nonR/outside/rawnonSkinfields validated; otherfive successfulcases notrepeated"
+    },
+    "gale_overlay_bounds": {
+      "failures": [],
+      "variants": [
+        {
+          "id": "creature_grifalon_gale",
+          "min_y": 2.440121899658366,
+          "max_y": 11.74700712751398,
+          "envelope_top": 12.3860918166453,
+          "cropped_vertex_samples": 0
+        }
+      ]
+    }
+  },
+  "personally_viewed": [
+    "build/checks/grifalon-fullset/six-variants-five-clips.jpg (final corrected30poses)",
+    "build/checks/grifalon-fullset/light-contact-proof/light-contact-side.png",
+    "build/checks/grifalon-fullset/creature_grifalon_fire-attack.png",
+    "build/checks/grifalon-fullset/creature_grifalon_gale-attack.png",
+    "build/checks/grifalon-fullset/creature_grifalon_stone-attack.png",
+    "build/checks/grifalon-fullset/creature_grifalon_light-attack.png",
+    "build/checks/grifalon-fullset/creature_grifalon_shadow-attack.png",
+    "build/checks/grifalon-fullset/creature_grifalon_tide-attack.png",
+    "build/checks/grifalon-fullset/gale-correction/creature_grifalon_gale-idle.png",
+    "build/checks/grifalon-fullset/gale-correction/creature_grifalon_gale-stance.png",
+    "build/checks/grifalon-fullset/gale-correction/creature_grifalon_gale-roar.png",
+    "build/checks/grifalon-fullset/gale-correction/creature_grifalon_gale-attack.png",
+    "build/checks/grifalon-fullset/gale-correction/creature_grifalon_gale-hit.png"
+  ],
+  "attack_body_angles_before_after_match": {
+    "creature_grifalon_fire-attack": 78.1980161847756,
+    "creature_grifalon_gale-attack": 77.5301602877317,
+    "creature_grifalon_light-attack": 77.2253562658308,
+    "creature_grifalon_shadow-attack": 77.0457564416053,
+    "creature_grifalon_stone-attack": 77.9004726539623,
+    "creature_grifalon_tide-attack": 74.7924087325264
+  },
+  "art_findings": [
+    "Corrected runtime contacts now visibly differ from roar: bodydives and gatheredclawslead; LightSIDE matches acceptedhorizontalV6/ref01middle intent.",
+    "All6remain visibly airborne with complete body/feather silhouettes in inspectedframes; no obvious longskinstrips. Differentmaterials retained. This is sampledkeypose review, not continuousmotion inspection.",
+    "Stance/roar still share a similar wing silhouette; jawarticulation absent; source white/gold angular shoulder plate remains.",
+    "Gale roundedrightwing concern CLOSED in scopedvisualreview: sparseRchainweightoverlay yields continuous outwardfeathers with readableface; approved12orthographicviews plus5actualruntimePNG inspected. RejectedPCA52degreeposefix notused."
+  ],
+  "invalid_evidence_excluded": "Initial30PNG and their palettes/bounds from reset->playblend.16->onebigadvance are invalid for ART/frustum. Firstmix evaluatedoldblend while clock reached.4, notGPUuploadlag. Fixed _process1/120 fromliveidle yields actual77.225deg Lightbody before/afterdraw. Earliertechnicaltiming/cachechecks and separatewallclockBoot/pooltest are not invalidated.",
+  "limitations": [
+    "No fullphysicsmatch, humanplaytest, continuouswing-head collision, arbitraryidleblendC1, Windows, audio or releaseclaim.",
+    "Finalbounds25posespervariant and .06sourcepadding cannot certify everyintermediateframe/arenaangle.",
+    "SourceGLB/rest/weights/UV preservation relies on existingAstra.sourcehash/retargetmanifest plus unchangedruntimecode; reviewer did not repeatall49hashes.",
+    "Gale overlay changesruntimecloneweights at9873vertices; sourceGLB/rest/IBM/UV and authoredsixAnimationLibraries remainunchanged. Existingtargetjointplacement/sourceanatomicalasymmetry prevents a claim of identicalsilhouette or fullnatural3jointflex."
+  ],
+  "evidence_files": {
+    "build/checks/grifalon-fullset/report.json": "911144fc81953d31748aef2dad5f66e8154bb32ff50a8ef872f89dd2b3d1ea40",
+    "build/checks/grifalon-fullset/bounds-report.json": "2c461b3df3ccf220b190c07d844dda3ee9165cdd7f09a079fcd416dbc1e92ba3",
+    "build/checks/grifalon-fullset/six-variants-five-clips.jpg": "b62082ae982f34997341d1cb8b712d6f6f997b3ce16957b2f5058fc0370d72ac",
+    "build/checks/grifalon-fullset/light-contact-proof/report.json": "395620e57259b291220bb830ac8ca587deab76cde937d410a3741abebc05953f",
+    "build/checks/grifalon-fullset/gale-correction/report.json": "2391105806210384f252d216f94851e7b5ad7c37f514faf01955b1b504ae574c",
+    "build/checks/grifalon-fullset/gale-correction/bounds-report.json": "8b60f59051a0de2b33dcfe3aabb8caa42b708d363c7f3dad13156a2592b0ed86",
+    "build/experiments/unirig-unimate-2026-11-08/grifalon-retarget-six/common-master-motion-proof.json": "d0983cd4f37d3b5f993721bf16feaa9e2f1741c96bf0f06521f78fe418b8c2c8",
+    "build/checks/grifalon-fullset/common-master-timing.json": "80ffb678e32a857f020f198e0fb574a10606d60733041c703506216d29be44c0",
+    "build/experiments/unirig-unimate-2026-11-08/grifalon-retarget-six/actual-godot-common-master-proof.json": "9f0c70decfe7e87f8926e61f71fe33f647d78b30cbf28c8172c897ea74549766",
+    "build/experiments/unirig-unimate-2026-11-08/grifalon-retarget-six/master-metadata-only-proof.json": "c1876abed53eca3d5cf451a2a31f3dbd49b42a74815445a4babe9f8af3504880",
+    "build/checks/grifalon-fullset/common-master-runtime.json": "8789a2429d895d7856e1341986f9b9da72c1e5833a7bfe4e2b107a8b1d00a54f"
+  },
+  "historical_gale_concern": "Gale contact has a distinctly curled/rounded screen-right distalwing close to torso while screen-left is extended. This is a visible concern; cause (resttwist, meshshape or viewforeshortening) is NOT established by thisonequarterview. Neutraloldsource comparison is not a samepose regression proof. Shared with root and Astra for read-onlydiagnosis; no keys changed.",
+  "gale_consumer_code_review": {
+    "status": "PASS_CURRENT_GODOT4_7_2_LAYOUT_AND_PAYLOAD",
+    "evidence": [
+      "scenes/grifalon_gale_skin.gd:49 strictpackedresource/sourcefingerprint/21bindnames/8weights/ids/massvalidations",
+      "scenes/grifalon_gale_skin.gd:102 bindslotnames gatheredfromsourceSkin then declarednames remapped; noSkeletonindex assumption",
+      "scenes/grifalon_gale_skin.gd:106 cachekey sourceResourceID+actualpayloadSHA+bindnames; strongsource/overlay/ArrayMesh references, noNodes",
+      "scenes/grifalon_gale_skin.gd:132 originalsurfacefingerprints gate; copy packedarrays; nonRboneweights and originalmass guarded",
+      "scenes/grifalon_gale_skin.gd:170 temporaryencoder used onlyfornewskin_data/bone_aabbs; originalRAWsurfaces retainedfornormals,UV,indices,LODs,material,format and otherfields",
+      "scenes/grifalon_gale_skin.gd:182 newArrayMesh/RID; originalArrayMesh untouched; shadow_meshnull matches testedsource and shadows useupdatedfullmesh",
+      "scenes/creature_models.gd:170 consumerappliesonlyGale beforebounds/normalization/material/modelsetup; preparation_source remainsoriginalPackedScene at200",
+      "scenes/loading/startup_catalog.gd:16 seventhrequiredres enumerated; GameLoading58 requiredgate and93 actorinstallfailuregate before ready/menu",
+      "scenes/grifalon_motion.gd:98 envelope=max(animationmetadata,skinmetadata), no authoredkeymutation",
+      "export_presets.cfg all_resources alreadycoversnew.res; no release/exportrun"
+    ],
+    "version_limit": "Native_surfaces storage is version-specific; testedactualGodot4.7.2 format34493963287/layout. Unsupportedlayout returnsfailure and Bootguard preventsblankfallback; no otherengineversioncertification.",
+    "source_weights_wording": "Sourcefiles unchanged; clonedruntimeMesh skinweights DOchange byauthorizedsparseoverlay. No claim that allweights remainunchanged."
+  },
+  "common_master_95_review": {
+    "status": "PASS_CANONICAL_SHARED_CHOREOGRAPHY_AND_ACTUAL_RUNTIME_TIMING_NOT_LITERAL_GEOMETRIC95_PERCENT",
+    "method_review": "Canonicalization uses onefixedtargetrest anatomicalyaw and onespinelengthscale pervariant. Globalposedrotation*inverseglobalrest is conjugatedbyinversefixedyaw. Root translation removesconstantfloor/restoffset then fixedyaw/scale. No perframefit; nearidentityquaterniondistanceformula is correct.",
+    "samples_per_element": 203,
+    "bones": 21,
+    "elements": 6,
+    "max_canonical_rotation_degrees": 1.0298887636595555e-13,
+    "max_canonical_root_source_units": 1.1189974934759746e-16,
+    "all_current_library_hashes_match_proof": true,
+    "master_sha256": "f323ba537d5ca35b58d56c857de427111f9f729c19208f89b30ea099c26d342c",
+    "meaning": "Offlinecanonicalboneintent/times matchwellwithin5%; not a numerical95percentmesh/silhouette/humanperception score. Existingrestproportions/accessories/skin makephysicalsilhouettes different.",
+    "runtime_tempo_fix": "CreatureAnim84 successfulnewsetflag ->89_tempo1.0 onlynewGrifalon. OldelementTEMPO and othercreatures remainlegacy; globalBattleTempo settings preserved.",
+    "runtime_timing_readiness": {
+      "failures": 0,
+      "rows": [
+        {
+          "contact_time": 0.389999985694885,
+          "duration": 1.08000004291534,
+          "element": "fire",
+          "idle_speed": 0.850000023841858,
+          "ok": true,
+          "signal_times": [
+            0.391666666666667
+          ],
+          "tempo": 1.0
+        },
+        {
+          "contact_time": 0.389999985694885,
+          "duration": 1.08000004291534,
+          "element": "gale",
+          "idle_speed": 0.850000023841858,
+          "ok": true,
+          "signal_times": [
+            0.391666666666667
+          ],
+          "tempo": 1.0
+        },
+        {
+          "contact_time": 0.389999985694885,
+          "duration": 1.08000004291534,
+          "element": "stone",
+          "idle_speed": 0.850000023841858,
+          "ok": true,
+          "signal_times": [
+            0.391666666666667
+          ],
+          "tempo": 1.0
+        },
+        {
+          "contact_time": 0.389999985694885,
+          "duration": 1.08000004291534,
+          "element": "light",
+          "idle_speed": 0.850000023841858,
+          "ok": true,
+          "signal_times": [
+            0.391666666666667
+          ],
+          "tempo": 1.0
+        },
+        {
+          "contact_time": 0.389999985694885,
+          "duration": 1.08000004291534,
+          "element": "shadow",
+          "idle_speed": 0.850000023841858,
+          "ok": true,
+          "signal_times": [
+            0.391666666666667
+          ],
+          "tempo": 1.0
+        },
+        {
+          "contact_time": 0.389999985694885,
+          "duration": 1.08000004291534,
+          "element": "tide",
+          "idle_speed": 0.850000023841858,
+          "ok": true,
+          "signal_times": [
+            0.391666666666667
+          ],
+          "tempo": 1.0
+        }
+      ]
+    },
+    "timing_scope": "Headlessexisting6actorcheck validates commonattackprofile/contactsignal/return and commonidle. Otherthreeactionruntime lengths useunchangedcommonappear1.1/roar1.05/hit.8 code; allfiveassetclipdurations/timegrids matchoffline. DoesnotclaimnewGPUorfullmatch.",
+    "final_actual_loaded_resources_proof": {
+      "source": "build/experiments/unirig-unimate-2026-11-08/grifalon-retarget-six/actual-godot-common-master-proof.json",
+      "dump": {
+        "path": "build/checks/grifalon-fullset/common-master-runtime.json",
+        "sha256": "8789a2429d895d7856e1341986f9b9da72c1e5833a7bfe4e2b107a8b1d00a54f",
+        "sample_source": "Godot public Animation track interpolation from loaded final .res; actual imported Skeleton3D rest_local",
+        "phases_per_element": 203
+      },
+      "dump_sha_verified": true,
+      "actual_rest": "ActualGodotimportedSkeleton3D rest_local; finalproof supersedes preliminaryGLB-rest float32comparison.",
+      "max_rotation_degrees": 2.7607947785392414e-05,
+      "max_rotation_fraction_of_master_amplitude": 2.4215463266141214e-07,
+      "max_root_source_units": 3.666188341476717e-08,
+      "fixed_rest_segment_signature_max_fraction_height": 1.6491038769146967e-07,
+      "fixed_segment_interpretation": "Derivedkinematics using the same Lightrestsegments drivenbycanonicalparentrotations; not a second independentphysicaljoint or silhouetteagreementtest.",
+      "actual_body_scale_only_joint_residual_max_fraction_height_by_element": {
+        "light": 0.0,
+        "fire": 0.10996013860719374,
+        "gale": 0.2931170651733924,
+        "shadow": 0.12374194209457974,
+        "stone": 0.06522104866572773,
+        "tide": 0.15486526136314047
+      },
+      "actual_body_scale_only_joint_residual_max_RMS_fraction_height_by_element": {
+        "light": 0.0,
+        "fire": 0.01625508598479508,
+        "gale": 0.053048007361860786,
+        "shadow": 0.022642323308012996,
+        "stone": 0.015526221561687292,
+        "tide": 0.032323005855406914
+      },
+      "residual_interpretation": "Actualtargetjointpaths afterjuststaticyaw/onebodyscale doNOT fit5percent: extrema6.5–29.3percentofLightheight. This reflects differingstaticrestproportions/pivots, not disparateauthoredphase/character. No actualjoint95percentPASS is asserted.",
+      "current_six_resource_sha_match": true
+    },
+    "actual_runtime_readiness_after_tempo_fix": {
+      "checks": 62,
+      "failures": 0,
+      "legacy_controls": [
+        {
+          "authored": false,
+          "id": "creature_dragnar_fire",
+          "tempo": 1.04
+        },
+        {
+          "authored": false,
+          "id": "creature_ratnik_stone",
+          "tempo": 0.92
+        }
+      ],
+      "master": "f323ba537d5ca35b58d56c857de427111f9f729c19208f89b30ea099c26d342c",
+      "scope": "Existingheadlessloadedresources/allfiveassetduration/contact/clash/idle checks; reviewerdidnotrerun."
+    },
+    "metadata_only_resource_change": {
+      "source": "build/experiments/unirig-unimate-2026-11-08/grifalon-retarget-six/master-metadata-only-proof.json",
+      "all_key_interpolation_timing_digests_preserved": true,
+      "wording": "Six.res binarySHA changed onlybecausemasterprovenance metadatawasadded. Animationkeys/interpolation/timingunchanged; source49GLBfiles unchanged. Do notclaimunchangedfinalbinarySHAsacrossmetadatasave."
+    },
+    "loader_master_guard": "scenes/grifalon_motion.gd:48 requires master_motion_source_sha256==MASTER_SHA for eachof6libraries during requiredpreload."
+  },
+  "final_overlay_art_review_reference": "build/experiments/unirig-unimate-2026-11-08/grifalon-retarget-six/gale-skin-overlay/independent-review/review.json",
+  "final_status": "COMPLETE_SCOPED_INDEPENDENT_CODE_ART_AND_COMMON_MASTER_REVIEW_NO_PENDING_REVIEWER_TESTS"
+}

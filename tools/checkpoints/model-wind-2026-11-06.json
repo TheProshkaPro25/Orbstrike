@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-06",
+  "kind": "Local source model repairs; no client/server build or release",
+  "models": [
+    {
+      "id": "klykar_gale",
+      "issue": "a01",
+      "source": "build/model_candidates/2026-11-06-a01/source/klykar_gale.glb",
+      "candidate": "build/model_candidates/2026-11-06-a01/klykar_gale.glb",
+      "production": "assets/creatures_hd/klykar_gale.glb",
+      "source_sha256": "f16e61d615e7897ed513d3abb73aa941cb335827d7f43c07961fd8e277ab4c28",
+      "installed_sha256": "1c2855cee29711dc61eaedd108a0368158ca5d488f03e15796257eaf63dff0cc"
+    },
+    {
+      "id": "levian_gale",
+      "issue": "a02",
+      "source": "build/model_candidates/2026-11-06-a02/source/levian_gale.glb",
+      "candidate": "build/model_candidates/2026-11-06-a02/levian_gale.glb",
+      "production": "assets/creatures_hd/levian_gale.glb",
+      "source_sha256": "fe5c04377285353b7a95bdb723612464824aaaed05f9b499acb732e858db2ddc",
+      "installed_sha256": "c4359efccb27e465c6bd2be8bec3badf567dff0f8991e700a2ddfbf4539fbfb9"
+    }
+  ],
+  "evidence": "docs/audits/2026-11-06-model-wind-runtime",
+  "runtime_assertions": 24602,
+  "runtime_failures": 0,
+  "unchanged_other_catalog_models": 47,
+  "gpu_visual_acceptance": false,
+  "accepted_035_continuation": "A02 source accepted035 SHA is the immutable backup; all224 other accessors and530tailrepair triangles byte exact; historical model-repairs035 manifest remains unchanged"
+}

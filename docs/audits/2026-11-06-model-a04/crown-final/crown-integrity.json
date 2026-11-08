@@ -1,0 +1,128 @@
+{
+  "status": "PASS",
+  "kind": "CPU raw-rest source/collar/crown integrity, actual imported poses and GPU acceptance separate",
+  "source_sha256": "454e8442b83fe7fd618d0bc0338dfc8b51b1daabaa49b4a5237dcb669598f727",
+  "candidate_sha256": "b209b4bad3ec5e2a4b02104993b7de1adbbdd1b59dba565c7f1e14270fe13df8",
+  "source_binary_prefix_bytes_exact": 23369004,
+  "source_uv_skin_rig_binds_animation_images_CapeGPU_exact": true,
+  "retained_source_face_indices_exact": 114060,
+  "source_collar_position_normal_vertices": 315,
+  "source_collar_vertex_ids_sha256": "586dc67610957eeb70514e06d966858737737a597e9f8d2cfdd2fae740a5963b",
+  "source_outside_collar_all_attributes_exact": true,
+  "source_collar_max_displacement": 0.0030000105034559965,
+  "source_collar_changed_triangles": 406,
+  "source_collar_min_area_ratio": 0.35948437452316284,
+  "source_collar_max_area_ratio": 2.382939577102661,
+  "source_collar_min_normal_cosine": 0.7834478616714478,
+  "new_crown_triangles": 5403,
+  "new_crown_vertices": 2806,
+  "new_crown_min_area": 9.70025695323784e-08,
+  "new_crown_boundary_vertices_exact_source_position_and8weights": 201,
+  "new_crown_interior_head_weight_one": 2605,
+  "new_unmatched_boundary_edges": 0,
+  "ring_raw_rest_plane_clearance": 0.01672795524544113,
+  "normalization": {
+    "source": {
+      "all_accessor_positions": {
+        "bbox_min": [
+          -0.4845844507217407,
+          -0.4236454963684082,
+          -0.49471211433410645
+        ],
+        "bbox_max": [
+          0.32174772024154663,
+          0.435552716255188,
+          0.4315739572048187
+        ],
+        "bbox_size": [
+          0.8063321709632874,
+          0.8591982126235962,
+          0.9262860715389252
+        ],
+        "build_scale": 9.643124236799352,
+        "build_position": [
+          0.7851274111673617,
+          4.085266153841089,
+          0.3044245466401401
+        ]
+      },
+      "referenced_triangle_positions": {
+        "bbox_min": [
+          -0.4845844507217407,
+          -0.4236454963684082,
+          -0.49471211433410645
+        ],
+        "bbox_max": [
+          0.32174772024154663,
+          0.435552716255188,
+          0.4315739572048187
+        ],
+        "bbox_size": [
+          0.8063321709632874,
+          0.8591982126235962,
+          0.9262860715389252
+        ],
+        "build_scale": 9.643124236799352,
+        "build_position": [
+          0.7851274111673617,
+          4.085266153841089,
+          0.3044245466401401
+        ]
+      },
+      "formula": "CreatureModels.build/_bounds: transformed raw-rest nodes; FIG_H=3.5*WORLD*CARD_SCALE, FIG_W=2.5*WORLD*CARD_SCALE",
+      "arena_source_sha256": "98a616fa4ba06408b51f0d542bea8ca8544f30575775a362623da3dbf1867b47",
+      "models_source_sha256": "edd2183ec6eef7264d61299b87a3c7ea5ffeec9076dd2929cbefa081225f797d"
+    },
+    "candidate": {
+      "all_accessor_positions": {
+        "bbox_min": [
+          -0.4845844507217407,
+          -0.4236454963684082,
+          -0.49471211433410645
+        ],
+        "bbox_max": [
+          0.32174772024154663,
+          0.47634732723236084,
+          0.4315739572048187
+        ],
+        "bbox_size": [
+          0.8063321709632874,
+          0.899992823600769,
+          0.9262860715389252
+        ],
+        "build_scale": 9.643124236799352,
+        "build_position": [
+          0.7851274111673617,
+          4.085266153841089,
+          0.3044245466401401
+        ]
+      },
+      "referenced_triangle_positions": {
+        "bbox_min": [
+          -0.4845844507217407,
+          -0.4236454963684082,
+          -0.49471211433410645
+        ],
+        "bbox_max": [
+          0.32174772024154663,
+          0.47634732723236084,
+          0.4315739572048187
+        ],
+        "bbox_size": [
+          0.8063321709632874,
+          0.899992823600769,
+          0.9262860715389252
+        ],
+        "build_scale": 9.643124236799352,
+        "build_position": [
+          0.7851274111673617,
+          4.085266153841089,
+          0.3044245466401401
+        ]
+      },
+      "formula": "CreatureModels.build/_bounds: transformed raw-rest nodes; FIG_H=3.5*WORLD*CARD_SCALE, FIG_W=2.5*WORLD*CARD_SCALE",
+      "arena_source_sha256": "98a616fa4ba06408b51f0d542bea8ca8544f30575775a362623da3dbf1867b47",
+      "models_source_sha256": "edd2183ec6eef7264d61299b87a3c7ea5ffeec9076dd2929cbefa081225f797d"
+    }
+  }
+}

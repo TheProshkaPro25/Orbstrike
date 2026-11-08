@@ -1,0 +1,14 @@
+{
+  "captured_utc": "2026-11-06T19:25:12.786980+00:00",
+  "sha256": {
+    "assets/creatures_hd/klykar_gale.glb": "1c2855cee29711dc61eaedd108a0368158ca5d488f03e15796257eaf63dff0cc",
+    "assets/creatures_hd/levian_gale.glb": "c4359efccb27e465c6bd2be8bec3badf567dff0f8991e700a2ddfbf4539fbfb9",
+    "assets/creatures_hd/kolossar_shadow.glb": "ca2580a32b502635b15193141c6b71b388ebdde75c04ac10e1646c733c8b4e0f",
+    "assets/creatures_hd/ratnik_light.glb": "d51ab2dc59b810d39e2b7346fab0101256f44f421fdaa8ed4a538eb97cbf5a70",
+    "tools/test_window.gd": "bfb972225c8f99f2f51f24056091007b9dba0aa850aab4ec4f3d20041e9a4982",
+    "tools/check.py": "85e5c5a5a6b2fc0d4d573a109c0638a77ed98b42eb434d72408362abf369aa33",
+    "scenes/creature_ball.gd": "e382fd70a1ba0deec9870528f613e660725dda30d0807d77bbfd3297e0920f13",
+    "scenes/creature_cloth.gd": "c01a5dde9a50f3679a90155640c9affd5d953d70997eb52de42f2ceb75612de7",
+    "scenes/ui/creature_portrait_crops.gd": "b6a08b729dad974c08c1eb312d585818b9f1b1ad3d7a0798f8ee17cc996328d9"
+  }
+}

@@ -11,6 +11,11 @@ static func resource_paths() -> Array[String]:
 	_collect("res://scenes/", paths)
 	_collect("res://assets/fonts/", paths)
 	_collect("res://assets/avatars/editor/", paths)
+	_collect("res://assets/portraits/", paths)
+	paths.append_array(CreatureModels.GrifalonMotion.resource_paths())
+	paths.append_array(CreatureModels.KolossarMotion.resource_paths())
+	paths.append(CreatureModels.KolossarLightSkin.PATH)
+	paths.append(CreatureModels.GrifalonGaleSkin.PATH)
 	for d in CreatureModels.catalog_defs():
 		var path: String = CreatureModels._key_path(d)[1]
 		if not paths.has(path):

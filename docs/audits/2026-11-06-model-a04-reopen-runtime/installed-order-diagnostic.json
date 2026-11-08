@@ -1,0 +1,288 @@
+{
+	"actions": [
+		"idle",
+		"attack",
+		"hit",
+		"appear"
+	],
+	"after_build": {
+		"extent": 8.93229166666667,
+		"height": 8.28535484179233,
+		"offset": [
+			0.785127699375153,
+			4.08526611328125,
+			0.304424405097961
+		],
+		"scale": 9.64312362670898
+	},
+	"assertions": 27745,
+	"before_build": {
+		"extent": 8.93229166666667,
+		"height": 8.28535484179233,
+		"offset": [
+			0.785127699375153,
+			4.08526611328125,
+			0.304424405097961
+		],
+		"scale": 9.64312362670898
+	},
+	"candidate_sha256": "d51ab2dc59b810d39e2b7346fab0101256f44f421fdaa8ed4a538eb97cbf5a70",
+	"direct_after": {
+		"bounds": [
+			[
+				-0.484584450721741,
+				-0.423645496368408,
+				-0.494712114334106
+			],
+			[
+				0.806332111358643,
+				0.899992823600769,
+				0.926286101341248
+			]
+		],
+		"surfaces": [
+			{
+				"mesh": "Mesh_0",
+				"position_normal_index_bones_weights_sha256": "3c4ddcc3543bad6668018ce408ab5b8d1800beb952a33740520c1323f8cff1c0",
+				"surface": 0,
+				"triangles": 116729,
+				"vertices": 85417
+			},
+			{
+				"mesh": "Mesh_0",
+				"position_normal_index_bones_weights_sha256": "5083df6f2fb4383f52088e67f05f95b777b389f133305636026ed21a8e814d84",
+				"surface": 1,
+				"triangles": 2304,
+				"vertices": 1152
+			},
+			{
+				"mesh": "CapeGPU",
+				"position_normal_index_bones_weights_sha256": "7701aabe89e92b009f81dfcdd57528a7a3513333a279352132aa8e501fa05629",
+				"surface": 0,
+				"triangles": 34599,
+				"vertices": 21208
+			}
+		],
+		"triangles": 153632,
+		"vertices": 107777
+	},
+	"direct_before": {
+		"bounds": [
+			[
+				-0.484584450721741,
+				-0.423645496368408,
+				-0.494712114334106
+			],
+			[
+				0.806332111358643,
+				0.899992823600769,
+				0.926286101341248
+			]
+		],
+		"surfaces": [
+			{
+				"mesh": "Mesh_0",
+				"position_normal_index_bones_weights_sha256": "b46c8721c362e36b540333b12d96db6d350f44a929c71e5dc0d0a38596e198d1",
+				"surface": 0,
+				"triangles": 119463,
+				"vertices": 86947
+			},
+			{
+				"mesh": "Mesh_0",
+				"position_normal_index_bones_weights_sha256": "5083df6f2fb4383f52088e67f05f95b777b389f133305636026ed21a8e814d84",
+				"surface": 1,
+				"triangles": 2304,
+				"vertices": 1152
+			},
+			{
+				"mesh": "CapeGPU",
+				"position_normal_index_bones_weights_sha256": "7701aabe89e92b009f81dfcdd57528a7a3513333a279352132aa8e501fa05629",
+				"surface": 0,
+				"triangles": 34599,
+				"vertices": 21208
+			}
+		],
+		"triangles": 156366,
+		"vertices": 109307
+	},
+	"display_server": "headless",
+	"engine_max_fps": 60,
+	"failures": 2,
+	"forehead_witness": {
+		"max_head_relative_drift_model_units": 0.0,
+		"max_head_relative_drift_scaled_world_units": 0.0,
+		"poses": [
+			{
+				"action": "idle",
+				"frame": 0,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "idle",
+				"frame": 12,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "idle",
+				"frame": 24,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "idle",
+				"frame": 48,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "idle",
+				"frame": 90,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "attack",
+				"frame": 0,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "attack",
+				"frame": 12,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "attack",
+				"frame": 24,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "attack",
+				"frame": 48,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "attack",
+				"frame": 90,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "hit",
+				"frame": 0,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "hit",
+				"frame": 12,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "hit",
+				"frame": 24,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "hit",
+				"frame": 48,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "hit",
+				"frame": 90,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "appear",
+				"frame": 0,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "appear",
+				"frame": 12,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "appear",
+				"frame": 24,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "appear",
+				"frame": 48,
+				"head_relative_delta": 0.0
+			},
+			{
+				"action": "appear",
+				"frame": 90,
+				"head_relative_delta": 0.0
+			}
+		],
+		"scope": "Measured vertex motion in actual head frame; does not remove three existing cap/body contacts",
+		"vertices": 12
+	},
+	"frames": [
+		0,
+		12,
+		24,
+		48,
+		90
+	],
+	"installed": true,
+	"max_palette_delta": 0.0,
+	"max_world_delta": 0.0,
+	"ordinary": {
+		"build": {
+			"extent": 8.93229166666667,
+			"height": 8.28535484179233,
+			"offset": [
+				0.785127699375153,
+				4.08526611328125,
+				0.304424405097961
+			],
+			"scale": 9.64312362670898
+		},
+		"head_relative_witness_delta": 0.0,
+		"metrics": {
+			"bounds": [
+				[
+					-0.484584450721741,
+					-0.423645496368408,
+					-0.494712114334106
+				],
+				[
+					0.806332111358643,
+					0.899992823600769,
+					0.926286101341248
+				]
+			],
+			"surfaces": [
+				{
+					"mesh": "Mesh_0",
+					"position_normal_index_bones_weights_sha256": "d8833764ea6738dce8798c1854c0b4001160954dfd54bdde44d2fecee9cdb0a7",
+					"surface": 0,
+					"triangles": 116729,
+					"vertices": 85417
+				},
+				{
+					"mesh": "Mesh_0",
+					"position_normal_index_bones_weights_sha256": "7d62b4ce4a118ca97c771849c708157378ed5373336c2e5ef59592ce3d63eb5b",
+					"surface": 1,
+					"triangles": 2304,
+					"vertices": 1152
+				},
+				{
+					"mesh": "CapeGPU",
+					"position_normal_index_bones_weights_sha256": "edc6e57bb7ffdef754dd4fedc5f275d09122ac0c0e8410acb23f52b770f6bad2",
+					"surface": 0,
+					"triangles": 34599,
+					"vertices": 21208
+				}
+			],
+			"triangles": 153632,
+			"vertices": 107777
+		},
+		"palette_delta": 0.0000000596046447753906,
+		"world_delta": 0.000000238418579101562
+	},
+	"production_sha256": "d51ab2dc59b810d39e2b7346fab0101256f44f421fdaa8ed4a538eb97cbf5a70",
+	"protected_world_samples": 64,
+	"scope": "ratnik_light GLTF/import/CreatureBall CPU; no GPU cloth/art",
+	"source_sha256": "b209b4bad3ec5e2a4b02104993b7de1adbbdd1b59dba565c7f1e14270fe13df8",
+	"upper_skin_samples": 96
+}

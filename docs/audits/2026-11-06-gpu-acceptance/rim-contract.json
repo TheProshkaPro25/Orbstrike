@@ -1,0 +1,5 @@
+{
+  "checks": 29,
+  "failures": 0,
+  "scope": "headless material assignment/lifecycle only; GPU shader compilation and visual acceptance OPEN"
+}

@@ -36,7 +36,10 @@ func run():
    if node is Skeleton3D:sk=node
    if node is MeshInstance3D and node.skin!=null:meshes.append(node)
   var dir:=out+'/'+String(d.id);DirAccess.make_dir_recursive_absolute(dir)
-  var info:={"id":String(d.id),"height":a.get_height(),"meshes":[],"poses":[]}
+  var wrapper:Node3D=a.get_child(0).get_child(0)
+  var info:={"id":String(d.id),"height":a.get_height(),"extent":a.get_extent(),
+   "normalization_scale":wrapper.scale.x,
+   "normalization_offset":[wrapper.position.x,wrapper.position.y,wrapper.position.z],"meshes":[],"poses":[]}
   for mi in range(meshes.size()):
    var m:=meshes[mi]
    var names:Array[String]=[]
@@ -53,7 +56,7 @@ func run():
     var idx:PackedInt32Array=arrays[Mesh.ARRAY_INDEX]
     for item in [["vertices",verts.to_byte_array()],["joints",joints.to_byte_array()],["weights",weights.to_byte_array()],["indices",idx.to_byte_array()]]:
      var file:=FileAccess.open(dir+'/'+prefix+'_'+item[0]+'.bin',FileAccess.WRITE);file.store_buffer(item[1]);file.close()
-    info.meshes.append({"prefix":prefix,"mi":mi,"vertices":verts.size(),"stride":weights.size()/verts.size(),"bones":names})
+    info.meshes.append({"prefix":prefix,"mi":mi,"name":String(m.name),"vertices":verts.size(),"stride":weights.size()/verts.size(),"bones":names})
   for action in actions:
    ReviewState.reset_actor(a);a.idle_on=true
    match action:
@@ -82,5 +85,5 @@ func run():
     info.poses.append({"action":action,"frame":frame,"palettes":palettes})
   var file:=FileAccess.open(dir+'/poses.json',FileAccess.WRITE);file.store_string(JSON.stringify(info));file.close()
   print('DEFORM ',d.id)
-  a.free();CreatureModels.clear();await process_frame
+  ModelLifetime.release(a,self);CreatureModels.clear();await process_frame
  quit()

@@ -41,4 +41,5 @@ func _load_game() -> void:
 		_progress.value = value * 100
 		_status.text = text)
 	await get_tree().process_frame
+	if not GameLoading.i().ready_to_play: return
 	GameLoading.i().show_menu()

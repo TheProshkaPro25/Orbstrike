@@ -1,0 +1,10 @@
+[
+  {
+    "name": "import",
+    "profile": "models",
+    "ok": false,
+    "exit_code": 0,
+    "seconds": 11.33,
+    "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/models/selected-import/import.log"
+  }
+]

@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-06",
+  "scope": "stable device click; silent deck hover; styled match HUD entrance",
+  "check": {
+    "name": "device-feedback",
+    "profile": "presentation",
+    "ok": true,
+    "exit_code": 0,
+    "seconds": 5.31,
+    "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/selected-device-feedback/device-feedback.log"
+  },
+  "assertions": 126,
+  "failures": 0,
+  "display": "headless; one graphical wrapper failed to accessX11/Wayland; no visual acceptance or listening",
+  "independent_review": "Sol high read incremental diff and final stdout/stderr; no blocking findings",
+  "not_run": [
+    "previous full profiles",
+    "career fullflow",
+    "Windows",
+    "exports/releases",
+    "server"
+  ],
+  "source_sha256": {
+    "scenes/audio/sound.gd": "62d1e35a56bbf4fe6087d56898560708efba892e733e311fccee93a323805726",
+    "scenes/ui/team_menu.gd": "578e94d5009ba8a8307dabcafe46d866646229513cdd01262e7a114f360f9d85",
+    "scenes/ui/hud.gd": "3cb2241d1486a379761de7554e6ec66226df47081a3660189aece3936b79f08a",
+    "scenes/ui/ui_theme.gd": "f4c7f03e961ad456f3bece2809d0cea5aff810d3ee2b2945f620a2f441ed89f7",
+    "scenes/ui/device_settings.gd": "b62a2f1f6a821103509ca8434c1a5d74a544d01877e0b078d489c80d120be649",
+    "scenes/ui/setup_panel.gd": "86dc6988a04f6b2e4bc353459cc22805b24848a6eac6020f0df0322412722f62",
+    "scenes/ui/ability_panel.gd": "576258c62c2b059111e25eae05199c6bb1192873e8fe8bae49f3a513c45f206f",
+    "scenes/ui/battle_hud.gd": "b9f214ac73885e5aa4512904b7b5b1a1c9736598248edb767287b2e18f1c61d1",
+    "scenes/menu/menu_settings.gd": "2d11678567c4baf7357ce3e4efcc14fb76b5acdc5948b3145640c6f2f2723232",
+    "scenes/main.gd": "ce717eac8b4d8fd16d22fd81a6b78877e468dc21dbce09857577496700d40f95",
+    "tools/test_device_feedback.gd": "b9a698640e97bef6eff86d6372ab053b82100ba842f6b4ecf2fdf368a8d3b30f"
+  }
+}

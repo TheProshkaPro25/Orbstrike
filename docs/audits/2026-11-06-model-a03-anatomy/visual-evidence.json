@@ -1,0 +1,19 @@
+{
+  "kind": "CPU raw-rest comparison, not GPU/runtime/animation",
+  "source_sha256": "ca2580a32b502635b15193141c6b71b388ebdde75c04ac10e1646c733c8b4e0f",
+  "candidate_sha256": "69b159a0e8763ef85c1e78b951255deb5e75d3939643af71c1abb8357d7e9a5c",
+  "camera_azimuth": 0.6,
+  "camera_elevation": 0.78,
+  "shared_projected_bounds": [
+    [
+      -0.4192370008064944,
+      -0.37315923095961445
+    ],
+    [
+      0.40201240164054086,
+      0.4989023295321188
+    ]
+  ],
+  "same_camera_frame_light_scale": true,
+  "image": "before-after-game.png"
+}

@@ -13,8 +13,11 @@ from mathutils.bvhtree import BVHTree
 args = sys.argv[sys.argv.index('--') + 1:]
 root, output = map(Path, args[:2])
 region = args[2] if len(args) > 2 else 'legs'
+selected_ids = next((set(arg[4:].split(',')) for arg in args[4:] if arg.startswith('ids=')), None)
 report = []
 for folder in sorted(root.iterdir()):
+    if selected_ids is not None and folder.name not in selected_ids:
+        continue
     if not (folder / 'poses.json').exists():
         continue
     doc = json.loads((folder / 'poses.json').read_text())
@@ -28,7 +31,10 @@ for folder in sorted(root.iterdir()):
         j = read('joints', np.int32).reshape(-1, mesh['stride'])
         w = read('weights', np.float32).reshape(j.shape)
         f = read('indices', np.int32).reshape(-1, 3)
-        if region == 'body':
+        if region == 'sculpt':
+            assert 'name' in mesh, 'Re-export poses with mesh names before sculpt audit'
+            selected = np.full(len(f), not mesh['name'].startswith('CapeGPU'))
+        elif region == 'body':
             # Reconstructed beetles store the body exterior and its caps first;
             # new rear limbs deliberately overlap the body at their roots.
             selected = np.full(len(f), len(meshes) < 2)
@@ -63,7 +69,12 @@ for folder in sorted(root.iterdir()):
         baseline = Path(args[3]) / folder.name
         old_doc = json.loads((baseline / 'poses.json').read_text())
         old_v, old_f, old_offset = [], [], 0
-        for mesh in old_doc['meshes'][:2]:
+        old_meshes = old_doc['meshes'] if region == 'sculpt' else old_doc['meshes'][:2]
+        for mesh in old_meshes:
+            if region == 'sculpt':
+                assert 'name' in mesh, 'Re-export baseline with mesh names before sculpt audit'
+                if mesh['name'].startswith('CapeGPU'):
+                    continue
             prefix = baseline / mesh['prefix']
             v = np.fromfile(str(prefix) + '_vertices.bin', np.float32).reshape(-1, 3)
             f = np.fromfile(str(prefix) + '_indices.bin', np.int32).reshape(-1, 3)

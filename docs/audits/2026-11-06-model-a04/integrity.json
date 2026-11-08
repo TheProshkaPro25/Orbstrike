@@ -1,0 +1,129 @@
+{
+  "status": "PASS",
+  "kind": "CPU source integrity; not Godot runtime/GPU/cloth or full motion acceptance",
+  "source_sha256": "454e8442b83fe7fd618d0bc0338dfc8b51b1daabaa49b4a5237dcb669598f727",
+  "candidate_sha256": "9bb9ad9d1313da698a0eec96782da0cf40d2db1e4cf3513645f5fbf13fef6f2f",
+  "original_binary_prefix_bytes_exact": 23369004,
+  "original_nodes_skins_binds_animation_material_images_exact": true,
+  "CapeGPU_json_and_buffers_exact": true,
+  "retained_source_triangles_exact": 114060,
+  "all_original_attribute_prefixes_exact": true,
+  "cap_triangles": 193,
+  "caps_min_area": 1.7091887229980784e-06,
+  "cap_skin_inherited_from_source_boundary": true,
+  "new_unmatched_boundary_edges": 0,
+  "ring_triangles": 2304,
+  "ring_source_rest_plane_clearance": 0.01589295909816446,
+  "ring_open_center_radius": 0.0742,
+  "ring_closed_outward_and_head_weight_one": true,
+  "normalization": {
+    "source": {
+      "all_accessor_positions": {
+        "bbox_min": [
+          -0.4845844507217407,
+          -0.4236454963684082,
+          -0.49471211433410645
+        ],
+        "bbox_max": [
+          0.32174772024154663,
+          0.435552716255188,
+          0.4315739572048187
+        ],
+        "bbox_size": [
+          0.8063321709632874,
+          0.8591982126235962,
+          0.9262860715389252
+        ],
+        "build_scale": 9.643124236799352,
+        "build_position": [
+          0.7851274111673617,
+          4.085266153841089,
+          0.3044245466401401
+        ]
+      },
+      "referenced_triangle_positions": {
+        "bbox_min": [
+          -0.4845844507217407,
+          -0.4236454963684082,
+          -0.49471211433410645
+        ],
+        "bbox_max": [
+          0.32174772024154663,
+          0.435552716255188,
+          0.4315739572048187
+        ],
+        "bbox_size": [
+          0.8063321709632874,
+          0.8591982126235962,
+          0.9262860715389252
+        ],
+        "build_scale": 9.643124236799352,
+        "build_position": [
+          0.7851274111673617,
+          4.085266153841089,
+          0.3044245466401401
+        ]
+      },
+      "formula": "CreatureModels.build/_bounds: transformed raw-rest nodes; FIG_H=3.5*WORLD*CARD_SCALE, FIG_W=2.5*WORLD*CARD_SCALE",
+      "arena_source_sha256": "98a616fa4ba06408b51f0d542bea8ca8544f30575775a362623da3dbf1867b47",
+      "models_source_sha256": "85ee805e615196b8c89b7fa58d896b65ca148664dbfb1d34f08dd3b603a16fde"
+    },
+    "candidate": {
+      "all_accessor_positions": {
+        "bbox_min": [
+          -0.4845844507217407,
+          -0.4236454963684082,
+          -0.49471211433410645
+        ],
+        "bbox_max": [
+          0.32174772024154663,
+          0.47634732723236084,
+          0.4315739572048187
+        ],
+        "bbox_size": [
+          0.8063321709632874,
+          0.899992823600769,
+          0.9262860715389252
+        ],
+        "build_scale": 9.643124236799352,
+        "build_position": [
+          0.7851274111673617,
+          4.085266153841089,
+          0.3044245466401401
+        ]
+      },
+      "referenced_triangle_positions": {
+        "bbox_min": [
+          -0.4845844507217407,
+          -0.4236454963684082,
+          -0.49471211433410645
+        ],
+        "bbox_max": [
+          0.32174772024154663,
+          0.47634732723236084,
+          0.4315739572048187
+        ],
+        "bbox_size": [
+          0.8063321709632874,
+          0.899992823600769,
+          0.9262860715389252
+        ],
+        "build_scale": 9.643124236799352,
+        "build_position": [
+          0.7851274111673617,
+          4.085266153841089,
+          0.3044245466401401
+        ]
+      },
+      "formula": "CreatureModels.build/_bounds: transformed raw-rest nodes; FIG_H=3.5*WORLD*CARD_SCALE, FIG_W=2.5*WORLD*CARD_SCALE",
+      "arena_source_sha256": "98a616fa4ba06408b51f0d542bea8ca8544f30575775a362623da3dbf1867b47",
+      "models_source_sha256": "85ee805e615196b8c89b7fa58d896b65ca148664dbfb1d34f08dd3b603a16fde"
+    }
+  },
+  "limitations": [
+    "No Godot import/runtime, actual cloth, animation, support, arena lighting or emitted glow evaluated.",
+    "Boundary equality is not an all-surface intersection proof.",
+    "Source mask follows baked brown disc paint; adjoining helmet border needs independent six-view artistic review.",
+    "Added ring increases raw AABB height by 0.04079461; current CPU build formula gives identical scale/offset, actual Godot import not executed."
+  ]
+}

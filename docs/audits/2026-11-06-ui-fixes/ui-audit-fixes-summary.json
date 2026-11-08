@@ -1,0 +1,10 @@
+[
+  {
+    "name": "ui-audit-fixes",
+    "profile": "presentation",
+    "ok": true,
+    "exit_code": 0,
+    "seconds": 29.75,
+    "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/selected-ui-audit-fixes/ui-audit-fixes.log"
+  }
+]

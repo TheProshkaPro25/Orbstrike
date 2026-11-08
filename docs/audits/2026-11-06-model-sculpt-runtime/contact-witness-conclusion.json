@@ -1,0 +1,321 @@
+{
+  "scope": "Read-only small-pair NumPy triangle-plane/edge witnesses, not a BVH rerun; projected candidate geometry with calibrated actual source pose palettes and quantized imported weights.",
+  "verdict": "The examined contacts include strict nonzero triangle crossings in float64 as well as float32. They are not established exact coincident seam/edge contacts and cannot be waived as numerical contact.",
+  "pairs": [
+    {
+      "variant": "retry0430",
+      "new_local_pair": [
+        101,
+        764
+      ],
+      "source_face_pair": [
+        28233,
+        -1
+      ],
+      "worst_segment_pose": [
+        "attack",
+        24
+      ],
+      "intersection_segment_length": 1.4979666584837163e-05,
+      "triangleA_plane_crossing_depth": 3.941434624695703e-06,
+      "triangleB_plane_crossing_depth": 5.074301685555028e-06,
+      "rest_near_edge_matches": [
+        {
+          "vertex_on": "A",
+          "vertex": 0,
+          "other_edge": [
+            0,
+            1
+          ],
+          "fraction": 0.3135406501049397,
+          "rest_distance": 6.489890700297933e-06,
+          "interpolated_weight_max_delta": 9.56850128497333e-06
+        },
+        {
+          "vertex_on": "A",
+          "vertex": 1,
+          "other_edge": [
+            0,
+            1
+          ],
+          "fraction": 0.1631064656098331,
+          "rest_distance": 2.6474692778591086e-06,
+          "interpolated_weight_max_delta": 1.0281174755544242e-05
+        }
+      ]
+    },
+    {
+      "variant": "retry0430",
+      "new_local_pair": [
+        64,
+        726
+      ],
+      "source_face_pair": [
+        23143,
+        -1
+      ],
+      "worst_segment_pose": [
+        "attack",
+        30
+      ],
+      "intersection_segment_length": 0.0003820732245621037,
+      "triangleA_plane_crossing_depth": 0.0005195530446307473,
+      "triangleB_plane_crossing_depth": 4.562438650321037e-05,
+      "rest_near_edge_matches": []
+    },
+    {
+      "variant": "retry0430",
+      "new_local_pair": [
+        463,
+        745
+      ],
+      "source_face_pair": [
+        22424,
+        -1
+      ],
+      "worst_segment_pose": [
+        "attack",
+        24
+      ],
+      "intersection_segment_length": 0.00020591016859167747,
+      "triangleA_plane_crossing_depth": 0.00028135547844390456,
+      "triangleB_plane_crossing_depth": 0.0015897377938754583,
+      "rest_near_edge_matches": []
+    },
+    {
+      "variant": "retry0430",
+      "new_local_pair": [
+        55,
+        745
+      ],
+      "source_face_pair": [
+        21108,
+        -1
+      ],
+      "worst_segment_pose": [
+        "attack",
+        30
+      ],
+      "intersection_segment_length": 0.0017434476869351199,
+      "triangleA_plane_crossing_depth": 8.44746647472442e-05,
+      "triangleB_plane_crossing_depth": 0.0003113905038776006,
+      "rest_near_edge_matches": []
+    },
+    {
+      "variant": "retry0430",
+      "new_local_pair": [
+        62,
+        728
+      ],
+      "source_face_pair": [
+        22679,
+        -1
+      ],
+      "worst_segment_pose": [
+        "attack",
+        24
+      ],
+      "intersection_segment_length": 0.00018341947395217505,
+      "triangleA_plane_crossing_depth": 0.0002117213210199681,
+      "triangleB_plane_crossing_depth": 5.498261809474096e-05,
+      "rest_near_edge_matches": []
+    },
+    {
+      "variant": "retry0415",
+      "new_local_pair": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "worst_segment_pose": [
+        "attack",
+        42
+      ],
+      "intersection_segment_length": 1.932013575441099e-05,
+      "triangleA_plane_crossing_depth": 6.688590573783684e-06,
+      "triangleB_plane_crossing_depth": 1.800311940382401e-05,
+      "rest_near_edge_matches": [
+        {
+          "vertex_on": "A",
+          "vertex": 1,
+          "other_edge": [
+            0,
+            1
+          ],
+          "fraction": 0.25705758652163674,
+          "rest_distance": 1.5097104137293444e-06,
+          "interpolated_weight_max_delta": 8.93116815015027e-05
+        }
+      ]
+    },
+    {
+      "variant": "retry0415",
+      "new_local_pair": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "worst_segment_pose": [
+        "hit",
+        30
+      ],
+      "intersection_segment_length": 0.0001129266339636721,
+      "triangleA_plane_crossing_depth": 3.2921950637866107e-06,
+      "triangleB_plane_crossing_depth": 8.837024568064634e-06,
+      "rest_near_edge_matches": [
+        {
+          "vertex_on": "A",
+          "vertex": 1,
+          "other_edge": [
+            0,
+            1
+          ],
+          "fraction": 0.3885025121594422,
+          "rest_distance": 8.76793187661261e-06,
+          "interpolated_weight_max_delta": 0.00012856300361568929
+        },
+        {
+          "vertex_on": "A",
+          "vertex": 2,
+          "other_edge": [
+            0,
+            1
+          ],
+          "fraction": 0.25705758652163674,
+          "rest_distance": 1.5097104137293444e-06,
+          "interpolated_weight_max_delta": 8.93116815015027e-05
+        }
+      ]
+    },
+    {
+      "variant": "retry0430-bulged",
+      "new_local_pair": [
+        99,
+        1250
+      ],
+      "source_face_pair": [
+        28231,
+        -1
+      ],
+      "worst_segment_pose": [
+        "idle",
+        0
+      ],
+      "intersection_segment_length": 1.735500139544693e-05,
+      "triangleA_plane_crossing_depth": 5.225368947372541e-06,
+      "triangleB_plane_crossing_depth": 4.101253882654788e-06,
+      "rest_near_edge_matches": [
+        {
+          "vertex_on": "A",
+          "vertex": 1,
+          "other_edge": [
+            2,
+            0
+          ],
+          "fraction": 0.6257544610193095,
+          "rest_distance": 6.8585897555461305e-06,
+          "interpolated_weight_max_delta": 9.54825532561987e-06
+        },
+        {
+          "vertex_on": "B",
+          "vertex": 0,
+          "other_edge": [
+            0,
+            1
+          ],
+          "fraction": 0.7256006956796388,
+          "rest_distance": 5.90131826972096e-06,
+          "interpolated_weight_max_delta": 6.884786855454461e-06
+        }
+      ]
+    },
+    {
+      "variant": "retry0430-bulged",
+      "new_local_pair": [
+        99,
+        1511
+      ],
+      "source_face_pair": [
+        28231,
+        -1
+      ],
+      "worst_segment_pose": [
+        "hit",
+        24
+      ],
+      "intersection_segment_length": 4.252914628821143e-05,
+      "triangleA_plane_crossing_depth": 2.906521934947453e-06,
+      "triangleB_plane_crossing_depth": 9.4367035473006e-07,
+      "rest_near_edge_matches": [
+        {
+          "vertex_on": "A",
+          "vertex": 1,
+          "other_edge": [
+            0,
+            1
+          ],
+          "fraction": 0.45741732372060334,
+          "rest_distance": 3.710552705660063e-06,
+          "interpolated_weight_max_delta": 6.9796344561723345e-06
+        },
+        {
+          "vertex_on": "A",
+          "vertex": 1,
+          "other_edge": [
+            2,
+            0
+          ],
+          "fraction": 0.642239003444867,
+          "rest_distance": 4.375448693416501e-06,
+          "interpolated_weight_max_delta": 5.458999581264834e-06
+        },
+        {
+          "vertex_on": "B",
+          "vertex": 1,
+          "other_edge": [
+            0,
+            1
+          ],
+          "fraction": 0.7387232208445323,
+          "rest_distance": 2.1911133827965465e-06,
+          "interpolated_weight_max_delta": 7.2852545423551796e-06
+        },
+        {
+          "vertex_on": "B",
+          "vertex": 2,
+          "other_edge": [
+            0,
+            1
+          ],
+          "fraction": 0.6080427218649975,
+          "rest_distance": 3.2889291026969123e-06,
+          "interpolated_weight_max_delta": 5.980793428617126e-06
+        }
+      ]
+    }
+  ],
+  "independent_true_boundary_witness_recalculation": {
+    "action": "attack",
+    "frame": 24,
+    "source_face": 23143,
+    "signed_boundary_endpoint_distances_to_body_plane": [
+      -0.00013636171023940423,
+      9.76795986384585e-05
+    ],
+    "segment_t": 0.5826394959642198,
+    "body_barycentric": [
+      0.10269220151312097,
+      0.30355220812324024,
+      0.5937555903636388
+    ],
+    "strict_interior_crossing": true
+  },
+  "minimal_interior_bulge_conclusion": "No finite cap-interior displacement can remove a strict crossing already present on its fixed true boundary segment. Resolving it requires changing the attachment/cut boundary, source collar geometry or weights, with a new wider preservation review. A blind convex offset is not justified by these data.",
+  "fallback": "For the currently authorized scope, exact original geometry/UV/skin with a local material-only color correction is a defensible partial improvement, subject to fresh art and exact-data review."
+}

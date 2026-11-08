@@ -1,0 +1,17 @@
+{
+  "kind": "CPU raw-rest personal art-review evidence",
+  "source_sha256": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+  "candidate_sha256": "845dafef53e0cb4476de6a9561a28a903f6bb4692dcf1569c93c19d1971c05a2",
+  "source_triangles": 149994,
+  "cut_or_split_original_triangles": 11713,
+  "root_triangles_geometry_weights_exact_uv_only": 4020,
+  "candidate_triangles": 139316,
+  "views": [
+    "front",
+    "right",
+    "rear",
+    "left"
+  ],
+  "runtime_gpu_import_animation_executed": false,
+  "whitelist_manifest": "build/model_candidates/2026-11-06-a03/final/kolossar_shadow.graft.json"
+}

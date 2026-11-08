@@ -1,0 +1,37 @@
+{
+  "status": "BLOCKED_BEFORE_UI_SCENE_DISPLAY_EPERM_AFTER_RESUME",
+  "completed": "A03 rounded shoulders installed69b159, ordinary15448/0; R01assignment29/0; user realRTX4070GPU70004/0 and scoped model/cloth visual accepted",
+  "ui_changes": [
+    "tools/test_gpu_acceptance.gd capture now waits frame_post_draw before get_image",
+    "GPU fixture updates external public powers like Main; mapping own/enemy follows set_external_panels attacker side, independently corrected",
+    "tools/test_hud_gdelta.gd opt-in presentation test isolates actual normal/reduced tween progression, visibility/alpha/rects, six cards plus two pass chips, simultaneous delta labels, final public powers and post-draw portrait pixel anchors"
+  ],
+  "executed": {
+    "command": "python3 tools/check.py --profile presentation --checks hud-gdelta --logic-only",
+    "assertions": 95,
+    "failures": 0,
+    "rendered": false,
+    "pngs": 0
+  },
+  "not_confirmed": [
+    "Corrected post-draw GPU capture has not been executed",
+    "Original normal-motion black/incomplete HUD frame cause remains unproven; missing frame barrier is a capture contract defect, not proof of that raster cause",
+    "No product UI fix claimed; only test capture/fixture changed"
+  ],
+  "resume_command": "python3 tools/check.py --profile presentation --checks hud-gdelta --visual",
+  "execution_access": "Fresh resume: DISPLAY=:0 and WAYLAND_DISPLAY=wayland-1 are set; existing X0/X1 socket connects return EPERM/errno1; /dev/dri and NVIDIA device nodes absent. Godot failed both display servers before UI scene. Host terminal read tool failed. Cause of user-terminal versus executor access difference remains UNKNOWN.",
+  "rerun_scope": "UI only, no GLB/Boot/models or full gpu-acceptance rerun",
+  "server_build_commit_release": false,
+  "resume_attempt": {
+    "command": "python3 tools/check.py --profile presentation --checks hud-gdelta --visual",
+    "exit_code": 1,
+    "seconds": 0.09,
+    "ui_scene_executed": false,
+    "rendered": false,
+    "new_pngs": 0,
+    "log": "visual-attempt.log",
+    "summary": "visual-attempt-summary.json",
+    "environment": "resume-environment-probe.json"
+  },
+  "next_step": "Run resume_command from the ordinary user terminal with hardware/display access, then review the four new PNGs and report.json in build/checks/presentation/hud-gdelta/. Do not repeat model/Boot/full profiles."
+}

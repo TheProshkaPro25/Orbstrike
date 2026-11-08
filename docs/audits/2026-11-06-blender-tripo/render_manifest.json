@@ -1,0 +1,90 @@
+{
+  "blender": "5.2.3 LTS",
+  "engine": "Cycles CPU",
+  "samples": 24,
+  "resolution": [
+    640,
+    640
+  ],
+  "ortho_scale": 2.700000047683716,
+  "models": {
+    "old": {
+      "path": "assets/creatures_hd/levian_gale.glb",
+      "sha256": "fe5c04377285353b7a95bdb723612464824aaaed05f9b499acb732e858db2ddc",
+      "bytes": 22696188,
+      "mesh_objects": 1,
+      "vertices": 100006,
+      "triangles": 144894,
+      "bones": 19,
+      "materials": [
+        "Material_0",
+        "tail repair matching source texture"
+      ],
+      "source_bbox_min": [
+        -0.38898158073425293,
+        -0.37399953603744507,
+        -0.39435577392578125
+      ],
+      "source_bbox_max": [
+        0.39066630601882935,
+        0.49182969331741333,
+        0.42505595088005066
+      ],
+      "normalization": {
+        "height": 2,
+        "scale": 2.440775423946882,
+        "z_rotation_degrees": 0
+      }
+    }
+  },
+  "views": {
+    "front": {
+      "camera_position": [
+        0.0,
+        -6.0,
+        2.25
+      ],
+      "target": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    "three_quarter": {
+      "camera_position": [
+        4.242640495300293,
+        -4.242640495300293,
+        2.25
+      ],
+      "target": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    "side": {
+      "camera_position": [
+        6.0,
+        -3.6739402930577075e-16,
+        2.25
+      ],
+      "target": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    "back": {
+      "camera_position": [
+        7.347880586115415e-16,
+        6.0,
+        2.25
+      ],
+      "target": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "source_sha256": "d51ab2dc59b810d39e2b7346fab0101256f44f421fdaa8ed4a538eb97cbf5a70",
+  "before_after_same_glb": true,
+  "source": "actual Godot runtime bone matrices after BodySupport",
+  "render": "CPU skin and approximate light, not GPU cloth",
+  "shared_camera": true,
+  "shared_frame_bounds": [
+    [
+      -0.601188143214039,
+      -0.4326122609266236,
+      -0.6048305699658179
+    ],
+    [
+      0.570507112086909,
+      0.6774232621854996,
+      0.6129114045045276
+    ]
+  ],
+  "frames": [
+    0,
+    4,
+    8,
+    12,
+    16,
+    20,
+    24,
+    28,
+    32,
+    36,
+    40,
+    44,
+    48,
+    52,
+    56,
+    60,
+    64,
+    68,
+    70
+  ],
+  "contact_frame": 28
+}

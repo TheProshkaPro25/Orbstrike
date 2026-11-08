@@ -1,0 +1,163 @@
+{
+  "reviewer": "independent gpt-6.1-sol high",
+  "date": "2026-11-06",
+  "status": "ACCEPT_INSTALLED_A03_MATERIAL_PARTIAL_AND_A04_CROWN_CPU_IMPORT",
+  "blockers_for_installed_changes": [],
+  "decision": "A04 local crown/halo source repair and A03 exact-geometry material-only partial are accepted for reversible source installation. A03 angular effect form and GPU/cloth presentation acceptance remain open.",
+  "personally_viewed": [
+    "tools/ai_models/concepts/kolossar_shadow.png",
+    "tools/ai_models/concepts/ratnik_light.png",
+    "docs/audits/2026-11-06-model-a03/final-before-after-mask.png",
+    "docs/audits/2026-11-06-model-a04/crown-final/head-before-mask-after.png",
+    "docs/audits/2026-11-06-model-a04/crown-final/full-before-mask-after.png",
+    "docs/audits/2026-11-06-model-a03/material/tint-comparison-four-views.png",
+    "docs/audits/2026-11-06-model-repairs-summary.png"
+  ],
+  "a03": {
+    "decision": "PARTIAL_MATERIAL_IMPROVEMENT_FORM_OPEN",
+    "sha256": {
+      "source": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+      "candidate": "ca2580a32b502635b15193141c6b71b388ebdde75c04ac10e1646c733c8b4e0f",
+      "installed": "ca2580a32b502635b15193141c6b71b388ebdde75c04ac10e1646c733c8b4e0f"
+    },
+    "material_palette": "muted_violet",
+    "raw_base_color_factor_rgb": [
+      0.38,
+      0.22,
+      0.52
+    ],
+    "ordinary_shader_materials": [
+      {
+        "has_texture": true,
+        "mesh": "Mesh_0",
+        "surface": 0,
+        "tint": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "triangles": 139551
+      },
+      {
+        "has_texture": true,
+        "mesh": "Mesh_0",
+        "surface": 1,
+        "tint": [
+          0.649956464767456,
+          0.506386458873749,
+          0.748379111289978,
+          1.0
+        ],
+        "triangles": 10443
+      }
+    ],
+    "triangles": 149994,
+    "original_material_triangles": 139551,
+    "tinted_pale_effect_triangles": 10443,
+    "preservation": "All270 original accessors and original binary prefix exact. Every source triangle occurs exactly once across two primitives sharing all original attribute accessors. POSITION/NORMAL/UV/8weights/nodes/rest/bind/clips/images exact. Original material exact; duplicate material changes only name and RGB factor.",
+    "final_narrow_check": {
+      "assertions": 11473,
+      "failures": 0,
+      "report": "material-installed.json",
+      "log": "material-installed.log"
+    },
+    "direct_palette_delta": 0.0,
+    "ordinary_palette_delta": 0.0,
+    "direct_sampled_world_delta": 0.0,
+    "ordinary_sampled_world_delta": 0.0,
+    "retained_world_samples": 16,
+    "normalization": {
+      "extent": 10.9480671403495,
+      "height": 11.3535052240395,
+      "offset": [
+        -0.128339096903801,
+        5.56805849075317,
+        0.29528346657753
+      ],
+      "scale": 13.3923768997192
+    },
+    "no_geometry_frame_override": true,
+    "form_repair_claimed": false
+  },
+  "a04": {
+    "decision": "ACCEPT_LOCAL_CROWN_HALO_REPAIR_WITH_GPU_CLOTH_OPEN",
+    "sha256": {
+      "source": "454e8442b83fe7fd618d0bc0338dfc8b51b1daabaa49b4a5237dcb669598f727",
+      "candidate": "b209b4bad3ec5e2a4b02104993b7de1adbbdd1b59dba565c7f1e14270fe13df8",
+      "installed": "b209b4bad3ec5e2a4b02104993b7de1adbbdd1b59dba565c7f1e14270fe13df8"
+    },
+    "final_narrow_check": {
+      "assertions": 31408,
+      "failures": 0,
+      "report": "installed-a04.json",
+      "log": "installed-a04.log"
+    },
+    "ordinary_import_triangles": 156366,
+    "normalization": {
+      "extent": 8.93229166666667,
+      "height": 8.28535484179233,
+      "offset": [
+        0.785127699375153,
+        4.08526611328125,
+        0.304424405097961
+      ],
+      "scale": 9.64312362670898
+    },
+    "direct_palette_delta": 0.0,
+    "ordinary_palette_delta": 5.96046447753906e-08,
+    "actual_cpu_pose_bvh_samples": 43,
+    "new_face_nonadjacent_intersection_pairs": 0,
+    "source_collar_whitelist_vertices": 315,
+    "collar_max_displacement_limit": 0.0030001,
+    "new_crown_boundary_exact_position_and_8weights": 201,
+    "normal_finish": "Verified d389eafd→b209b4ba chain changes only920 new underside NORMAL vertices; positions/indices/UV/skin/CapeGPU exact.",
+    "cloth_limit": "CapeGPU data are exact, but new crown/halo grows body bbox and changes cloth collider proxy voxel step .08591982→.08999928. GPU cloth/rim behavior has not been accepted."
+  },
+  "rejected_a03_geometry": {
+    "not_installed": true,
+    "variants": [
+      "845dafef local sloped graft",
+      "retry0430",
+      "retry0415",
+      "retry0430_bulged"
+    ],
+    "reason": "Strict nonadjacent cap crossings in actual exported source palettes; no nearzero exemptions.",
+    "independent_witness_reports": [
+      "contact-witness-review.json",
+      "contact-witness-conclusion.json"
+    ],
+    "independent_boundary_proof": {
+      "action": "attack",
+      "frame": 24,
+      "source_face": 23143,
+      "endpoint_signed_plane_distances": [
+        -0.00013636171023940423,
+        9.76795986384585e-05
+      ],
+      "segment_t": 0.5826394959642198,
+      "body_barycentric": [
+        0.10269220151312097,
+        0.30355220812324024,
+        0.5937555903636388
+      ]
+    },
+    "conclusion": "Fixed true boundary itself crosses nonadjacent body interior, so cap-interior-only bulge cannot solve all contacts. The material fallback preserves original shape and source contacts exactly.",
+    "pose_evidence_boundary": "Retry candidate data were explicitly projected into calibrated actual Godot source bone palettes with quantized8weight proof; not mislabeled as fresh actual candidate import."
+  },
+  "review_findings": [
+    "Personally viewed original concepts, current final A04 head/full six-view sheets, A03 material mask and all three four-view palettes. Muted violet improves foreign white effects while retaining readable detail; source angular form remains visible.",
+    "Read builders, exact preservation contracts, named-mesh posed-BVH, independent source-pair mapping, promotion guards and final CreatureBall import test code. Both original snapshots and .import sidecar backups are present; unexpected production hashes are rejected before atomic replacement.",
+    "Independently checked installed/source/candidate SHA256. Final ordinary paths have intended materials and triangle counts. Source/candidate/ordinary A03 palettes and sampled reconstructed skinned world points have delta0 across15 idle/attack/hit states.",
+    "A04 source height/scale/center are preserved by key+liveAABB+triangle guarded normalization; unused A03 rejected-geometry frame has been removed.",
+    "Requested explicit ordinary palette-size and center assertions; added and passed.",
+    "PreparationStore cache identity includes raw GLB SHA256, .import SHA and artifact stamp, invalidating old-source preparation data.",
+    "Successful model/import/pose/BVH checks were not independently rerun. Independently executed only narrow read-only triangle contact witnesses for rejected geometry, plus hash verification."
+  ],
+  "limitations": [
+    "A03 remains partial: rigid angular shoulder effect geometry, opacity and pre-existing source contacts remain. No cap/collar geometry repair is accepted.",
+    "No GPU lighting/material render or live GPU cloth/rim R01 acceptance. CPU raw-rest images and reconstructed skin points are not GPU readback.",
+    "Formal editor import checks retain sandbox TCP socket/listen FAIL status despite completed GLB import/save and successful ordinary resource contracts.",
+    "No Windows, sound, physical-match, release build or publication accepted."
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "reviewer": "Independent Sol gpt-6.1-sol high",
+  "scope": "Source and fresh 29/0 material assignment/lifecycle evidence after one targeted lifetime correction; no GPU rendering",
+  "status": "PASS_CODE_CONTRACT_GPU_VISUAL_OPEN",
+  "reviewed": [
+    "scenes/creature_cloth.gd",
+    "scenes/creature_ball.gd",
+    "scenes/model_lifetime.gd",
+    "tools/test_cloth_rim_contract.gd",
+    "docs/audits/2026-11-06-gpu-acceptance/rim-contract.json"
+  ],
+  "findings": [
+    "Cloth next_pass injects the exact primary GPU_VERTEX hook and copies all eight deformation parameters, including render offset.",
+    "Only the shader is static; each source material owns its pass and actor textures through material metadata. No Node or actor state is stored in a global cache.",
+    "CreatureBall keeps native surfaces on the existing shared owner rim and changes only the cloth material selected by its active gpu_driven contract.",
+    "Owner changes and pooled reparent retain the same per-cape material while preserving other actors' uniforms.",
+    "ModelLifetime detaches the retained pass, disables gpu_driven and clears texture references before freeing the model. It now retains the detached ShaderMaterial itself until the same frame boundary as the base material. A WeakRef with no external strong pass reference proves live-after-release and freed-after-frame behavior. Vendor teardown separately invalidates its shared Texture2DRD wrappers.",
+    "The unchanged vendor solver and preparation cache hashes do not require new canonical cache compatibility exceptions.",
+    "The test uses synthetic ShaderMaterial textures and a real CreatureBall assignment/ModelLifetime release path; its 29 assertions do not establish shader compilation, cloth simulation or rendered rim alignment."
+  ],
+  "resolved_followup": "Removing next_pass and metadata initially dropped the last pass reference too early. clear_rim now returns that pass and ModelLifetime includes it in held; the targeted WeakRef assertions cover the previously masked lifetime gap.",
+  "blocking_code_findings": [],
+  "required_remaining_acceptance": "Physical GPU with current ordinary CreatureBall/SCN, real cape solver, both owner colors, idle/attack and rear/side captures; hardware renderer label and source hashes."
+}

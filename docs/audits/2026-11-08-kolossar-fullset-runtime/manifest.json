@@ -1,0 +1,42 @@
+{
+  "master_sha256": "b771a0b622888746bb1b35b52d4b12df973445ee9fdf59e01d82860aac6877c2",
+  "resources": {
+    "assets/animations/kolossar/stone.res": {
+      "sha256": "d0fcf718807343ac395fa8c39e465f3f1a1d9ced4005ea2b9886cef9cb05c346",
+      "bytes": 60296
+    },
+    "assets/animations/kolossar/fire.res": {
+      "sha256": "be5cf29f8ba70982204ee5ff0d6010b5cb0a58a9a0f314986e206c010368d3b1",
+      "bytes": 60495
+    },
+    "assets/animations/kolossar/gale.res": {
+      "sha256": "e05bd4776596e912176de4e458daf6b78f1b1427c3285af756e3eaf3e3ea7a36",
+      "bytes": 60780
+    },
+    "assets/animations/kolossar/light.res": {
+      "sha256": "3f1527329555306cf267e5311799cf3994e651090f5008172b70fab14f368297",
+      "bytes": 60882
+    },
+    "assets/animations/kolossar/shadow.res": {
+      "sha256": "581bfb5edc5cd656e0567e76d88031d5a1794dc569e1cbe117bc5931cf72c359",
+      "bytes": 60607
+    },
+    "assets/animations/kolossar/tide.res": {
+      "sha256": "745542ec795a36b21e992b50b5c5567c581fcd9d25e6444fcdb2762c21172ec8",
+      "bytes": 60619
+    },
+    "assets/animations/kolossar/light-heel-skin.res": {
+      "sha256": "8371d01f0ff8ed85fad5f5a857dc83e520ba90ca7cca92b5e1e5bc66002c4ce0",
+      "bytes": 35350
+    }
+  },
+  "final_source_spotcheck": {
+    "assets/creatures_hd/kolossar_stone.glb": "efbfa17fa96fbc5cbdf6acb36666f6595c4cfb9b5551f23ffea8f1d9576d5070",
+    "assets/creatures_hd/kolossar_shadow.glb": "69b159a0e8763ef85c1e78b951255deb5e75d3939643af71c1abb8357d7e9a5c"
+  },
+  "shadow_note": "Already dirty at task start; current baseline preserved. Other six-source hashes verified by producer published proof.",
+  "runtime_report": "build/checks/kolossar-fullset/report.json",
+  "bounds_report": "build/checks/kolossar-fullset/bounds-report.json",
+  "boot_pool_report": "build/checks/models/selected-kolossar-runtime-pool/kolossar-runtime-pool.json",
+  "actual_master_proof": "build/experiments/kolossar-fullset-2026-11-08/retarget-six/actual-godot-common-master-proof.json"
+}

@@ -12,6 +12,14 @@ static func restore(data: Dictionary) -> Dictionary:
 	var ctrl := MatchController.new(decks[0], decks[1], int(data.seed), int(data.ruleset))
 	ctrl.landing_window = bool(data.landing_window)
 	ctrl.state.manual_gates = bool(data.get("manual_gates", false))
+	var power_snapshots: Variant = data.get("power_snapshots", [])
+	if not power_snapshots is Array or (not power_snapshots.is_empty() and power_snapshots.size() != 2):
+		return {"error": "Некорректный снимок силы матча"}
+	for side in range(power_snapshots.size()):
+		if not power_snapshots[side] is Dictionary or power_snapshots[side].size() != ctrl.state.players[side].creature_uids.size():
+			return {"error": "Некорректный снимок силы матча"}
+		if PowerCalc.apply_power_snapshot(ctrl.state, side, power_snapshots[side]) != OK:
+			return {"error": "Некорректный снимок силы матча"}
 	var index := 0
 	for action in data.actions:
 		var name := String(action[0])

@@ -1,0 +1,56 @@
+{
+  "status": "PASS_CODE_CONTRACT_PENDING_POSED_BVH_AND_ORDINARY_PROMOTION",
+  "reviewer": "Independent Sol high",
+  "reviewed_utc": "2026-11-06T19:44:39.571776+00:00",
+  "candidate_sha256_observed": "69b159a0e8763ef85c1e78b951255deb5e75d3939643af71c1abb8357d7e9a5c",
+  "reviewed_files_sha256": {
+    "tools/models/repair_kolossar_shadow_anatomy.py": "69a0e4ab8e4a6b6ceea2a4366c061e30aa03d298f7f784dac889541e341feeee",
+    "tools/models/kolossar_shadow_attachment.py": "69dfad3653260a0f5a2cc041a007c6ffe4522e308472619ad4b5e50a4bea3f3f",
+    "tests/kolossar_shadow_anatomy_integrity.py": "d3e387952514e4d2ef08e0e871198d2fd92b4884c61b5b82437592f006fcffff",
+    "tools/test_model_a03_anatomy.gd": "75666d5ffff7c23364b674a3e54413124fe83ca64f6151dce80f8ac00349602d",
+    "scenes/creature_models.gd": "b27a28c6e58fa76359171a880b200a15cf866b83ab19f77f3b3b8a7c57bd7f2a"
+  },
+  "production_blockers_found": [],
+  "findings": [
+    {
+      "area": "normalization guard",
+      "verdict": "PASS_CODE_AND_PREIMPORT_EVIDENCE",
+      "detail": "Only hd:kolossar_shadow;171156tri plus reviewed active AABB uses source frame height. Active/source positions and XZ extents agree; source Y extent.84775877 versus active.82631367. Actual-import source/candidate scale13.3923769,height11.3535052,extent10.9480671,offset match exactly. Unrelated key/bounds/count take existing live-bounds path."
+    },
+    {
+      "area": "retained body/source mapping",
+      "verdict": "PASS_CODE",
+      "detail": "Builder accepts only original6ea6/materialca2580 SHA; retained source primitive order/material/accessors retained by exact triangle-ID mapping. Integrity verifies135753retained+14241removed cover all149994source faces exactly once; original BINprefix/accessor/view/rig/rest/bind/clips/images/materials remain exact."
+    },
+    {
+      "area": "new attachment scope",
+      "verdict": "PASS_CODE_WITH_EXPLICIT_SCOPE",
+      "detail": "35403newtri/17797newverts;185source-boundary POSITION and eight influences copied exactly. Original source UV/NORMAL streams unchanged. New patch UV/image/material/interior weights and smoothed NORMAL are newly authored; no claim that new cap normals or UV equal original. Unit finite normals/weights, degenerate faces and closed rounded6 geometric boundary checked by existing integrity report."
+    },
+    {
+      "area": "renderer/path claims",
+      "verdict": "PASS_LIMITED",
+      "detail": "actual-import explicitly headless CPU;11495/0 pre-promotion,installedfalse,productionca2580/149994tri. Candidate171156tri is actual directGLTF/CreatureBall; this is not promoted ordinarySCN or GPU acceptance. Source/candidate palette/world deltas0,ordinary palette/world0 on current material-only production."
+    },
+    {
+      "area": "raw and posed BVH",
+      "verdict": "PENDING_POSED_REPORT",
+      "detail": "Frozen69b159 raw report0new nonadjacent intersections,bodycap0,self0. Actual source/candidate exports each46poses exist. Anatomy-specific final posed BVH report not yet present at review; raw0 and exported matrices alone do not accept those poses. Old review_kolossar_shadow_posed_scope.py expects source1/candidate2surfaces and legacy clipped-face manifest, so it is not applicable to this source2/candidate3 anatomy."
+    }
+  ],
+  "actual_import_evidence": {
+    "sha256": "3a44f9e04f31a45254bdcb444c47f6f88556d56259191059070cf05f38369603",
+    "assertions": 11495,
+    "failures": 0,
+    "installed": false
+  },
+  "runtime_reruns_by_reviewer": 0,
+  "limits": [
+    "No new test or Blender/Godot launch by reviewer",
+    "No independent new art verdict; requested review was code/integration",
+    "46pose new-face BVH final report pending",
+    "Installed ordinary resource/SCN final report pending",
+    "Hardware GPU shader/cloth/rim/HUD visual acceptance OPEN"
+  ],
+  "final_integration_status": "Installed ordinary15448/0 personally read by integration Sol; source/candidate and new/previous ordinary moving palette/world0; critical idle/attack CPU images accepted. Full corrected46poseBVH not executed after author scope narrowing, no all-pose or GPU acceptance."
+}

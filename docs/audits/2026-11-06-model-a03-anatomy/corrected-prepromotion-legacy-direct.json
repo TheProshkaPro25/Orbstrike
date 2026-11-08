@@ -1,0 +1,94 @@
+{
+	"actual_pose_motion_delta": 1.07040774822235,
+	"assertions": 11499,
+	"candidate_actor": {
+		"extent": 10.9480671403495,
+		"height": 11.3535052240395,
+		"offset": [
+			-0.128339096903801,
+			5.56805849075317,
+			0.29528346657753
+		],
+		"scale": 13.3923768997192
+	},
+	"candidate_import": {
+		"bounds": [
+			[
+				-0.399159491062164,
+				-0.415763258934021,
+				-0.355532795190811
+			],
+			[
+				0.817484974861145,
+				0.826313674449921,
+				0.66696834564209
+			]
+		],
+		"triangles": 171156,
+		"vertices": 119339
+	},
+	"candidate_sha256": "69b159a0e8763ef85c1e78b951255deb5e75d3939643af71c1abb8357d7e9a5c",
+	"display_server": "headless",
+	"failures": 2,
+	"installed": false,
+	"ordinary_actor": {
+		"extent": 10.9480671403495,
+		"height": 11.3535052240395,
+		"offset": [
+			-0.128339096903801,
+			5.56805849075317,
+			0.29528346657753
+		],
+		"scale": 13.3923768997192
+	},
+	"ordinary_import": {
+		"bounds": [
+			[
+				-0.399159491062164,
+				-0.415763258934021,
+				-0.355532795190811
+			],
+			[
+				0.817484974861145,
+				0.847758769989014,
+				0.66696834564209
+			]
+		],
+		"triangles": 149994,
+		"vertices": 112192
+	},
+	"ordinary_palette_delta": 0.0135127604007721,
+	"ordinary_world_delta": 0.0298786740750074,
+	"production_sha256": "ca2580a32b502635b15193141c6b71b388ebdde75c04ac10e1646c733c8b4e0f",
+	"scope": "Actual Godot GLTF/CreatureBall CPU import and poses; no rendered/GPU acceptance",
+	"source_actor": {
+		"extent": 10.9480671403495,
+		"height": 11.3535052240395,
+		"offset": [
+			-0.128339096903801,
+			5.56805849075317,
+			0.29528346657753
+		],
+		"scale": 13.3923768997192
+	},
+	"source_candidate_palette_delta": 0.0,
+	"source_candidate_world_delta": 0.0,
+	"source_import": {
+		"bounds": [
+			[
+				-0.399159491062164,
+				-0.415763258934021,
+				-0.355532795190811
+			],
+			[
+				0.817484974861145,
+				0.847758769989014,
+				0.66696834564209
+			]
+		],
+		"triangles": 149994,
+		"vertices": 112192
+	},
+	"source_sha256": "ca2580a32b502635b15193141c6b71b388ebdde75c04ac10e1646c733c8b4e0f",
+	"world_samples": 32
+}

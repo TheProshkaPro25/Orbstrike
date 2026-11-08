@@ -1,0 +1,5417 @@
+{
+  "status": "FAIL_NEW_OR_UNRESOLVED_INTERSECTIONS",
+  "candidate_sha256": "298705e229991cc41cd56be7dd93102d0e23cb90bf3a7e75eff34ab5e90179cb",
+  "source_sha256": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+  "pose_count": 46,
+  "all_actual_bone_palettes_identical": true,
+  "source_candidate_normalization_height_exact": true,
+  "imported_triangle_order_verified_against_glb": true,
+  "new_caps": 412,
+  "clipped_source_triangles": 625,
+  "uv_only_roots": 3081,
+  "candidate_export_kind": "CPU_GLTF_PROJECTED_TO_ACTUAL_GODOT_SOURCE_PALETTES",
+  "candidate_actual_Godot_import": false,
+  "projection_proof": {
+    "candidate_sha256": "298705e229991cc41cd56be7dd93102d0e23cb90bf3a7e75eff34ab5e90179cb",
+    "source_glb_sha256": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+    "calibration_glb_sha256": "845dafef53e0cb4476de6a9561a28a903f6bb4692dcf1569c93c19d1971c05a2",
+    "source_actual_pose_json_sha256": "f6b0b44eaea15a8b11d76d5c7ca4f91849bc4c921b54d0eb85957b111989e441",
+    "calibration_actual_pose_json_sha256": "16906f887bc9c92ac6f6660f1d9e9491c7077da5186fbd048156bc80e6d78b45",
+    "bone_name_mapping_verified": true,
+    "source_bind_nodes_clips_exact": true,
+    "raw_to_imported_frame_and_face_order_exact": true,
+    "source_and_old_candidate_quantized_8weights_exact": true,
+    "new_candidate_imported_in_Godot": false,
+    "source_authored_frame_assumption": "Uses source height/normalization frame. Final actual candidate import must confirm the guarded source frame remains active."
+  },
+  "new_intersection_pairs": 127,
+  "inherited_pairs": 0,
+  "unresolved_originally_adjacent_pairs": 0,
+  "adjacency_rule": "Only candidate pairs sharing an original geometric vertex (rounded6decimals, matching existing audit) are excluded. Inheritance requires the exact mapped source face pair to intersect under the identical actual exported pose and to be nonadjacent in the source. Same-source-face folds and new caps cannot inherit a source collision.",
+  "poses": [
+    {
+      "action": "idle",
+      "frame": 0,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 230,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 6,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 231,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 12,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 216,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 18,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 219,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 24,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 214,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 30,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 238,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 36,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 219,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 42,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 232,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 48,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 226,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 54,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 238,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 60,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 234,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 66,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 220,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 72,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 232,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 78,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 249,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 84,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 232,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 90,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 237,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 96,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 242,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 102,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 221,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 108,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 233,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 114,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 246,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "idle",
+      "frame": 120,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 238,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "frame": 0,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 230,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "frame": 6,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 236,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "frame": 12,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 221,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "frame": 18,
+      "patch_pairs_after_candidate_adjacency_exclusion": 6,
+      "candidate_geometric_adjacency_exclusions": 226,
+      "pairs_touching_new_caps": 6,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 6,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134233,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            45,
+            831
+          ],
+          "source_face_pair": [
+            16918,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134632,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            444,
+            831
+          ],
+          "source_face_pair": [
+            16918,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134634,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            446,
+            831
+          ],
+          "source_face_pair": [
+            17164,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134236,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            48,
+            831
+          ],
+          "source_face_pair": [
+            17164,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "frame": 24,
+      "patch_pairs_after_candidate_adjacency_exclusion": 6,
+      "candidate_geometric_adjacency_exclusions": 248,
+      "pairs_touching_new_caps": 6,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 6,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134236,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            48,
+            831
+          ],
+          "source_face_pair": [
+            17164,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134233,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            45,
+            831
+          ],
+          "source_face_pair": [
+            16918,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134634,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            446,
+            831
+          ],
+          "source_face_pair": [
+            17164,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134632,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            444,
+            831
+          ],
+          "source_face_pair": [
+            16918,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "frame": 30,
+      "patch_pairs_after_candidate_adjacency_exclusion": 6,
+      "candidate_geometric_adjacency_exclusions": 229,
+      "pairs_touching_new_caps": 6,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 6,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134632,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            444,
+            831
+          ],
+          "source_face_pair": [
+            16918,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134236,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            48,
+            831
+          ],
+          "source_face_pair": [
+            17164,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134634,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            446,
+            831
+          ],
+          "source_face_pair": [
+            17164,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134233,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            45,
+            831
+          ],
+          "source_face_pair": [
+            16918,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "frame": 36,
+      "patch_pairs_after_candidate_adjacency_exclusion": 6,
+      "candidate_geometric_adjacency_exclusions": 242,
+      "pairs_touching_new_caps": 6,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 6,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134236,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            48,
+            831
+          ],
+          "source_face_pair": [
+            17164,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134634,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            446,
+            831
+          ],
+          "source_face_pair": [
+            17164,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134233,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            45,
+            831
+          ],
+          "source_face_pair": [
+            16918,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134632,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            444,
+            831
+          ],
+          "source_face_pair": [
+            16918,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "frame": 42,
+      "patch_pairs_after_candidate_adjacency_exclusion": 6,
+      "candidate_geometric_adjacency_exclusions": 226,
+      "pairs_touching_new_caps": 6,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 6,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134632,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            444,
+            831
+          ],
+          "source_face_pair": [
+            16918,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134634,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            446,
+            831
+          ],
+          "source_face_pair": [
+            17164,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134236,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            48,
+            831
+          ],
+          "source_face_pair": [
+            17164,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134233,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            45,
+            831
+          ],
+          "source_face_pair": [
+            16918,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "frame": 48,
+      "patch_pairs_after_candidate_adjacency_exclusion": 6,
+      "candidate_geometric_adjacency_exclusions": 215,
+      "pairs_touching_new_caps": 6,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 6,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134634,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            446,
+            831
+          ],
+          "source_face_pair": [
+            17164,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134236,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            48,
+            831
+          ],
+          "source_face_pair": [
+            17164,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134632,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            444,
+            831
+          ],
+          "source_face_pair": [
+            16918,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134233,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            45,
+            831
+          ],
+          "source_face_pair": [
+            16918,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "frame": 54,
+      "patch_pairs_after_candidate_adjacency_exclusion": 6,
+      "candidate_geometric_adjacency_exclusions": 209,
+      "pairs_touching_new_caps": 6,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 6,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134634,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            446,
+            831
+          ],
+          "source_face_pair": [
+            17164,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134233,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            45,
+            831
+          ],
+          "source_face_pair": [
+            16918,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134632,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            444,
+            831
+          ],
+          "source_face_pair": [
+            16918,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134236,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            48,
+            831
+          ],
+          "source_face_pair": [
+            17164,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "frame": 60,
+      "patch_pairs_after_candidate_adjacency_exclusion": 6,
+      "candidate_geometric_adjacency_exclusions": 223,
+      "pairs_touching_new_caps": 6,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 6,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134233,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            45,
+            831
+          ],
+          "source_face_pair": [
+            16918,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134632,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            444,
+            831
+          ],
+          "source_face_pair": [
+            16918,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134634,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            446,
+            831
+          ],
+          "source_face_pair": [
+            17164,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134236,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            48,
+            831
+          ],
+          "source_face_pair": [
+            17164,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "frame": 66,
+      "patch_pairs_after_candidate_adjacency_exclusion": 5,
+      "candidate_geometric_adjacency_exclusions": 225,
+      "pairs_touching_new_caps": 5,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 5,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134632,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            444,
+            831
+          ],
+          "source_face_pair": [
+            16918,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134236,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            48,
+            831
+          ],
+          "source_face_pair": [
+            17164,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134233,
+            135019
+          ],
+          "candidate_new_local_face_ids": [
+            45,
+            831
+          ],
+          "source_face_pair": [
+            16918,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "frame": 72,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 228,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "frame": 78,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 234,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "frame": 84,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 239,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "attack",
+      "frame": 89,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 228,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "hit",
+      "frame": 0,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 230,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "hit",
+      "frame": 6,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 226,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "hit",
+      "frame": 12,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 267,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "hit",
+      "frame": 18,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 241,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "hit",
+      "frame": 24,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 229,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "hit",
+      "frame": 30,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 253,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "hit",
+      "frame": 36,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 239,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "hit",
+      "frame": 42,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 246,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    },
+    {
+      "action": "hit",
+      "frame": 48,
+      "patch_pairs_after_candidate_adjacency_exclusion": 2,
+      "candidate_geometric_adjacency_exclusions": 229,
+      "pairs_touching_new_caps": 2,
+      "inherited_nonadjacent_source_pairs": 0,
+      "source_adjacent_contacts_requiring_review": 0,
+      "genuinely_new_pairs": 2,
+      "details": [
+        {
+          "candidate_face_pair": [
+            134611,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            423,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        },
+        {
+          "candidate_face_pair": [
+            134197,
+            134998
+          ],
+          "candidate_new_local_face_ids": [
+            9,
+            810
+          ],
+          "source_face_pair": [
+            11557,
+            -1
+          ],
+          "touches_cap": true,
+          "source_pair_intersects_in_same_actual_pose": false,
+          "source_pair_originally_adjacent": false,
+          "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+        }
+      ]
+    }
+  ],
+  "genuinely_new_pairs": [
+    {
+      "action": "idle",
+      "frame": 0,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 0,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 6,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 6,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 12,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 12,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 18,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 18,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 24,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 24,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 30,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 30,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 36,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 36,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 42,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 42,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 48,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 48,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 54,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 54,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 60,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 60,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 66,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 66,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 72,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 72,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 78,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 78,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 84,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 84,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 90,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 90,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 96,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 96,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 102,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 102,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 108,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 108,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 114,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 114,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 120,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "idle",
+      "frame": 120,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 0,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 0,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 6,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 6,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 12,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 12,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 18,
+      "candidate_face_pair": [
+        134233,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        45,
+        831
+      ],
+      "source_face_pair": [
+        16918,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 18,
+      "candidate_face_pair": [
+        134632,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        444,
+        831
+      ],
+      "source_face_pair": [
+        16918,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 18,
+      "candidate_face_pair": [
+        134634,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        446,
+        831
+      ],
+      "source_face_pair": [
+        17164,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 18,
+      "candidate_face_pair": [
+        134236,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        48,
+        831
+      ],
+      "source_face_pair": [
+        17164,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 18,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 18,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 24,
+      "candidate_face_pair": [
+        134236,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        48,
+        831
+      ],
+      "source_face_pair": [
+        17164,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 24,
+      "candidate_face_pair": [
+        134233,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        45,
+        831
+      ],
+      "source_face_pair": [
+        16918,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 24,
+      "candidate_face_pair": [
+        134634,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        446,
+        831
+      ],
+      "source_face_pair": [
+        17164,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 24,
+      "candidate_face_pair": [
+        134632,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        444,
+        831
+      ],
+      "source_face_pair": [
+        16918,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 24,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 24,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 30,
+      "candidate_face_pair": [
+        134632,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        444,
+        831
+      ],
+      "source_face_pair": [
+        16918,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 30,
+      "candidate_face_pair": [
+        134236,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        48,
+        831
+      ],
+      "source_face_pair": [
+        17164,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 30,
+      "candidate_face_pair": [
+        134634,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        446,
+        831
+      ],
+      "source_face_pair": [
+        17164,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 30,
+      "candidate_face_pair": [
+        134233,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        45,
+        831
+      ],
+      "source_face_pair": [
+        16918,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 30,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 30,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 36,
+      "candidate_face_pair": [
+        134236,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        48,
+        831
+      ],
+      "source_face_pair": [
+        17164,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 36,
+      "candidate_face_pair": [
+        134634,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        446,
+        831
+      ],
+      "source_face_pair": [
+        17164,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 36,
+      "candidate_face_pair": [
+        134233,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        45,
+        831
+      ],
+      "source_face_pair": [
+        16918,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 36,
+      "candidate_face_pair": [
+        134632,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        444,
+        831
+      ],
+      "source_face_pair": [
+        16918,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 36,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 36,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 42,
+      "candidate_face_pair": [
+        134632,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        444,
+        831
+      ],
+      "source_face_pair": [
+        16918,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 42,
+      "candidate_face_pair": [
+        134634,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        446,
+        831
+      ],
+      "source_face_pair": [
+        17164,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 42,
+      "candidate_face_pair": [
+        134236,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        48,
+        831
+      ],
+      "source_face_pair": [
+        17164,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 42,
+      "candidate_face_pair": [
+        134233,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        45,
+        831
+      ],
+      "source_face_pair": [
+        16918,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 42,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 42,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 48,
+      "candidate_face_pair": [
+        134634,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        446,
+        831
+      ],
+      "source_face_pair": [
+        17164,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 48,
+      "candidate_face_pair": [
+        134236,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        48,
+        831
+      ],
+      "source_face_pair": [
+        17164,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 48,
+      "candidate_face_pair": [
+        134632,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        444,
+        831
+      ],
+      "source_face_pair": [
+        16918,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 48,
+      "candidate_face_pair": [
+        134233,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        45,
+        831
+      ],
+      "source_face_pair": [
+        16918,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 48,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 48,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 54,
+      "candidate_face_pair": [
+        134634,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        446,
+        831
+      ],
+      "source_face_pair": [
+        17164,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 54,
+      "candidate_face_pair": [
+        134233,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        45,
+        831
+      ],
+      "source_face_pair": [
+        16918,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 54,
+      "candidate_face_pair": [
+        134632,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        444,
+        831
+      ],
+      "source_face_pair": [
+        16918,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 54,
+      "candidate_face_pair": [
+        134236,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        48,
+        831
+      ],
+      "source_face_pair": [
+        17164,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 54,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 54,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 60,
+      "candidate_face_pair": [
+        134233,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        45,
+        831
+      ],
+      "source_face_pair": [
+        16918,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 60,
+      "candidate_face_pair": [
+        134632,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        444,
+        831
+      ],
+      "source_face_pair": [
+        16918,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 60,
+      "candidate_face_pair": [
+        134634,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        446,
+        831
+      ],
+      "source_face_pair": [
+        17164,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 60,
+      "candidate_face_pair": [
+        134236,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        48,
+        831
+      ],
+      "source_face_pair": [
+        17164,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 60,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 60,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 66,
+      "candidate_face_pair": [
+        134632,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        444,
+        831
+      ],
+      "source_face_pair": [
+        16918,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 66,
+      "candidate_face_pair": [
+        134236,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        48,
+        831
+      ],
+      "source_face_pair": [
+        17164,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 66,
+      "candidate_face_pair": [
+        134233,
+        135019
+      ],
+      "candidate_new_local_face_ids": [
+        45,
+        831
+      ],
+      "source_face_pair": [
+        16918,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 66,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 66,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 72,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 72,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 78,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 78,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 84,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 84,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 89,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "attack",
+      "frame": 89,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "hit",
+      "frame": 0,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "hit",
+      "frame": 0,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "hit",
+      "frame": 6,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "hit",
+      "frame": 6,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "hit",
+      "frame": 12,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "hit",
+      "frame": 12,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "hit",
+      "frame": 18,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "hit",
+      "frame": 18,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "hit",
+      "frame": 24,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "hit",
+      "frame": 24,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "hit",
+      "frame": 30,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "hit",
+      "frame": 30,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "hit",
+      "frame": 36,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "hit",
+      "frame": 36,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "hit",
+      "frame": 42,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "hit",
+      "frame": 42,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "hit",
+      "frame": 48,
+      "candidate_face_pair": [
+        134611,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        423,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    },
+    {
+      "action": "hit",
+      "frame": 48,
+      "candidate_face_pair": [
+        134197,
+        134998
+      ],
+      "candidate_new_local_face_ids": [
+        9,
+        810
+      ],
+      "source_face_pair": [
+        11557,
+        -1
+      ],
+      "touches_cap": true,
+      "source_pair_intersects_in_same_actual_pose": false,
+      "source_pair_originally_adjacent": false,
+      "verdict": "GENUINELY_NEW_CAP_INTERSECTION"
+    }
+  ],
+  "originally_adjacent_unresolved_pairs": [],
+  "source_pose_json_sha256": "f6b0b44eaea15a8b11d76d5c7ca4f91849bc4c921b54d0eb85957b111989e441",
+  "candidate_pose_json_sha256": "0789b4d992dec0eb1e0dc3ee56c600d3049950cdbfc4f5093930db214a3642e4",
+  "scope": "Only A03 affected patch versus remaining body and patch. No A04 or full baseline BVH repeated. Actual Godot exported source matrices/support; candidate provenance is recorded explicitly. CPU BVH, not GPU art."
+}

@@ -1,0 +1,17 @@
+{
+  "status": "Source GLB and ordinary imported CreatureBall resource verified",
+  "gpu_cloth_review": false,
+  "release_or_server": false,
+  "models": [
+    {
+      "issue": "a03",
+      "id": "kolossar_shadow",
+      "source": "build/model_candidates/2026-11-06-sculpt/source/kolossar_shadow.glb",
+      "candidate": "build/model_candidates/2026-11-06-sculpt/candidate/kolossar_shadow.glb",
+      "production": "assets/creatures_hd/kolossar_shadow.glb",
+      "source_sha256": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+      "installed_sha256": "ca2580a32b502635b15193141c6b71b388ebdde75c04ac10e1646c733c8b4e0f"
+    }
+  ],
+  "runtime_report": "material-installed.json"
+}

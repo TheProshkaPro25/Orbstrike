@@ -1,0 +1,505 @@
+{
+  "date": "2026-11-06",
+  "kind": "CPU raw-rest technical preview; no Godot/animation/cloth/support/arena",
+  "models": [
+    {
+      "id": "dragnar_fire",
+      "source_sha256": "2d759d92cc19566c5228e0ba913a7663fff934131b63f9295c4a84d92f47c6aa",
+      "triangles": 149996,
+      "seconds": 0.59,
+      "rest_skin_max_matrix_error": [
+        3.5136176662620144e-08
+      ]
+    },
+    {
+      "id": "dragnar_gale",
+      "source_sha256": "d02f3a67084a9e3464716897c2ef5b24f5a53c7ce596c10bf007049d2c97b830",
+      "triangles": 149992,
+      "seconds": 0.51,
+      "rest_skin_max_matrix_error": [
+        3.3256370671197466e-08
+      ]
+    },
+    {
+      "id": "dragnar_light",
+      "source_sha256": "8a82bcf7f89287daefd65baa25e96a5b1e1c4503b73ea3fa8817c83fcdd81f96",
+      "triangles": 150000,
+      "seconds": 0.5,
+      "rest_skin_max_matrix_error": [
+        3.247996205324455e-08
+      ]
+    },
+    {
+      "id": "dragnar_shadow",
+      "source_sha256": "ec28cf12618f5a739fc7b9604d384cf560d23b5590f64491a1ec320de39b8470",
+      "triangles": 149996,
+      "seconds": 0.5,
+      "rest_skin_max_matrix_error": [
+        3.3798226661829744e-08
+      ]
+    },
+    {
+      "id": "dragnar_stone",
+      "source_sha256": "1db9f2a935fc8731ad7bd274364c749e1622a965deacdfaf9c3e4285f5b2a72d",
+      "triangles": 150000,
+      "seconds": 0.5,
+      "rest_skin_max_matrix_error": [
+        3.7731887614356197e-08
+      ]
+    },
+    {
+      "id": "dragnar_tide",
+      "source_sha256": "fc95ce7731cf5331c84bfee312f69d7e3e6019c33e04ba011b878fa8adea8b6b",
+      "triangles": 149998,
+      "seconds": 0.51,
+      "rest_skin_max_matrix_error": [
+        2.99584959062571e-08
+      ]
+    },
+    {
+      "id": "gorgul_fire",
+      "source_sha256": "128eb7948519337b63fb3349447194910d0cc82e44d2efe22fc0ca0d20a7f3b6",
+      "triangles": 149996,
+      "seconds": 0.52,
+      "rest_skin_max_matrix_error": [
+        3.3445068936543976e-08
+      ]
+    },
+    {
+      "id": "gorgul_gale",
+      "source_sha256": "55d82a572aec50ffffcc3912b2fc448dec5db1176c819dd4e7b189d2611bd073",
+      "triangles": 149998,
+      "seconds": 0.54,
+      "rest_skin_max_matrix_error": [
+        3.5561433575637125e-08
+      ]
+    },
+    {
+      "id": "gorgul_light",
+      "source_sha256": "799f7c1f34ee27382315e42ef71a7625c2491648e45a02d6be611cb712b86e5c",
+      "triangles": 149996,
+      "seconds": 0.56,
+      "rest_skin_max_matrix_error": [
+        3.348178767570431e-08
+      ]
+    },
+    {
+      "id": "gorgul_shadow",
+      "source_sha256": "d31399c990f0148444c0082bf2bcc5d362d43f0a5516e3e70285beeec9b6ed86",
+      "triangles": 149998,
+      "seconds": 0.51,
+      "rest_skin_max_matrix_error": [
+        2.950120503442122e-08
+      ]
+    },
+    {
+      "id": "gorgul_stone",
+      "source_sha256": "e1fd5c9a9c8fd8ff1b01cc670b7a004689f6051484443e7d0518c5fc788d9bca",
+      "triangles": 150000,
+      "seconds": 0.52,
+      "rest_skin_max_matrix_error": [
+        3.659477543216383e-08
+      ]
+    },
+    {
+      "id": "gorgul_tide",
+      "source_sha256": "10cde043d74620940f53baff371f27631cf50ecff07bb888ef46255baa017d8a",
+      "triangles": 149998,
+      "seconds": 0.58,
+      "rest_skin_max_matrix_error": [
+        2.803432241904602e-08
+      ]
+    },
+    {
+      "id": "grifalon_fire",
+      "source_sha256": "295aaa4752b85e3febeb01dc36570b9845c3f05eea37188cc4c5c453b40f5954",
+      "triangles": 149992,
+      "seconds": 0.55,
+      "rest_skin_max_matrix_error": [
+        4.497111116830155e-08
+      ]
+    },
+    {
+      "id": "grifalon_gale",
+      "source_sha256": "0329fff5f70f53e6c14fbfaaf293c93860ff86cf5be79ef0f1e85f1c7d02bd79",
+      "triangles": 127814,
+      "seconds": 0.52,
+      "rest_skin_max_matrix_error": [
+        4.132191860906076e-08
+      ]
+    },
+    {
+      "id": "grifalon_light",
+      "source_sha256": "0437c2014c5c0e87801a0acc7b25a4f957acf3a8028dbb699b5e6672d9574481",
+      "triangles": 149996,
+      "seconds": 0.55,
+      "rest_skin_max_matrix_error": [
+        3.829076156147693e-08
+      ]
+    },
+    {
+      "id": "grifalon_shadow",
+      "source_sha256": "15da6c635d6aa002e11049082ece86d2f0124570d0da5a71f41091b07765b0b3",
+      "triangles": 150000,
+      "seconds": 0.53,
+      "rest_skin_max_matrix_error": [
+        3.599017462421446e-08
+      ]
+    },
+    {
+      "id": "grifalon_stone",
+      "source_sha256": "376640d70ecbdc35c0da1f3dec334118f9037b1b10f80364d973992310b3f540",
+      "triangles": 149996,
+      "seconds": 0.55,
+      "rest_skin_max_matrix_error": [
+        3.965769151959009e-08
+      ]
+    },
+    {
+      "id": "grifalon_tide",
+      "source_sha256": "9695d09298d8daeddb55c8908e7181b7e3503c7a30c1d3b402bf730c87b22413",
+      "triangles": 150000,
+      "seconds": 0.51,
+      "rest_skin_max_matrix_error": [
+        3.76610592711657e-08
+      ]
+    },
+    {
+      "id": "klykar_fire",
+      "source_sha256": "73fcda1b1a9466e5cfc8860de7df4c5beb9f2b2440e4a34bb7a2a17b4622a160",
+      "triangles": 150000,
+      "seconds": 0.55,
+      "rest_skin_max_matrix_error": [
+        2.881509829355533e-08
+      ]
+    },
+    {
+      "id": "klykar_gale",
+      "source_sha256": "f16e61d615e7897ed513d3abb73aa941cb335827d7f43c07961fd8e277ab4c28",
+      "triangles": 149996,
+      "seconds": 0.55,
+      "rest_skin_max_matrix_error": [
+        3.985862373490079e-08
+      ]
+    },
+    {
+      "id": "klykar_light",
+      "source_sha256": "57c8b87a62361796eaf7dc647762950065d8bef84d41d5d824c96f0d554cd4e0",
+      "triangles": 150000,
+      "seconds": 0.52,
+      "rest_skin_max_matrix_error": [
+        2.989049585622183e-08
+      ]
+    },
+    {
+      "id": "klykar_shadow",
+      "source_sha256": "30d7873a5bb6e83f906a44be7fa4cf7706dc919a1ecdee7667763d875c87963b",
+      "triangles": 149992,
+      "seconds": 0.54,
+      "rest_skin_max_matrix_error": [
+        3.9438071031128175e-08
+      ]
+    },
+    {
+      "id": "klykar_stone",
+      "source_sha256": "bafa3a230c96e8799a061e81c58a058f1a43363d2c114858239fa3c109508027",
+      "triangles": 149998,
+      "seconds": 0.55,
+      "rest_skin_max_matrix_error": [
+        3.258466685363004e-08
+      ]
+    },
+    {
+      "id": "klykar_tide",
+      "source_sha256": "f5e70149c8408ecbc5a00bb3e11238a2d43e75fea021a8001ce3098dee697b2e",
+      "triangles": 149992,
+      "seconds": 0.55,
+      "rest_skin_max_matrix_error": [
+        3.4885214050817126e-08
+      ]
+    },
+    {
+      "id": "kolossar_fire",
+      "source_sha256": "30cae0eb02ec6073300d1e2ed34aa65a3f8d6e64941612f8fd1555294ba60657",
+      "triangles": 149994,
+      "seconds": 0.57,
+      "rest_skin_max_matrix_error": [
+        5.960463944632011e-08
+      ]
+    },
+    {
+      "id": "kolossar_gale",
+      "source_sha256": "dbbabf794f6a5acf4d64463d80a253757d51ce24990814759ec6bc587f7f54fd",
+      "triangles": 149994,
+      "seconds": 0.62,
+      "rest_skin_max_matrix_error": [
+        3.818083127438143e-08
+      ]
+    },
+    {
+      "id": "kolossar_light",
+      "source_sha256": "e103137b0e52c6ba2a9673dda69e519c0034ac8eccba4b5e32194d1b1c93ef71",
+      "triangles": 149405,
+      "seconds": 0.78,
+      "rest_skin_max_matrix_error": [
+        3.457493524816613e-08
+      ]
+    },
+    {
+      "id": "kolossar_shadow",
+      "source_sha256": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+      "triangles": 149994,
+      "seconds": 0.64,
+      "rest_skin_max_matrix_error": [
+        3.528181224954352e-08
+      ]
+    },
+    {
+      "id": "kolossar_stone",
+      "source_sha256": "efbfa17fa96fbc5cbdf6acb36666f6595c4cfb9b5551f23ffea8f1d9576d5070",
+      "triangles": 150000,
+      "seconds": 0.58,
+      "rest_skin_max_matrix_error": [
+        4.071214521061961e-08
+      ]
+    },
+    {
+      "id": "kolossar_tide",
+      "source_sha256": "c212690db15deaf3e63e4aa44f312c657ebb2c2b8441650094ba837d38e1de56",
+      "triangles": 149994,
+      "seconds": 0.66,
+      "rest_skin_max_matrix_error": [
+        3.546701821122156e-08
+      ]
+    },
+    {
+      "id": "levian_fire",
+      "source_sha256": "ded936ce93435d9651078a26276a025aff627f150454a08a0d830bd5d2280310",
+      "triangles": 143268,
+      "seconds": 0.71,
+      "rest_skin_max_matrix_error": [
+        3.5899985206810925e-08
+      ]
+    },
+    {
+      "id": "levian_gale",
+      "source_sha256": "fe5c04377285353b7a95bdb723612464824aaaed05f9b499acb732e858db2ddc",
+      "triangles": 144894,
+      "seconds": 0.75,
+      "rest_skin_max_matrix_error": [
+        3.0468644607317685e-08
+      ]
+    },
+    {
+      "id": "levian_light",
+      "source_sha256": "8e15e3d6bc72489f271d0d16f1c6270158fd7d2b113ec96a358ba3ebaba2669a",
+      "triangles": 145130,
+      "seconds": 0.74,
+      "rest_skin_max_matrix_error": [
+        2.823745059998828e-08
+      ]
+    },
+    {
+      "id": "levian_shadow",
+      "source_sha256": "c8f42fa47c27e6a0d06dfa6fa5d570031601de9e52cb0c7f184979ea78d8a90e",
+      "triangles": 144636,
+      "seconds": 0.67,
+      "rest_skin_max_matrix_error": [
+        3.5204675841171706e-08
+      ]
+    },
+    {
+      "id": "levian_stone",
+      "source_sha256": "070f9616426759b58ebd39b7d64c312fafb7597ef7e333ad6baef8402e188dcf",
+      "triangles": 143620,
+      "seconds": 0.76,
+      "rest_skin_max_matrix_error": [
+        2.8728541434652755e-08
+      ]
+    },
+    {
+      "id": "levian_tide",
+      "source_sha256": "7eade977ce428ce052690b7bbf235740a002a91140b0677e92e5b0d7a2bf63d8",
+      "triangles": 144776,
+      "seconds": 0.71,
+      "rest_skin_max_matrix_error": [
+        3.0552752328105726e-08
+      ]
+    },
+    {
+      "id": "likorez_shadow",
+      "source_sha256": "5874835226b02bce3dba194313d07ed1631f7b0fabf5b6d65ef38dc1b97d7b09",
+      "triangles": 149355,
+      "seconds": 0.64,
+      "rest_skin_max_matrix_error": [
+        6.05565474876002e-07
+      ]
+    },
+    {
+      "id": "ratnik_fire",
+      "source_sha256": "7824f01282e239912f40c3eafbf26dfa2ffd0c8b551c325ac75f3725242a81dd",
+      "triangles": 149998,
+      "seconds": 0.74,
+      "rest_skin_max_matrix_error": [
+        3.008974669427289e-08,
+        3.008974669427289e-08
+      ]
+    },
+    {
+      "id": "ratnik_gale",
+      "source_sha256": "6e40647983c1e9fb8c0c5f79513a6e5e97fe496f2ac5562f34999cf5769a1103",
+      "triangles": 149996,
+      "seconds": 0.71,
+      "rest_skin_max_matrix_error": [
+        5.904506494847084e-08,
+        5.904506494847084e-08
+      ]
+    },
+    {
+      "id": "ratnik_light",
+      "source_sha256": "454e8442b83fe7fd618d0bc0338dfc8b51b1daabaa49b4a5237dcb669598f727",
+      "triangles": 149994,
+      "seconds": 0.76,
+      "rest_skin_max_matrix_error": [
+        3.051195074377233e-08,
+        3.051195074377233e-08
+      ]
+    },
+    {
+      "id": "ratnik_shadow",
+      "source_sha256": "5be558ea4208a92f4b1b2684847935fa5b0ad9ebc2cb4b1f35a8329f19f5789b",
+      "triangles": 149996,
+      "seconds": 0.73,
+      "rest_skin_max_matrix_error": [
+        2.9343787733004945e-08,
+        2.9343787733004945e-08
+      ]
+    },
+    {
+      "id": "ratnik_stone",
+      "source_sha256": "0c7909c072cca08b68536d94df80915358b3052e8979eff39614a94cee753db6",
+      "triangles": 149996,
+      "seconds": 0.73,
+      "rest_skin_max_matrix_error": [
+        5.887404230797699e-08,
+        5.887404230797699e-08
+      ]
+    },
+    {
+      "id": "ratnik_tide",
+      "source_sha256": "1092ec4c85963fe869274d5555a881921e46b51327809cbaee385c70f38e37ce",
+      "triangles": 149998,
+      "seconds": 0.72,
+      "rest_skin_max_matrix_error": [
+        5.938141389716378e-08,
+        5.938141389716378e-08
+      ]
+    },
+    {
+      "id": "rogozhuk_fire",
+      "source_sha256": "1ff332d623750f53cbefb3c557cbe4ec80fe1341394f033910aca90d5848c61e",
+      "triangles": 153038,
+      "seconds": 0.67,
+      "rest_skin_max_matrix_error": [
+        3.0027776376506665e-07
+      ]
+    },
+    {
+      "id": "rogozhuk_gale",
+      "source_sha256": "025b3c5488c18b8dc978afb5851e76db4b24534736d7d48c4dd0eafe8984aae5",
+      "triangles": 153028,
+      "seconds": 0.69,
+      "rest_skin_max_matrix_error": [
+        1.2896027556941192e-07
+      ]
+    },
+    {
+      "id": "rogozhuk_light",
+      "source_sha256": "8dcffa2a2981714c5255403fb7b9ac337b4c709913384b845874cafc006ce21f",
+      "triangles": 132806,
+      "seconds": 0.85,
+      "rest_skin_max_matrix_error": [
+        3.453638064421227e-08
+      ]
+    },
+    {
+      "id": "rogozhuk_shadow",
+      "source_sha256": "51af8c75076d54f083c502156fe8e9a8dba737d819b7fdf86aacf1c7c36bc62f",
+      "triangles": 153040,
+      "seconds": 0.65,
+      "rest_skin_max_matrix_error": [
+        3.369400771724429e-07
+      ]
+    },
+    {
+      "id": "rogozhuk_stone",
+      "source_sha256": "e5e198539f5d6ed892a9f0b553dc9d46892a66696b5d7b808acfafa2bd6f1a39",
+      "triangles": 179960,
+      "seconds": 2.64,
+      "rest_skin_max_matrix_error": [
+        4.301778666615519e-08
+      ]
+    },
+    {
+      "id": "rogozhuk_tide",
+      "source_sha256": "4ff3f18af1934d271c019e2301f8b914f33d14746da550eb9ddb885094eba2a9",
+      "triangles": 149172,
+      "seconds": 0.92,
+      "rest_skin_max_matrix_error": [
+        3.058481645723532e-08
+      ]
+    }
+  ],
+  "portrait_sha256": {
+    "dragnar_fire.png": "09bd795755cafe06dd9d8b8531ac47c0b518ffe28c1968673279481138d4d822",
+    "dragnar_gale.png": "102f10019ad02c2df75d97f5a587ecbdf61fd352c12ec773bea37f275506a7ed",
+    "dragnar_light.png": "6f332ab7b1c0c64000beb2fdbb8bb3082add49a60a7c6d66b0ceed8c4d653397",
+    "dragnar_shadow.png": "59e198fc51757e62203a7cf044ba69672f53310479cd9c6de9aef912a779ed63",
+    "dragnar_stone.png": "8fc7b5a6adde08dbc0822611361929673435448ff1f29213a459475ff29e1ab5",
+    "dragnar_tide.png": "6f41b9d05cacd8d724a65dba3d330cb626e6a05f0e43e13a66183909f8f945dc",
+    "gorgul_fire.png": "6db5c35491bfc38bcaaadf13dcb410a72af1da526913835cf691fcfef40e7e0c",
+    "gorgul_gale.png": "11f3b30eb9b44dde4b26887ad38ca5aef41bec263026618164995d00ef790728",
+    "gorgul_light.png": "d086ccdaee5a9162e6461691596d47b1316a5db91a882fb58f7e2a6f52f662c7",
+    "gorgul_shadow.png": "11e4fcb689389cf8031ba97ba0e3613faed2ff89ff80961671239f54f49c8a1f",
+    "gorgul_stone.png": "fc6aa5e5c0df54fe778a40eb7155e1bc0e3992574d14f04a0ff401ef2856ebe6",
+    "gorgul_tide.png": "16676973ad8e906531ebac83cdadc1fbb65d33c52cd8c0096610989d280daa87",
+    "grifalon_fire.png": "9ee3da379eab17b16b9fb4db966829d0ffa446b271621fece92894e769674022",
+    "grifalon_gale.png": "cf615c72998423157ca99f6fc575565a9437a78e4433827ed280cd7de8e236a3",
+    "grifalon_light.png": "ed3edb3d68d6c226f3432a9955a5cc534a73746ec98eb88ece1724e08b95c760",
+    "grifalon_shadow.png": "cca05869ea5ec767a04928b883f741e6ec426f4d5cd51aed2298fe35a89cbe52",
+    "grifalon_stone.png": "7397277f2d92dc312e356b3f31b5d1510bab99c4b195d9451de5005f0e3b91e8",
+    "grifalon_tide.png": "20c75ef06ad075593046ffdd97c358ffbf3ad8ba793ed4abc72d291d7ada3934",
+    "klykar_fire.png": "12c7f11c7272ad4abc72926287877009da1246577fedf607a2489bbeaa471ae6",
+    "klykar_gale.png": "347d96df4d6838369cbd399375463776c7905727144404ad940d51744dad613f",
+    "klykar_light.png": "146dae00a52221a222c43bc9da700d6789ffc38274c76c0634f214741cda0bf7",
+    "klykar_shadow.png": "31431b731a43c4f58f04e45e1f4d219bbb23c18517058966b0e048b4fa846fa5",
+    "klykar_stone.png": "da5c5f5153ae38b95046f7008868dd01799082f859b98908e23c819caef446fe",
+    "klykar_tide.png": "b08890f5b258e4e746cdeb5788b1a5adc0d3e9045933fa0383fa68e3bc987d0f",
+    "kolossar_fire.png": "8fd65b209cfe23c18a1565e451b16598ff590092b4ad1ec37db874e97fa4d1cc",
+    "kolossar_gale.png": "076a1ef388e5c35d140d748521c60f2adbf6a88edc4c7540507834e86cd3e9f8",
+    "kolossar_light.png": "d8c1baf0083d233dafe92988785b7a453246373708a1bb8128eb0a8645886433",
+    "kolossar_shadow.png": "2272bf21b85a26a9a676fcbce668da953b0cb6ee434a72d59056f89a9fbdc371",
+    "kolossar_stone.png": "d2159f76b766aa638ac07fb0a85141842d9843b32a7d3f2cb33b7876b9e4c8f3",
+    "kolossar_tide.png": "8ee6878ca01e8e3b6c39ae152d98102632b54a943850d911ac2a0ce83a89262b",
+    "levian_fire.png": "9415738cdae8f6bb7651a21ed610fe0ea3f15f25e2597ec42ea08b208dd3ca91",
+    "levian_gale.png": "306afd3d489042aeaddbcdecf78b0ce3159ce75a8c68d000b3695129a706a8ab",
+    "levian_light.png": "37033956290332be58ca67d98f7cc7667913fb884204ec28fee3d624bad63612",
+    "levian_shadow.png": "fa9b6553d2a07675800dbd0985fe11c75802be8e6fed3069f01e5698c482a335",
+    "levian_stone.png": "3853dcbbd5b9ad068e91f0f92d4b38771298bdd5d745edf4cc941dd7647970b4",
+    "levian_tide.png": "da72dfadcc07f3ddd9c9508ade64fc9965374fe3fa235cb252cfcdd69cd00f1d",
+    "likorez_shadow.png": "bc60dcbdeaebe6b4f6239a384020e96cc6d7f014f07a7e677b78d3a54bc4157e",
+    "ratnik_fire.png": "eb2dce1c7e2d3b862b8857c60b39a92ef0087b94668d6be9e59f37695ba0625a",
+    "ratnik_gale.png": "d28a6bab2af4531d19c6a5bde88797b5f104900695592c979b044224feda94f5",
+    "ratnik_light.png": "1ea156c75cfc60f78d85710704c025bec0805c08e61a609b1e9d3666ac451601",
+    "ratnik_shadow.png": "08f6487590108dc7d4d0fa1cf83b254be2d8c00c89491308f96e64c9de0dde85",
+    "ratnik_stone.png": "07e895e129ffc1d034ae1c4fcb8576826b7d3986e7a688ab3b3f246aa68112a7",
+    "ratnik_tide.png": "2bc41fe2a902f7c92b82f6912aca96685756d663ef708442c1d5c610dc2658d1",
+    "rogozhuk_fire.png": "f94d8ea94dd07e82e2b5373146a0c48ff790561c05afd4bd3aced07366590b58",
+    "rogozhuk_gale.png": "348364392439ce8082e1c4e3c3d306a75541607a61f70b22d6c656d7e007a861",
+    "rogozhuk_light.png": "e17ddede4bd405ecb4425180c0db2cbc12379632bb42b2f3c7aa93a6cb1b4b42",
+    "rogozhuk_shadow.png": "4936803fe2a50cb08c51ab14a5619dd7cc7c27fee9265f85d6ce5b4055eab306",
+    "rogozhuk_stone.png": "47991d6815cedf4160d1c756a4bac3e44069e8e63ebc7991f6bdcfae4ae1e921",
+    "rogozhuk_tide.png": "9178dfe6df5581fe43c3f6aa93fee383309828bf44e9e2ae1a71f8f1554b5f18"
+  },
+  "script_sha256": "bd6d80577a0ffa90010c6ac5eb517ca4e80965b4ff5c0f2bdcbb07e90e0135db"
+}

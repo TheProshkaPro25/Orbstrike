@@ -1,0 +1,271 @@
+{
+  "model": "ratnik_light",
+  "candidate_geometry_sha256": "d389eafd5e6d59ae77b853e3c2cd5e713e4561906e7a48a6bee131bd895546ee",
+  "final_normal_finish_sha256": "b209b4bad3ec5e2a4b02104993b7de1adbbdd1b59dba565c7f1e14270fe13df8",
+  "normal_only_equivalence": "../2026-11-06-model-a04/crown-final/normal-equivalence.json",
+  "scope": "Actual Godot43poses, named body/halo surfaces, CapeGPU excluded; CPU BVH, not GPU cloth",
+  "data": {
+    "id": "creature_ratnik_light",
+    "region": "sculpt",
+    "poses": [
+      {
+        "action": "idle",
+        "frame": 0,
+        "pairs": 14,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 6,
+        "pairs": 22,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 12,
+        "pairs": 37,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 18,
+        "pairs": 37,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 24,
+        "pairs": 37,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 30,
+        "pairs": 39,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 36,
+        "pairs": 39,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 42,
+        "pairs": 53,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 48,
+        "pairs": 59,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 54,
+        "pairs": 51,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 60,
+        "pairs": 43,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 66,
+        "pairs": 43,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 72,
+        "pairs": 43,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 78,
+        "pairs": 43,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 84,
+        "pairs": 43,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 90,
+        "pairs": 43,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 96,
+        "pairs": 43,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 102,
+        "pairs": 51,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 108,
+        "pairs": 51,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 114,
+        "pairs": 45,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "idle",
+        "frame": 120,
+        "pairs": 45,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "attack",
+        "frame": 0,
+        "pairs": 14,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "attack",
+        "frame": 6,
+        "pairs": 55,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "attack",
+        "frame": 12,
+        "pairs": 715,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "attack",
+        "frame": 18,
+        "pairs": 1313,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "attack",
+        "frame": 24,
+        "pairs": 1334,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "attack",
+        "frame": 30,
+        "pairs": 917,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "attack",
+        "frame": 36,
+        "pairs": 845,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "attack",
+        "frame": 42,
+        "pairs": 725,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "attack",
+        "frame": 48,
+        "pairs": 864,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "attack",
+        "frame": 54,
+        "pairs": 815,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "attack",
+        "frame": 60,
+        "pairs": 532,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "attack",
+        "frame": 66,
+        "pairs": 74,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "attack",
+        "frame": 70,
+        "pairs": 35,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "hit",
+        "frame": 0,
+        "pairs": 14,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "hit",
+        "frame": 6,
+        "pairs": 101,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "hit",
+        "frame": 12,
+        "pairs": 304,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "hit",
+        "frame": 18,
+        "pairs": 359,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "hit",
+        "frame": 24,
+        "pairs": 403,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "hit",
+        "frame": 30,
+        "pairs": 337,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "hit",
+        "frame": 36,
+        "pairs": 217,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "hit",
+        "frame": 42,
+        "pairs": 132,
+        "pairs_touching_changed_faces": 0
+      },
+      {
+        "action": "hit",
+        "frame": 48,
+        "pairs": 45,
+        "pairs_touching_changed_faces": 0
+      }
+    ]
+  }
+}

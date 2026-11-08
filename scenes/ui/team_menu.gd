@@ -83,6 +83,7 @@ var _hidden_for_arena: Array[Control] = []
 
 func _ready() -> void:
 	_build()
+	UiTheme.apply_device_frame(self, "КОМАНДА")
 
 
 ## Меню заранее создаётся под экраном загрузки. Настройки главного меню
@@ -189,7 +190,7 @@ func _build() -> void:
 	_back_btn = _button("← Назад", 130)
 	_back_btn.pressed.connect(func() -> void: _show_step(_step - 1))
 	nav.add_child(_back_btn)
-	var keys := VisualUtil.label("1–3 шаги · ←/→ · Enter — в бой · R — случайная", 12)
+	var keys := VisualUtil.label("Tab / стрелки — выбор · Enter — выбрать · 1–3 — шаг · R — случайная", 12)
 	keys.add_theme_color_override("font_color", Color(UiTheme.TEXT_DIM, 0.7))
 	keys.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	keys.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -286,7 +287,7 @@ func _button(text: String, w: float, h: float = 42.0, fs: int = 17) -> Button:
 	var b := Button.new()
 	b.text = text
 	b.custom_minimum_size = Vector2(w, h)
-	b.focus_mode = Control.FOCUS_NONE
+	b.focus_mode = Control.FOCUS_ALL
 	b.add_theme_font_size_override("font_size", fs)
 	return b
 
@@ -294,6 +295,13 @@ func _button(text: String, w: float, h: float = 42.0, fs: int = 17) -> Button:
 # ---------------------------------------------------------------- шаги
 
 func _show_step(step: int) -> void:
+	var owner := get_viewport().gui_get_focus_owner()
+	var restore_cards := owner != null and _page.is_ancestor_of(owner)
+	var filter_index := owner.get_index() if owner != null and owner.get_parent() == _filters else -1
+	var focused_id: StringName = owner.card_id if owner is CardView else &""
+	if owner is CardView and focused_id == &"":
+		for id in _cards:
+			if _cards[id] == owner: focused_id = id
 	var s := clampi(step, 0, 2)
 	if s != _step:
 		_filter = &""
@@ -315,6 +323,11 @@ func _show_step(step: int) -> void:
 	_hover_id = &""
 	_refresh()
 	_show_preview(_focus_id, false)
+	if restore_cards and not _cards.is_empty():
+		var target: Control = _cards.get(focused_id, _cards.values()[0])
+		VisualUtil.focus_if_present.call_deferred(target)
+	elif filter_index >= 0 and _filters.get_child_count() > 0:
+		VisualUtil.focus_if_present.call_deferred(_filters.get_child(mini(filter_index, _filters.get_child_count() - 1)) as Control)
 
 
 ## Свободное место под карты в центре (оценка по размеру окна; колонки фиксированной ширины).
@@ -338,7 +351,7 @@ func _build_creatures_page() -> void:
 			var ac := VisualUtil.attr_color(a)
 			b.add_theme_stylebox_override("pressed", UiTheme.box(ac.darkened(0.55), ac.lightened(0.3), 2, 8, 6))
 			b.add_theme_stylebox_override("hover_pressed", UiTheme.box(ac.darkened(0.45), ac.lightened(0.4), 2, 8, 6))
-		b.tooltip_text = "Стихия %s: бьёт %s, уступает %s" % [VisualUtil.attr_name(a), VisualUtil.attr_name((a + 1) % 6), VisualUtil.attr_name(Attr.beaten_by(a))]
+		b.tooltip_text = "Стихия %s определяет совместимые способности и силу открытых ворот. Автоматического преимущества над другой стихией нет." % VisualUtil.attr_name(a)
 		b.pressed.connect(_on_element.bind(a))
 		# значок стихии и название по центру кнопки
 		var name_txt := b.text
@@ -373,11 +386,13 @@ func _build_creatures_page() -> void:
 	center.add_child(grid)
 	for id in CardDB.creatures_of(_element):
 		var cv := CardView.new().for_creature(CardDB.creature(id), -1, "", sz)
+		cv.set_meta("silent_hover", true)
 		cv.tooltip_text = ""   # подробности — в предпросмотре справа
 		cv.toggle_mode = true
 		cv.pressed.connect(_on_creature.bind(id))
 		cv.mouse_entered.connect(_on_hover.bind(id, true))
 		cv.mouse_exited.connect(_on_hover.bind(id, false))
+		cv.focus_entered.connect(_on_card_focus.bind(id))
 		cv.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		grid.add_child(cv)
 		_cards[id] = cv
@@ -445,11 +460,13 @@ func _build_cards_page(kind: int, classes: Array[StringName]) -> void:
 			col.add_child(VisualUtil.label("нет подходящих карт", 13))
 		for id in ids:
 			var cv := CardView.new().for_card(CardDB.card(id), sz)
+			cv.set_meta("silent_hover", true)
 			cv.tooltip_text = ""
 			cv.toggle_mode = true
 			cv.pressed.connect(_on_card.bind(cls, id))
 			cv.mouse_entered.connect(_on_hover.bind(id, true))
 			cv.mouse_exited.connect(_on_hover.bind(id, false))
+			cv.focus_entered.connect(_on_card_focus.bind(id))
 			grid.add_child(cv)
 			_cards[id] = cv
 	_sync_cards()
@@ -521,6 +538,13 @@ func _sync_cards() -> void:
 
 
 # ---------------------------------------------------------------- предпросмотр
+
+func _on_card_focus(id: StringName) -> void:
+	_focus_id = id
+	_hover_id = &""
+	_hover_t = 0.0
+	_show_preview(id, false)
+	if _cards.has(id): _page.ensure_control_visible.call_deferred(_cards[id])
 
 func _on_hover(id: StringName, on: bool) -> void:
 	if on:
@@ -729,7 +753,7 @@ func _section(title: String, n: int) -> Control:
 ## Слот колоды: клик — перейти к шагу (и классу) и показать карту; × — убрать из колоды.
 func _slot(text: String, c: Color, right: String, element: int, step: int, id: StringName, cls: StringName) -> Control:
 	var b := Button.new()
-	b.focus_mode = Control.FOCUS_NONE
+	b.focus_mode = Control.FOCUS_ALL
 	b.custom_minimum_size = Vector2(0, 26)
 	var filled := id != &""
 	b.add_theme_stylebox_override("normal", UiTheme.box(c.darkened(0.78) if filled else Color(0.08, 0.08, 0.11, 0.6), c.darkened(0.1) if filled else c.darkened(0.55), 1, 6, 4))
@@ -771,10 +795,10 @@ func _slot(text: String, c: Color, right: String, element: int, step: int, id: S
 		var x := Button.new()
 		x.text = "×"
 		x.flat = true
-		x.focus_mode = Control.FOCUS_NONE
+		x.focus_mode = Control.FOCUS_ALL
 		x.custom_minimum_size = Vector2(22, 22)
 		x.add_theme_font_size_override("font_size", 16)
-		for st in ["normal", "hover", "pressed", "hover_pressed", "focus"]:
+		for st in ["normal", "hover", "pressed", "hover_pressed"]:
 			x.add_theme_stylebox_override(st, StyleBoxEmpty.new())
 		x.add_theme_color_override("font_hover_color", Color(1.0, 0.85, 0.8))
 		x.add_theme_color_override("font_color", Color(1.0, 0.6, 0.55))
@@ -803,6 +827,8 @@ func _slot(text: String, c: Color, right: String, element: int, step: int, id: S
 		b.mouse_exited.connect(func() -> void:
 			if step == _step:
 				_on_hover(id, false))
+		b.focus_entered.connect(func() -> void:
+			if step == _step: _on_card_focus(id))
 	return b
 
 
@@ -810,6 +836,11 @@ func _slot(text: String, c: Color, right: String, element: int, step: int, id: S
 
 func _unhandled_key_input(e: InputEvent) -> void:
 	if not visible or (_arena_picker != null and _arena_picker.visible) or not (e is InputEventKey) or not e.pressed or e.echo:
+		return
+	# Button подтверждает ui_accept при отпускании. Общий Enter не должен
+	# запускать матч на нажатии до выбора сфокусированной карты/кнопки.
+	var owner := get_viewport().gui_get_focus_owner()
+	if (e as InputEventKey).keycode in [KEY_ENTER, KEY_KP_ENTER] and owner is BaseButton and is_ancestor_of(owner):
 		return
 	match (e as InputEventKey).keycode:
 		KEY_1, KEY_KP_1:

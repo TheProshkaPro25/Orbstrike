@@ -8,6 +8,7 @@ var _panel: PanelContainer
 var _title: Label
 var _choices: HBoxContainer
 var _cancel: Button
+var _return_focus: Control
 
 func _ready() -> void:
 	theme = UiTheme.get_theme()
@@ -41,6 +42,7 @@ func _ready() -> void:
 	hide()
 
 func show_targets(card_id: StringName, targets: Array, view: MatchState) -> void:
+	if not visible: _return_focus = get_viewport().gui_get_focus_owner()
 	VisualUtil.clear_children(_choices)
 	var def := CardDB.card(card_id)
 	_title.text = def.display_name + ": выберите " + ("союзника" if def.effect_id == &"gale_call" else "карту")
@@ -57,15 +59,35 @@ func show_targets(card_id: StringName, targets: Array, view: MatchState) -> void
 		cv.pressed.connect(_select.bind(target.duplicate(true)))
 		_choices.add_child(cv)
 	show()
+	# Tab остаётся в обратимом выборе цели, не уходит в скрытую за ним руку.
+	var focusables: Array[Control] = []
+	for child in _choices.get_children(): focusables.append(child)
+	focusables.append(_cancel)
+	for i in focusables.size():
+		focusables[i].focus_next = focusables[i].get_path_to(focusables[(i + 1) % focusables.size()])
+		focusables[i].focus_previous = focusables[i].get_path_to(focusables[posmod(i - 1, focusables.size())])
+		focusables[i].focus_neighbor_left = focusables[i].focus_previous
+		focusables[i].focus_neighbor_right = focusables[i].focus_next
+		focusables[i].focus_neighbor_top = focusables[i].get_path_to(focusables[0] if focusables[i] == _cancel else _cancel)
+		focusables[i].focus_neighbor_bottom = focusables[i].focus_neighbor_top
+	VisualUtil.focus_if_present.call_deferred(focusables[0])
 
 func _select(target: Dictionary) -> void:
 	hide()
+	_restore_focus()
 	var command_target := {"target_uid":int(target.target_uid)} if target.has("target_uid") else {"target_card":StringName(target.target_card)}
 	chosen.emit(command_target)
 
 func _on_cancel() -> void:
 	hide()
+	_restore_focus()
 	cancelled.emit()
+
+
+func _restore_focus() -> void:
+	if is_instance_valid(_return_focus) and _return_focus.is_visible_in_tree() and _return_focus.focus_mode != Control.FOCUS_NONE:
+		_return_focus.grab_focus()
+	_return_focus = null
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if visible and event.is_action_pressed("ui_cancel"):

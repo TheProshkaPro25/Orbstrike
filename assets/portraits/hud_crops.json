@@ -1,0 +1,510 @@
+{
+  "schema": 1,
+  "status": "sol_reviewed_cpu_gpu_pending",
+  "coordinate_space": [
+    256,
+    256
+  ],
+  "preview_px": 72,
+  "note": "49 individual manual composition decisions. 42 HUD crops enlarge readable heads while retaining horns/halos; 7 full-body decisions retain compact or multi-arm silhouettes. Original image pixels, white background and full references are preserved. CPU 72px review only; GPU acceptance remains pending.",
+  "candidates": {
+    "creature_dragnar_fire": {
+      "enabled": true,
+      "region": [
+        80,
+        16,
+        112,
+        112
+      ],
+      "intent": "Enlarges red face and intact horns; wing tips, tail and lower body deliberately outside head-and-chest portrait."
+    },
+    "creature_dragnar_gale": {
+      "enabled": true,
+      "region": [
+        80,
+        16,
+        120,
+        120
+      ],
+      "intent": "Enlarges green face, swept horns and chest; the long wind tail and wing tips are deliberately omitted."
+    },
+    "creature_dragnar_light": {
+      "enabled": true,
+      "region": [
+        88,
+        8,
+        120,
+        120
+      ],
+      "intent": "Keeps complete thin halo, horns and gold face; wider head window than fire preserves the ring."
+    },
+    "creature_dragnar_stone": {
+      "enabled": true,
+      "region": [
+        80,
+        20,
+        120,
+        120
+      ],
+      "intent": "Keeps stone horns, face and plated chest; tail crystals and outer wings are outside this head portrait."
+    },
+    "creature_dragnar_shadow": {
+      "enabled": true,
+      "region": [
+        84,
+        16,
+        120,
+        120
+      ],
+      "intent": "Keeps every head spike and purple face; outer wings and tail are deliberately omitted."
+    },
+    "creature_dragnar_tide": {
+      "enabled": true,
+      "region": [
+        80,
+        20,
+        120,
+        120
+      ],
+      "intent": "Keeps pale horns, blue face and wave-marked chest; tail and wing tips are deliberately omitted."
+    },
+    "creature_klykar_fire": {
+      "enabled": true,
+      "region": [
+        100,
+        12,
+        144,
+        144
+      ],
+      "intent": "Keeps upright flame crown, open muzzle and chest; rear flame fin, tail and legs are deliberately omitted."
+    },
+    "creature_klykar_gale": {
+      "enabled": true,
+      "region": [
+        104,
+        16,
+        140,
+        140
+      ],
+      "intent": "Keeps face, mane tips and front wind ribbon; outer ribbon loop, tail and legs are deliberately omitted."
+    },
+    "creature_klykar_light": {
+      "enabled": true,
+      "region": [
+        72,
+        8,
+        176,
+        176
+      ],
+      "intent": "Wider window keeps the complete halo and longest gold back spine tips beside the muzzle, with safe margin; lower legs are omitted."
+    },
+    "creature_klykar_stone": {
+      "enabled": true,
+      "region": [
+        72,
+        8,
+        172,
+        172
+      ],
+      "intent": "Wider window retains tall crystal back spines, stone mane and muzzle; tail and lower legs are omitted."
+    },
+    "creature_klykar_shadow": {
+      "enabled": true,
+      "region": [
+        72,
+        8,
+        176,
+        176
+      ],
+      "intent": "Wider window retains long purple back spines, head and front mist; tail and legs are omitted."
+    },
+    "creature_klykar_tide": {
+      "enabled": true,
+      "region": [
+        76,
+        8,
+        172,
+        172
+      ],
+      "intent": "Wider window retains tall ice back spines, pale mane and complete muzzle; tail and lower legs are omitted."
+    },
+    "creature_grifalon_fire": {
+      "enabled": true,
+      "region": [
+        96,
+        0,
+        128,
+        128
+      ],
+      "intent": "Keeps complete flame crest, yellow beak, neck and both wing roots; legs and outer feathers are omitted."
+    },
+    "creature_grifalon_gale": {
+      "enabled": true,
+      "region": [
+        92,
+        0,
+        136,
+        136
+      ],
+      "intent": "Keeps swept green crest, complete beak, chest and inner wind curve; outer wind loop and wings are omitted."
+    },
+    "creature_grifalon_light": {
+      "enabled": true,
+      "region": [
+        100,
+        0,
+        128,
+        128
+      ],
+      "intent": "Keeps tall gold crest, beak and pale breast; wing roots remain visible while legs and feather tips are omitted."
+    },
+    "creature_grifalon_stone": {
+      "enabled": true,
+      "region": [
+        100,
+        0,
+        128,
+        128
+      ],
+      "intent": "Keeps stone crest, yellow beak, neck and shoulder plates; outer feathers and legs are omitted."
+    },
+    "creature_grifalon_shadow": {
+      "enabled": true,
+      "region": [
+        96,
+        0,
+        132,
+        132
+      ],
+      "intent": "Keeps complete dark swept crest, pale beak and feathered breast; legs and feather tips are omitted."
+    },
+    "creature_grifalon_tide": {
+      "enabled": true,
+      "region": [
+        100,
+        0,
+        128,
+        128
+      ],
+      "intent": "Keeps complete blue crest, pale beak and star-marked breast; outer wings and legs are omitted."
+    },
+    "creature_kolossar_fire": {
+      "enabled": true,
+      "region": [
+        36,
+        4,
+        184,
+        184
+      ],
+      "intent": "Conservative upper-body crop preserves both horns, single eye and shoulder flame silhouette; lower legs are omitted."
+    },
+    "creature_kolossar_gale": {
+      "enabled": true,
+      "region": [
+        20,
+        0,
+        208,
+        208
+      ],
+      "intent": "Wide crop preserves long outward shoulder spines, both horns and single eye; smaller zoom avoids cutting the shoulders."
+    },
+    "creature_kolossar_light": {
+      "enabled": true,
+      "region": [
+        20,
+        0,
+        212,
+        212
+      ],
+      "intent": "Very wide crop preserves large gold shoulder spikes and both horns; only lower legs are lost, avoiding a falsely narrow body."
+    },
+    "creature_kolossar_stone": {
+      "enabled": true,
+      "region": [
+        24,
+        0,
+        208,
+        208
+      ],
+      "intent": "Wide crop preserves asymmetric stone shoulder, both horns and the blue eye; lower legs are omitted."
+    },
+    "creature_kolossar_shadow": {
+      "enabled": true,
+      "region": [
+        44,
+        4,
+        168,
+        168
+      ],
+      "intent": "Keeps complete horns, bright single eye and broad purple chest; arm ends and legs are deliberately omitted."
+    },
+    "creature_kolossar_tide": {
+      "enabled": true,
+      "region": [
+        28,
+        0,
+        200,
+        200
+      ],
+      "intent": "Wide crop preserves blue fin-shaped shoulders, pale horns and single eye; lower legs are omitted."
+    },
+    "creature_rogozhuk_fire": {
+      "enabled": false,
+      "region": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "intent": "KEEP FULL: compact dome, full flame horn and spread hot legs already use the square; head crop loses the beetle silhouette."
+    },
+    "creature_rogozhuk_gale": {
+      "enabled": false,
+      "region": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "intent": "KEEP FULL: green shell, complete tall horn, wind tuft and spread legs are the defining shape; head crop loses the shell."
+    },
+    "creature_rogozhuk_light": {
+      "enabled": false,
+      "region": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "intent": "KEEP FULL: gold shell, tall ivory horn and legs already fill the square; a tighter portrait loses the rounded shell."
+    },
+    "creature_rogozhuk_stone": {
+      "enabled": false,
+      "region": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "intent": "KEEP FULL: mottled dome, long horn and stone legs form the identity; head crop sacrifices the compact complete silhouette."
+    },
+    "creature_rogozhuk_shadow": {
+      "enabled": false,
+      "region": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "intent": "KEEP FULL: purple dome, long horn and spread legs are more useful together than a larger eye without its shell."
+    },
+    "creature_rogozhuk_tide": {
+      "enabled": false,
+      "region": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "intent": "KEEP FULL: blue scalloped dome, ivory horn and fin-like feet define the variant; a tight face crop removes the dome."
+    },
+    "creature_levian_fire": {
+      "enabled": true,
+      "region": [
+        76,
+        4,
+        136,
+        136
+      ],
+      "intent": "Keeps complete branching horns, fiery face, long neck and wing roots; coil and outer wings are omitted."
+    },
+    "creature_levian_gale": {
+      "enabled": true,
+      "region": [
+        72,
+        4,
+        136,
+        136
+      ],
+      "intent": "Keeps complete horns, green face, long neck and wing roots; wind coil and wing tips are omitted."
+    },
+    "creature_levian_light": {
+      "enabled": true,
+      "region": [
+        84,
+        0,
+        132,
+        132
+      ],
+      "intent": "Keeps full halo, complete horns, gold face and neck; coiled body and wing tips are omitted."
+    },
+    "creature_levian_stone": {
+      "enabled": true,
+      "region": [
+        76,
+        4,
+        140,
+        140
+      ],
+      "intent": "Keeps complete stone horns, face and plated neck; coil and wing tips are omitted."
+    },
+    "creature_levian_shadow": {
+      "enabled": true,
+      "region": [
+        72,
+        0,
+        144,
+        144
+      ],
+      "intent": "Keeps complete swept horns, dark face and purple neck; smoke coil and wing tips are omitted."
+    },
+    "creature_levian_tide": {
+      "enabled": true,
+      "region": [
+        80,
+        4,
+        136,
+        136
+      ],
+      "intent": "Keeps ivory horns, full foamy crown, blue face and long neck; coil and wing tips are omitted."
+    },
+    "creature_ratnik_fire": {
+      "enabled": true,
+      "region": [
+        60,
+        0,
+        148,
+        148
+      ],
+      "intent": "Keeps both helmet horns, complete shoulder flames and breastplate; sword blade, cape ends and legs are deliberately omitted."
+    },
+    "creature_ratnik_gale": {
+      "enabled": true,
+      "region": [
+        60,
+        0,
+        148,
+        148
+      ],
+      "intent": "Keeps both helmet horns and green spiked shoulders; sword blade, cape ends and legs are deliberately omitted."
+    },
+    "creature_ratnik_light": {
+      "enabled": true,
+      "region": [
+        60,
+        0,
+        148,
+        148
+      ],
+      "intent": "Keeps the complete thin halo at the original top margin, helmet and gold shoulders; sword blade and legs are omitted."
+    },
+    "creature_ratnik_stone": {
+      "enabled": true,
+      "region": [
+        64,
+        0,
+        148,
+        148
+      ],
+      "intent": "Keeps both helmet horns and stone shoulder plates; sword blade, cape ends and legs are deliberately omitted."
+    },
+    "creature_ratnik_shadow": {
+      "enabled": true,
+      "region": [
+        60,
+        0,
+        152,
+        152
+      ],
+      "intent": "Keeps both pale helmet horns and purple shoulder spikes; sword blade, cape ends and legs are deliberately omitted."
+    },
+    "creature_ratnik_tide": {
+      "enabled": true,
+      "region": [
+        60,
+        0,
+        148,
+        148
+      ],
+      "intent": "Keeps both helmet horns and pale-dotted blue shoulders; sword blade, cape ends and legs are deliberately omitted."
+    },
+    "creature_gorgul_fire": {
+      "enabled": true,
+      "region": [
+        68,
+        16,
+        132,
+        132
+      ],
+      "intent": "Keeps both horns, full flame crown, face and round glowing chest core; outer wings and lower body are omitted."
+    },
+    "creature_gorgul_gale": {
+      "enabled": true,
+      "region": [
+        72,
+        16,
+        128,
+        128
+      ],
+      "intent": "Keeps both pale horns, large green eye and chest motif; outer wings and wind tail are deliberately omitted."
+    },
+    "creature_gorgul_light": {
+      "enabled": true,
+      "region": [
+        72,
+        12,
+        132,
+        132
+      ],
+      "intent": "Keeps complete halo, both gold horns, large eye and chest core; outer wings and lower body are omitted."
+    },
+    "creature_gorgul_stone": {
+      "enabled": true,
+      "region": [
+        72,
+        16,
+        132,
+        132
+      ],
+      "intent": "Keeps both stone horns, large eye and rocky chest; outer wings and lower body are omitted."
+    },
+    "creature_gorgul_shadow": {
+      "enabled": true,
+      "region": [
+        72,
+        16,
+        128,
+        128
+      ],
+      "intent": "Keeps both dark horns, large purple eye and ivory chest markings; outer wings and lower body are omitted."
+    },
+    "creature_gorgul_tide": {
+      "enabled": true,
+      "region": [
+        72,
+        16,
+        128,
+        128
+      ],
+      "intent": "Keeps both ivory horns, pale-blue eye and star-marked chest; outer wings and lower body are omitted."
+    },
+    "creature_likorez_shadow": {
+      "enabled": false,
+      "region": [
+        12,
+        0,
+        232,
+        232
+      ],
+      "intent": "KEEP FULL: trial gives only 1.10x enlargement while crowding outer blades; complete six-arm and sword silhouette is preferable."
+    }
+  },
+  "initial_trial_ids": [
+    "creature_dragnar_fire",
+    "creature_klykar_gale",
+    "creature_kolossar_shadow",
+    "creature_levian_gale",
+    "creature_ratnik_light",
+    "creature_likorez_shadow"
+  ]
+}

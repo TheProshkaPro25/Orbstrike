@@ -1,0 +1,74 @@
+{
+  "reviewer": "independent gpt-6.1-sol high",
+  "date": "2026-11-06",
+  "blockers": [],
+  "decision": "Accept narrow reversible A01/A02 production source promotion and CPU/import contract. GPU presentation acceptance remains unperformed.",
+  "personally_viewed": [
+    "docs/audits/2026-11-06-model-a01/component-localization.png",
+    "docs/audits/2026-11-06-model-a01/before-after-mask.png",
+    "docs/audits/2026-11-06-model-a02/before-after-mask.png"
+  ],
+  "read_code": [
+    "tools/models/remove_klykar_gale_wind.py",
+    "tools/models/remove_levian_gale_wind.py",
+    "tests/klykar_wind_integrity.py",
+    "tests/levian_gale_wind_integrity.py",
+    "scenes/creature_models.gd",
+    "tools/test_model_wind_import.gd",
+    "tools/check.py",
+    "tools/models/promote_wind_candidates.py"
+  ],
+  "findings": [
+    "Art masks isolate the detached wind ribbon/arc/loop on A01 and detached white ribbon on A02. Ears, horns, tail and retained body silhouette are preserved; A01 small integrated white details intentionally remain.",
+    "Exact-byte contracts reconstruct the full expected GLB, changing only accessor count and retained index prefix. Other attributes, nodes, skin/rest/bind, clips, UV/materials/images remain exact. A02 accepted 530-triangle tail repair remains exact.",
+    "Godot compacts A01 unused vertices and changes live AABB. Key plus active-AABB plus triangle-count guarded source normalization preserves body scale and center. Unrelated keys, changed bounds and triangle count fall back; visual bounds remain measured.",
+    "Promotion preflights both source/candidate hashes and existing production source-or-candidate hashes before the first asset replacement. Per-file atomic replacement and verified original snapshots preserve reversibility; .import sidecar backups exist.",
+    "Final ordinary production-resource path resolves candidate SHA and reduced triangle counts for both models. Real CreatureBall CPU palettes and sampled reconstructed skinned world points agree within floating-point tolerance across idle/attack/hit at frames 0,12,24,48,90.",
+    "Import log completes both GLB scene imports and saving. check.py import summary remains FAIL due sandbox TCP socket/listen errors after imports; it is not relabeled PASS."
+  ],
+  "final_narrow_result": {
+    "assertions": 24602,
+    "failures": 0,
+    "installed_both": true,
+    "log": "build/checks/models/selected-model-wind-import/model-wind-import.log"
+  },
+  "models": [
+    {
+      "id": "klykar_gale",
+      "sha256": {
+        "source": "f16e61d615e7897ed513d3abb73aa941cb335827d7f43c07961fd8e277ab4c28",
+        "candidate": "1c2855cee29711dc61eaedd108a0368158ca5d488f03e15796257eaf63dff0cc",
+        "production": "1c2855cee29711dc61eaedd108a0368158ca5d488f03e15796257eaf63dff0cc"
+      },
+      "ordinary_import_triangles": 132146,
+      "ordinary_scale": 11.9439964294434,
+      "direct_palette_delta": 0.0,
+      "direct_sampled_world_delta": 0.0,
+      "ordinary_palette_delta": 2.38418579101562e-07,
+      "ordinary_sampled_world_delta": 3.42402614705861e-07,
+      "retained_world_samples": 16
+    },
+    {
+      "id": "levian_gale",
+      "sha256": {
+        "source": "fe5c04377285353b7a95bdb723612464824aaaed05f9b499acb732e858db2ddc",
+        "candidate": "c4359efccb27e465c6bd2be8bec3badf567dff0f8991e700a2ddfbf4539fbfb9",
+        "production": "c4359efccb27e465c6bd2be8bec3badf567dff0f8991e700a2ddfbf4539fbfb9"
+      },
+      "ordinary_import_triangles": 142356,
+      "ordinary_scale": 10.3164615631104,
+      "direct_palette_delta": 0.0,
+      "direct_sampled_world_delta": 0.0,
+      "ordinary_palette_delta": 0.0,
+      "ordinary_sampled_world_delta": 0.0,
+      "retained_world_samples": 32
+    }
+  ],
+  "limitations": [
+    "No GPU rendering, cloth, physical match, Windows, sound, release build or publication accepted.",
+    "World-point evidence samples 16 A01 and 32 A02 imported vertices with CPU skin reconstruction, not full GPU surface readback.",
+    "No independent redundant successful test run: independently read source, final logs/JSON and hashes.",
+    "Scope is A01/A02; A03/A04 and R01 are outside this review."
+  ],
+  "minor_comment_resolved": "Normalization guard comment now accurately promises fallback for different bounds or triangle count."
+}

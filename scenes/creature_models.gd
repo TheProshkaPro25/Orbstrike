@@ -16,8 +16,41 @@ const MAX_WIDTH := 1.3
 const DIR := "res://assets/creatures/%s.glb"
 ## Модели существ (Pixal3D, со своей текстурой): assets/creatures_hd/<вид>_<стихия>.glb (= id без creature_).
 const HD_DIR := "res://assets/creatures_hd/%s.glb"
+const GrifalonMotion := preload("res://scenes/grifalon_motion.gd")
+const KolossarMotion := preload("res://scenes/kolossar_motion.gd")
+const KolossarLightSkin := preload("res://scenes/kolossar_light_skin.gd")
+const GrifalonGaleSkin := preload("res://scenes/grifalon_gale_skin.gd")
 ## Поворот HD-моделей вокруг Y, чтобы смотрели вдоль +Z (как архетипы).
 const HD_YAW_DEG := 0.0
+## Preserve the accepted body/motion frame across local decorative repairs.
+## Godot compacts unused GLB vertices; removed wind or a new halo changes AABB
+## and otherwise rescales the body or changes support/action amplitudes.
+## Source frames measured before A01/A03/A04 (targeted runtime reports).
+## Visual bounds stay live; these frames only preserve authored normalization.
+const NORMALIZATION_FRAMES := {
+	"hd:klykar_gale": {
+		"triangles": 132146,
+		"active": AABB(Vector3(-0.494633555412292, -0.393120139837265, -0.24501459300518),
+			Vector3(0.823238730430603, 0.793244004249573, 0.593697786331177)),
+		"source": AABB(Vector3(-0.494633555412292, -0.393120139837265, -0.337262958288193),
+			Vector3(0.925168871879578, 0.793244004249573, 0.74784779548645)),
+	},
+	"hd:ratnik_light": {
+		"triangles": 153632,
+		"previous_triangles": 156366, # immutable pre-reopen source frame
+		"active": AABB(Vector3(-0.484584450721741, -0.423645496368408, -0.494712114334106),
+			Vector3(0.806332111358643, 0.899992823600769, 0.926286101341248)),
+		"source": AABB(Vector3(-0.484584450721741, -0.423645496368408, -0.494712114334106),
+			Vector3(0.806332111358643, 0.859198212623596, 0.926286101341248)),
+	},
+	"hd:kolossar_shadow": {
+		"triangles": 171156,
+		"active": AABB(Vector3(-0.3991594910621643, -0.415763258934021, -0.35553279519081116),
+			Vector3(0.8174850046634674, 0.8263136744499207, 0.6669683456420898)),
+		"source": AABB(Vector3(-0.3991594910621643, -0.415763258934021, -0.35553279519081116),
+			Vector3(0.8174850046634674, 0.8477587699890137, 0.6669683456420898)),
+	},
+}
 
 
 ## Загрузчик перед меню закрепляет конечный каталог; изолированные стенды сохраняют
@@ -85,6 +118,10 @@ static func preload_match(defs: Array) -> void:
 		if d != null:
 			var kp := _key_path(d)
 			_scene(kp[0], kp[1])
+			GrifalonMotion.preload_for(d)
+			KolossarMotion.preload_for(d)
+			if d.id == &"creature_kolossar_light": KolossarLightSkin.preload_required()
+			if d.id == &"creature_grifalon_gale": GrifalonGaleSkin.preload_required()
 
 
 ## Меню исключает особую встречу из выбора, но загрузчик обязан подготовить и её.
@@ -109,6 +146,11 @@ static func clear() -> void:
 	_scenes.clear()
 	preparation_cache.clear()
 	animation_library_cache.clear()
+	GrifalonMotion.clear()
+	KolossarMotion.clear()
+	KolossarLightSkin.clear()
+	preload("res://scenes/authored_ground_support.gd").clear()
+	GrifalonGaleSkin.clear()
 
 
 static func _scene(res_key: String, path: String) -> PackedScene:
@@ -132,6 +174,25 @@ static func build(d: CreatureDef) -> Node3D:
 		return null
 	var root := Node3D.new()
 	var inst := ps.instantiate() as Node3D
+	if d.id == &"creature_kolossar_light":
+		if not KolossarLightSkin.apply(inst):
+			push_error("Kolossar Light skin overlay: " + KolossarLightSkin.last_error)
+			inst.free()
+			root.free()
+			return null
+		root.set_meta("kolossar_light_skin_overlay", 1)
+		root.set_meta("support_surface_signature", KolossarLightSkin.payload_digest(KolossarLightSkin.overlay))
+		root.set_meta("skin_visual_top_source", KolossarLightSkin.overlay.get_meta("visual_top_source"))
+		root.set_meta("skin_visual_extent_source", KolossarLightSkin.overlay.get_meta("visual_extent_source"))
+	if d.id == &"creature_grifalon_gale":
+		if not GrifalonGaleSkin.apply(inst):
+			push_error("Grifalon Gale skin overlay: " + GrifalonGaleSkin.last_error)
+			inst.free()
+			root.free()
+			return null
+		root.set_meta("grifalon_gale_skin_overlay", 1)
+		root.set_meta("skin_visual_top_source", GrifalonGaleSkin.overlay.get_meta("visual_top_source"))
+		root.set_meta("skin_visual_extent_source", GrifalonGaleSkin.overlay.get_meta("visual_extent_source"))
 	var model: Node3D = inst
 	if hd:
 		# обёртка с поворотом, чтобы модель смотрела вдоль +Z
@@ -139,6 +200,7 @@ static func build(d: CreatureDef) -> Node3D:
 		inst.rotation_degrees.y = HD_YAW_DEG
 		model.add_child(inst)
 	var box := _bounds(model, Transform3D.IDENTITY)
+	box = _normalization_frame(kp[0], model, box)
 	var k: float = 1.0
 	if box.size.length() > 0.001:
 		var sx: float = maxf(box.size.x, 0.01)
@@ -154,6 +216,8 @@ static func build(d: CreatureDef) -> Node3D:
 	root.add_child(model)
 	root.set_meta("preparation_source", ps)
 	root.set_meta("height", box.size.y * k)
+	root.set_meta("normalization_scale", k)
+	root.set_meta("normalization_floor_source", box.position.y)
 	root.set_meta("extent", maxf(box.size.x, box.size.z) * k)  # наибольший размер по полу (для камеры)
 	if hd:
 		# Audit the whole instance before replacing any active material.
@@ -162,6 +226,25 @@ static func build(d: CreatureDef) -> Node3D:
 	else:
 		_recolor(model, d)
 	return root
+
+
+## Scope the preserved frame to the reviewed repaired surface; a different model
+## with different bounds or triangle count falls back to measured bounds.
+static func _normalization_frame(key: String, model: Node, live: AABB) -> AABB:
+	if not NORMALIZATION_FRAMES.has(key): return live
+	var frame: Dictionary = NORMALIZATION_FRAMES[key]
+	var expected: AABB = frame.active
+	if not live.position.is_equal_approx(expected.position) or not live.size.is_equal_approx(expected.size):
+		return live
+	var stack: Array[Node] = [model]
+	var triangles := 0
+	while not stack.is_empty():
+		var node: Node = stack.pop_back()
+		stack.append_array(node.get_children())
+		if node is MeshInstance3D and node.mesh != null:
+			for surface in node.mesh.get_surface_count():
+				triangles += node.mesh.surface_get_array_index_len(surface) / 3
+	return frame.source if triangles == frame.triangles or triangles == frame.get("previous_triangles", -1) else live
 
 
 ## Общий AABB всех мешей поддерева в координатах корня (узел может быть вне дерева сцены).

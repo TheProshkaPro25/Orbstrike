@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "candidate_sha256": "69b159a0e8763ef85c1e78b951255deb5e75d3939643af71c1abb8357d7e9a5c",
+  "reviewer": "Independent Sol gpt-6.1-sol high, agent /root/shoulders_gpu_finish/a03_anatomy/a03_art_consult",
+  "personally_inspected_views": [
+    "rounded_smoke22-front.png",
+    "rounded_smoke22-right.png",
+    "rounded_smoke22-rear.png",
+    "rounded_smoke22-left.png",
+    "rounded_smoke22-game-three-quarter.png"
+  ],
+  "criteria": "Practical author goal: remove foreign shoulder sheets and retain a natural readable silhouette. Two/three smoke lobes are guidance rather than a strict count. Low integrated shoulder base is acceptable; a separate broad flat plate, face/horn contact, or conspicuous hard geometry is not.",
+  "findings": [
+    "Foreign white rectangular sheets removed.",
+    "Low base integrates into shoulder armor in front and game three-quarter views.",
+    "Small local raised forms are rounded; the two forms read particularly clearly on the right.",
+    "Face and horns remain clear.",
+    "Small asymmetry and weak left lobe separation are not blockers for this authorized repair."
+  ],
+  "limitations": "CPU raw-rest images only; not actual animated pose, GPU, scene lighting, cloth or gameplay acceptance.",
+  "final_review_message": "Independent ART PASS for rounded_smoke22 SHA69b159a0e8763ef85c1e78b951255deb5e75d3939643af71c1abb8357d7e9a5c. All five views personally inspected, full candidate SHA personally verified. No concrete art blocker; proceed to actual poses."
+}

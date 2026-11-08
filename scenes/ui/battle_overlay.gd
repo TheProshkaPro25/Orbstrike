@@ -13,6 +13,8 @@ var _scroll: ScrollContainer
 var _open := false
 var _seq := 0
 var _built := false
+var _continue_button: Button
+var _return_focus: Control
 
 
 func _ready() -> void:
@@ -62,6 +64,7 @@ func _center_result() -> void:
 ## names: словарь uid -> строка (имя существа). Возвращает сигнал closed.
 func show_result(r: BattleResult, names: Dictionary = {}) -> Signal:
 	_build()
+	_return_focus = get_viewport().gui_get_focus_owner()
 	VisualUtil.clear_children(_vbox)
 	var an: String = str(names.get(r.attacker_uid, "Атакующий"))
 	var dn: String = str(names.get(r.defender_uid, "Защитник"))
@@ -119,6 +122,7 @@ func show_result(r: BattleResult, names: Dictionary = {}) -> Signal:
 	_vbox.add_child(win)
 
 	var btn := Button.new()
+	_continue_button = btn
 	btn.text = "Дальше (Enter)"
 	btn.custom_minimum_size = Vector2(190, 42)
 	btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
@@ -136,6 +140,9 @@ func show_result(r: BattleResult, names: Dictionary = {}) -> Signal:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_open = true
 	_seq += 1
+	btn.focus_next = btn.get_path_to(btn)
+	btn.focus_previous = btn.get_path_to(btn)
+	focus_primary.call_deferred()
 
 	return closed
 
@@ -224,10 +231,31 @@ func _pretty_source(src: String) -> String:
 	return src
 
 
-func _unhandled_key_input(e: InputEvent) -> void:
-	if not _open or not (e is InputEventKey):
-		return
+func _covered() -> bool:
+	for sibling in get_parent().get_children():
+		if sibling != self and ((sibling is HelpOverlay and sibling.is_visible_in_tree()) or (sibling is Window and sibling.visible)):
+			return true
+	return false
+
+
+func focus_primary() -> void:
+	if _open and not _covered(): _continue_button.grab_focus()
+
+
+func _input(e: InputEvent) -> void:
+	if not _open or not (e is InputEventKey) or _covered(): return
 	var k := e as InputEventKey
+	if k.pressed and k.keycode in [KEY_UP, KEY_DOWN, KEY_PAGEUP, KEY_PAGEDOWN, KEY_HOME, KEY_END]:
+		get_viewport().set_input_as_handled()
+		var step := 64 if k.keycode in [KEY_UP, KEY_DOWN] else 240
+		_scroll.scroll_vertical += -step if k.keycode in [KEY_UP, KEY_PAGEUP] else step
+		if k.keycode == KEY_HOME: _scroll.scroll_vertical = 0
+		if k.keycode == KEY_END: _scroll.scroll_vertical = int(_vbox.size.y)
+		return
+	if k.pressed and k.keycode in [KEY_TAB, KEY_LEFT, KEY_RIGHT, KEY_ESCAPE]:
+		get_viewport().set_input_as_handled()
+		_continue_button.grab_focus()
+		return
 	if k.pressed and not k.echo and k.keycode in [KEY_ENTER, KEY_KP_ENTER, KEY_SPACE]:
 		get_viewport().set_input_as_handled()
 		_close()
@@ -240,4 +268,6 @@ func _close() -> void:
 	_dim.visible = false
 	_panel.visible = false
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if is_instance_valid(_return_focus) and _return_focus.is_visible_in_tree(): _return_focus.grab_focus()
+	_return_focus = null
 	closed.emit()

@@ -1,0 +1,152 @@
+{
+	"assertions": 11471,
+	"cases": [
+		{
+			"after_build": {
+				"extent": 10.9480671403495,
+				"height": 11.3535052240395,
+				"offset": [
+					-0.128339096903801,
+					5.56805849075317,
+					0.29528346657753
+				],
+				"scale": 13.3923768997192
+			},
+			"before_build": {
+				"extent": 10.9480671403495,
+				"height": 11.3535052240395,
+				"offset": [
+					-0.128339096903801,
+					5.56805849075317,
+					0.29528346657753
+				],
+				"scale": 13.3923768997192
+			},
+			"candidate_sha256": "ca2580a32b502635b15193141c6b71b388ebdde75c04ac10e1646c733c8b4e0f",
+			"direct_after": {
+				"bounds": [
+					[
+						-0.399159491062164,
+						-0.415763258934021,
+						-0.355532795190811
+					],
+					[
+						0.817484974861145,
+						0.847758769989014,
+						0.66696834564209
+					]
+				],
+				"triangles": 149994,
+				"vertices": 112192
+			},
+			"direct_before": {
+				"bounds": [
+					[
+						-0.399159491062164,
+						-0.415763258934021,
+						-0.355532795190811
+					],
+					[
+						0.817484974861145,
+						0.847758769989014,
+						0.66696834564209
+					]
+				],
+				"triangles": 149994,
+				"vertices": 111734
+			},
+			"direct_materials": [
+				{
+					"has_texture": true,
+					"mesh": "Mesh_0",
+					"surface": 0,
+					"tint": [
+						1.0,
+						1.0,
+						1.0,
+						1.0
+					],
+					"triangles": 139551
+				},
+				{
+					"has_texture": true,
+					"mesh": "Mesh_0",
+					"surface": 1,
+					"tint": [
+						0.649956464767456,
+						0.506386458873749,
+						0.748379111289978,
+						1.0
+					],
+					"triangles": 10443
+				}
+			],
+			"frames": [
+				0,
+				12,
+				24,
+				48,
+				90
+			],
+			"id": "kolossar_shadow",
+			"installed": false,
+			"max_world_delta": 0.0,
+			"ordinary_build": {
+				"extent": 10.9480671403495,
+				"height": 11.3535052240395,
+				"offset": [
+					-0.128339096903801,
+					5.56805849075317,
+					0.29528346657753
+				],
+				"scale": 13.3923768997192
+			},
+			"ordinary_import": {
+				"bounds": [
+					[
+						-0.399159491062164,
+						-0.415763258934021,
+						-0.355532795190811
+					],
+					[
+						0.817484974861145,
+						0.847758769989014,
+						0.66696834564209
+					]
+				],
+				"triangles": 149994,
+				"vertices": 111734
+			},
+			"ordinary_materials": [
+				{
+					"has_texture": true,
+					"mesh": "Mesh_0",
+					"surface": 0,
+					"tint": [
+						1.0,
+						1.0,
+						1.0,
+						1.0
+					],
+					"triangles": 149994
+				}
+			],
+			"ordinary_palette_delta": 0.0,
+			"ordinary_world_delta": 0.0,
+			"palette_delta": 0.0,
+			"production_sha256": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c",
+			"retained_world_samples": 16,
+			"sampled_actions": [
+				"idle",
+				"attack",
+				"hit"
+			],
+			"source_sha256": "6ea6f89a1f2632961e66821d504c57a219952f27e8f0974b4ebc07503ab1462c"
+		}
+	],
+	"failures": 0,
+	"installed_both": false,
+	"installed_selected": false,
+	"only_a03": true,
+	"scope": "A03 material/A04 crown Godot import and CreatureBall CPU; no GPU cloth"
+}

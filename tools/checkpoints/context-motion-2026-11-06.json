@@ -1,0 +1,52 @@
+{
+  "date": "2026-11-06",
+  "scope": "context-only opponent reveal2.2s/battle and finite procedural event effects",
+  "checks": [
+    {
+      "name": "opponent-panel",
+      "profile": "presentation",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 9.61,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/selected-opponent-panel/opponent-panel.log"
+    },
+    {
+      "name": "device-feedback",
+      "profile": "presentation",
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 5.9,
+      "log": "/home/loq/Документы/game/sfery_stikhiy/build/checks/presentation/selected-device-feedback/device-feedback.log"
+    }
+  ],
+  "assertions": {
+    "opponent-panel": 61,
+    "device-feedback": 128
+  },
+  "rendering": "headless; noGPUvisual/crop/artacceptance orPNG; no listening/Windows/performance",
+  "independent_review": "Sol high reviewed contexttimers/lazyview/layers/finiteMotion and actual61/0 log; no blockers",
+  "sources": [
+    "https://docs.godotengine.org/en/stable/classes/class_tween.html",
+    "https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/canvas_item_shader.html",
+    "https://bounthavong.com/hud001",
+    "https://github.com/EvilBunnyMan/TweenFX"
+  ],
+  "external_assets_added": false,
+  "no_changes_to": [
+    "rules",
+    "career",
+    "server",
+    ".codex",
+    "GLB"
+  ],
+  "source_sha256": {
+    "scenes/ui/opponent_panel.gd": "a9a99adcca3bd58630678bc690f03a07f066208d561f1942339c4430c96140b8",
+    "scenes/ui/creature_portrait.gd": "3921b1a0b749cf41202582d56999da81a0f4d4996ef6058c81139b992e67eefa",
+    "scenes/ui/device_motion.gd": "d81c0811912205c08c1541ac7c291f8d57be2488033dbd3df4acc7ad063350d0",
+    "scenes/ui/hud.gd": "53bdebf317897c47a27e4cdc3b6764538cabce7f9b4798a909bf6f1165517440",
+    "scenes/ui/ability_panel.gd": "7121e2a2f78df2dcbd9d0809306f95dc629136afc15c3863be66e60b5e5df4e8",
+    "scenes/main.gd": "c448683fbf71b4cb0e087541ede86be4c34916051de7cac4937c9a02088242a0",
+    "tools/test_opponent_panel.gd": "be39f70cf1229ffb5b1e5f8eb6df255e2833dbf39f7d676eb475622561bc0054",
+    "tools/test_device_feedback.gd": "752106f48c496b5c69f8320907132693d8a99e279874fee415ff6c388d932c45"
+  }
+}

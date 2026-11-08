@@ -9,7 +9,14 @@ signal action_finished(action: StringName)
 const BodySupport := preload("res://scenes/creature_support.gd")
 const DragnarTorso := preload("res://scenes/dragnar_torso.gd")
 const GrifalonFlight := preload("res://scenes/grifalon_flight.gd")
+const HumanoidStrike := preload("res://scenes/humanoid_strike.gd")
 const GrifalonTail := preload("res://scenes/grifalon_tail.gd")
+const GrifalonMotion := preload("res://scenes/grifalon_motion.gd")
+const KolossarMotion := preload("res://scenes/kolossar_motion.gd")
+const AuthoredGroundSupport := preload("res://scenes/authored_ground_support.gd")
+var _authored_fullset := false
+var _authored_grounded := false
+var _authored_hover_envelope := 0.0
 var _support
 var _cloth
 ## Диагностика синхронной подготовки (мс), вне игрового интерфейса.
@@ -39,6 +46,7 @@ var _flash_age := 0.0
 var _flash_duration := 0.0
 var _flash_strength := 0.0
 var _kind := "fighter"
+var _creature_id: StringName = &""
 var _species: StringName = &""
 var _tempo := 1.0
 var _clock := 0.0
@@ -66,6 +74,7 @@ func set_model(model: Node3D, d: CreatureDef) -> void:
 	add_child(model)
 	_height = float(model.get_meta("height", 1.5))
 	_extent = float(model.get_meta("extent", _height))
+	_creature_id = d.id if d != null else &""
 	_species = d.species if d != null else &""
 	var archetype := CreatureModels.archetype_of(d) if d != null else "knight"
 	_flyer = FLYERS.has(archetype)
@@ -75,6 +84,17 @@ func set_model(model: Node3D, d: CreatureDef) -> void:
 	_meshes.clear()
 	_player = null
 	_collect(model)
+	_authored_fullset = GrifalonMotion.install(model, _player, d) or KolossarMotion.install(model, _player, d)
+	_authored_grounded = _authored_fullset and _species == &"kolossar"
+	_authored_hover_envelope = 0.0
+	if _authored_fullset:
+		# One species master keeps identical timings across elemental variants.
+		# The player's global BattleTempo still affects the whole match equally.
+		_tempo = 1.0
+		var unit_scale := float(model.get_meta("normalization_scale", 1.0))
+		var floor_source := float(model.get_meta("normalization_floor_source", 0.0))
+		_authored_hover_envelope = maxf(0.0, (float(model.get_meta("authored_visual_top_source")) - floor_source) * unit_scale - _height)
+		_extent = maxf(_extent, float(model.get_meta("authored_visual_extent_source")) * unit_scale)
 	var animations_started := Time.get_ticks_usec()
 	if _player != null:
 		# Prepared curves are immutable; playback/seek/blends belong to each player.
@@ -94,7 +114,8 @@ func set_model(model: Node3D, d: CreatureDef) -> void:
 						if skeleton == null: continue
 						var bone := skeleton.find_bone(path.get_subname(0))
 						if bone >= 0: rest_signature.append([path, skeleton.get_bone_rest(bone)])
-			var key := str([source.get_instance_id(), original.get_instance_id(), name, _species]) + ":" + var_to_bytes(rest_signature).hex_encode().sha256_text()
+			rest_signature.append_array(HumanoidStrike.cache_signature(original, _player, _creature_id))
+			var key := str([source.get_instance_id(), original.get_instance_id(), name, _species, _creature_id]) + ":" + var_to_bytes(rest_signature).hex_encode().sha256_text()
 			var cache := CreatureModels.animation_library_cache
 			if not cache.has(key):
 				var prepared := original.duplicate(true) as AnimationLibrary
@@ -112,9 +133,10 @@ func set_model(model: Node3D, d: CreatureDef) -> void:
 	reset()
 	# У шестирукого собственные опорные ключи и смена ноги в клипах.
 	_support = null
-	if _species != &"likorez":
+	if _species != &"likorez" and (not _authored_fullset or _authored_grounded):
 		_support = BodySupport.new()
-		_support.configure(self, model)
+		if _authored_grounded: AuthoredGroundSupport.configure(_support, self, model)
+		else: _support.configure(self, model)
 	var cloth_started := Time.get_ticks_usec()
 	if _species == &"ratnik":
 		_cloth = CreatureCloth.attach(model)
@@ -128,6 +150,11 @@ func set_model(model: Node3D, d: CreatureDef) -> void:
 func _prepare_library(library: AnimationLibrary) -> void:
 	for clip in library.get_animation_list():
 		var animation := library.get_animation(clip)
+		if _authored_fullset:
+			# Preserve Astra's values/interpolation; only the idle playback mode loops.
+			animation.loop_mode = Animation.LOOP_LINEAR if clip == &"idle" else Animation.LOOP_NONE
+			for track in animation.get_track_count(): animation.track_set_interpolation_loop_wrap(track, clip == &"idle")
+			continue
 		for track in animation.get_track_count():
 			if animation.track_get_type(track) in [Animation.TYPE_ROTATION_3D, Animation.TYPE_POSITION_3D]:
 				animation.track_set_interpolation_type(track, Animation.INTERPOLATION_CUBIC)
@@ -135,6 +162,7 @@ func _prepare_library(library: AnimationLibrary) -> void:
 		if clip == &"idle": _prepare_idle_loop(animation)
 		for track in animation.get_track_count():
 			animation.track_set_interpolation_loop_wrap(track, clip == &"idle")
+		if clip == &"attack": HumanoidStrike.prepare(animation, _player, _creature_id, _species)
 		if _species in [&"dragnar", &"grifalon"]:
 			DragnarTorso.prepare(animation, _player, clip in [&"idle", &"attack"])
 		if _species == &"grifalon" and clip in [&"idle", &"attack", &"stance", &"roar", &"hit"]:
@@ -205,6 +233,7 @@ func get_extent() -> float:
 
 
 func get_hover_height() -> float:
+	if _authored_fullset: return _authored_hover_envelope
 	var ratio: float = {&"dragnar": 0.19, &"grifalon": 0.24, &"gorgul": 0.27}.get(_species, 0.20)
 	return _height * ratio if _flyer else 0.0
 
@@ -251,6 +280,7 @@ func _idle_clip(blend: float = 0.22) -> void:
 	if _player != null and _player.has_animation(&"idle"):
 		_player.clear_queue()
 		var speed: float = _tempo * {&"kolossar": 0.62, &"rogozhuk": 0.68, &"levian": 0.7, &"dragnar": 0.72, &"ratnik": 0.72, &"klykar": 0.8}.get(_species, 0.85)
+		if _authored_grounded: speed = 1.0
 		_player.play(&"idle", blend, speed)
 		# Return to the continuing idle phase, rather than replaying its first beat after each action.
 		var length := _player.get_animation(&"idle").length
@@ -293,7 +323,8 @@ func _process(delta: float) -> void:
 			_player.advance(delta)
 	_apply(_clock)
 	if _support != null:
-		if _species == &"grifalon": GrifalonFlight.apply(_support)
+		if _authored_grounded: AuthoredGroundSupport.apply(_support, delta)
+		elif _species == &"grifalon": GrifalonFlight.apply(_support)
 		else: _support.apply(delta)
 
 
@@ -302,7 +333,7 @@ func _apply(now: float) -> void:
 	var procedural := _blend if _player == null else 0.0
 	var breath := sin(t * 1.7)
 	# Заметный постоянный просвет над воротами; волна только мягко меняет высоту.
-	var lift := (get_hover_height() + 0.016 * _height * sin(t * 1.3)) * _hover_blend if _flyer else 0.0
+	var lift := (get_hover_height() + 0.016 * _height * sin(t * 1.3)) * _hover_blend if _flyer and not _authored_fullset else 0.0
 	position = _base + fx_pos + Vector3(0, lift, 0)
 	scale = Vector3(1.0 - breath * 0.003 * procedural, 1.0 + breath * 0.006 * procedural, 1.0 - breath * 0.003 * procedural) * fx_scale
 	rotation = Vector3(fx_pitch + sin(t * 0.7) * 0.006 * procedural, fx_yaw, fx_roll + sin(t * 0.8) * 0.006 * procedural)
@@ -354,6 +385,15 @@ func _attack_progress(t: float) -> float:
 
 
 func _sample_action(t: float) -> void:
+	if _authored_fullset:
+		# Hover, anticipation, lunge, recoil and recovery are authored in the clips.
+		# Contact/tempo/warp/hitstop still follow the common action timeline.
+		fx_pos = Vector3.ZERO
+		fx_pitch = 0.0
+		fx_yaw = 0.0
+		fx_roll = 0.0
+		fx_scale = 1.0
+		return
 	var pos := Vector3.ZERO
 	var pitch := 0.0
 	var yaw := 0.0
@@ -464,6 +504,7 @@ func lunge(dist: float, contact_override: float = 0.0) -> void:
 		&"rogozhuk": Vector2(0.5, 1.24), &"levian": Vector2(0.45, 1.26),
 		&"ratnik": Vector2(0.43, 1.16), &"gorgul": Vector2(0.35, 1.0),
 	}.get(_species, Vector2(0.44, 1.12))
+	if _authored_grounded: timing = Vector2(.4, 1.2)
 	_contact_time = timing.x / _tempo
 	var duration: float = timing.y / _tempo
 	if contact_override > 0.0:

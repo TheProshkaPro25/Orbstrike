@@ -1,0 +1,101 @@
+{
+  "kind": "Uninstalled A04 CPU/source candidate; GPU/cloth/runtime pending",
+  "underside_normal_finish": true,
+  "source_sha256": "454e8442b83fe7fd618d0bc0338dfc8b51b1daabaa49b4a5237dcb669598f727",
+  "candidate_sha256": "b209b4bad3ec5e2a4b02104993b7de1adbbdd1b59dba565c7f1e14270fe13df8",
+  "script_sha256": "45e5886cef0dbc94804953e1036c557bed7dcb8c67321e7848ed44726dda0dec",
+  "crown_helper_sha256": "a7575df9304b4b54102d77826d8ba540cf80e756f649b6db73d2572d1619e7bd",
+  "removed_face_ids_sha256": "78f78b71b6d91f0fa3a190158461c001283e1f23de9e5385755139415fda65eb",
+  "removed_triangles": 1335,
+  "retained_triangles": 114060,
+  "cap_triangles": 5403,
+  "cap_loops": 4,
+  "crown_reconstruction": [
+    {
+      "boundary_vertices": 102,
+      "vertices": 1787,
+      "triangles": 3470,
+      "bulge": 0.022,
+      "outward_normal": [
+        0.23757243156433105,
+        0.648871660232544,
+        0.7228587865829468
+      ],
+      "method": "fixed-boundary cotangent FEM harmonic height plus normalized Poisson dome; interior edge target <=0.012"
+    },
+    {
+      "boundary_vertices": 93,
+      "vertices": 1013,
+      "triangles": 1931,
+      "bulge": null,
+      "outward_normal": [
+        -0.38998207449913025,
+        -0.3628368079662323,
+        -0.846323549747467
+      ],
+      "method": "original safe underside triangulation refined without moving its surface; interior edge target <=0.012"
+    }
+  ],
+  "crown_skin": "new crown interiors exactly head joint11 weight1; boundary exact original8weights; all source skin arrays unchanged",
+  "ring_triangles": 2304,
+  "ring_vertices": 1152,
+  "ring_center": [
+    0.043,
+    0.442,
+    0.086
+  ],
+  "ring_normal": [
+    0.0,
+    0.9199705614130446,
+    0.3919874566020799
+  ],
+  "major_radius": 0.078,
+  "tube_radius": 0.0038,
+  "ring_head_joint": 11,
+  "original_binary_bytes_preserved": 23369004,
+  "original_boundaries_preserved": true,
+  "source_vertices_moved": 315,
+  "scope": "Only appended buffers/accessors/material, main primitive attribute/index references and additional halo primitive. Original source arrays except exact collar POSITION/NORMAL, CapeGPU, nodes, skeleton/rest/binds, clips, source materials/images retained exactly.",
+  "collar": {
+    "geodesic_radius": 0.008,
+    "max_displacement_limit": 0.003,
+    "max_actual_displacement": 0.0030000000000000183,
+    "position_delta_l2": 0.02733718854241563,
+    "retained_triangle_min_area_ratio": 0.35948160789222083,
+    "retained_triangle_max_area_ratio": 2.3829419302030983,
+    "retained_triangle_min_normal_cosine": 0.7834461397294058,
+    "method": "periodic arc-length Fourier seam fairing; bounded geodesic smoothstep collar; all UV copies; authored normal rotation only"
+  },
+  "status": "Reconstructed crown CPU/source candidate ready for independent imported-pose acceptance; production install not performed by owner",
+  "candidate_path": "build/model_candidates/2026-11-06-a04/ratnik_light_crown_normals.glb",
+  "baseline_geometry_path": "build/model_candidates/2026-11-06-a04/ratnik_light_crown.glb",
+  "baseline_geometry_sha256": "d389eafd5e6d59ae77b853e3c2cd5e713e4561906e7a48a6bee131bd895546ee",
+  "manifest_path": "build/model_candidates/2026-11-06-a04/ratnik_light_crown_normals.manifest.json",
+  "art_review": "Sol high personally inspected final before/magenta disc + cyan collar mask/after in front, right, rear, left, above, below; convex gold crown and separate thin open ring are readable. Flat-cap blocker resolved in this CPU scope. Source horn outer silhouette preserved; collar touches only upper inner rim. No raw-art blocker found requiring another shape edit. Independent acceptance and actual imported poses remain separate.",
+  "source_skin": "Every original source JOINTS/WEIGHTS stream is byte-exact.201 duplicated new patch boundary vertices use exact original8weights and modified matching source positions;2605 interior crown vertices head11/weight1.",
+  "evidence": [
+    "crown-final/head-before-mask-after.png",
+    "crown-final/full-before-mask-after.png",
+    "crown-final/crown-integrity.json",
+    "crown-final/crown-bvh.json",
+    "crown-final/normal-equivalence.json"
+  ],
+  "BVH_scope": "BlenderCPU raw-rest, no shared geometric vertices. Caps versus3752nearby retainedtris0, capself0, changedcollar406trisnewpairs0/baseline0. Actual report uses d389 geometry; b209 is byte-proved identical except920new underside NORMALvertices.",
+  "normalization_scope": "Current CPU CreatureModels.build scale+offset identical. Additional source AABB height changes actor motion-height separately; full runtime normalization belongs to imported-pose acceptance.",
+  "limitations": [
+    "No actual GPU render/cloth/rim/arena-light acceptance executed here.",
+    "No actual Godot pose/export or support check executed by this owner; parent coordinates that narrow stage.",
+    "Raw-rest BVH does not prove continuous animation or all body regions.",
+    "The lower safe closure retains original triangulated geometry; normal-only finish removes its accidental shading stripe."
+  ],
+  "commands": [
+    "python tools/models/repair_ratnik_light_halo.py --source build/model_candidates/2026-11-06-sculpt/source/ratnik_light.glb --output build/model_candidates/2026-11-06-a04/ratnik_light_crown_normals.glb",
+    "python tools/models/repair_ratnik_light_halo.py --source build/model_candidates/2026-11-06-sculpt/source/ratnik_light.glb --output build/model_candidates/2026-11-06-a04/ratnik_light_crown.glb --diagnostic-underside-normals",
+    "python tests/ratnik_light_crown_integrity.py build/model_candidates/2026-11-06-sculpt/source/ratnik_light.glb build/model_candidates/2026-11-06-a04/ratnik_light_crown_normals.glb docs/audits/2026-11-06-model-a04/crown-final/crown-integrity.json",
+    "blender -b --factory-startup -P tools/models/audit_ratnik_light_crown_bvh.py -- build/model_candidates/2026-11-06-sculpt/source/ratnik_light.glb build/model_candidates/2026-11-06-a04/ratnik_light_crown.glb docs/audits/2026-11-06-model-a04/crown-final/crown-bvh.json",
+    "python tests/ratnik_light_crown_normal_equivalence.py build/model_candidates/2026-11-06-a04/ratnik_light_crown.glb build/model_candidates/2026-11-06-a04/ratnik_light_crown_normals.glb docs/audits/2026-11-06-model-a04/crown-final/normal-equivalence.json",
+    "python tools/models/review_ratnik_light_halo.py --source build/model_candidates/2026-11-06-sculpt/source/ratnik_light.glb --candidate build/model_candidates/2026-11-06-a04/ratnik_light_crown_normals.glb --output docs/audits/2026-11-06-model-a04/crown-final"
+  ],
+  "integration_status": "Установлен ведущим этапом: productionb209b4…, ordinaryCreatureBall31408/0, scale/центр/motionheight сохранены;43actualposes безновыхпересечений.",
+  "integration_report": "../2026-11-06-model-sculpt-runtime/installed-a04.json"
+}

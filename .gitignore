@@ -31,3 +31,6 @@ assets/avatars/motions/kevin_local/
 # Author audio previews remain local; only the selected canonical cue is shipped.
 assets/audio/candidates/*
 !assets/audio/candidates/.gdignore
+
+# Runtime portraits made from the author's exact creature reference concepts.
+!assets/portraits/creatures/*.png

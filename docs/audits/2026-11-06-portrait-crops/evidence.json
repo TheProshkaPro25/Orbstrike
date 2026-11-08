@@ -1,0 +1,802 @@
+{
+  "status": "sol_reviewed_cpu_gpu_pending",
+  "method": "CPU Pillow bilinear resize; manual regions; no source pixel edits",
+  "godot_capture": false,
+  "gpu_acceptance": false,
+  "production_enabled_count": 42,
+  "display_px": 72,
+  "candidate_count": 49,
+  "sources_unchanged": true,
+  "source_hashes_before": {
+    "assets/portraits/creatures/dragnar_fire.png": "09bd795755cafe06dd9d8b8531ac47c0b518ffe28c1968673279481138d4d822",
+    "assets/portraits/creatures/dragnar_gale.png": "102f10019ad02c2df75d97f5a587ecbdf61fd352c12ec773bea37f275506a7ed",
+    "assets/portraits/creatures/dragnar_light.png": "6f332ab7b1c0c64000beb2fdbb8bb3082add49a60a7c6d66b0ceed8c4d653397",
+    "assets/portraits/creatures/dragnar_shadow.png": "59e198fc51757e62203a7cf044ba69672f53310479cd9c6de9aef912a779ed63",
+    "assets/portraits/creatures/dragnar_stone.png": "8fc7b5a6adde08dbc0822611361929673435448ff1f29213a459475ff29e1ab5",
+    "assets/portraits/creatures/dragnar_tide.png": "6f41b9d05cacd8d724a65dba3d330cb626e6a05f0e43e13a66183909f8f945dc",
+    "assets/portraits/creatures/gorgul_fire.png": "6db5c35491bfc38bcaaadf13dcb410a72af1da526913835cf691fcfef40e7e0c",
+    "assets/portraits/creatures/gorgul_gale.png": "11f3b30eb9b44dde4b26887ad38ca5aef41bec263026618164995d00ef790728",
+    "assets/portraits/creatures/gorgul_light.png": "d086ccdaee5a9162e6461691596d47b1316a5db91a882fb58f7e2a6f52f662c7",
+    "assets/portraits/creatures/gorgul_shadow.png": "11e4fcb689389cf8031ba97ba0e3613faed2ff89ff80961671239f54f49c8a1f",
+    "assets/portraits/creatures/gorgul_stone.png": "fc6aa5e5c0df54fe778a40eb7155e1bc0e3992574d14f04a0ff401ef2856ebe6",
+    "assets/portraits/creatures/gorgul_tide.png": "16676973ad8e906531ebac83cdadc1fbb65d33c52cd8c0096610989d280daa87",
+    "assets/portraits/creatures/grifalon_fire.png": "9ee3da379eab17b16b9fb4db966829d0ffa446b271621fece92894e769674022",
+    "assets/portraits/creatures/grifalon_gale.png": "cf615c72998423157ca99f6fc575565a9437a78e4433827ed280cd7de8e236a3",
+    "assets/portraits/creatures/grifalon_light.png": "ed3edb3d68d6c226f3432a9955a5cc534a73746ec98eb88ece1724e08b95c760",
+    "assets/portraits/creatures/grifalon_shadow.png": "cca05869ea5ec767a04928b883f741e6ec426f4d5cd51aed2298fe35a89cbe52",
+    "assets/portraits/creatures/grifalon_stone.png": "7397277f2d92dc312e356b3f31b5d1510bab99c4b195d9451de5005f0e3b91e8",
+    "assets/portraits/creatures/grifalon_tide.png": "20c75ef06ad075593046ffdd97c358ffbf3ad8ba793ed4abc72d291d7ada3934",
+    "assets/portraits/creatures/klykar_fire.png": "12c7f11c7272ad4abc72926287877009da1246577fedf607a2489bbeaa471ae6",
+    "assets/portraits/creatures/klykar_gale.png": "347d96df4d6838369cbd399375463776c7905727144404ad940d51744dad613f",
+    "assets/portraits/creatures/klykar_light.png": "146dae00a52221a222c43bc9da700d6789ffc38274c76c0634f214741cda0bf7",
+    "assets/portraits/creatures/klykar_shadow.png": "31431b731a43c4f58f04e45e1f4d219bbb23c18517058966b0e048b4fa846fa5",
+    "assets/portraits/creatures/klykar_stone.png": "da5c5f5153ae38b95046f7008868dd01799082f859b98908e23c819caef446fe",
+    "assets/portraits/creatures/klykar_tide.png": "b08890f5b258e4e746cdeb5788b1a5adc0d3e9045933fa0383fa68e3bc987d0f",
+    "assets/portraits/creatures/kolossar_fire.png": "8fd65b209cfe23c18a1565e451b16598ff590092b4ad1ec37db874e97fa4d1cc",
+    "assets/portraits/creatures/kolossar_gale.png": "076a1ef388e5c35d140d748521c60f2adbf6a88edc4c7540507834e86cd3e9f8",
+    "assets/portraits/creatures/kolossar_light.png": "d8c1baf0083d233dafe92988785b7a453246373708a1bb8128eb0a8645886433",
+    "assets/portraits/creatures/kolossar_shadow.png": "2272bf21b85a26a9a676fcbce668da953b0cb6ee434a72d59056f89a9fbdc371",
+    "assets/portraits/creatures/kolossar_stone.png": "d2159f76b766aa638ac07fb0a85141842d9843b32a7d3f2cb33b7876b9e4c8f3",
+    "assets/portraits/creatures/kolossar_tide.png": "8ee6878ca01e8e3b6c39ae152d98102632b54a943850d911ac2a0ce83a89262b",
+    "assets/portraits/creatures/levian_fire.png": "9415738cdae8f6bb7651a21ed610fe0ea3f15f25e2597ec42ea08b208dd3ca91",
+    "assets/portraits/creatures/levian_gale.png": "306afd3d489042aeaddbcdecf78b0ce3159ce75a8c68d000b3695129a706a8ab",
+    "assets/portraits/creatures/levian_light.png": "37033956290332be58ca67d98f7cc7667913fb884204ec28fee3d624bad63612",
+    "assets/portraits/creatures/levian_shadow.png": "fa9b6553d2a07675800dbd0985fe11c75802be8e6fed3069f01e5698c482a335",
+    "assets/portraits/creatures/levian_stone.png": "3853dcbbd5b9ad068e91f0f92d4b38771298bdd5d745edf4cc941dd7647970b4",
+    "assets/portraits/creatures/levian_tide.png": "da72dfadcc07f3ddd9c9508ade64fc9965374fe3fa235cb252cfcdd69cd00f1d",
+    "assets/portraits/creatures/likorez_shadow.png": "bc60dcbdeaebe6b4f6239a384020e96cc6d7f014f07a7e677b78d3a54bc4157e",
+    "assets/portraits/creatures/ratnik_fire.png": "eb2dce1c7e2d3b862b8857c60b39a92ef0087b94668d6be9e59f37695ba0625a",
+    "assets/portraits/creatures/ratnik_gale.png": "d28a6bab2af4531d19c6a5bde88797b5f104900695592c979b044224feda94f5",
+    "assets/portraits/creatures/ratnik_light.png": "1ea156c75cfc60f78d85710704c025bec0805c08e61a609b1e9d3666ac451601",
+    "assets/portraits/creatures/ratnik_shadow.png": "08f6487590108dc7d4d0fa1cf83b254be2d8c00c89491308f96e64c9de0dde85",
+    "assets/portraits/creatures/ratnik_stone.png": "07e895e129ffc1d034ae1c4fcb8576826b7d3986e7a688ab3b3f246aa68112a7",
+    "assets/portraits/creatures/ratnik_tide.png": "2bc41fe2a902f7c92b82f6912aca96685756d663ef708442c1d5c610dc2658d1",
+    "assets/portraits/creatures/rogozhuk_fire.png": "f94d8ea94dd07e82e2b5373146a0c48ff790561c05afd4bd3aced07366590b58",
+    "assets/portraits/creatures/rogozhuk_gale.png": "348364392439ce8082e1c4e3c3d306a75541607a61f70b22d6c656d7e007a861",
+    "assets/portraits/creatures/rogozhuk_light.png": "e17ddede4bd405ecb4425180c0db2cbc12379632bb42b2f3c7aa93a6cb1b4b42",
+    "assets/portraits/creatures/rogozhuk_shadow.png": "4936803fe2a50cb08c51ab14a5619dd7cc7c27fee9265f85d6ce5b4055eab306",
+    "assets/portraits/creatures/rogozhuk_stone.png": "47991d6815cedf4160d1c756a4bac3e44069e8e63ebc7991f6bdcfae4ae1e921",
+    "assets/portraits/creatures/rogozhuk_tide.png": "9178dfe6df5581fe43c3f6aa93fee383309828bf44e9e2ae1a71f8f1554b5f18",
+    "tools/ai_models/concepts/dragnar_fire.png": "a26acfda4318c88fc610db3aaae3c233e0a6bb8bcf9dd4b287106a683310f468",
+    "tools/ai_models/concepts/dragnar_gale.png": "18963ea5bf9310294d48e1e5af6eec560ab3fcb65cbf6804f77b763b2f0c1886",
+    "tools/ai_models/concepts/dragnar_light.png": "977b7fe4eae73d540e88933cc72e37c6f715a9545599d9f57a45205a06b5c162",
+    "tools/ai_models/concepts/dragnar_shadow.png": "3e587eb5fe20c6dd7509e8f191a6107e4184bbbb32636410ddaec2f0e4208724",
+    "tools/ai_models/concepts/dragnar_stone.png": "c4533b23964383a1dc6512ecdaf3b9af2952597b424a76fcc02f76f3b83dd542",
+    "tools/ai_models/concepts/dragnar_tide.png": "59aaf4e3f9d6f1c2aadd26771e8d5fbd84f0b1f59a7b5cc3a914f88260595464",
+    "tools/ai_models/concepts/gorgul_fire.png": "0786c89d8d245e439e05c7caffcf0b8178b5766ffad6c3788c516cc060810116",
+    "tools/ai_models/concepts/gorgul_gale.png": "04b768f5e06419c3c23562a70d44c5b895a8f20a753de841e8de059d36482c06",
+    "tools/ai_models/concepts/gorgul_light.png": "43625c94a6a38e0a8b58ad1e14b434010677ce6aa45b86ff2cf0bbca874eee0c",
+    "tools/ai_models/concepts/gorgul_shadow.png": "ab554f95ec607f5e81c0111f46a437e6e47abef24e84cb9c926b210cccc74e0c",
+    "tools/ai_models/concepts/gorgul_stone.png": "3743edb92a64890d2f9d60c040d4ad70d14e9ec039f92161a761d079e9fac4a9",
+    "tools/ai_models/concepts/gorgul_tide.png": "61a77ed7b0c699c32458260053572c88e2c055c0866131000a532497a1d24572",
+    "tools/ai_models/concepts/grifalon_fire.png": "31dd0812e4b7f310973a5b94ddb885619aefbac51cef6decfd9a896bde09ec70",
+    "tools/ai_models/concepts/grifalon_gale.png": "f4a7f99255d6976fc2863ea34bd7cb6ac9473b58e63a2189678454180c44c92d",
+    "tools/ai_models/concepts/grifalon_light.png": "1d9df2364d9b6ddf5ba1d57e19530eae072533158bce4e41b134c806d5d9c5b4",
+    "tools/ai_models/concepts/grifalon_shadow.png": "b63e16bff3079b6e42148ed2186ae2916f5e18fe73163afbe74fb325cab2ef37",
+    "tools/ai_models/concepts/grifalon_stone.png": "bbc6c87d702fb6bb6cf1073f5914f1050cbd0676de1606366f39112c086a4aea",
+    "tools/ai_models/concepts/grifalon_tide.png": "ab10169d11911afb78049c461681fcd41a61c190f6272bc49476e5c60ed2e58a",
+    "tools/ai_models/concepts/klykar_fire.png": "31558cfef22eda7369fb7d0866fbf82733451d160622ea048beea935fa4ce5f2",
+    "tools/ai_models/concepts/klykar_gale.png": "de5adcd0c9b94f851b96556ab6ab675eed733a0d6d533401fb364f9695da0950",
+    "tools/ai_models/concepts/klykar_light.png": "07ae191eb39584efafbcdea383e4119e6479a88ac237f3600542d9d6ac523989",
+    "tools/ai_models/concepts/klykar_shadow.png": "f4224ca554078072bfbbc1cfe2aac7e5adc256833ec068906d4fcc996650d40a",
+    "tools/ai_models/concepts/klykar_stone.png": "1ace6a4e3f858ae613b584cb085f6e007b89e1512d9bcb7f75742aa9fc719aac",
+    "tools/ai_models/concepts/klykar_tide.png": "2e3c3d0a3ffb020383beed4cfa3bd31adeb6590c01da7e1ffb2bb33f1f613314",
+    "tools/ai_models/concepts/kolossar_fire.png": "3d5608898fcd3306e9f43e691c526b49a65c60f34a807989fb8e2c55fa6911c5",
+    "tools/ai_models/concepts/kolossar_gale.png": "13702ece86d7c8f118a33b47f5f9d6d34ea6ee7286d1ff5300ec26f364d4bc86",
+    "tools/ai_models/concepts/kolossar_light.png": "5866cfcd7b3f6da9fd6862913c05ca37ad308e401ed96a0f061e713182be4a02",
+    "tools/ai_models/concepts/kolossar_shadow.png": "fc2f41a8cb27b4321fbc0d3fbbca096172356965e07e7275a22f39db2aecf834",
+    "tools/ai_models/concepts/kolossar_stone.png": "d5dbb6b008e1b16fff8963ff2f32c30f831dab1f5bccd13f352e2dceba7f1334",
+    "tools/ai_models/concepts/kolossar_tide.png": "d6ebabf43b32e5565488b657a71d1dc7285df7671fdcb3d5658657a61ec5dc42",
+    "tools/ai_models/concepts/levian_fire.png": "11473b546c5eaab3060189932de6538e4036aa5c9c56f65395194531a79fb0f8",
+    "tools/ai_models/concepts/levian_gale.png": "07e733a91d9d255f15225eaf67ee2e5fa6ff241c142606971b037c5468ff8d13",
+    "tools/ai_models/concepts/levian_light.png": "c907defbf8fee1dba35a7c5d5052488d9f0949662649d4428322411cac78b33a",
+    "tools/ai_models/concepts/levian_shadow.png": "69f2797e94cee2a88707a70979592c742d00bcee389daf6ce6c77e9e89884c54",
+    "tools/ai_models/concepts/levian_stone.png": "6d11a3c9b178d1c06be87b7a70cbe928f8bd3ffe823da5488605bc4121a30912",
+    "tools/ai_models/concepts/levian_tide.png": "bb1828398186c1883ae886e903013258f58acfd48647a107f0b07d14e46c562c",
+    "tools/ai_models/concepts/likorez_shadow.png": "9d72ef67cf799106c3dc2633f7402433d34d16db1f1b81377d042d70e54e5988",
+    "tools/ai_models/concepts/ratnik_fire.png": "a37ee0aebb57d7426bad2855c5ffa73ecd494db68697e1a8109005e18fdff4ee",
+    "tools/ai_models/concepts/ratnik_gale.png": "e15f04c4813a2c3b0daacf3966cff13010efc0c019e79fcdfc883b0975963437",
+    "tools/ai_models/concepts/ratnik_light.png": "25b61b51dc1531d29865e2868340629ba61f63ec1afe401cbf533c2e42d16011",
+    "tools/ai_models/concepts/ratnik_shadow.png": "e8fd5520e36d520747049d0178cf71c2b9ec7a8920e88707f8155df5e80edbc1",
+    "tools/ai_models/concepts/ratnik_stone.png": "9f8506d22e8a13479ce13ea02b63f115dd226f76a5f4802f32349b78ddb4c44a",
+    "tools/ai_models/concepts/ratnik_tide.png": "49fbad73bf04df2ceb2db8e8d9fbea52350d9a1d34b8d9d2ffb4e182604902ee",
+    "tools/ai_models/concepts/rogozhuk_fire.png": "e63e2d8e794eaeecd35ddb1e179939cd9f244b71156eed20402d92763afa71db",
+    "tools/ai_models/concepts/rogozhuk_gale.png": "56cafdddf156b705aaeb8c9cf9d83e59c471014d618a387975fdb142e13e6c4b",
+    "tools/ai_models/concepts/rogozhuk_light.png": "763d00f38dd211595e669e60e318223f13dd854692b929808fb3993ee37c14d2",
+    "tools/ai_models/concepts/rogozhuk_shadow.png": "c5b39c2f5419e48095d942f395fec67e881eb2572cd20040782848ccf28af66d",
+    "tools/ai_models/concepts/rogozhuk_stone.png": "7fd5213c5a2f2a2f5c4fe409962a1af7a4b317b7efa938dcac3e6ebcf011b365",
+    "tools/ai_models/concepts/rogozhuk_tide.png": "2fadb23aa88f629ea9ec537529f0741464fae130fbefd16a3e7db0bf78f04897"
+  },
+  "source_hashes_after": {
+    "assets/portraits/creatures/dragnar_fire.png": "09bd795755cafe06dd9d8b8531ac47c0b518ffe28c1968673279481138d4d822",
+    "assets/portraits/creatures/dragnar_gale.png": "102f10019ad02c2df75d97f5a587ecbdf61fd352c12ec773bea37f275506a7ed",
+    "assets/portraits/creatures/dragnar_light.png": "6f332ab7b1c0c64000beb2fdbb8bb3082add49a60a7c6d66b0ceed8c4d653397",
+    "assets/portraits/creatures/dragnar_shadow.png": "59e198fc51757e62203a7cf044ba69672f53310479cd9c6de9aef912a779ed63",
+    "assets/portraits/creatures/dragnar_stone.png": "8fc7b5a6adde08dbc0822611361929673435448ff1f29213a459475ff29e1ab5",
+    "assets/portraits/creatures/dragnar_tide.png": "6f41b9d05cacd8d724a65dba3d330cb626e6a05f0e43e13a66183909f8f945dc",
+    "assets/portraits/creatures/gorgul_fire.png": "6db5c35491bfc38bcaaadf13dcb410a72af1da526913835cf691fcfef40e7e0c",
+    "assets/portraits/creatures/gorgul_gale.png": "11f3b30eb9b44dde4b26887ad38ca5aef41bec263026618164995d00ef790728",
+    "assets/portraits/creatures/gorgul_light.png": "d086ccdaee5a9162e6461691596d47b1316a5db91a882fb58f7e2a6f52f662c7",
+    "assets/portraits/creatures/gorgul_shadow.png": "11e4fcb689389cf8031ba97ba0e3613faed2ff89ff80961671239f54f49c8a1f",
+    "assets/portraits/creatures/gorgul_stone.png": "fc6aa5e5c0df54fe778a40eb7155e1bc0e3992574d14f04a0ff401ef2856ebe6",
+    "assets/portraits/creatures/gorgul_tide.png": "16676973ad8e906531ebac83cdadc1fbb65d33c52cd8c0096610989d280daa87",
+    "assets/portraits/creatures/grifalon_fire.png": "9ee3da379eab17b16b9fb4db966829d0ffa446b271621fece92894e769674022",
+    "assets/portraits/creatures/grifalon_gale.png": "cf615c72998423157ca99f6fc575565a9437a78e4433827ed280cd7de8e236a3",
+    "assets/portraits/creatures/grifalon_light.png": "ed3edb3d68d6c226f3432a9955a5cc534a73746ec98eb88ece1724e08b95c760",
+    "assets/portraits/creatures/grifalon_shadow.png": "cca05869ea5ec767a04928b883f741e6ec426f4d5cd51aed2298fe35a89cbe52",
+    "assets/portraits/creatures/grifalon_stone.png": "7397277f2d92dc312e356b3f31b5d1510bab99c4b195d9451de5005f0e3b91e8",
+    "assets/portraits/creatures/grifalon_tide.png": "20c75ef06ad075593046ffdd97c358ffbf3ad8ba793ed4abc72d291d7ada3934",
+    "assets/portraits/creatures/klykar_fire.png": "12c7f11c7272ad4abc72926287877009da1246577fedf607a2489bbeaa471ae6",
+    "assets/portraits/creatures/klykar_gale.png": "347d96df4d6838369cbd399375463776c7905727144404ad940d51744dad613f",
+    "assets/portraits/creatures/klykar_light.png": "146dae00a52221a222c43bc9da700d6789ffc38274c76c0634f214741cda0bf7",
+    "assets/portraits/creatures/klykar_shadow.png": "31431b731a43c4f58f04e45e1f4d219bbb23c18517058966b0e048b4fa846fa5",
+    "assets/portraits/creatures/klykar_stone.png": "da5c5f5153ae38b95046f7008868dd01799082f859b98908e23c819caef446fe",
+    "assets/portraits/creatures/klykar_tide.png": "b08890f5b258e4e746cdeb5788b1a5adc0d3e9045933fa0383fa68e3bc987d0f",
+    "assets/portraits/creatures/kolossar_fire.png": "8fd65b209cfe23c18a1565e451b16598ff590092b4ad1ec37db874e97fa4d1cc",
+    "assets/portraits/creatures/kolossar_gale.png": "076a1ef388e5c35d140d748521c60f2adbf6a88edc4c7540507834e86cd3e9f8",
+    "assets/portraits/creatures/kolossar_light.png": "d8c1baf0083d233dafe92988785b7a453246373708a1bb8128eb0a8645886433",
+    "assets/portraits/creatures/kolossar_shadow.png": "2272bf21b85a26a9a676fcbce668da953b0cb6ee434a72d59056f89a9fbdc371",
+    "assets/portraits/creatures/kolossar_stone.png": "d2159f76b766aa638ac07fb0a85141842d9843b32a7d3f2cb33b7876b9e4c8f3",
+    "assets/portraits/creatures/kolossar_tide.png": "8ee6878ca01e8e3b6c39ae152d98102632b54a943850d911ac2a0ce83a89262b",
+    "assets/portraits/creatures/levian_fire.png": "9415738cdae8f6bb7651a21ed610fe0ea3f15f25e2597ec42ea08b208dd3ca91",
+    "assets/portraits/creatures/levian_gale.png": "306afd3d489042aeaddbcdecf78b0ce3159ce75a8c68d000b3695129a706a8ab",
+    "assets/portraits/creatures/levian_light.png": "37033956290332be58ca67d98f7cc7667913fb884204ec28fee3d624bad63612",
+    "assets/portraits/creatures/levian_shadow.png": "fa9b6553d2a07675800dbd0985fe11c75802be8e6fed3069f01e5698c482a335",
+    "assets/portraits/creatures/levian_stone.png": "3853dcbbd5b9ad068e91f0f92d4b38771298bdd5d745edf4cc941dd7647970b4",
+    "assets/portraits/creatures/levian_tide.png": "da72dfadcc07f3ddd9c9508ade64fc9965374fe3fa235cb252cfcdd69cd00f1d",
+    "assets/portraits/creatures/likorez_shadow.png": "bc60dcbdeaebe6b4f6239a384020e96cc6d7f014f07a7e677b78d3a54bc4157e",
+    "assets/portraits/creatures/ratnik_fire.png": "eb2dce1c7e2d3b862b8857c60b39a92ef0087b94668d6be9e59f37695ba0625a",
+    "assets/portraits/creatures/ratnik_gale.png": "d28a6bab2af4531d19c6a5bde88797b5f104900695592c979b044224feda94f5",
+    "assets/portraits/creatures/ratnik_light.png": "1ea156c75cfc60f78d85710704c025bec0805c08e61a609b1e9d3666ac451601",
+    "assets/portraits/creatures/ratnik_shadow.png": "08f6487590108dc7d4d0fa1cf83b254be2d8c00c89491308f96e64c9de0dde85",
+    "assets/portraits/creatures/ratnik_stone.png": "07e895e129ffc1d034ae1c4fcb8576826b7d3986e7a688ab3b3f246aa68112a7",
+    "assets/portraits/creatures/ratnik_tide.png": "2bc41fe2a902f7c92b82f6912aca96685756d663ef708442c1d5c610dc2658d1",
+    "assets/portraits/creatures/rogozhuk_fire.png": "f94d8ea94dd07e82e2b5373146a0c48ff790561c05afd4bd3aced07366590b58",
+    "assets/portraits/creatures/rogozhuk_gale.png": "348364392439ce8082e1c4e3c3d306a75541607a61f70b22d6c656d7e007a861",
+    "assets/portraits/creatures/rogozhuk_light.png": "e17ddede4bd405ecb4425180c0db2cbc12379632bb42b2f3c7aa93a6cb1b4b42",
+    "assets/portraits/creatures/rogozhuk_shadow.png": "4936803fe2a50cb08c51ab14a5619dd7cc7c27fee9265f85d6ce5b4055eab306",
+    "assets/portraits/creatures/rogozhuk_stone.png": "47991d6815cedf4160d1c756a4bac3e44069e8e63ebc7991f6bdcfae4ae1e921",
+    "assets/portraits/creatures/rogozhuk_tide.png": "9178dfe6df5581fe43c3f6aa93fee383309828bf44e9e2ae1a71f8f1554b5f18",
+    "tools/ai_models/concepts/dragnar_fire.png": "a26acfda4318c88fc610db3aaae3c233e0a6bb8bcf9dd4b287106a683310f468",
+    "tools/ai_models/concepts/dragnar_gale.png": "18963ea5bf9310294d48e1e5af6eec560ab3fcb65cbf6804f77b763b2f0c1886",
+    "tools/ai_models/concepts/dragnar_light.png": "977b7fe4eae73d540e88933cc72e37c6f715a9545599d9f57a45205a06b5c162",
+    "tools/ai_models/concepts/dragnar_shadow.png": "3e587eb5fe20c6dd7509e8f191a6107e4184bbbb32636410ddaec2f0e4208724",
+    "tools/ai_models/concepts/dragnar_stone.png": "c4533b23964383a1dc6512ecdaf3b9af2952597b424a76fcc02f76f3b83dd542",
+    "tools/ai_models/concepts/dragnar_tide.png": "59aaf4e3f9d6f1c2aadd26771e8d5fbd84f0b1f59a7b5cc3a914f88260595464",
+    "tools/ai_models/concepts/gorgul_fire.png": "0786c89d8d245e439e05c7caffcf0b8178b5766ffad6c3788c516cc060810116",
+    "tools/ai_models/concepts/gorgul_gale.png": "04b768f5e06419c3c23562a70d44c5b895a8f20a753de841e8de059d36482c06",
+    "tools/ai_models/concepts/gorgul_light.png": "43625c94a6a38e0a8b58ad1e14b434010677ce6aa45b86ff2cf0bbca874eee0c",
+    "tools/ai_models/concepts/gorgul_shadow.png": "ab554f95ec607f5e81c0111f46a437e6e47abef24e84cb9c926b210cccc74e0c",
+    "tools/ai_models/concepts/gorgul_stone.png": "3743edb92a64890d2f9d60c040d4ad70d14e9ec039f92161a761d079e9fac4a9",
+    "tools/ai_models/concepts/gorgul_tide.png": "61a77ed7b0c699c32458260053572c88e2c055c0866131000a532497a1d24572",
+    "tools/ai_models/concepts/grifalon_fire.png": "31dd0812e4b7f310973a5b94ddb885619aefbac51cef6decfd9a896bde09ec70",
+    "tools/ai_models/concepts/grifalon_gale.png": "f4a7f99255d6976fc2863ea34bd7cb6ac9473b58e63a2189678454180c44c92d",
+    "tools/ai_models/concepts/grifalon_light.png": "1d9df2364d9b6ddf5ba1d57e19530eae072533158bce4e41b134c806d5d9c5b4",
+    "tools/ai_models/concepts/grifalon_shadow.png": "b63e16bff3079b6e42148ed2186ae2916f5e18fe73163afbe74fb325cab2ef37",
+    "tools/ai_models/concepts/grifalon_stone.png": "bbc6c87d702fb6bb6cf1073f5914f1050cbd0676de1606366f39112c086a4aea",
+    "tools/ai_models/concepts/grifalon_tide.png": "ab10169d11911afb78049c461681fcd41a61c190f6272bc49476e5c60ed2e58a",
+    "tools/ai_models/concepts/klykar_fire.png": "31558cfef22eda7369fb7d0866fbf82733451d160622ea048beea935fa4ce5f2",
+    "tools/ai_models/concepts/klykar_gale.png": "de5adcd0c9b94f851b96556ab6ab675eed733a0d6d533401fb364f9695da0950",
+    "tools/ai_models/concepts/klykar_light.png": "07ae191eb39584efafbcdea383e4119e6479a88ac237f3600542d9d6ac523989",
+    "tools/ai_models/concepts/klykar_shadow.png": "f4224ca554078072bfbbc1cfe2aac7e5adc256833ec068906d4fcc996650d40a",
+    "tools/ai_models/concepts/klykar_stone.png": "1ace6a4e3f858ae613b584cb085f6e007b89e1512d9bcb7f75742aa9fc719aac",
+    "tools/ai_models/concepts/klykar_tide.png": "2e3c3d0a3ffb020383beed4cfa3bd31adeb6590c01da7e1ffb2bb33f1f613314",
+    "tools/ai_models/concepts/kolossar_fire.png": "3d5608898fcd3306e9f43e691c526b49a65c60f34a807989fb8e2c55fa6911c5",
+    "tools/ai_models/concepts/kolossar_gale.png": "13702ece86d7c8f118a33b47f5f9d6d34ea6ee7286d1ff5300ec26f364d4bc86",
+    "tools/ai_models/concepts/kolossar_light.png": "5866cfcd7b3f6da9fd6862913c05ca37ad308e401ed96a0f061e713182be4a02",
+    "tools/ai_models/concepts/kolossar_shadow.png": "fc2f41a8cb27b4321fbc0d3fbbca096172356965e07e7275a22f39db2aecf834",
+    "tools/ai_models/concepts/kolossar_stone.png": "d5dbb6b008e1b16fff8963ff2f32c30f831dab1f5bccd13f352e2dceba7f1334",
+    "tools/ai_models/concepts/kolossar_tide.png": "d6ebabf43b32e5565488b657a71d1dc7285df7671fdcb3d5658657a61ec5dc42",
+    "tools/ai_models/concepts/levian_fire.png": "11473b546c5eaab3060189932de6538e4036aa5c9c56f65395194531a79fb0f8",
+    "tools/ai_models/concepts/levian_gale.png": "07e733a91d9d255f15225eaf67ee2e5fa6ff241c142606971b037c5468ff8d13",
+    "tools/ai_models/concepts/levian_light.png": "c907defbf8fee1dba35a7c5d5052488d9f0949662649d4428322411cac78b33a",
+    "tools/ai_models/concepts/levian_shadow.png": "69f2797e94cee2a88707a70979592c742d00bcee389daf6ce6c77e9e89884c54",
+    "tools/ai_models/concepts/levian_stone.png": "6d11a3c9b178d1c06be87b7a70cbe928f8bd3ffe823da5488605bc4121a30912",
+    "tools/ai_models/concepts/levian_tide.png": "bb1828398186c1883ae886e903013258f58acfd48647a107f0b07d14e46c562c",
+    "tools/ai_models/concepts/likorez_shadow.png": "9d72ef67cf799106c3dc2633f7402433d34d16db1f1b81377d042d70e54e5988",
+    "tools/ai_models/concepts/ratnik_fire.png": "a37ee0aebb57d7426bad2855c5ffa73ecd494db68697e1a8109005e18fdff4ee",
+    "tools/ai_models/concepts/ratnik_gale.png": "e15f04c4813a2c3b0daacf3966cff13010efc0c019e79fcdfc883b0975963437",
+    "tools/ai_models/concepts/ratnik_light.png": "25b61b51dc1531d29865e2868340629ba61f63ec1afe401cbf533c2e42d16011",
+    "tools/ai_models/concepts/ratnik_shadow.png": "e8fd5520e36d520747049d0178cf71c2b9ec7a8920e88707f8155df5e80edbc1",
+    "tools/ai_models/concepts/ratnik_stone.png": "9f8506d22e8a13479ce13ea02b63f115dd226f76a5f4802f32349b78ddb4c44a",
+    "tools/ai_models/concepts/ratnik_tide.png": "49fbad73bf04df2ceb2db8e8d9fbea52350d9a1d34b8d9d2ffb4e182604902ee",
+    "tools/ai_models/concepts/rogozhuk_fire.png": "e63e2d8e794eaeecd35ddb1e179939cd9f244b71156eed20402d92763afa71db",
+    "tools/ai_models/concepts/rogozhuk_gale.png": "56cafdddf156b705aaeb8c9cf9d83e59c471014d618a387975fdb142e13e6c4b",
+    "tools/ai_models/concepts/rogozhuk_light.png": "763d00f38dd211595e669e60e318223f13dd854692b929808fb3993ee37c14d2",
+    "tools/ai_models/concepts/rogozhuk_shadow.png": "c5b39c2f5419e48095d942f395fec67e881eb2572cd20040782848ccf28af66d",
+    "tools/ai_models/concepts/rogozhuk_stone.png": "7fd5213c5a2f2a2f5c4fe409962a1af7a4b317b7efa938dcac3e6ebcf011b365",
+    "tools/ai_models/concepts/rogozhuk_tide.png": "2fadb23aa88f629ea9ec537529f0741464fae130fbefd16a3e7db0bf78f04897"
+  },
+  "manifest_sha256": "31805bed49bbd8191c5f4bf0877b5a78b63854e0db2b279fa2253944af25a42a",
+  "runtime_table_sha256": "b6a08b729dad974c08c1eb312d585818b9f1b1ad3d7a0798f8ee17cc996328d9",
+  "candidates": [
+    {
+      "id": "creature_dragnar_fire",
+      "enabled": true,
+      "region": [
+        80,
+        16,
+        112,
+        112
+      ],
+      "scale": 2.2857,
+      "intent": "Enlarges red face and intact horns; wing tips, tail and lower body deliberately outside head-and-chest portrait."
+    },
+    {
+      "id": "creature_dragnar_gale",
+      "enabled": true,
+      "region": [
+        80,
+        16,
+        120,
+        120
+      ],
+      "scale": 2.1333,
+      "intent": "Enlarges green face, swept horns and chest; the long wind tail and wing tips are deliberately omitted."
+    },
+    {
+      "id": "creature_dragnar_light",
+      "enabled": true,
+      "region": [
+        88,
+        8,
+        120,
+        120
+      ],
+      "scale": 2.1333,
+      "intent": "Keeps complete thin halo, horns and gold face; wider head window than fire preserves the ring."
+    },
+    {
+      "id": "creature_dragnar_stone",
+      "enabled": true,
+      "region": [
+        80,
+        20,
+        120,
+        120
+      ],
+      "scale": 2.1333,
+      "intent": "Keeps stone horns, face and plated chest; tail crystals and outer wings are outside this head portrait."
+    },
+    {
+      "id": "creature_dragnar_shadow",
+      "enabled": true,
+      "region": [
+        84,
+        16,
+        120,
+        120
+      ],
+      "scale": 2.1333,
+      "intent": "Keeps every head spike and purple face; outer wings and tail are deliberately omitted."
+    },
+    {
+      "id": "creature_dragnar_tide",
+      "enabled": true,
+      "region": [
+        80,
+        20,
+        120,
+        120
+      ],
+      "scale": 2.1333,
+      "intent": "Keeps pale horns, blue face and wave-marked chest; tail and wing tips are deliberately omitted."
+    },
+    {
+      "id": "creature_klykar_fire",
+      "enabled": true,
+      "region": [
+        100,
+        12,
+        144,
+        144
+      ],
+      "scale": 1.7778,
+      "intent": "Keeps upright flame crown, open muzzle and chest; rear flame fin, tail and legs are deliberately omitted."
+    },
+    {
+      "id": "creature_klykar_gale",
+      "enabled": true,
+      "region": [
+        104,
+        16,
+        140,
+        140
+      ],
+      "scale": 1.8286,
+      "intent": "Keeps face, mane tips and front wind ribbon; outer ribbon loop, tail and legs are deliberately omitted."
+    },
+    {
+      "id": "creature_klykar_light",
+      "enabled": true,
+      "region": [
+        72,
+        8,
+        176,
+        176
+      ],
+      "scale": 1.4545,
+      "intent": "Wider window keeps the complete halo and longest gold back spine tips beside the muzzle, with safe margin; lower legs are omitted."
+    },
+    {
+      "id": "creature_klykar_stone",
+      "enabled": true,
+      "region": [
+        72,
+        8,
+        172,
+        172
+      ],
+      "scale": 1.4884,
+      "intent": "Wider window retains tall crystal back spines, stone mane and muzzle; tail and lower legs are omitted."
+    },
+    {
+      "id": "creature_klykar_shadow",
+      "enabled": true,
+      "region": [
+        72,
+        8,
+        176,
+        176
+      ],
+      "scale": 1.4545,
+      "intent": "Wider window retains long purple back spines, head and front mist; tail and legs are omitted."
+    },
+    {
+      "id": "creature_klykar_tide",
+      "enabled": true,
+      "region": [
+        76,
+        8,
+        172,
+        172
+      ],
+      "scale": 1.4884,
+      "intent": "Wider window retains tall ice back spines, pale mane and complete muzzle; tail and lower legs are omitted."
+    },
+    {
+      "id": "creature_grifalon_fire",
+      "enabled": true,
+      "region": [
+        96,
+        0,
+        128,
+        128
+      ],
+      "scale": 2.0,
+      "intent": "Keeps complete flame crest, yellow beak, neck and both wing roots; legs and outer feathers are omitted."
+    },
+    {
+      "id": "creature_grifalon_gale",
+      "enabled": true,
+      "region": [
+        92,
+        0,
+        136,
+        136
+      ],
+      "scale": 1.8824,
+      "intent": "Keeps swept green crest, complete beak, chest and inner wind curve; outer wind loop and wings are omitted."
+    },
+    {
+      "id": "creature_grifalon_light",
+      "enabled": true,
+      "region": [
+        100,
+        0,
+        128,
+        128
+      ],
+      "scale": 2.0,
+      "intent": "Keeps tall gold crest, beak and pale breast; wing roots remain visible while legs and feather tips are omitted."
+    },
+    {
+      "id": "creature_grifalon_stone",
+      "enabled": true,
+      "region": [
+        100,
+        0,
+        128,
+        128
+      ],
+      "scale": 2.0,
+      "intent": "Keeps stone crest, yellow beak, neck and shoulder plates; outer feathers and legs are omitted."
+    },
+    {
+      "id": "creature_grifalon_shadow",
+      "enabled": true,
+      "region": [
+        96,
+        0,
+        132,
+        132
+      ],
+      "scale": 1.9394,
+      "intent": "Keeps complete dark swept crest, pale beak and feathered breast; legs and feather tips are omitted."
+    },
+    {
+      "id": "creature_grifalon_tide",
+      "enabled": true,
+      "region": [
+        100,
+        0,
+        128,
+        128
+      ],
+      "scale": 2.0,
+      "intent": "Keeps complete blue crest, pale beak and star-marked breast; outer wings and legs are omitted."
+    },
+    {
+      "id": "creature_kolossar_fire",
+      "enabled": true,
+      "region": [
+        36,
+        4,
+        184,
+        184
+      ],
+      "scale": 1.3913,
+      "intent": "Conservative upper-body crop preserves both horns, single eye and shoulder flame silhouette; lower legs are omitted."
+    },
+    {
+      "id": "creature_kolossar_gale",
+      "enabled": true,
+      "region": [
+        20,
+        0,
+        208,
+        208
+      ],
+      "scale": 1.2308,
+      "intent": "Wide crop preserves long outward shoulder spines, both horns and single eye; smaller zoom avoids cutting the shoulders."
+    },
+    {
+      "id": "creature_kolossar_light",
+      "enabled": true,
+      "region": [
+        20,
+        0,
+        212,
+        212
+      ],
+      "scale": 1.2075,
+      "intent": "Very wide crop preserves large gold shoulder spikes and both horns; only lower legs are lost, avoiding a falsely narrow body."
+    },
+    {
+      "id": "creature_kolossar_stone",
+      "enabled": true,
+      "region": [
+        24,
+        0,
+        208,
+        208
+      ],
+      "scale": 1.2308,
+      "intent": "Wide crop preserves asymmetric stone shoulder, both horns and the blue eye; lower legs are omitted."
+    },
+    {
+      "id": "creature_kolossar_shadow",
+      "enabled": true,
+      "region": [
+        44,
+        4,
+        168,
+        168
+      ],
+      "scale": 1.5238,
+      "intent": "Keeps complete horns, bright single eye and broad purple chest; arm ends and legs are deliberately omitted."
+    },
+    {
+      "id": "creature_kolossar_tide",
+      "enabled": true,
+      "region": [
+        28,
+        0,
+        200,
+        200
+      ],
+      "scale": 1.28,
+      "intent": "Wide crop preserves blue fin-shaped shoulders, pale horns and single eye; lower legs are omitted."
+    },
+    {
+      "id": "creature_rogozhuk_fire",
+      "enabled": false,
+      "region": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "scale": 1.0,
+      "intent": "KEEP FULL: compact dome, full flame horn and spread hot legs already use the square; head crop loses the beetle silhouette."
+    },
+    {
+      "id": "creature_rogozhuk_gale",
+      "enabled": false,
+      "region": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "scale": 1.0,
+      "intent": "KEEP FULL: green shell, complete tall horn, wind tuft and spread legs are the defining shape; head crop loses the shell."
+    },
+    {
+      "id": "creature_rogozhuk_light",
+      "enabled": false,
+      "region": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "scale": 1.0,
+      "intent": "KEEP FULL: gold shell, tall ivory horn and legs already fill the square; a tighter portrait loses the rounded shell."
+    },
+    {
+      "id": "creature_rogozhuk_stone",
+      "enabled": false,
+      "region": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "scale": 1.0,
+      "intent": "KEEP FULL: mottled dome, long horn and stone legs form the identity; head crop sacrifices the compact complete silhouette."
+    },
+    {
+      "id": "creature_rogozhuk_shadow",
+      "enabled": false,
+      "region": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "scale": 1.0,
+      "intent": "KEEP FULL: purple dome, long horn and spread legs are more useful together than a larger eye without its shell."
+    },
+    {
+      "id": "creature_rogozhuk_tide",
+      "enabled": false,
+      "region": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "scale": 1.0,
+      "intent": "KEEP FULL: blue scalloped dome, ivory horn and fin-like feet define the variant; a tight face crop removes the dome."
+    },
+    {
+      "id": "creature_levian_fire",
+      "enabled": true,
+      "region": [
+        76,
+        4,
+        136,
+        136
+      ],
+      "scale": 1.8824,
+      "intent": "Keeps complete branching horns, fiery face, long neck and wing roots; coil and outer wings are omitted."
+    },
+    {
+      "id": "creature_levian_gale",
+      "enabled": true,
+      "region": [
+        72,
+        4,
+        136,
+        136
+      ],
+      "scale": 1.8824,
+      "intent": "Keeps complete horns, green face, long neck and wing roots; wind coil and wing tips are omitted."
+    },
+    {
+      "id": "creature_levian_light",
+      "enabled": true,
+      "region": [
+        84,
+        0,
+        132,
+        132
+      ],
+      "scale": 1.9394,
+      "intent": "Keeps full halo, complete horns, gold face and neck; coiled body and wing tips are omitted."
+    },
+    {
+      "id": "creature_levian_stone",
+      "enabled": true,
+      "region": [
+        76,
+        4,
+        140,
+        140
+      ],
+      "scale": 1.8286,
+      "intent": "Keeps complete stone horns, face and plated neck; coil and wing tips are omitted."
+    },
+    {
+      "id": "creature_levian_shadow",
+      "enabled": true,
+      "region": [
+        72,
+        0,
+        144,
+        144
+      ],
+      "scale": 1.7778,
+      "intent": "Keeps complete swept horns, dark face and purple neck; smoke coil and wing tips are omitted."
+    },
+    {
+      "id": "creature_levian_tide",
+      "enabled": true,
+      "region": [
+        80,
+        4,
+        136,
+        136
+      ],
+      "scale": 1.8824,
+      "intent": "Keeps ivory horns, full foamy crown, blue face and long neck; coil and wing tips are omitted."
+    },
+    {
+      "id": "creature_ratnik_fire",
+      "enabled": true,
+      "region": [
+        60,
+        0,
+        148,
+        148
+      ],
+      "scale": 1.7297,
+      "intent": "Keeps both helmet horns, complete shoulder flames and breastplate; sword blade, cape ends and legs are deliberately omitted."
+    },
+    {
+      "id": "creature_ratnik_gale",
+      "enabled": true,
+      "region": [
+        60,
+        0,
+        148,
+        148
+      ],
+      "scale": 1.7297,
+      "intent": "Keeps both helmet horns and green spiked shoulders; sword blade, cape ends and legs are deliberately omitted."
+    },
+    {
+      "id": "creature_ratnik_light",
+      "enabled": true,
+      "region": [
+        60,
+        0,
+        148,
+        148
+      ],
+      "scale": 1.7297,
+      "intent": "Keeps the complete thin halo at the original top margin, helmet and gold shoulders; sword blade and legs are omitted."
+    },
+    {
+      "id": "creature_ratnik_stone",
+      "enabled": true,
+      "region": [
+        64,
+        0,
+        148,
+        148
+      ],
+      "scale": 1.7297,
+      "intent": "Keeps both helmet horns and stone shoulder plates; sword blade, cape ends and legs are deliberately omitted."
+    },
+    {
+      "id": "creature_ratnik_shadow",
+      "enabled": true,
+      "region": [
+        60,
+        0,
+        152,
+        152
+      ],
+      "scale": 1.6842,
+      "intent": "Keeps both pale helmet horns and purple shoulder spikes; sword blade, cape ends and legs are deliberately omitted."
+    },
+    {
+      "id": "creature_ratnik_tide",
+      "enabled": true,
+      "region": [
+        60,
+        0,
+        148,
+        148
+      ],
+      "scale": 1.7297,
+      "intent": "Keeps both helmet horns and pale-dotted blue shoulders; sword blade, cape ends and legs are deliberately omitted."
+    },
+    {
+      "id": "creature_gorgul_fire",
+      "enabled": true,
+      "region": [
+        68,
+        16,
+        132,
+        132
+      ],
+      "scale": 1.9394,
+      "intent": "Keeps both horns, full flame crown, face and round glowing chest core; outer wings and lower body are omitted."
+    },
+    {
+      "id": "creature_gorgul_gale",
+      "enabled": true,
+      "region": [
+        72,
+        16,
+        128,
+        128
+      ],
+      "scale": 2.0,
+      "intent": "Keeps both pale horns, large green eye and chest motif; outer wings and wind tail are deliberately omitted."
+    },
+    {
+      "id": "creature_gorgul_light",
+      "enabled": true,
+      "region": [
+        72,
+        12,
+        132,
+        132
+      ],
+      "scale": 1.9394,
+      "intent": "Keeps complete halo, both gold horns, large eye and chest core; outer wings and lower body are omitted."
+    },
+    {
+      "id": "creature_gorgul_stone",
+      "enabled": true,
+      "region": [
+        72,
+        16,
+        132,
+        132
+      ],
+      "scale": 1.9394,
+      "intent": "Keeps both stone horns, large eye and rocky chest; outer wings and lower body are omitted."
+    },
+    {
+      "id": "creature_gorgul_shadow",
+      "enabled": true,
+      "region": [
+        72,
+        16,
+        128,
+        128
+      ],
+      "scale": 2.0,
+      "intent": "Keeps both dark horns, large purple eye and ivory chest markings; outer wings and lower body are omitted."
+    },
+    {
+      "id": "creature_gorgul_tide",
+      "enabled": true,
+      "region": [
+        72,
+        16,
+        128,
+        128
+      ],
+      "scale": 2.0,
+      "intent": "Keeps both ivory horns, pale-blue eye and star-marked chest; outer wings and lower body are omitted."
+    },
+    {
+      "id": "creature_likorez_shadow",
+      "enabled": false,
+      "region": [
+        12,
+        0,
+        232,
+        232
+      ],
+      "scale": 1.1034,
+      "intent": "KEEP FULL: trial gives only 1.10x enlargement while crowding outer blades; complete six-arm and sword silhouette is preferable."
+    }
+  ]
+}

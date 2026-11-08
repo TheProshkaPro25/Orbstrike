@@ -1,0 +1,16 @@
+{
+  "candidate_sha256": "69b159a0e8763ef85c1e78b951255deb5e75d3939643af71c1abb8357d7e9a5c",
+  "source_actual_pose_json_sha256": "4c34c87a3ef3cc4875155439302414837291761a6576339d8d5b002663571d57",
+  "poses": [
+    [
+      "idle",
+      0
+    ],
+    [
+      "attack",
+      24
+    ]
+  ],
+  "kind": "CPU skin using actual visible Godot post-clip/support palettes; CPU texture/light approximation, not GPU",
+  "image": "actual-critical-game.png"
+}

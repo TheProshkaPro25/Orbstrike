@@ -34,6 +34,7 @@ var _warning: Label
 
 func _ready() -> void:
 	_build()
+	UiTheme.apply_device_frame(self, "ТУРНИР")
 	resized.connect(_adapt_layout)
 	_adapt_layout()
 

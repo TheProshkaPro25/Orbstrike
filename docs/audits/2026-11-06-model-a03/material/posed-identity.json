@@ -1,0 +1,15 @@
+{
+  "status": "PASS_NO_NEW_INTERSECTIONS",
+  "candidate_sha256": "ca2580a32b502635b15193141c6b71b388ebdde75c04ac10e1646c733c8b4e0f",
+  "new_intersection_pairs": 0,
+  "proof_type": "EXACT_SOURCE_GEOMETRY_UV_SKIN_IDENTITY",
+  "source_triangles": 149994,
+  "every_source_face_once_exact": true,
+  "all270source_accessors_byte_exact": true,
+  "inherited_pairs": "All original source contact pairs remain identical for identical bone palettes; counts not repeated. No geometry/BVH threshold is relaxed.",
+  "adjacency_exclusions": "None added. No new geometric pairs are possible because the full indexed triangles and skin are exactly the source, only material assignment differs.",
+  "strict_contract_report": "integrity.json",
+  "form_repair_claimed": false,
+  "runtime_new_BVH_executed": false,
+  "scope": "Mathematical identity proof, not a fresh engine/GPU run."
+}

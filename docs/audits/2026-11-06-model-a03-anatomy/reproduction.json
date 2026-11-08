@@ -1,0 +1,10 @@
+{
+  "status": "PASS_FULL_SHA_REPRODUCTION",
+  "candidate_sha256": "69b159a0e8763ef85c1e78b951255deb5e75d3939643af71c1abb8357d7e9a5c",
+  "reproduced_sha256": "69b159a0e8763ef85c1e78b951255deb5e75d3939643af71c1abb8357d7e9a5c",
+  "recipe": "tools/models/repair_kolossar_shadow_anatomy.py",
+  "attachment_helper": "tools/models/kolossar_shadow_attachment.py",
+  "source_sha256": "ca2580a32b502635b15193141c6b71b388ebdde75c04ac10e1646c733c8b4e0f",
+  "recipe_sha256": "69a0e4ab8e4a6b6ceea2a4366c061e30aa03d298f7f784dac889541e341feeee",
+  "helper_sha256": "69dfad3653260a0f5a2cc041a007c6ffe4522e308472619ad4b5e50a4bea3f3f"
+}

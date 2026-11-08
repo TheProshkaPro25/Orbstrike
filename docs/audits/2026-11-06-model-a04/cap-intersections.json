@@ -1,0 +1,6 @@
+{
+  "kind": "CPU raw rest exact segment-triangle intersections; not animation or coplanar contact proof",
+  "caps_vs_retained_body_nonshared_intersection_pairs": 0,
+  "pairs_cap_index_retained_face_index": [],
+  "candidate_sha256": "9bb9ad9d1313da698a0eec96782da0cf40d2db1e4cf3513645f5fbf13fef6f2f"
+}

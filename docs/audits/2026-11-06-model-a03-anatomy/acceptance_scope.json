@@ -1,0 +1,33 @@
+{
+  "status": "INSTALLED_LIMITED_PRACTICAL_ACCEPTANCE",
+  "candidate_sha256": "69b159a0e8763ef85c1e78b951255deb5e75d3939643af71c1abb8357d7e9a5c",
+  "runtime_report": "actual-import.json",
+  "runtime_assertions": 15448,
+  "runtime_failures": 0,
+  "installed": true,
+  "ordinary_triangles": 171156,
+  "nonzero_motion_delta": 1.07040774822235,
+  "source_candidate_actual_pose_palette_delta": 0.0,
+  "source_candidate_retained_world_delta": 0.0,
+  "ordinary_vs_immutable_ordinary_palette_delta": 0.0,
+  "ordinary_vs_immutable_ordinary_world_delta": 0.0,
+  "raw_BVH": "PASS_ZERO_NEW_LOCAL_INTERSECTIONS",
+  "independent_raw_art": "PASS",
+  "critical_actual_CPU_art": "PASS_TWO_POSES_NO_SUBSTANTIAL_VISIBLE_DEFECT",
+  "source_contract": "PASS",
+  "full_recipe_SHA_reproduction": "PASS",
+  "not_claimed": [
+    "zero-intersection actual moving geometry",
+    "full46pose BVH after visible-fixture correction",
+    "continuous animation geometric proof",
+    "GPU/shading/cloth",
+    "Windows",
+    "release/publication"
+  ],
+  "static_bind_contact_pairs_retained": 526,
+  "withdrawn_motion_reports": [
+    "static-rest-import-not-motion.json",
+    "static-bind-intersections.json"
+  ],
+  "scope_reason": "Author explicitly requested immediate completion without further audit/geometry cycles; practical corrected movement/body and critical visible-pose gates passed."
+}

@@ -5,6 +5,8 @@ extends RefCounted
 var uid: int = -1
 var def_id: StringName = &""
 var owner: int = 0
+## Необязательная БС, зафиксированная на этот матч (карьера); -1 — определение CardDB.
+var base_power_override: int = -1
 var alive: bool = true
 var slot: int = -1
 ## В зоне использованных: бросать нельзя, пока не вернутся все (см. MatchController._refill_if_needed).
@@ -27,6 +29,7 @@ func _init(p_uid: int = -1, p_def_id: StringName = &"", p_owner: int = 0) -> voi
 
 func clone() -> CreatureState:
 	var c: CreatureState = CreatureState.new(uid, def_id, owner)
+	c.base_power_override = base_power_override
 	c.alive = alive
 	c.slot = slot
 	c.used = used

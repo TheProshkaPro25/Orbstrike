@@ -56,11 +56,13 @@ func battle_started(slot: int, attacker_uid: int, defender_uid: int, powers: Arr
 		SoundFx.i().play("capsule_open", -3.0)
 		game._cry(attacker_uid, "appear", .35)
 		atk.open_animated()
+		game._public_creature_opened(attacker_uid)
 		await game._wait(reveal_time)
 	var h: float = maxf(atk.figure_height() if atk != null else 0.0, dfn.figure_height() if dfn != null else 0.0)
 	game.cam.battle_view(base, h, true, maxf(atk.figure_size() if atk != null else 0.0, dfn.figure_size() if dfn != null else 0.0))
 	game.hud.set_battle_mode(true)
 	game._battle_uids.assign([attacker_uid, defender_uid])
+	game._present_battle_opponent(attacker_uid,defender_uid,powers)
 	if powers.size() == 2:
 		game.battle_hud.open([game._cname(attacker_uid), game._cname(defender_uid)], [game._creature_def(attacker_uid).attribute, game._creature_def(defender_uid).attribute], powers, momentum)
 	game._focus_labels([attacker_uid, defender_uid])
@@ -141,6 +143,7 @@ func battle_resolved(result: BattleResult) -> void:
 	game.cam.overview()  # кат на общий план после боя
 	game._focus_labels([])
 	game._battle_uids.clear()
+	game._finish_opponent_battle()
 	await game.battle_overlay.show_result(result, game._names_for(result))
 
 
@@ -178,6 +181,7 @@ func no_winner(result: BattleResult) -> void:
 	game.cam.overview()
 	game._focus_labels([])
 	game._battle_uids.clear()
+	game._finish_opponent_battle()
 	await game.battle_overlay.show_result(result, game._names_for(result))
 
 ## Выбирается карта-цель. Начальная скорость рассчитана заранее; дальше действуют

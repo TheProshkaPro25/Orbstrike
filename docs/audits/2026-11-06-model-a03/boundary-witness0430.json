@@ -1,0 +1,75 @@
+{
+  "candidate_sha256": "34ea6493acc74c1ae30c2473bd0db116a109f47db89a5df03c777a8a7172a260",
+  "true_cap_boundary_edges": 433,
+  "candidate_export_kind": "CPU_GLTF_PROJECTED_TO_ACTUAL_GODOT_SOURCE_PALETTES",
+  "poses": [
+    {
+      "action": "idle",
+      "frame": 0,
+      "seam_segment_body_intersections": 0,
+      "strict_interior_crossings": 0,
+      "witnesses": []
+    },
+    {
+      "action": "attack",
+      "frame": 24,
+      "seam_segment_body_intersections": 1,
+      "strict_interior_crossings": 1,
+      "witnesses": [
+        {
+          "seam_raw_endpoints": [
+            [
+              -0.20802511274814606,
+              0.2170899510383606,
+              0.17618997395038605
+            ],
+            [
+              -0.2078472375869751,
+              0.2176477015018463,
+              0.17528791725635529
+            ]
+          ],
+          "seam_posed_endpoints": [
+            [
+              -0.1805681437253952,
+              0.19542644917964935,
+              0.10879479348659515
+            ],
+            [
+              -0.1804402768611908,
+              0.19552594423294067,
+              0.10790408402681351
+            ]
+          ],
+          "body_face": 134279,
+          "source_face": 23143,
+          "body_triangle_posed": [
+            [
+              -0.18026673793792725,
+              0.19554372131824493,
+              0.11034148931503296
+            ],
+            [
+              -0.18060457706451416,
+              0.19486883282661438,
+              0.10682130604982376
+            ],
+            [
+              -0.18047617375850677,
+              0.19578887522220612,
+              0.1086621806025505
+            ]
+          ],
+          "segment_t": 0.5826394959642198,
+          "body_barycentric": [
+            0.10269220151312042,
+            0.3035522081232374,
+            0.5937555903636422
+          ],
+          "strict_interior_crossing": true
+        }
+      ]
+    }
+  ],
+  "scope": "Exact Moller-Trumbore segment/triangle tests after AABB pruning. Body triangles sharing either raw geometric seam endpoint are excluded. No depth tolerance or near-contact exemption. Strict crossings of fixed true boundary imply cap-interior-only changes cannot remove all contacts."
+}

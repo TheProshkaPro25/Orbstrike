@@ -30,6 +30,39 @@ const MOMENTUM_MAX: int = 2
 const FINAL_ADVANTAGE_MULT: int = 2
 
 
+## Единственный источник БС экземпляра: карьерный снимок либо обычный каталог.
+static func base_power(state: MatchState, uid: int) -> int:
+	var c: CreatureState = state.creature(uid)
+	if c == null:
+		return 0
+	if c.base_power_override >= 0:
+		return c.base_power_override
+	var definition := CardDB.creature(c.def_id)
+	return definition.base_power if definition != null else 0
+
+
+## Снимок стороны перед стартом матча. Пропущенные записи возвращают БС каталога.
+## Определения CardDB не меняются; одинаковый вид у соперников имеет независимую БС.
+## Ошибка не меняет ни одного экземпляра; JSON-числа принимаются только целыми190..420G.
+static func apply_power_snapshot(state: MatchState, player: int, powers: Dictionary) -> Error:
+	if player < 0 or player >= state.players.size():
+		return ERR_INVALID_PARAMETER
+	var known: Dictionary = {}
+	for uid in state.players[player].creature_uids:
+		known[String(state.creatures[uid].def_id)] = true
+	for key in powers:
+		if not (key is String or key is StringName) or not known.has(String(key)):
+			return ERR_INVALID_PARAMETER
+		var value: Variant = powers[key]
+		if not (value is int or value is float) or not is_finite(float(value)) or float(value) < 190.0 or float(value) > 420.0 or float(value) != floorf(float(value)):
+			return ERR_INVALID_PARAMETER
+	for uid in state.players[player].creature_uids:
+		var creature: CreatureState = state.creatures[uid]
+		var value: Variant = powers.get(String(creature.def_id), powers.get(creature.def_id, -1))
+		creature.base_power_override = int(value)
+	return OK
+
+
 ## Совместимый вход: по одной основной карте и одному слиянию на сторону (порядок: атакующий, затем защитник).
 static func compute(state: MatchState, atk_uid: int, def_uid: int, slot: int, atk_ability: StringName, def_ability: StringName,
 		atk_fusion: StringName = &"", def_fusion: StringName = &"") -> BattleResult:
@@ -150,7 +183,7 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 	_fill_compat(r, plays, cards, cancelled)
 
 	# 1. Базовая сила
-	var base: Array[int] = [defs[0].base_power, defs[1].base_power]
+	var base: Array[int] = [base_power(state, atk_uid), base_power(state, def_uid)]
 	var p: Array[int] = [base[0], base[1]]
 	r.add(0, "base", p[0])
 	r.add(1, "base", p[1])
@@ -467,7 +500,7 @@ static func gate_bonus_for(state: MatchState, uid: int, slot: int) -> int:
 		return 0
 	var d: CreatureDef = CardDB.creature(c.def_id)
 	var own_side: int = 1 if state.slots[slot].card_owner == c.owner else 0
-	return _gate_delta(state, arena, 1, own_side, d.attribute, d.base_power, d.species)
+	return _gate_delta(state, arena, 1, own_side, d.attribute, base_power(state, uid), d.species)
 
 
 static func _gate_owner_side(state: MatchState, slot: int, owners: Array[int]) -> int:
@@ -534,7 +567,7 @@ static func gust_target(state: MatchState, player: int) -> int:
 		var c: CreatureState = state.creatures[u]
 		if not c.alive or c.slot < 0:
 			continue
-		var pw: int = CardDB.creature(c.def_id).base_power
+		var pw: int = base_power(state, u)
 		if pw < best_pw:
 			best_pw = pw
 			best = u
@@ -549,7 +582,7 @@ static func swap_candidate(state: MatchState, player: int, exclude: Array, max_a
 		var c: CreatureState = state.creatures[u]
 		if not c.alive or c.slot >= 0 or exclude.has(u) or (max_attached >= 0 and c.attached.size() > max_attached):
 			continue
-		var pw: int = CardDB.creature(c.def_id).base_power
+		var pw: int = base_power(state, u)
 		if pw > best_pw:
 			best_pw = pw
 			best = u

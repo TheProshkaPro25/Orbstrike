@@ -1,0 +1,23 @@
+{
+  "candidate_sha256": "69b159a0e8763ef85c1e78b951255deb5e75d3939643af71c1abb8357d7e9a5c",
+  "status": "LIMITED_PRACTICAL_ART_GATE_PASS",
+  "reviewers": [
+    "Sol high implementation owner",
+    "Independent Sol high art consultant"
+  ],
+  "personally_inspected_image": "actual-critical-game.png",
+  "poses": [
+    [
+      "idle",
+      0
+    ],
+    [
+      "attack",
+      24
+    ]
+  ],
+  "actual_palette_motion_delta": 0.9338856190443041,
+  "runtime_moving_pose_delta": 1.07040774822235,
+  "findings": "No substantial visible new hole or large shoulder penetration in either critical CPU-skinned pose. Shoulder silhouette remains small with raised arm, face and horns clear.",
+  "limits": "Two CPU-skinned views using actual visible Godot post-clip/support palettes. Not GPU shading, not continuous animation proof, not a zero-intersection proof. The static-bind 526 contact pairs are retained without calling them numerical false positives or a full moving-pose PASS. No new 46-pose BVH series was run after the author explicitly narrowed completion scope."
+}
