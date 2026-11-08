@@ -213,11 +213,15 @@ func _sync_parts(p: Dictionary) -> void:
 	_localize_materials()
 
 func _apply_face() -> void:
+	apply_profile_face_to(meshes)
+
+
+func apply_profile_face_to(target_meshes: Array[MeshInstance3D]) -> void:
 	if appearance_profile.is_empty(): return
 	var eye: int = appearance_profile.vrm_eye_shape
 	var brow: int = appearance_profile.vrm_brows
 	var mouth: int = appearance_profile.vrm_mouth
-	for mesh in meshes:
+	for mesh in target_meshes:
 		if not "Face" in str(mesh.name): continue
 		for index in mesh.get_blend_shape_count():
 			var name := str(mesh.mesh.get_blend_shape_name(index))

@@ -1,0 +1,305 @@
+Godot Engine v4.7.2.stable.arch_linux.ed1daf0bf (2026-08-17 01:18:38 UTC) - https://godotengine.org
+Vulkan 1.4.351 - Forward+ - Using Device #0: NVIDIA - NVIDIA GeForce RTX 4070 Laptop GPU
+
+Background GPU test: minimized, unfocusable, offscreen rendering
+[GPUCloth] ── Initializing GPUClothSolver ──────────────────────────
+[GPUCloth] Skeleton: Skeleton3D  bones: 37  Skin binds: 37
+[GPUCloth] Cloth surface(s) [0] contribute 14187 render verts / 23625 triangles (from 14187 raw verts / 23625 raw triangles, 0 cross-seam triangles dropped).
+[GPUCloth] Welded particles: 11945 (from 14187 render verts)
+[GPUCloth] Cloth weights → anchored: 956  blend: 3877  free: 7112
+[GPUCloth] Vertex color channels (across 14187 src verts):
+           R  min=0.000  max=1.000  mean=0.774  ← active
+           G  min=0.000  max=0.000  mean=0.000
+           B  min=0.000  max=0.000  mean=0.000
+           A  min=1.000  max=1.000  mean=1.000
+[GPUCloth] Marker pins: 0  fishing-line enabled: false
+[GPUCloth] Constraints: 70875 in 20 groups
+[GPUCloth] Mesh collider: 126373 source tris → 683 after decimation (voxel res 10, 125690 dropped degenerate)
+[GPUCloth] Colliders: 1 manual + 0 auto-capsule + 0 body-sphere = 1 total, plus 683 mesh-collider tris
+[GPUCloth] Adjacency list: 70875 entries for 11945 welded particles.
+[GPUCloth] Peer proxy: 11945 welded verts → 224 reps (voxel res 12), 23625 source tris → 500 proxy tris (23061 degenerate, 64 duplicate)
+[GPUCloth] Output texture: 4096x3 (welded)  Lookup: 4096x4 (raw render)
+[GPUCloth] Cloth shader applied to surface(s): [0]
+[GPUCloth] GPU init complete on render thread.
+[GPUCloth] GPU init queued on render thread.
+[GPUCloth] ── CPU initialization complete ───────────────────────────
+[GPUCloth] Warm start complete.
+[GPUCloth] ── Initializing GPUClothSolver ──────────────────────────
+[GPUCloth] Skeleton: Skeleton3D  bones: 37  Skin binds: 37
+[GPUCloth] Cloth surface(s) [0] contribute 14187 render verts / 23625 triangles (from 14187 raw verts / 23625 raw triangles, 0 cross-seam triangles dropped).
+[GPUCloth] Welded particles: 11945 (from 14187 render verts)
+[GPUCloth] Cloth weights → anchored: 956  blend: 3877  free: 7112
+[GPUCloth] Vertex color channels (across 14187 src verts):
+           R  min=0.000  max=1.000  mean=0.774  ← active
+           G  min=0.000  max=0.000  mean=0.000
+           B  min=0.000  max=0.000  mean=0.000
+           A  min=1.000  max=1.000  mean=1.000
+[GPUCloth] Marker pins: 0  fishing-line enabled: false
+[GPUCloth] Constraints: 70875 in 20 groups
+[GPUCloth] Mesh collider: 126373 source tris → 683 after decimation (voxel res 10, 125690 dropped degenerate)
+[GPUCloth] Colliders: 1 manual + 0 auto-capsule + 0 body-sphere = 1 total, plus 683 mesh-collider tris
+[GPUCloth] Adjacency list: 70875 entries for 11945 welded particles.
+[GPUCloth] Peer proxy: 11945 welded verts → 224 reps (voxel res 12), 23625 source tris → 500 proxy tris (23061 degenerate, 64 duplicate)
+[GPUCloth] Output texture: 4096x3 (welded)  Lookup: 4096x4 (raw render)
+[GPUCloth] Cloth shader applied to surface(s): [0]
+[GPUCloth] GPU init complete on render thread.
+[GPUCloth] GPU init queued on render thread.
+[GPUCloth] ── CPU initialization complete ───────────────────────────
+[GPUCloth] Warm start complete.
+[GPUCloth] ── Initializing GPUClothSolver ──────────────────────────
+[GPUCloth] Skeleton: Skeleton3D  bones: 37  Skin binds: 37
+[GPUCloth] Cloth surface(s) [0] contribute 23627 render verts / 38054 triangles (from 23627 raw verts / 38054 raw triangles, 0 cross-seam triangles dropped).
+[GPUCloth] Welded particles: 19074 (from 23627 render verts)
+[GPUCloth] Cloth weights → anchored: 3918  blend: 3325  free: 11831
+[GPUCloth] Vertex color channels (across 23627 src verts):
+           R  min=0.000  max=1.000  mean=0.693  ← active
+           G  min=0.000  max=0.000  mean=0.000
+           B  min=0.000  max=0.000  mean=0.000
+           A  min=1.000  max=1.000  mean=1.000
+[GPUCloth] Marker pins: 0  fishing-line enabled: false
+[GPUCloth] Constraints: 114162 in 20 groups
+[GPUCloth] Mesh collider: 111942 source tris → 564 after decimation (voxel res 10, 111378 dropped degenerate)
+[GPUCloth] Colliders: 1 manual + 0 auto-capsule + 0 body-sphere = 1 total, plus 564 mesh-collider tris
+[GPUCloth] Adjacency list: 114162 entries for 19074 welded particles.
+[GPUCloth] Peer proxy: 19074 welded verts → 203 reps (voxel res 12), 38054 source tris → 485 proxy tris (37472 degenerate, 97 duplicate)
+[GPUCloth] Output texture: 4096x5 (welded)  Lookup: 4096x6 (raw render)
+[GPUCloth] Cloth shader applied to surface(s): [0]
+[GPUCloth] GPU init complete on render thread.
+[GPUCloth] GPU init queued on render thread.
+[GPUCloth] ── CPU initialization complete ───────────────────────────
+[GPUCloth] Warm start complete.
+[GPUCloth] ── Initializing GPUClothSolver ──────────────────────────
+[GPUCloth] Skeleton: Skeleton3D  bones: 37  Skin binds: 37
+[GPUCloth] Cloth surface(s) [0] contribute 23627 render verts / 38054 triangles (from 23627 raw verts / 38054 raw triangles, 0 cross-seam triangles dropped).
+[GPUCloth] Welded particles: 19074 (from 23627 render verts)
+[GPUCloth] Cloth weights → anchored: 3918  blend: 3325  free: 11831
+[GPUCloth] Vertex color channels (across 23627 src verts):
+           R  min=0.000  max=1.000  mean=0.693  ← active
+           G  min=0.000  max=0.000  mean=0.000
+           B  min=0.000  max=0.000  mean=0.000
+           A  min=1.000  max=1.000  mean=1.000
+[GPUCloth] Marker pins: 0  fishing-line enabled: false
+[GPUCloth] Constraints: 114162 in 20 groups
+[GPUCloth] Mesh collider: 111942 source tris → 564 after decimation (voxel res 10, 111378 dropped degenerate)
+[GPUCloth] Colliders: 1 manual + 0 auto-capsule + 0 body-sphere = 1 total, plus 564 mesh-collider tris
+[GPUCloth] Adjacency list: 114162 entries for 19074 welded particles.
+[GPUCloth] Peer proxy: 19074 welded verts → 203 reps (voxel res 12), 38054 source tris → 485 proxy tris (37472 degenerate, 97 duplicate)
+[GPUCloth] Output texture: 4096x5 (welded)  Lookup: 4096x6 (raw render)
+[GPUCloth] Cloth shader applied to surface(s): [0]
+[GPUCloth] GPU init complete on render thread.
+[GPUCloth] GPU init queued on render thread.
+[GPUCloth] ── CPU initialization complete ───────────────────────────
+[GPUCloth] Warm start complete.
+[GPUCloth] ── Initializing GPUClothSolver ──────────────────────────
+[GPUCloth] Skeleton: Skeleton3D  bones: 37  Skin binds: 37
+[GPUCloth] Cloth surface(s) [0] contribute 21208 render verts / 34599 triangles (from 21208 raw verts / 34599 raw triangles, 0 cross-seam triangles dropped).
+[GPUCloth] Welded particles: 17458 (from 21208 render verts)
+[GPUCloth] Cloth weights → anchored: 1502  blend: 5003  free: 10953
+[GPUCloth] Vertex color channels (across 21208 src verts):
+           R  min=0.000  max=1.000  mean=0.788  ← active
+           G  min=0.000  max=0.000  mean=0.000
+           B  min=0.000  max=0.000  mean=0.000
+           A  min=1.000  max=1.000  mean=1.000
+[GPUCloth] Marker pins: 0  fishing-line enabled: false
+[GPUCloth] Constraints: 103797 in 20 groups
+[GPUCloth] Mesh collider: 119033 source tris → 604 after decimation (voxel res 10, 118429 dropped degenerate)
+[GPUCloth] Colliders: 1 manual + 0 auto-capsule + 0 body-sphere = 1 total, plus 604 mesh-collider tris
+[GPUCloth] Adjacency list: 103797 entries for 17458 welded particles.
+[GPUCloth] Peer proxy: 17458 welded verts → 243 reps (voxel res 12), 34599 source tris → 608 proxy tris (33821 degenerate, 170 duplicate)
+[GPUCloth] Output texture: 4096x5 (welded)  Lookup: 4096x6 (raw render)
+[GPUCloth] Cloth shader applied to surface(s): [0]
+[GPUCloth] GPU init complete on render thread.
+[GPUCloth] GPU init queued on render thread.
+[GPUCloth] ── CPU initialization complete ───────────────────────────
+[GPUCloth] Warm start complete.
+[GPUCloth] ── Initializing GPUClothSolver ──────────────────────────
+[GPUCloth] Skeleton: Skeleton3D  bones: 37  Skin binds: 37
+[GPUCloth] Cloth surface(s) [0] contribute 21208 render verts / 34599 triangles (from 21208 raw verts / 34599 raw triangles, 0 cross-seam triangles dropped).
+[GPUCloth] Welded particles: 17458 (from 21208 render verts)
+[GPUCloth] Cloth weights → anchored: 1502  blend: 5003  free: 10953
+[GPUCloth] Vertex color channels (across 21208 src verts):
+           R  min=0.000  max=1.000  mean=0.788  ← active
+           G  min=0.000  max=0.000  mean=0.000
+           B  min=0.000  max=0.000  mean=0.000
+           A  min=1.000  max=1.000  mean=1.000
+[GPUCloth] Marker pins: 0  fishing-line enabled: false
+[GPUCloth] Constraints: 103797 in 20 groups
+[GPUCloth] Mesh collider: 119033 source tris → 604 after decimation (voxel res 10, 118429 dropped degenerate)
+[GPUCloth] Colliders: 1 manual + 0 auto-capsule + 0 body-sphere = 1 total, plus 604 mesh-collider tris
+[GPUCloth] Adjacency list: 103797 entries for 17458 welded particles.
+[GPUCloth] Peer proxy: 17458 welded verts → 243 reps (voxel res 12), 34599 source tris → 608 proxy tris (33821 degenerate, 170 duplicate)
+[GPUCloth] Output texture: 4096x5 (welded)  Lookup: 4096x6 (raw render)
+[GPUCloth] Cloth shader applied to surface(s): [0]
+[GPUCloth] GPU init complete on render thread.
+[GPUCloth] GPU init queued on render thread.
+[GPUCloth] ── CPU initialization complete ───────────────────────────
+[GPUCloth] Warm start complete.
+[GPUCloth] ── Initializing GPUClothSolver ──────────────────────────
+[GPUCloth] Skeleton: Skeleton3D  bones: 37  Skin binds: 37
+[GPUCloth] Cloth surface(s) [0] contribute 26967 render verts / 41646 triangles (from 26967 raw verts / 41646 raw triangles, 0 cross-seam triangles dropped).
+[GPUCloth] Welded particles: 20877 (from 26967 render verts)
+[GPUCloth] Cloth weights → anchored: 1934  blend: 6445  free: 12498
+[GPUCloth] Vertex color channels (across 26967 src verts):
+           R  min=0.000  max=1.000  mean=0.697  ← active
+           G  min=0.000  max=0.000  mean=0.000
+           B  min=0.000  max=0.000  mean=0.000
+           A  min=1.000  max=1.000  mean=1.000
+[GPUCloth] Marker pins: 0  fishing-line enabled: false
+[GPUCloth] Constraints: 124938 in 22 groups
+[GPUCloth] Mesh collider: 108350 source tris → 600 after decimation (voxel res 10, 107750 dropped degenerate)
+[GPUCloth] Colliders: 1 manual + 0 auto-capsule + 0 body-sphere = 1 total, plus 600 mesh-collider tris
+[GPUCloth] Adjacency list: 124938 entries for 20877 welded particles.
+[GPUCloth] Peer proxy: 20877 welded verts → 231 reps (voxel res 12), 41646 source tris → 584 proxy tris (40882 degenerate, 180 duplicate)
+[GPUCloth] Output texture: 4096x6 (welded)  Lookup: 4096x7 (raw render)
+[GPUCloth] Cloth shader applied to surface(s): [0]
+[GPUCloth] GPU init complete on render thread.
+[GPUCloth] GPU init queued on render thread.
+[GPUCloth] ── CPU initialization complete ───────────────────────────
+[GPUCloth] Warm start complete.
+[GPUCloth] ── Initializing GPUClothSolver ──────────────────────────
+[GPUCloth] Skeleton: Skeleton3D  bones: 37  Skin binds: 37
+[GPUCloth] Cloth surface(s) [0] contribute 26967 render verts / 41646 triangles (from 26967 raw verts / 41646 raw triangles, 0 cross-seam triangles dropped).
+[GPUCloth] Welded particles: 20877 (from 26967 render verts)
+[GPUCloth] Cloth weights → anchored: 1934  blend: 6445  free: 12498
+[GPUCloth] Vertex color channels (across 26967 src verts):
+           R  min=0.000  max=1.000  mean=0.697  ← active
+           G  min=0.000  max=0.000  mean=0.000
+           B  min=0.000  max=0.000  mean=0.000
+           A  min=1.000  max=1.000  mean=1.000
+[GPUCloth] Marker pins: 0  fishing-line enabled: false
+[GPUCloth] Constraints: 124938 in 22 groups
+[GPUCloth] Mesh collider: 108350 source tris → 600 after decimation (voxel res 10, 107750 dropped degenerate)
+[GPUCloth] Colliders: 1 manual + 0 auto-capsule + 0 body-sphere = 1 total, plus 600 mesh-collider tris
+[GPUCloth] Adjacency list: 124938 entries for 20877 welded particles.
+[GPUCloth] Peer proxy: 20877 welded verts → 231 reps (voxel res 12), 41646 source tris → 584 proxy tris (40882 degenerate, 180 duplicate)
+[GPUCloth] Output texture: 4096x6 (welded)  Lookup: 4096x7 (raw render)
+[GPUCloth] Cloth shader applied to surface(s): [0]
+[GPUCloth] GPU init complete on render thread.
+[GPUCloth] GPU init queued on render thread.
+[GPUCloth] ── CPU initialization complete ───────────────────────────
+[GPUCloth] Warm start complete.
+[GPUCloth] ── Initializing GPUClothSolver ──────────────────────────
+[GPUCloth] Skeleton: Skeleton3D  bones: 37  Skin binds: 37
+[GPUCloth] Cloth surface(s) [0] contribute 20321 render verts / 32706 triangles (from 20321 raw verts / 32706 raw triangles, 0 cross-seam triangles dropped).
+[GPUCloth] Welded particles: 16501 (from 20321 render verts)
+[GPUCloth] Cloth weights → anchored: 3338  blend: 4606  free: 8557
+[GPUCloth] Vertex color channels (across 20321 src verts):
+           R  min=0.000  max=1.000  mean=0.634  ← active
+           G  min=0.000  max=0.000  mean=0.000
+           B  min=0.000  max=0.000  mean=0.000
+           A  min=1.000  max=1.000  mean=1.000
+[GPUCloth] Marker pins: 0  fishing-line enabled: false
+[GPUCloth] Constraints: 98118 in 22 groups
+[GPUCloth] Mesh collider: 117290 source tris → 586 after decimation (voxel res 10, 116704 dropped degenerate)
+[GPUCloth] Colliders: 1 manual + 0 auto-capsule + 0 body-sphere = 1 total, plus 586 mesh-collider tris
+[GPUCloth] Adjacency list: 98118 entries for 16501 welded particles.
+[GPUCloth] Peer proxy: 16501 welded verts → 200 reps (voxel res 12), 32706 source tris → 482 proxy tris (32085 degenerate, 139 duplicate)
+[GPUCloth] Output texture: 4096x5 (welded)  Lookup: 4096x5 (raw render)
+[GPUCloth] Cloth shader applied to surface(s): [0]
+[GPUCloth] GPU init complete on render thread.
+[GPUCloth] GPU init queued on render thread.
+[GPUCloth] ── CPU initialization complete ───────────────────────────
+[GPUCloth] Warm start complete.
+[GPUCloth] ── Initializing GPUClothSolver ──────────────────────────
+[GPUCloth] Skeleton: Skeleton3D  bones: 37  Skin binds: 37
+[GPUCloth] Cloth surface(s) [0] contribute 20321 render verts / 32706 triangles (from 20321 raw verts / 32706 raw triangles, 0 cross-seam triangles dropped).
+[GPUCloth] Welded particles: 16501 (from 20321 render verts)
+[GPUCloth] Cloth weights → anchored: 3338  blend: 4606  free: 8557
+[GPUCloth] Vertex color channels (across 20321 src verts):
+           R  min=0.000  max=1.000  mean=0.634  ← active
+           G  min=0.000  max=0.000  mean=0.000
+           B  min=0.000  max=0.000  mean=0.000
+           A  min=1.000  max=1.000  mean=1.000
+[GPUCloth] Marker pins: 0  fishing-line enabled: false
+[GPUCloth] Constraints: 98118 in 22 groups
+[GPUCloth] Mesh collider: 117290 source tris → 586 after decimation (voxel res 10, 116704 dropped degenerate)
+[GPUCloth] Colliders: 1 manual + 0 auto-capsule + 0 body-sphere = 1 total, plus 586 mesh-collider tris
+[GPUCloth] Adjacency list: 98118 entries for 16501 welded particles.
+[GPUCloth] Peer proxy: 16501 welded verts → 200 reps (voxel res 12), 32706 source tris → 482 proxy tris (32085 degenerate, 139 duplicate)
+[GPUCloth] Output texture: 4096x5 (welded)  Lookup: 4096x5 (raw render)
+[GPUCloth] Cloth shader applied to surface(s): [0]
+[GPUCloth] GPU init complete on render thread.
+[GPUCloth] GPU init queued on render thread.
+[GPUCloth] ── CPU initialization complete ───────────────────────────
+[GPUCloth] Warm start complete.
+[GPUCloth] ── Initializing GPUClothSolver ──────────────────────────
+[GPUCloth] Skeleton: Skeleton3D  bones: 37  Skin binds: 37
+[GPUCloth] Cloth surface(s) [0] contribute 16075 render verts / 26572 triangles (from 16075 raw verts / 26572 raw triangles, 0 cross-seam triangles dropped).
+[GPUCloth] Welded particles: 13418 (from 16075 render verts)
+[GPUCloth] Cloth weights → anchored: 1218  blend: 3178  free: 9022
+[GPUCloth] Vertex color channels (across 16075 src verts):
+           R  min=0.000  max=1.000  mean=0.797  ← active
+           G  min=0.000  max=0.000  mean=0.000
+           B  min=0.000  max=0.000  mean=0.000
+           A  min=1.000  max=1.000  mean=1.000
+[GPUCloth] Marker pins: 0  fishing-line enabled: false
+WARNING: [GPUCloth] 1 non-manifold edges (3+ faces) skipped for bending.
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _build_mesh_constraints (res://addons/godot_gpu_cloth/src/gpu_cloth_solver.gd:2338)
+         [1] _build_mesh_constraints (res://scenes/resident_cloth_solver.gd:164)
+         [2] _initialize (res://addons/godot_gpu_cloth/src/gpu_cloth_solver.gd:1150)
+         [3] _initialize (res://scenes/resident_cloth_solver.gd:27)
+         [4] _ready (res://addons/godot_gpu_cloth/src/gpu_cloth_solver.gd:583)
+         [5] attach (res://scenes/creature_cloth.gd:122)
+         [6] set_model (res://scenes/creature_anim.gd:142)
+         [7] setup (res://scenes/creature_ball.gd:243)
+         [8] prepare (res://scenes/loading/game_loading.gd:99)
+[GPUCloth] Constraints: 79713 in 22 groups
+[GPUCloth] Mesh collider: 123426 source tris → 643 after decimation (voxel res 10, 122783 dropped degenerate)
+[GPUCloth] Colliders: 1 manual + 0 auto-capsule + 0 body-sphere = 1 total, plus 643 mesh-collider tris
+[GPUCloth] Adjacency list: 79716 entries for 13418 welded particles.
+[GPUCloth] Peer proxy: 13418 welded verts → 195 reps (voxel res 12), 26572 source tris → 473 proxy tris (25994 degenerate, 105 duplicate)
+[GPUCloth] Output texture: 4096x4 (welded)  Lookup: 4096x4 (raw render)
+[GPUCloth] Cloth shader applied to surface(s): [0]
+[GPUCloth] GPU init complete on render thread.
+[GPUCloth] GPU init queued on render thread.
+[GPUCloth] ── CPU initialization complete ───────────────────────────
+[GPUCloth] Warm start complete.
+[GPUCloth] ── Initializing GPUClothSolver ──────────────────────────
+[GPUCloth] Skeleton: Skeleton3D  bones: 37  Skin binds: 37
+[GPUCloth] Cloth surface(s) [0] contribute 16075 render verts / 26572 triangles (from 16075 raw verts / 26572 raw triangles, 0 cross-seam triangles dropped).
+[GPUCloth] Welded particles: 13418 (from 16075 render verts)
+[GPUCloth] Cloth weights → anchored: 1218  blend: 3178  free: 9022
+[GPUCloth] Vertex color channels (across 16075 src verts):
+           R  min=0.000  max=1.000  mean=0.797  ← active
+           G  min=0.000  max=0.000  mean=0.000
+           B  min=0.000  max=0.000  mean=0.000
+           A  min=1.000  max=1.000  mean=1.000
+[GPUCloth] Marker pins: 0  fishing-line enabled: false
+WARNING: [GPUCloth] 1 non-manifold edges (3+ faces) skipped for bending.
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _build_mesh_constraints (res://addons/godot_gpu_cloth/src/gpu_cloth_solver.gd:2338)
+         [1] _build_mesh_constraints (res://scenes/resident_cloth_solver.gd:164)
+         [2] _initialize (res://addons/godot_gpu_cloth/src/gpu_cloth_solver.gd:1150)
+         [3] _initialize (res://scenes/resident_cloth_solver.gd:27)
+         [4] _ready (res://addons/godot_gpu_cloth/src/gpu_cloth_solver.gd:583)
+         [5] attach (res://scenes/creature_cloth.gd:122)
+         [6] set_model (res://scenes/creature_anim.gd:142)
+         [7] setup (res://scenes/creature_ball.gd:243)
+         [8] prepare (res://scenes/loading/game_loading.gd:99)
+[GPUCloth] Constraints: 79713 in 22 groups
+[GPUCloth] Mesh collider: 123426 source tris → 643 after decimation (voxel res 10, 122783 dropped degenerate)
+[GPUCloth] Colliders: 1 manual + 0 auto-capsule + 0 body-sphere = 1 total, plus 643 mesh-collider tris
+[GPUCloth] Adjacency list: 79716 entries for 13418 welded particles.
+[GPUCloth] Peer proxy: 13418 welded verts → 195 reps (voxel res 12), 26572 source tris → 473 proxy tris (25994 degenerate, 105 duplicate)
+[GPUCloth] Output texture: 4096x4 (welded)  Lookup: 4096x4 (raw render)
+[GPUCloth] Cloth shader applied to surface(s): [0]
+[GPUCloth] GPU init complete on render thread.
+[GPUCloth] GPU init queued on render thread.
+[GPUCloth] ── CPU initialization complete ───────────────────────────
+[GPUCloth] Warm start complete.
+[GPUCloth] GPU resource cleanup queued on render thread.
+[GPUCloth] GPU resource cleanup queued on render thread.
+[GPUCloth] GPU resource cleanup queued on render thread.
+[GPUCloth] GPU resource cleanup queued on render thread.
+[GPUCloth] GPU resource cleanup queued on render thread.
+[GPUCloth] GPU resource cleanup queued on render thread.
+[GPUCloth] GPU resource cleanup queued on render thread.
+[GPUCloth] GPU resource cleanup queued on render thread.
+[GPUCloth] GPU resource cleanup queued on render thread.
+[GPUCloth] GPU resource cleanup queued on render thread.
+[GPUCloth] GPU resource cleanup queued on render thread.
+[GPUCloth] GPU resource cleanup queued on render thread.
+CARD HOVER 505/0

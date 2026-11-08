@@ -1,0 +1,74 @@
+{
+  "catalog_build_ms": 281.726,
+  "checks": 505,
+  "failures": 0,
+  "focus_batches": [
+    {
+      "batch": 0,
+      "elapsed_ms": 37.843,
+      "layers": 1
+    },
+    {
+      "batch": 1,
+      "elapsed_ms": 34.32,
+      "layers": 1
+    },
+    {
+      "batch": 2,
+      "elapsed_ms": 23.969,
+      "layers": 1
+    }
+  ],
+  "layouts": [
+    {
+      "hint": "[P: (286.0, 74.0), S: (656.0, 63.0)]",
+      "label": "classic-960-false",
+      "tooltip": "(320.0, 238.0)"
+    },
+    {
+      "hint": "[P: (286.0, 74.0), S: (656.0, 63.0)]",
+      "label": "classic-1280-false",
+      "tooltip": "(320.0, 238.0)"
+    },
+    {
+      "hint": "[P: (286.0, 74.0), S: (656.0, 63.0)]",
+      "label": "classic-960-true",
+      "tooltip": "(320.0, 238.0)"
+    },
+    {
+      "hint": "[P: (286.0, 74.0), S: (656.0, 63.0)]",
+      "label": "classic-1280-true",
+      "tooltip": "(320.0, 238.0)"
+    },
+    {
+      "hint": "[P: (230.0, 74.0), S: (568.0, 63.0)]",
+      "label": "device-960-false",
+      "tooltip": "(320.0, 238.0)"
+    },
+    {
+      "hint": "[P: (230.0, 74.0), S: (568.0, 63.0)]",
+      "label": "device-1280-false",
+      "tooltip": "(320.0, 238.0)"
+    },
+    {
+      "hint": "[P: (230.0, 74.0), S: (568.0, 63.0)]",
+      "label": "device-960-true",
+      "tooltip": "(320.0, 238.0)"
+    },
+    {
+      "hint": "[P: (230.0, 74.0), S: (568.0, 63.0)]",
+      "label": "device-1280-true",
+      "tooltip": "(320.0, 238.0)"
+    }
+  ],
+  "max_hint_minimum": "(320.0, 296.0)",
+  "packed_boot": {
+    "actor_count": 98,
+    "arena_count": 3,
+    "backdrops": 12,
+    "portrait_generations": 49,
+    "portrait_generations_after_warm": 49,
+    "seconds": 74.13
+  },
+  "scope": "Actual export0.4.2.6 Boot/cache and targeted UI; no game source overlay"
+}

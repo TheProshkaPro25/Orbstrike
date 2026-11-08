@@ -100,7 +100,7 @@ func run() -> void:
 	portrait.bind(replacement,0)
 	await sample("rebind-hidden",portrait,portrait,true)
 	hud.set_portrait(0,portrait.get_texture())
-	if not baseline: check(portrait.camera.position.distance_to(replacement.position) < 3.0,"rebound actor camera is ready before first draw")
+	if not baseline: check(portrait.camera.position.distance_to(portrait._standby_actor.position) < 3.0,"rebound standby camera is ready before first draw")
 	await sample("consumer-resume",portrait,portrait,false)
 	check(portrait.get_texture().get_image().get_used_rect().size.x > 30,"replacement actor renders on resumed viewport")
 	capture("hud-replacement-resume")

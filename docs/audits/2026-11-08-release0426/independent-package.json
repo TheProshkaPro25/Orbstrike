@@ -1,0 +1,99 @@
+{
+  "status": "PASS",
+  "verdict": "GO for audited client package; publication belongs to release lead",
+  "reviewer": "independent Sol high",
+  "version": "0.4.2.6",
+  "timestamp_utc": "2026-11-08T15:30:41.456987+00:00",
+  "scope": "Static client ZIP/PE/PCK and current shipping resource identity only",
+  "package_report": "build/release0426-audit/report.json",
+  "package_report_sha256": "59cba510f0201dc338e9e59830da200683fdcc272a886cc00b0d07884a7027e0",
+  "pipeline_preparation": "build/release0426-audit/pipeline-preparation.json",
+  "zip": {
+    "path": "build/Orbstrike_v0.4.2.6_win64.zip",
+    "bytes": 1035655235,
+    "sha256": "9cbf7f1c8ad35d8b4df94dfe625933710f440f009d1d044a1df88b9c75e42cde",
+    "crc_and_exact_staging_sha256_files": 12,
+    "safe_paths_no_duplicates_no_symlinks_no_encryption": true,
+    "sidecar_pass": true,
+    "release_SHA256SUMS_pass": true
+  },
+  "exe": {
+    "sha256": "5659dc5fe98429cd2bc94b12e214a649cb9d89bf7b8e8bbec65aa7377147b9b3",
+    "architecture": "AMD64 PE32+",
+    "file_version": [
+      0,
+      4,
+      2,
+      6
+    ],
+    "product_version": [
+      0,
+      4,
+      2,
+      6
+    ],
+    "product_name": "Orbstrike"
+  },
+  "pck": {
+    "sha256": "4447af8e9b7bfd9ae1ae6e7ed822a9d70a4484cf0d875ad6b8a84a4d1a3ac6b4",
+    "all_entries_md5_pass": 1563,
+    "runtime_project": {
+      "application_name": "Orbstrike",
+      "application_version": "0.4.2.6",
+      "main_scene": "res://scenes/loading/boot.tscn",
+      "parsed_entries": 17
+    },
+    "current_client_GDC_byte_equal": 155,
+    "immutable_shipped_server_only_GDC": {
+      "network/online_server.gd": {
+        "gdc_sha256": "e749ce3bfccffd6f26e98b7c0e21183a062b0c65334923be61237809f0ba30fb",
+        "source_read": false,
+        "baseline": "build/release0425/client/Orbstrike.pck"
+      },
+      "network/server_main.gd": {
+        "gdc_sha256": "0f2852d803d09ef6496c85601ece1e6a3c9385de6e5272ceb1a59fa188d7e1a1",
+        "source_read": false,
+        "baseline": "build/release0425/client/Orbstrike.pck"
+      }
+    },
+    "immutable_baseline_sha256": "a9165536802a792c5677e2405380c3dae9b0a809577413f020ab5e02669651fb",
+    "exact_total_GDC_set": 157,
+    "source_scripts_current_at_audit": true
+  },
+  "resources": {
+    "preserved_source_GLB": 49,
+    "current_imported_models": 49,
+    "preserved_original_portrait_PNG": 49,
+    "current_portrait_imports": 49,
+    "preserved_animation_and_skin_resources": 14,
+    "prepared_PDAT": 68,
+    "prepared_manifest": true,
+    "portrait_backdrop_shader_exact": true,
+    "Kevin_runtime_banks": 2,
+    "device_audio_current_imports": 7,
+    "approved_gate_wave_and_provenance": true,
+    "battle_music_current_import": true
+  },
+  "license_privacy": {
+    "canonical_documents_licenses_sha256_pass": 9,
+    "private_PCK_signatures": [],
+    "private_ZIP_document_signatures": [],
+    "forbidden_PCK_paths": [],
+    "Kevin_sources_and_audio_candidates_excluded": true
+  },
+  "material_blockers": [],
+  "limits": {
+    "native_windows_exe_launched": false,
+    "wine_launched": false,
+    "game_or_gpu_test_launched_by_reviewer": false,
+    "runtime_UI_or_art_acceptance_claimed_by_this_audit": false,
+    "subjective_audio_listened": false,
+    "server_source_files_read": false,
+    "server_built_started_tested_or_published": false,
+    "publication_checked": false,
+    "online_compatible": false,
+    "client_rules": 11,
+    "public_server_rules": 10
+  },
+  "production_files_changed_by_reviewer": false
+}

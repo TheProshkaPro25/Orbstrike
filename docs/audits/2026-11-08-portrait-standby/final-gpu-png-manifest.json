@@ -1,0 +1,38 @@
+{
+  "creatures-full-panel-0.png": {
+    "sha256": "aff4dab61c43b4249d291b53b247362e59ccb7c4f54c13528b5f86fd8e543b23",
+    "bytes": 180785
+  },
+  "creatures-full-panel-1.png": {
+    "sha256": "98f7c82cff17ee5990f86cc73eae818c34978c8d676237fe8b536d211119c4eb",
+    "bytes": 190182
+  },
+  "creatures-full-panel-2.png": {
+    "sha256": "3908894aab9f72541ff406984987e5e3c5b21e4ae9cf8699c2b9b0ad84a1beaa",
+    "bytes": 132565
+  },
+  "hero-original-0.png": {
+    "sha256": "48e1f1e48cfb62d296835439de75d109ade008c07dd6125109df8b018bc2f984",
+    "bytes": 19113
+  },
+  "hero-original-1.png": {
+    "sha256": "38376fad34856d7693bb6cae7205b532df68c76d886efc19eb463f33b4fdd36e",
+    "bytes": 18894
+  },
+  "hero-portrait-0.png": {
+    "sha256": "134bc8ba3e41c7dd87a92800958a7f361982c3ad329c659c07e7cf6ba029744f",
+    "bytes": 19608
+  },
+  "hero-portrait-1.png": {
+    "sha256": "c0dce24da2dfc9177d2ec1a67ab208a8c1f82c86a575cd51a6ba9fb33b8f2238",
+    "bytes": 16282
+  },
+  "hero-standby-0.png": {
+    "sha256": "2c5786356e4b697cb9a6bfb782ecd50700e0461b9c8fb5a709863eff70b94f10",
+    "bytes": 18851
+  },
+  "hero-standby-1.png": {
+    "sha256": "b3750d1708e81abe4c3c9aa4722cb795914e74691842bc216057564dd6d896e7",
+    "bytes": 19101
+  }
+}

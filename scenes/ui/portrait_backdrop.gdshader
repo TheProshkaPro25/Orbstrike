@@ -8,10 +8,10 @@ void fragment() {
 	vec3 ink = vec3(0.025, 0.033, 0.048);
 	vec3 tint = element_color.rgb;
 	vec3 color = mix(ink, tint * 0.36, 0.40 + halo * 0.48);
-	float ring = 1.0 - smoothstep(0.002, 0.007, abs(length(p * vec2(1.0, 0.92)) - 0.42));
-	float grid_x = 1.0 - smoothstep(0.001, 0.003, abs(fract(UV.x * 8.0) - 0.5));
-	float grid_y = 1.0 - smoothstep(0.001, 0.003, abs(fract(UV.y * 8.0) - 0.5));
-	color += tint * (ring * 0.065 + min(grid_x, grid_y) * 0.07 * device_style);
 	float vignette = 1.0 - smoothstep(0.38, 0.78, length(UV - vec2(0.5)));
-	COLOR = vec4(color * (0.72 + vignette * 0.28), 1.0);
+	// A soft wash dissolves into the containing panel, with no square border,
+	// hard ring or grid competing with the creature silhouette.
+	vec2 edge = smoothstep(vec2(0.0), vec2(0.24), UV) * smoothstep(vec2(0.0), vec2(0.24), vec2(1.0) - UV);
+	float opacity = edge.x * edge.y * halo * (0.56 + device_style * 0.04);
+	COLOR = vec4(color * (0.72 + vignette * 0.28), opacity);
 }

@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "exit_code": 0,
+  "seconds": 93.62637062799968,
+  "errors": [],
+  "command": [
+    "godot",
+    "--max-fps",
+    "60",
+    "--path",
+    "/home/loq/Документы/game/sfery_stikhiy/build/release0426/runtime",
+    "--main-pack",
+    "/home/loq/Документы/game/sfery_stikhiy/build/release0426/client/Orbstrike.pck",
+    "--windowed",
+    "--position",
+    "-20000,-20000",
+    "--log-file",
+    "/home/loq/Документы/game/sfery_stikhiy/build/release0426/runtime/ui-engine.log",
+    "-s",
+    "/home/loq/Документы/game/sfery_stikhiy/build/release0426/runtime/fixtures/packed_ui.gd",
+    "--",
+    "--out=/home/loq/Документы/game/sfery_stikhiy/build/release0426/runtime/captures/ui"
+  ],
+  "source_project_overlay": false,
+  "scope": "Actual export0.4.2.6 Boot/cache and targetedUI; no two-match/Wine/server run"
+}

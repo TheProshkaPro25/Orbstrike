@@ -565,6 +565,20 @@ func _sample_clip(name: String,time: float,weight: float,keep_free_arm: bool = f
 			var position := clip.position_track_interpolate(entry.track,time)
 			skeleton.set_bone_pose_position(entry.bone,skeleton.get_bone_pose_position(entry.bone).lerp(position,weight))
 
+
+## A portrait samples standby on its own skeleton without touching arena playback.
+func sample_standby_skeleton(target: Skeleton3D) -> void:
+	for bone in _bind_poses.size(): target.set_bone_pose(bone, _bind_poses[bone])
+	if not _clips.has("Idle_Loop"): return
+	var data: Dictionary = _clips["Idle_Loop"]
+	var clip: Animation = data.animation
+	for entry in data.tracks:
+		if entry.type == Animation.TYPE_ROTATION_3D:
+			target.set_bone_pose_rotation(entry.bone, clip.rotation_track_interpolate(entry.track, 0.0))
+		elif entry.type == Animation.TYPE_POSITION_3D:
+			target.set_bone_pose_position(entry.bone, clip.position_track_interpolate(entry.track, 0.0))
+	target.force_update_all_bone_transforms()
+
 func _speak(time: float,enabled: bool) -> void:
 	# Syllabic facial performance, not audio lip sync. Ends before recovery.
 	var envelope := smoothstep(.10,.22,time)*(1.0-smoothstep(.92,1.20,time)) if enabled else 0.0

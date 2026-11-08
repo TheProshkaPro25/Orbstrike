@@ -37,7 +37,9 @@ SCRIPTS = {
     'ratnik-family': 'tools/test_humanoid_motion.gd',
     'hud-gdelta': 'tools/test_hud_gdelta.gd',
     'card-hover': 'tools/test_card_hover.gd',
+    'battle-ui-followup': 'tools/test_battle_ui_followup.gd',
     'portrait-background': 'tools/test_portrait_background.gd',
+    'portrait-standby': 'tools/test_portrait_standby.gd',
     'a03-anatomy': 'tools/test_model_a03_anatomy.gd',
     'cloth-rim-contract': 'tools/test_cloth_rim_contract.gd',
     'gpu-acceptance': 'tools/test_gpu_acceptance.gd',
@@ -151,7 +153,7 @@ if args.profile == 'models' and args.checks:
     for optional in ['kolossar-runtime-pool', 'kolossar-common-master', 'kolossar-fullset', 'grifalon-common-master', 'grifalon-fullset', 'grifalon-runtime-pool', 'ratnik-family', 'humanoid-motion', 'a03-anatomy', 'cloth-rim-contract', 'gpu-acceptance', 'ratnik-crown-reopen', 'model-wind-import', 'sculpt-import', 'sculpt-candidate-poses', 'a03-material-import', 'sculpt-source-poses', 'a03-candidate-poses']:
         if optional in args.checks: plan.append(optional)
 if args.profile == 'presentation' and args.checks:
-    for optional in ['hud-gdelta', 'card-hover', 'portrait-background']:
+    for optional in ['hud-gdelta', 'card-hover', 'battle-ui-followup', 'portrait-background', 'portrait-standby']:
         if optional in args.checks: plan.append(optional)
 if args.checks:
     unknown = set(args.checks) - set(plan)
@@ -207,7 +209,7 @@ for name in plan:
         if name == 'ratnik-crown-reopen': graphics = True
         if name == 'a03-anatomy': graphics = True
         if name == 'gpu-acceptance': graphics = True
-        if name in ['hud-gdelta', 'card-hover', 'portrait-background']: graphics = True
+        if name in ['hud-gdelta', 'card-hover', 'battle-ui-followup', 'portrait-background', 'portrait-standby']: graphics = True
         if not graphics or args.logic_only:
             command += ['--headless']
         script = SCRIPTS[name]
@@ -283,7 +285,7 @@ for name in plan:
             command += ['--', str(OUT/'window-lighting')]
         elif name == 'turn-pool':
             command += ['--', str(OUT/'turn-pool-timings.json')]
-    timeout = 1200 if name == 'card-audit-balance' else (600 if name in MODELS or name in ['autoplay', 'tournament-flow', 'online-ui'] else 360)
+    timeout = 60 if name == 'portrait-standby' else (1200 if name == 'card-audit-balance' else (600 if name in MODELS or name in ['autoplay', 'tournament-flow', 'online-ui'] else 360))
     run(name, command, timeout)
 
 # Явные профили имеют собственную свежую сводку; результаты разных областей не смешиваются.

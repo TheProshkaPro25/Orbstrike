@@ -1,0 +1,1352 @@
+{
+  "release": "Orbstrike0.4.2.6",
+  "version": "0.4.2.6",
+  "date": "2026-11-08",
+  "status": "validated client; independent package PASS; publication pending",
+  "scope": "client only; no server update/build/tests/publication",
+  "author_acceptance": "все отлично можно считать версией 0.4.2.6",
+  "publication_instruction": "выложи ее",
+  "source_manifest": "tools/checkpoints/release0426-sources.json",
+  "export": {
+    "ok": true,
+    "exit_code": 0,
+    "seconds": 11.639199762000317,
+    "errors": [],
+    "command": [
+      "godot",
+      "--headless",
+      "--max-fps",
+      "60",
+      "--path",
+      "/home/loq/Документы/game/sfery_stikhiy",
+      "--log-file",
+      "/home/loq/Документы/game/sfery_stikhiy/build/release0426/export-engine.log",
+      "--export-release",
+      "Windows Desktop",
+      "/home/loq/Документы/game/sfery_stikhiy/build/release0426/client/Orbstrike.exe"
+    ],
+    "scope": "Windows Desktop client export only; no server build or game launch"
+  },
+  "packed_runtime": {
+    "ui": {
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 93.62637062799968,
+      "errors": [],
+      "command": [
+        "godot",
+        "--max-fps",
+        "60",
+        "--path",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release0426/runtime",
+        "--main-pack",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release0426/client/Orbstrike.pck",
+        "--windowed",
+        "--position",
+        "-20000,-20000",
+        "--log-file",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release0426/runtime/ui-engine.log",
+        "-s",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release0426/runtime/fixtures/packed_ui.gd",
+        "--",
+        "--out=/home/loq/Документы/game/sfery_stikhiy/build/release0426/runtime/captures/ui"
+      ],
+      "source_project_overlay": false,
+      "scope": "Actual export0.4.2.6 Boot/cache and targetedUI; no two-match/Wine/server run",
+      "assertions": 505
+    },
+    "portrait_standby": {
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 13.388592149000033,
+      "errors": [],
+      "command": [
+        "godot",
+        "--max-fps",
+        "60",
+        "--path",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release0426/runtime",
+        "--main-pack",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release0426/client/Orbstrike.pck",
+        "--windowed",
+        "--position",
+        "-20000,-20000",
+        "--log-file",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release0426/runtime/portrait_standby-engine.log",
+        "-s",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release0426/runtime/fixtures/packed_portrait_standby.gd",
+        "--",
+        "--out=/home/loq/Документы/game/sfery_stikhiy/build/release0426/runtime/captures/ui"
+      ],
+      "source_project_overlay": false,
+      "scope": "Actual export0.4.2.6 targeted portrait_standby UI fixture; no game source overlay; no Boot/two-match/Wine/server run",
+      "assertions": 270
+    },
+    "battle_ui_followup": {
+      "ok": true,
+      "exit_code": 0,
+      "seconds": 10.333692023999902,
+      "errors": [],
+      "command": [
+        "godot",
+        "--max-fps",
+        "60",
+        "--path",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release0426/runtime",
+        "--main-pack",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release0426/client/Orbstrike.pck",
+        "--windowed",
+        "--position",
+        "-20000,-20000",
+        "--log-file",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release0426/runtime/battle_ui_followup-engine.log",
+        "-s",
+        "/home/loq/Документы/game/sfery_stikhiy/build/release0426/runtime/fixtures/packed_battle_ui_followup.gd",
+        "--",
+        "--out=/home/loq/Документы/game/sfery_stikhiy/build/release0426/runtime/captures/ui"
+      ],
+      "source_project_overlay": false,
+      "scope": "Actual export0.4.2.6 targeted battle_ui_followup UI fixture; no game source overlay; no two-match/Wine/server run",
+      "assertions": 58
+    }
+  },
+  "independent_package_audit": {
+    "reviewer": "independent Sol high",
+    "timestamp_utc": "2026-11-08T15:29:01.930357+00:00",
+    "scope": "Client ZIP/PE/PCK and current shipping resource identity only",
+    "godot_game_launched": false,
+    "windows_exe_launched": false,
+    "server_work": false,
+    "status": "PASS",
+    "client": {
+      "pck": {
+        "format": 4,
+        "engine": [
+          4,
+          7,
+          2
+        ],
+        "flags": 2,
+        "entries": 1563,
+        "all_entries_md5_pass": 1563,
+        "private_signature_findings": [],
+        "sha256": "4447af8e9b7bfd9ae1ae6e7ed822a9d70a4484cf0d875ad6b8a84a4d1a3ac6b4"
+      },
+      "exe": {
+        "architecture": "AMD64 PE32+",
+        "file_version": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "product_version": [
+          0,
+          4,
+          2,
+          6
+        ],
+        "version_strings": {
+          "FileVersion": "0.4.2.6",
+          "ProductVersion": "0.4.2.6",
+          "ProductName": "Orbstrike",
+          "FileDescription": "Orbstrike"
+        },
+        "sha256": "5659dc5fe98429cd2bc94b12e214a649cb9d89bf7b8e8bbec65aa7377147b9b3"
+      },
+      "packed_runtime_project_settings": {
+        "application_name": "Orbstrike",
+        "application_version": "0.4.2.6",
+        "main_scene": "res://scenes/loading/boot.tscn",
+        "parsed_entries": 17
+      },
+      "current_source_script_reference": {
+        "all_current_source_scripts_bytecode_equal": 155,
+        "reference_pck_sha256": "28fb6c7498f98b16100d4101770f974d2475fac847d73525d4ce6d383e92fca6",
+        "source_snapshot_sha256": "498a422eb83947cfbea7b9c1f19781aa535e81acd270db6d2ce01471c77992cc",
+        "client_online_rules_tag": "online-rules-11",
+        "elemental_counter_cards_present": 6,
+        "files": {
+          "core/ai_player.gd": {
+            "source_sha256": "88b12f111614ab1ef25f76c396cb6a87a3cd9c8642359e2ca694f37d3cd64776",
+            "gdc_sha256": "073ec0210d55fc4c41a5335b28ef08c0a8d4276a441407112dacbad7fa92bfa3"
+          },
+          "core/attr.gd": {
+            "source_sha256": "e3b05b845b432195b5720f21354144dc8856593e4700690dc72904621ce6e62e",
+            "gdc_sha256": "04699846226ed98f008c1e469b7b5b67439b4143f6c61c90e170407f042e9345"
+          },
+          "core/battle_context.gd": {
+            "source_sha256": "fa0fe10f2fa2d8a4da9b836cf6a0e4c029ec8e9b83f9cb7acfd0a8104df125d7",
+            "gdc_sha256": "e1ffa417e801733e8a663b2a1bc8fe1917804a9b76f633f0c0970426f36e327a"
+          },
+          "core/battle_participant.gd": {
+            "source_sha256": "b91ff4d7154942c4f8626c0823d91ac863c5731efd021028c8bdc80e5bb51c12",
+            "gdc_sha256": "6aee0a3b6be7cf0df866a9b27eede77fa790e4a07bccc9e33a8f67a1fa9fc7ee"
+          },
+          "core/battle_result.gd": {
+            "source_sha256": "dae1bae1bec5fe836bdf4290f2ddac24177257cb5491111b0ed2181c9976bc24",
+            "gdc_sha256": "d3813be679218f940c6df992d521dc975819a178a96df806180d74d7ffd45040"
+          },
+          "core/campaign.gd": {
+            "source_sha256": "c0869df1de07300fe5604140aedbd391ff23569e647248bbbcd0d9a3b5cde6fe",
+            "gdc_sha256": "16382ad79f1cc383643d7d90dd412301b3efd70d0c740fadee807d35817c7455"
+          },
+          "core/card_db.gd": {
+            "source_sha256": "c8d80b3b8277f65b8878178c7165b122c841b2ae5765efbafb387164c5766cf4",
+            "gdc_sha256": "8894d5d4e935be38975925d16e652bd5397f810f3986a145eb1f6a77cbbefc16"
+          },
+          "core/card_def.gd": {
+            "source_sha256": "f1e9367aed1e980a43036a3816aa1f45155305fdb3befae5ea363332bda1707b",
+            "gdc_sha256": "a01c5fc9a93645fe7682b52d458b38c932915b1df0d156100f32806ec075d6cc"
+          },
+          "core/card_effects.gd": {
+            "source_sha256": "102cb1cbf1d19823b8a76e38ff538aebeb3e16dbaa202326f024fdfa559d6654",
+            "gdc_sha256": "8e6d634bad9ab1e5ef429ec93e282226a48852b0497fc249ce4bb1e9e3494e02"
+          },
+          "core/career.gd": {
+            "source_sha256": "6945c9b58ea75fefd13b1db3217023943d178a4028e22014cc083342880b91be",
+            "gdc_sha256": "37b98cca0f41600c669a3ab69f59f75d052f61355b0fd8cb12f9252c921d9a6b"
+          },
+          "core/creature_def.gd": {
+            "source_sha256": "881cedb40e94df7d8428736761b4072a0fb71bb0fda642ff29c932c29e2c0833",
+            "gdc_sha256": "6d724d74779ecd3ed89769e7955885202129662bf183cdb474d2d80ea1299d1d"
+          },
+          "core/creature_state.gd": {
+            "source_sha256": "68e9929a2086a515a506e73c6dc2654b448e30176820a68cea77ea1f17269073",
+            "gdc_sha256": "d3fbec3f13e8c478e8f419dc5e4989e4ad632046284ef708a21f8c8a2f92151f"
+          },
+          "core/deck_def.gd": {
+            "source_sha256": "4cd81936ed3aa8180b97ac7c0fda146582e97a529a0f40fb540b343e52eb4730",
+            "gdc_sha256": "d1839372b010feddf111b32bedf5d9a745a51bf33a3abe69e06d36f7b0bbb7b6"
+          },
+          "core/match_controller.gd": {
+            "source_sha256": "b3cb072cb3e2ce5b81f2ac08b8cc4764474aaa35133a6468ec1d02491acb3231",
+            "gdc_sha256": "7dc788694f1733138718b85439ef382ca67854d35f741032287025c7a71a96bc"
+          },
+          "core/match_replay.gd": {
+            "source_sha256": "cfec18ba010dc3ccb0868a9f5989db109920e77f8ec2c4e592b06e1eb97accdd",
+            "gdc_sha256": "d83704cdd718114158878f72882ab4c4b63b32e87cd9ed9227a88e0beafa5d36"
+          },
+          "core/match_rules.gd": {
+            "source_sha256": "0ac36e803a4e4eb9997e7b1f6498c7c263a3e42ad99d0ee37ce5a585614aa32d",
+            "gdc_sha256": "e84c8b6048d66d82718df8bead59264c375095ceb53ca8d489db1d8ed0409168"
+          },
+          "core/match_state.gd": {
+            "source_sha256": "c187310d53e3e1504b8ea9b84f090103cf63d863c1119b104608fbea1e3501b3",
+            "gdc_sha256": "8f124c7a56fcf3333d4db8397afc56d52efccb08778d7a451227f6deace43974"
+          },
+          "core/player_state.gd": {
+            "source_sha256": "f0cfb08fad2f2477260da93a8c40d52a29eba669e36094c3d6115b3a42e04df7",
+            "gdc_sha256": "ad130730e069a87700a833ca786f2d6ee0f8d1ecf400955798f49b1957994cf7"
+          },
+          "core/power_calc.gd": {
+            "source_sha256": "94f3ad5b41230affec42d183b940818d9dfea6c91c670f6860c6850afb275a90",
+            "gdc_sha256": "41e908ea8c35be3afe68823d9ac210f3b6b28fc23db175acb16b54c5d9c3bda4"
+          },
+          "core/slot_state.gd": {
+            "source_sha256": "acf5d2f92b55f6970abe71ae8c563b257066cb445139a83e24c6d4c322d5d040",
+            "gdc_sha256": "1ad258802a97fa8bff0565c52e25641a3d31321e7d1307a23b1400f5c72e1150"
+          },
+          "core/tournament.gd": {
+            "source_sha256": "b966b7f6b8b202e044e6b344db6b9c32db4cdf88cf93eb9996a54973fe401b9d",
+            "gdc_sha256": "288557f9c3116eee915061369fb1aaa7a9b4cb2970eccf77c073baa952a2fa1c"
+          },
+          "core/tournament_npc_simulator.gd": {
+            "source_sha256": "741cb116ae46bc9933ea2645d756be2a949bf8a8f45cfc9841cd1e8b2e1e4725",
+            "gdc_sha256": "ed4b90005b46f1b95ba149faa545de6c3a47c9a8bc3b51fef8203ccc2405011d"
+          },
+          "data/arena_locations.gd": {
+            "source_sha256": "e46264bb92b7b946e0589e207d9ad55657729d6b71c6683f627e7fc7bafd4340",
+            "gdc_sha256": "0cf9871523ea6efd6b54b2cf7033f2e0d0f6405e9749dc24d23f757c4553fe64"
+          },
+          "data/game_data.gd": {
+            "source_sha256": "685f7aee85b0e6e3b8ffafe980d56a7a5fe69d8363353fa6d8929d31afc35ae0",
+            "gdc_sha256": "685ed5090ed7958cee9e1849fba9e2857a63d853f7aad26e67defa9a29d554fc"
+          },
+          "data/player_profile.gd": {
+            "source_sha256": "e681425ccdbe2dfe11657a2740ce7b5842e380cb740fca5c39e044299988781e",
+            "gdc_sha256": "b5ba5016302ed7c49de325c6b031d3feade50c5270b79c8727294f272697e81e"
+          },
+          "data/tournament_session.gd": {
+            "source_sha256": "827615b9ba98c5d6cc5d04932d90c1dfedae3c1901df35937215bb580c178e76",
+            "gdc_sha256": "e47077eb5e1673286a93d764f86277efd87d540a60de566ca75818d7fce6e13b"
+          },
+          "network/online_client.gd": {
+            "source_sha256": "35da5150551ec7309b671be1789d34fce339b2c425e2b8eb51fb0c995baa09a6",
+            "gdc_sha256": "e12482dd2f75b678de8be7f6cd1d95444d32dcda23fbe79f7a20592f5d8425e7"
+          },
+          "network/online_physics.gd": {
+            "source_sha256": "65ec199a44e243a7d2b18a799fa1aae3ccd8fbdce507376a1bc7f61c212433b8",
+            "gdc_sha256": "aff920f76c9b86512b2b41175cc1159b07894870e2d382efb4e73c7471488fc7"
+          },
+          "network/online_protocol.gd": {
+            "source_sha256": "eb00a03b94880b56d8d8641f898da23817a475c9ed6bfcfd56b2c0f58cb8f47c",
+            "gdc_sha256": "55f6122d47e44dcdf943132c5a59777b28cae638140a7745333325159c64b673"
+          },
+          "network/online_view.gd": {
+            "source_sha256": "30f18d0a4a8eef9ff9ced859bac731310a754b7c6b8687f561ff759a46e4478c",
+            "gdc_sha256": "2f31a5b0ca840e01acefde1016f9d30a43a87527a770e32191fe44f892c22791"
+          },
+          "network/state_codec.gd": {
+            "source_sha256": "c084481af1d39f0229e2f546eacefff04e214f1c44d544dbdfd2e739280190a0",
+            "gdc_sha256": "d4a1643ac89ea6b5bbe37c0bc0022cac6176134091a903c17964f3167bf56f93"
+          },
+          "scenes/arena.gd": {
+            "source_sha256": "98a616fa4ba06408b51f0d542bea8ca8544f30575775a362623da3dbf1867b47",
+            "gdc_sha256": "b85c34b6600dbf21d99771c10e02b274585116278389b9426c139465d839dae0"
+          },
+          "scenes/arena_card_node.gd": {
+            "source_sha256": "c1369807ccd01a50f05cc2635f5785aab4804b51c8f2f17ae5ff0e54a9ba2497",
+            "gdc_sha256": "b6481fc052806a0c9c9b609da05c133700bde29e8cd910504fb31d8e00ce0e41"
+          },
+          "scenes/arena_landscape.gd": {
+            "source_sha256": "8582a82a9da2f78f1587a4078663496d5a8c8854cdc29df313c88b2018121405",
+            "gdc_sha256": "c74c010fa9a2d888bf57940618107aca084b67ccf522fe3f4018713b1382c332"
+          },
+          "scenes/attack_fx.gd": {
+            "source_sha256": "cd3afac6db16507ca924266e1c014a9d301c22e44888fc9b29b2160285601aff",
+            "gdc_sha256": "43ab97c4b3afda870ccd137dcdbc19fc26c31beae6466d19299f890b884abf31"
+          },
+          "scenes/audio/sound.gd": {
+            "source_sha256": "2440ef6b6ae656415ea559792c9495493fe18f03a13f5664515c5f47696e21d1",
+            "gdc_sha256": "c707dc9cd5b0afd547a05c8b19cfd22fc673e82864a566a6be76978a6c20682c"
+          },
+          "scenes/authored_ground_support.gd": {
+            "source_sha256": "94c8a82a2d5231583e1c68dbbb6f9a72681d93a5c946407915dd67fb39a8aa59",
+            "gdc_sha256": "081540a9760f1774ec01a57b0def1cda0a9dd9ffb5c3c6b98e3c53e4d18bb1a6"
+          },
+          "scenes/avatar/ability_card_prop.gd": {
+            "source_sha256": "62e57acd842a9d10b230ce8d9985939d2f5a52aa3549d0ead0b4caf8bff2540d",
+            "gdc_sha256": "9c463c84a8bd97647430706a384f72a5962fef9ed517d6f75f5ccb46801fd8ab"
+          },
+          "scenes/avatar/denim_wardrobe.gd": {
+            "source_sha256": "d1cd801273041cc095f81769bb5df25e0e9808ef4c2d65231247b14c5383de18",
+            "gdc_sha256": "e7597a642d929ea5d27fea6c56c2d282de4350fd329e445fca9a1a65a3c91f80"
+          },
+          "scenes/avatar/fighter_avatar.gd": {
+            "source_sha256": "8ee63d80fc30d6cf1a7aa42143c2f8960c3522bb393d5f7b3b2c8f154e72cfb9",
+            "gdc_sha256": "37e70b03662890dfb39633366c78592dbf0fcc14c05b7ae3d02e922693b4a871"
+          },
+          "scenes/avatar/fighter_portrait.gd": {
+            "source_sha256": "4633c39b9a444e991c9a5809ea13bc94cb1fd84953da826fb5f097f7ef40456c",
+            "gdc_sha256": "9ce50d4740fe315767ae8051c6f727f6b673ca96e36522fcdb49437b7d55dd2e"
+          },
+          "scenes/avatar/vrm_avatar.gd": {
+            "source_sha256": "c5013c3d3642d8a96a3cc2ec7855e30e700790a80448590a722cb51bbeb1123f",
+            "gdc_sha256": "b7539c9e1a1663917d1273044fd651087b880ad5e518a6806f0030a804448ae7"
+          },
+          "scenes/avatar/vrm_fighter.gd": {
+            "source_sha256": "68ce8536045c6bbfe81a8f7ddbfa71ad3202da0c2d87261adeff8a52811384a8",
+            "gdc_sha256": "42dfd6dd79d40fe8fd771ea3ad70237a6e4aecda1e30810435173b1c56b8ccef"
+          },
+          "scenes/avatar/vrm_palette_shaders.gd": {
+            "source_sha256": "838b4564f0237aeb06079e311b8aca38576456f5e0d8c597be4353add938fc87",
+            "gdc_sha256": "dd01af5f21866f9e9fa1a0e039055ef4101c2d869adc8c5d2506d7feba791ec4"
+          },
+          "scenes/avatar/vrm_parts.gd": {
+            "source_sha256": "25af9b18013e1f855fef65d3ef49eea1ef2109043b4272fb2c6baec6579a5472",
+            "gdc_sha256": "b3ccde63a8a6cc6925978128a3804c00c44aeaad2182493f438dc46cd18389ad"
+          },
+          "scenes/camera_rig.gd": {
+            "source_sha256": "9968665514ef174f8d2da907ad2b4e3cd205f102533bd4c38a004593397640d3",
+            "gdc_sha256": "5f50a28fd3b7a3ecfb9198ce8427fc165eab980d9d23932f669d816f80cd97c7"
+          },
+          "scenes/canyon_landscape.gd": {
+            "source_sha256": "9099a6f241f18df20b1a36fe783438a7bd7af1320bd4c0a043d16016e168f4f9",
+            "gdc_sha256": "cc5ca217b83df8f77b3fbef4d8a761b599372319d6c6363002ba3797071d73e3"
+          },
+          "scenes/creature_anim.gd": {
+            "source_sha256": "54e4a1a39c66e8052e91eb48a61a2bf05f545798ed89072b94e7cedf8d8dee71",
+            "gdc_sha256": "d53cf91e4a323108d7d89777b724800f64206f935b41b59b7ef48baba78028e5"
+          },
+          "scenes/creature_ball.gd": {
+            "source_sha256": "123a34513587e12d2f0fb45251a5d44dccdba3e54bd92eb7f3fe3be1a6b047cc",
+            "gdc_sha256": "b22ec92467c27a82acd5be9fa43d67baa43aa7bca0951e6d4587e345959a07c6"
+          },
+          "scenes/creature_cloth.gd": {
+            "source_sha256": "cc8a93b615c7eeff779b4dc845facde99bd6f7287dbde5471c11ad3b4f8bb2f8",
+            "gdc_sha256": "95a5d2755c4d8953bbeffa971f5ded3631cf4c441ed990d9862522105fe1f07c"
+          },
+          "scenes/creature_models.gd": {
+            "source_sha256": "1a070fda36487609d8d9030997f688776d3b92eebe8504817827c95694b26eef",
+            "gdc_sha256": "6ba2ef9a97a1fb137d87cf1449f4167dfd700e71597f4372fa93a00ec89aab71"
+          },
+          "scenes/creature_support.gd": {
+            "source_sha256": "b1ca0046dfd01791aee89a8f68a7664146880aca185a9a3106db437f7944a953",
+            "gdc_sha256": "1c3b7cea298318c41b72b9a8553bbf82cb1cb7da2060237148916e630f6f772d"
+          },
+          "scenes/dragnar_torso.gd": {
+            "source_sha256": "bb84d2cd7e838782d12049c171d9fcbece40a1bfd1e5d9112d6f234fec9530ed",
+            "gdc_sha256": "a6c4d89bb3fad406a561a500deae803f96d68e2b3de82e7ee5a589bb07c85f99"
+          },
+          "scenes/element_icon.gd": {
+            "source_sha256": "3534f178abdd45aba6c25e31d22072d142513ff30fd9b030b82a3b24c87a07f7",
+            "gdc_sha256": "25b22db0a21150fbee1ce3e0086eedd60bada3952a14a2a64b65fa692343e413"
+          },
+          "scenes/event_player.gd": {
+            "source_sha256": "9c950abd8b6bfeb038bb5aa092b301d40c5146ddb76947746c1be51ded3e1e7e",
+            "gdc_sha256": "c1f0c17fd24bee847a7099ae5e3a9968ad875d7a000b3b1f7b28dfa56cdac5fe"
+          },
+          "scenes/fx/ball_fx.gd": {
+            "source_sha256": "77e94997ba0b3b23a16592469564c4831a8a31ed127fc12fe97dc0371e02220b",
+            "gdc_sha256": "18623ebc6ecadf14e4d211556541ab276f06acff75ec81dda52af482fc489a3d"
+          },
+          "scenes/fx/ball_shell.gd": {
+            "source_sha256": "726f270cf43b91749df2558c90d7ae0ec0d91f2056556b2eae41b3516ea1477c",
+            "gdc_sha256": "6d025796801433e10cd973f7b19636344ae0a263ec63f27804077236450d6a79"
+          },
+          "scenes/fx/ball_trail.gd": {
+            "source_sha256": "5ebbcb2fbad8b007fcad8c0ca0e3aab1657c01720557b814df7c98eb857082c0",
+            "gdc_sha256": "72054f1617a51b05ba027040b5d0c7dee8e7887b9eae5e718b57d5835442ac69"
+          },
+          "scenes/graphics_settings.gd": {
+            "source_sha256": "e44a986cf551eed0fc08ab26804fafa9456ca79ea1ecd3c6210bafa2c740697a",
+            "gdc_sha256": "8fa1dfbb0ccf4ad347f114075d69b93a1981028480d46c53ab64d08bf506bb42"
+          },
+          "scenes/grifalon_flight.gd": {
+            "source_sha256": "bcc74db143ad1bc8ccb5bfca04070ab4cb3b3db5a854f713e18d3a51a77c7d99",
+            "gdc_sha256": "cc213a0c9f021df0bd67553872bdb2161206feb838a9288dfd98d8595cb6320a"
+          },
+          "scenes/grifalon_gale_skin.gd": {
+            "source_sha256": "ddf2419b34c751d3d9223eafa455c7b658593f6c75e9f0ef586e7304184f80a5",
+            "gdc_sha256": "d4c557e45fe2e88951c735e77cc512906b1ea00f6e5dfa0070c76d67a7c38ad9"
+          },
+          "scenes/grifalon_motion.gd": {
+            "source_sha256": "0e929cff6b423a9478c6cd8b1303beb6495eae4624d52f7ea4a5c22632104166",
+            "gdc_sha256": "355a1c94af2d49932c0c420eb4314832945ab72306036d1c0c1c172174b59ac3"
+          },
+          "scenes/grifalon_tail.gd": {
+            "source_sha256": "e5278a89597a1f6977b32be4a4721e9973a8248f48672007f93283f6181e611c",
+            "gdc_sha256": "d56c9ef76497cd4a9e7eb92545b9300b912c7b5f18e4caf216b40f5b2c652bc0"
+          },
+          "scenes/harbor_landscape.gd": {
+            "source_sha256": "d1bc5c8fe88f90c97d37d714999d12145261f96d17a600752b5e3d5186cd8a8a",
+            "gdc_sha256": "6808fe557ef824cce126fce431f2fa3a0354be5fbb57b9fe4e45a58e6d539aa3"
+          },
+          "scenes/humanoid_strike.gd": {
+            "source_sha256": "d7793e19f101dffc7683de69b26704c2ba1608070b71e4652cb44ae5aae332c9",
+            "gdc_sha256": "217bac774ddc28086bef2268b85638dcb92e168898cae2808444cc7e5f65f222"
+          },
+          "scenes/kolossar_light_skin.gd": {
+            "source_sha256": "5d3cd070794f59aacadc630d5f8f5cdc912c4119a3c8bf5dc007fb0e6359c0dc",
+            "gdc_sha256": "de05d78e335e242a2c42f2682824464bf49e9c514c890cecb9c9311a913e83b6"
+          },
+          "scenes/kolossar_motion.gd": {
+            "source_sha256": "bd34f0550b6f01afdac1c3ba7d7f056f63c30384c7a6e15ea863b05022927d4b",
+            "gdc_sha256": "3cd9dfd5f39def484c83167f087458e8c8822ea0720114a0d2ed67f9084fa8d2"
+          },
+          "scenes/landscape_atmosphere.gd": {
+            "source_sha256": "3efb03dc5a99989675f519ced0d99d70505dc2c8a2da159a03b272b69c0291d6",
+            "gdc_sha256": "06e282d3682d24cf479646bf9f7929fa7f5222d76a26517eb524dc0838d39052"
+          },
+          "scenes/landscape_detail.gd": {
+            "source_sha256": "c47b7c81ea8de7ac0e43cc385e3f0068979bf8633182e37738d9f630f8442202",
+            "gdc_sha256": "81064bc77ab2b9519ef69eb0908a754643a8ecbb3ee99dd27d5262e40ab96485"
+          },
+          "scenes/loading/boot.gd": {
+            "source_sha256": "a6d7c0567fb9111e6f385f7877f3a7a701a4157780f7f53bbaa7e836d97509bd",
+            "gdc_sha256": "ecea3dba8341ff66ffa895943d3dacfb549b2e8a76d8d595450741491903ff2e"
+          },
+          "scenes/loading/game_loading.gd": {
+            "source_sha256": "5306b286846ba2e195f8272998465882811e7477aed3afc25e718779f2106419",
+            "gdc_sha256": "acca8d037b2eadf5139d2d54d1aa5453eaa4d9e72d874ec261ae2d436a6ee283"
+          },
+          "scenes/loading/preparation_store.gd": {
+            "source_sha256": "97c7fcb0cb94e8c149b63c9ac290ab203bb18e1c384d6b7db40a344921a19fe1",
+            "gdc_sha256": "f20b7f6044ef1dfb5e6d49df483fa059d1281ada9686949e358457626045ce93"
+          },
+          "scenes/loading/startup_catalog.gd": {
+            "source_sha256": "09f13cafd39f9b90c0ef589fab264dd176b8a178e8255f7f52f6425eed01d8e2",
+            "gdc_sha256": "827eac74ffe549dad621a7bbd0335e4c564bba92a97528161af9b0245ca8c8bc"
+          },
+          "scenes/main.gd": {
+            "source_sha256": "055ae0c3019655428dc757b02c3e38eb55a31f2e1a64c08077cf6833a09b6c1a",
+            "gdc_sha256": "6a7051f223f62a9df0b925ff545223750266c4ee7d98052663a58c0d1e07d7f2"
+          },
+          "scenes/menu/audio_settings.gd": {
+            "source_sha256": "a5291c00cf5721390521ad2684766eb9b1314dbecbc974808f748996846bfd23",
+            "gdc_sha256": "ebc943955f04beb71c4fc2cbaa60f58efc4b594fee61ab69970ba934d0155d46"
+          },
+          "scenes/menu/day_cycle.gd": {
+            "source_sha256": "14dde5bb22a36b0aa04044ae4783bd1a87d10e95c52f47302749e858637703e5",
+            "gdc_sha256": "bb029445741c74e7caaed1fbc1e22207fda7adce677884dea3fea60c08a524e7"
+          },
+          "scenes/menu/main_menu.gd": {
+            "source_sha256": "476b2fdadc15bd23dc3ffe21d3b2cd7b14dd72ea33b5e46fff8709a4570ee044",
+            "gdc_sha256": "d1b05be5082713a016cdc8c794ea5a6b10dd5b4e7f7184d421759c66666eb658"
+          },
+          "scenes/menu/menu_city.gd": {
+            "source_sha256": "90c7afbedcc6602c6de364be3e6039185250c4a218b755c75c6fa2946eab73c3",
+            "gdc_sha256": "6fb0b17084cabea2be1ec5b0765ff74c6bd3e9419d04a38f2f674208ce5ce218"
+          },
+          "scenes/menu/menu_orbs.gd": {
+            "source_sha256": "4d17778f21106408c3bcd741db1cb04f9cbe09b35419c725f4621ce1a2d18e67",
+            "gdc_sha256": "fac13bb8d6bd1f81dcd6a70b43b751ac0a2e86f6a7a1c191dfeeeb52de4b831f"
+          },
+          "scenes/menu/menu_overlook.gd": {
+            "source_sha256": "2a270e35de555b036d83ae6e0af6d8f0193bc838f684f533daa33b90f92a41c7",
+            "gdc_sha256": "f6b2e6c915b7e3f4ac976bd911b5521e659c272db3e7909df2ea65fb70806867"
+          },
+          "scenes/menu/menu_settings.gd": {
+            "source_sha256": "2d11678567c4baf7357ce3e4efcc14fb76b5acdc5948b3145640c6f2f2723232",
+            "gdc_sha256": "3fbc344b94ca190933c5b2e075785525bf71dd5078f066d9073113548298d26e"
+          },
+          "scenes/menu/menu_traffic.gd": {
+            "source_sha256": "0c03d3856bbdb6ca105ec4793d559e66dc91371ed737d7d97ef3c63666fce55a",
+            "gdc_sha256": "998842476a9a88d5a0ef359532c2c6d35e3012610bfa483bf7ca048a4e7b8a16"
+          },
+          "scenes/model_lifetime.gd": {
+            "source_sha256": "a7ffa6e94e6a8bd95015adf19416217b111fd752fc7535620d962d6a04a36393",
+            "gdc_sha256": "ffcd1e9eb4b3d725c233b58f704bf7f734965b824d539f257aa577fd74f363a3"
+          },
+          "scenes/online/online_game.gd": {
+            "source_sha256": "fd976d28326bd3e96681a095bbe8ff98654bc81a27f81294329beb43aff909a9",
+            "gdc_sha256": "2f140d1077b531b95d141164ad828296fabf3da7a1dc424d8ac786506aa399bd"
+          },
+          "scenes/presentation/arena_director.gd": {
+            "source_sha256": "adc37571184fe148b1524581120aad65c1f079b857a7fb6d2928c0813ef14796",
+            "gdc_sha256": "e5d1e1c310c85d24de241f4d14f29733a24a00aba2c3a6588cd43fadae3a6795"
+          },
+          "scenes/presentation/battle_tempo.gd": {
+            "source_sha256": "a003b24e6952e4bca8a0a469d89440312206e9ac82aebd84b236b8bec87d889d",
+            "gdc_sha256": "2220be60c951e5c50dc0b4c73b6d191cf06a906b36f7270c09685696c234440c"
+          },
+          "scenes/resident_cloth_solver.gd": {
+            "source_sha256": "8302955b6972cc4c86d699f8463d05929ac5194936c2f379374bf414893d2b90",
+            "gdc_sha256": "4d788be377ff04896550d0f6f39f8214980fa66c2eae27add45d71d677fe4b97"
+          },
+          "scenes/sanctuary_interior.gd": {
+            "source_sha256": "aa60dce0a04f1221c9a1d81bb62ea2824ab99e19f29e9d5918f21912ce3a9421",
+            "gdc_sha256": "f12dce2ad03731372b056d65783209e593421157e9e4f1f156d0e77a02d36f22"
+          },
+          "scenes/sanctuary_window_light.gd": {
+            "source_sha256": "f95ac95b0ebc076adf403d1f9ed498c5384b9c1676ed75c9f29560fb3f588eb3",
+            "gdc_sha256": "1d52760f43569bd78b2d5ab356870240dd8af81d0b59a255963971bae64e90ac"
+          },
+          "scenes/shot_physics.gd": {
+            "source_sha256": "854698205ae29103cccd58829ce84c76917e0e1bd06ba0383b12c921dcdbbfbe",
+            "gdc_sha256": "9ce55621ac5546529ae117611477bbf3475612e8de96817e12d05c12efe24c83"
+          },
+          "scenes/throw_controller.gd": {
+            "source_sha256": "618881392b248db35dc06381bc06cd2c2a5911cf6db842de7a6d0f24ed637b14",
+            "gdc_sha256": "0fcfa692f423d53f14ae874cd9e72ecfe9cb2f33163e06103095b300f6f7d985"
+          },
+          "scenes/ui/ability_panel.gd": {
+            "source_sha256": "3cb6122024b0c13fa2587c0443252be15e3eb431f689263666fbbc6b7bda1a67",
+            "gdc_sha256": "ef1d7d0a89f868935cf2246970b4c8b8494d9b0112f4b8935640625b76726336"
+          },
+          "scenes/ui/ability_target_picker.gd": {
+            "source_sha256": "2123d497da64fe9058de0adc7cc16dd3c6a9a2296eb50aa6dd6a28f9bb1dfb02",
+            "gdc_sha256": "d07c0bb66e06009d580c5aa32f8eef68406863617636807e328ed6956f4a7a22"
+          },
+          "scenes/ui/arena_picker.gd": {
+            "source_sha256": "573f2ea80c2f924a7b374dd97c7017307590b8392805fcfc35c3563ea436947d",
+            "gdc_sha256": "ad1028ee6aa73a8e9b36710236e8f6842f6e16742ccdd99d26f1586dc8a9a8af"
+          },
+          "scenes/ui/arena_slot_picker.gd": {
+            "source_sha256": "204e077708b407359f71ebc9f450c268bf50d86167a6e36ada0368f0aea88923",
+            "gdc_sha256": "22444c421a038114b1159e8ec93a02a8c1a4913144b9f2dbc9eb2c2b4af559e8"
+          },
+          "scenes/ui/battle_hud.gd": {
+            "source_sha256": "877f5a0e59f806e1de4f21e2de865ac333789f78fba4a17e20bfa9d9d6beca86",
+            "gdc_sha256": "aabd31c54f852237cc901d2f964cad6536d46b661115f9ee5d48950e21e898fb"
+          },
+          "scenes/ui/battle_overlay.gd": {
+            "source_sha256": "4909f05d4d9425261ad8301f3248c364eeca34cf95b490a26a445f4ddbd48538",
+            "gdc_sha256": "9ebc10c74c5816b1ba039fd3bd73997a3635240973a6f5383cd73727cdcb9521"
+          },
+          "scenes/ui/card_artwork.gd": {
+            "source_sha256": "61ec9b7fe76dfc8e210be37b85d32518cb849f6387a15a96b91b14c5fbdb0677",
+            "gdc_sha256": "ac948b32c6be86676445f97a82b5fd4d2490f1d6074c0d6a79ca7b688343e233"
+          },
+          "scenes/ui/card_hint.gd": {
+            "source_sha256": "840afacd8a09f53002077771d6bfe41528a8f437f3a0a2ebcafb480f9a330990",
+            "gdc_sha256": "630b3264951b9e20ff455f8e5f484d29285f9ca956290247178c07089e16a302"
+          },
+          "scenes/ui/card_hover.gd": {
+            "source_sha256": "aafc82c514c49d4b56ae0d05ca842b2abd2fb2a6b7b010dc3c09c83debf92176",
+            "gdc_sha256": "02ddbf2ca24b5dfd94bcd27b1337339667870295d343a894ec870d01b2d034a7"
+          },
+          "scenes/ui/card_view.gd": {
+            "source_sha256": "feb6241a1441bf7e54d6747112cbbf2a1315dfab63a5998077d0a1eeb8d85401",
+            "gdc_sha256": "42842c3e27659d94ef67d6f9df146e4ea88445ff4dfd55b1576e3c24f1306f1d"
+          },
+          "scenes/ui/career_panel.gd": {
+            "source_sha256": "57b4ed394af055f76cb46d0adaa722e12c2e91eaeebd64a7c1f77292a13ebc5c",
+            "gdc_sha256": "704f696dff3de0f958a70047981912d088617d98e70859679c3f8571ee745a30"
+          },
+          "scenes/ui/character_editor.gd": {
+            "source_sha256": "5868ab8a1766f66ae574159100738b908675c64464368f573f65dc1dbab8eb99",
+            "gdc_sha256": "7f52b1f89cb86ddad59b40e7514cb7b0ea18cd7d50dd85bee691e09fb1344c43"
+          },
+          "scenes/ui/creature_portrait.gd": {
+            "source_sha256": "a04fdc043891aecdae89371251ddbb53ffc36c01ee4787186b938626b1b8710a",
+            "gdc_sha256": "58bc1bad4054528c7f85a01122f23bb986a3e3487881e8a15ae6d43420a67e5f"
+          },
+          "scenes/ui/creature_portrait_crops.gd": {
+            "source_sha256": "b6a08b729dad974c08c1eb312d585818b9f1b1ad3d7a0798f8ee17cc996328d9",
+            "gdc_sha256": "fd6dbe2ef06ddfeb60da72225cae36611c2a263250c5c791125b0bd81166e239"
+          },
+          "scenes/ui/creature_preview.gd": {
+            "source_sha256": "05cfc8da8d97ea03809a200560e50231826fec8bfb2ceaff217625b81a815b1a",
+            "gdc_sha256": "f52e0b51eb2dd86b2f8f405ddc6d810d7e148a060a952eb795b5a572c3f8a377"
+          },
+          "scenes/ui/device_motion.gd": {
+            "source_sha256": "dbdaf60512983d17e08f28df5f45873e444d41998f673d5346e8109ba9ad1b0b",
+            "gdc_sha256": "5e67861280e860caf6bc8f5f6bfa34d94c2d108c5b6668c3cf1c5a926595d4f9"
+          },
+          "scenes/ui/device_settings.gd": {
+            "source_sha256": "b62a2f1f6a821103509ca8434c1a5d74a544d01877e0b078d489c80d120be649",
+            "gdc_sha256": "4a0a29572d92d47a7101ebfe87491ac8954e1ec783ca991291c560886a8a7350"
+          },
+          "scenes/ui/element_mark.gd": {
+            "source_sha256": "19e657de51879827188d4f92ae9cf144ad5cd5bc6b9ba983e902f640ae5e622c",
+            "gdc_sha256": "aca5d5a9fec2e60123cc6af7d11fe706c01c2646560dbaf4d4cbfc6f0730c6c1"
+          },
+          "scenes/ui/fighter_plate.gd": {
+            "source_sha256": "cae958ddff3c47aeae4935f8ea6d5b0cb49dc2263e1fe4dced92e258ab7f0561",
+            "gdc_sha256": "0199fe69d66d01dcf42f0296e4c6d80d5b4ee53070a5aea7ebfebb7b88a66564"
+          },
+          "scenes/ui/game_over.gd": {
+            "source_sha256": "20df9b2b867cf50156ec7fe7090a85bac451b9412b98fb667dc1360c23795fe0",
+            "gdc_sha256": "dd81e200f0c2226c69aa7bb23ed2e68bd865502a3fe1c30b7346e49516cc4248"
+          },
+          "scenes/ui/help_overlay.gd": {
+            "source_sha256": "9056a116cd70e126cf6cfee004c3e700fd70cc5fe2d9f70aea442bd31cfe0720",
+            "gdc_sha256": "7f4d17f72bd039867a3155d16e336ed0e22df57d170866682e6177032dfd56e7"
+          },
+          "scenes/ui/hover_tips.gd": {
+            "source_sha256": "d1e6d6314fee677853a8cbfcc0408038e60bafbea7331ab01076a4b177ec6b3b",
+            "gdc_sha256": "c37b90623ad05450ec9c3494b56ff3f0611aa33a1875c5931c970eaa544b3ce7"
+          },
+          "scenes/ui/hud.gd": {
+            "source_sha256": "efe19e746d779dfeb702d1abbeaec7b53d976fb5a8629580a082bb6267aceca8",
+            "gdc_sha256": "cc7a9b7ede90af155a59931fbefbfe45b9c2e2c2e73f0463fc80f63620f770f0"
+          },
+          "scenes/ui/legacy_character_editor.gd": {
+            "source_sha256": "f03909240e818c68c869f664c445890cb2603825e76b9352b1ae88801406497a",
+            "gdc_sha256": "587ad1487171e30b764093549f6c00c8bda040a0b0a40157fdd82fff829c9e85"
+          },
+          "scenes/ui/opponent_panel.gd": {
+            "source_sha256": "c4e9ae0137ff451c1a85c625f9477af4e08e1d8524cb2c24625f4862c54dce58",
+            "gdc_sha256": "5a3dbe703f0dad225ebf485be782da30067e139c2782043ec7005ac7846a785a"
+          },
+          "scenes/ui/orb_button.gd": {
+            "source_sha256": "71a6e85db621ab0979400c69320a06583094dd4d3cb022d9a097df290bce8d37",
+            "gdc_sha256": "19ba294b53866dd96d705775e35d8095509a7c5c7125d1045876a092180418af"
+          },
+          "scenes/ui/portrait_background_regions.gd": {
+            "source_sha256": "85b4aa766e22c65d5d1f41509f9dfae8377cf83f3cd80dedb4012aedcf4fe9b6",
+            "gdc_sha256": "58719f835679081c73c41066c2df8846ab38b0b6c682453a2425ffe42477f3c9"
+          },
+          "scenes/ui/portrait_matte.gd": {
+            "source_sha256": "acbbd4b041840808381bf01c2e144997e0aacf2a31763f2de20f07c72bea227e",
+            "gdc_sha256": "4489dda68d1df3dbbbdb4b81d994b46e15a871a7c7e9c664ec3ac6ed7b9447d5"
+          },
+          "scenes/ui/preview_activity.gd": {
+            "source_sha256": "85e0294635163edf9aaf0d92bd8bf8e2a81744d1c5e044d2f17b51edeae16735",
+            "gdc_sha256": "3802fcf638f1b4e572668de6f8ac5a8e34fc49fea81c8d000eee38a4b56e56e1"
+          },
+          "scenes/ui/setup_panel.gd": {
+            "source_sha256": "43c14ede158ca172c7ddb3cc4d314ba81d8e118b77715810bd22e823a910b39a",
+            "gdc_sha256": "c85183c51551268f99b95d75683699df2cb18d9a2ce2f273c27679433dc633da"
+          },
+          "scenes/ui/team_menu.gd": {
+            "source_sha256": "b72c0230e5a17b718b0d0deeec4bdc56bbcb801ffc812b9a3fbe5a365457792f",
+            "gdc_sha256": "72c53a77b5f093870a238b7bbf3c961d05cee3dea282cf72abd17f9aedb5740c"
+          },
+          "scenes/ui/tournament_panel.gd": {
+            "source_sha256": "adc18e12e566ff54b890a8f206612779dd5a7548844f7e27cf6e2d6a460e63da",
+            "gdc_sha256": "8dd463bb5dfc02404b34ab1707cfee7e836ab4467667f826a2710f7ac3318061"
+          },
+          "scenes/ui/ui_theme.gd": {
+            "source_sha256": "6e81d6cce59055806d39418c4c9211cc3f49a0ce7e8c148b2a5f022786034860",
+            "gdc_sha256": "b612e3b5688c2241dfaec19a6e81b13f584293a8b9c2577cdb16a7a308a1f34f"
+          },
+          "scenes/ui/vrm_preview.gd": {
+            "source_sha256": "d7c2b33f31899a2dbf0c70ed973df60e666b0649b4d1fa7cd9f932a15ba14d1f",
+            "gdc_sha256": "0cd888857132e1707d1eeffeab404245b3fdde7e79231d51cb9754e5d66abd7d"
+          },
+          "scenes/visual_util.gd": {
+            "source_sha256": "44d8968d240068d82c598d6d4ce4e0c6030f3541aa5c48a62eec3f2d3e47e503",
+            "gdc_sha256": "babf3306f22934e9d7e6c81f4726a3d0ec6a136cdcb058bbb72e9cae4b8a3f13"
+          },
+          "addons/Godot-MToon-Shader/inspector_mtoon.gd": {
+            "source_sha256": "514ac79c15dbc2b748a1e4ca95c60274ebb8eec1eb99bdbd133adb8a5c1e14a5",
+            "gdc_sha256": "b2bec2197dfdb77a6d23f1a4aab1f05742b7cfd19b9cb08f6de7c368e0a7af96"
+          },
+          "addons/Godot-MToon-Shader/plugin.gd": {
+            "source_sha256": "b1a1f76fbdba0b391bdb9a181e7b66595aec745d77b73919872454a8c28131f8",
+            "gdc_sha256": "c8ca9267019d3b1f366c5190b06da17fb7910592a862a38e024a93a5619130ab"
+          },
+          "addons/godot_gpu_cloth/plugin.gd": {
+            "source_sha256": "45bb8dc00c5b957e7433125859223b295eb3ad39c4db3889cf8b3f5d47aac98a",
+            "gdc_sha256": "3e3250bcab3b210e054ba4061b738c390a384704fd8330b9e3ee331a0217e4ed"
+          },
+          "addons/godot_gpu_cloth/src/gpu_cloth_collider.gd": {
+            "source_sha256": "819b9cea8cae6ab4a6ef41baebb3e8dc5e55636c56dc35b41fa468760b7625f2",
+            "gdc_sha256": "5534d2b84f710667a19c4bbf09588a68204577ba811578e1ad00411e93eab527"
+          },
+          "addons/godot_gpu_cloth/src/gpu_cloth_collider_gizmo.gd": {
+            "source_sha256": "5392d590bb6ce98757760dfc546db690d871749999f9ee98f37437b4898a56d8",
+            "gdc_sha256": "b265641a7a9601bd3fe5e99be2e20333025394d3282f698692b9e0eae46dc2b8"
+          },
+          "addons/godot_gpu_cloth/src/gpu_cloth_solver.gd": {
+            "source_sha256": "88b293bb0a1eaadf9c50dbd84d437fee350c390b544a7fca40022824631a6235",
+            "gdc_sha256": "103d77f4bc555f7b5e451340980250b1c2777d31b971cbf8dfc38ce905269a6a"
+          },
+          "addons/godot_gpu_cloth/src/gpu_cloth_solver_gizmo.gd": {
+            "source_sha256": "fe8acc1fc3d3244d4e8145492a600814b9dfb004db2d5bbbc99cfcb472c6a200",
+            "gdc_sha256": "c7fd7a0a89e73c27f886cff424ce0ced6a910d71e22959b89a8665a7486e34bc"
+          },
+          "addons/vrm/1.0/VRMC_materials_hdr_emissiveMultiplier.gd": {
+            "source_sha256": "3e0882b31c6eb49e3702e32edaafc5c7dce85547ffe62c6eca10b3a686fee240",
+            "gdc_sha256": "fb11a10047c548f5952f97dcb8afe698678353d4de1b0dda453c2cdb71881cd0"
+          },
+          "addons/vrm/1.0/VRMC_materials_mtoon.gd": {
+            "source_sha256": "75527e71162e08022e1309ea344e2d020596349f70a752d1acee0d09ed929cf6",
+            "gdc_sha256": "2004ab4a7fd8edcc5e4179cbcf3cfb6a52ce3479c61b4f98c0e4d02a2cdec502"
+          },
+          "addons/vrm/1.0/VRMC_node_constraint.gd": {
+            "source_sha256": "c19424e89fae50046f6de82c629fb62d63f6ecc49ab14d0002d2de943175a017",
+            "gdc_sha256": "f0f2078a40dd2410bc89b588f0472c17c001a517725148b449442aa0f8d391e2"
+          },
+          "addons/vrm/1.0/VRMC_springBone.gd": {
+            "source_sha256": "38c14bb58bfcee902ef94f319abab672bb46db059c277e15b1e5852a61961539",
+            "gdc_sha256": "3fb2699c7c32f11a988dc5c85ae05c0ebabdcf69cb7f4eefee898669278bee89"
+          },
+          "addons/vrm/1.0/VRMC_vrm.gd": {
+            "source_sha256": "0b83917224828e286d2f0d23c8dc7b4ff40b0f9409845a46b6ba2e3610c233e0",
+            "gdc_sha256": "a0f782dc2f4ba1c2601cab64f83102098a293dad087d5a13fe04aa0ef25dfaa5"
+          },
+          "addons/vrm/1.0/VRMC_vrm_animation.gd": {
+            "source_sha256": "6def6f56c6c9329890c76fb66d1364aa641b5b9729cf269be8b4018504735d46",
+            "gdc_sha256": "d425e3ad41c562b984bf1703f25fb76f6ba2b3b6fb67af95831744880da1dfdf"
+          },
+          "addons/vrm/import_vrm.gd": {
+            "source_sha256": "877b876f02f77028a8ecb62021e6b54f44741716486fbac84058046e3246d79c",
+            "gdc_sha256": "13cb90b4d23722a08051e5be929e90e10aa1f36c21600416251ea12e052027d9"
+          },
+          "addons/vrm/importer_mesh_attributes.gd": {
+            "source_sha256": "b059894ed16849043b7cd1d0504881384d633f101593f3913a7fd3b19f57b1bb",
+            "gdc_sha256": "1e3e14e30bfafe8d80e74859c5f0149241ea2d8f35bc07d9329139ad13feffa8"
+          },
+          "addons/vrm/node_constraint/bone_node_constraint.gd": {
+            "source_sha256": "6850f86ac910b47c9f82a0fa983821c8c5e065fb0122cdee9ffcedf88aebdc08",
+            "gdc_sha256": "2ee3deed2a6cdbde99d4a44f61ff354aa3f3f9a3ad93a4719b4dd2a86450ca06"
+          },
+          "addons/vrm/node_constraint/bone_node_constraint_applier.gd": {
+            "source_sha256": "c81b69a229646567ba884b8446073fc34228636740bfdc1ca334a9590c75fc3f",
+            "gdc_sha256": "40869c0ec8bee2e17ee2afb479fd76dce7cfb4d38d173c25e27cb1395e06e488"
+          },
+          "addons/vrm/plugin.gd": {
+            "source_sha256": "813eaebcde77992b983191b7ad9ca6e950c00856e94b53ffcc55bafd882b58a7",
+            "gdc_sha256": "ab64a9090cd290d1ecb3b7324b01d8dd8d3cf9be99676509aef740049c30bb87"
+          },
+          "addons/vrm/vrm_collider.gd": {
+            "source_sha256": "bf6fd5f0ee81d84423080aea4fb915f1bd1588aebc2f325ca07ccd65b7451087",
+            "gdc_sha256": "c8c16546581023f26b50275c8a6e9c3d1456d7bfe0a05aab4b39692ff47e32f0"
+          },
+          "addons/vrm/vrm_collider_group.gd": {
+            "source_sha256": "c4b16cda0156416574de7fc4004b689ff6558b84ff309a4a6e2f788cd4118bec",
+            "gdc_sha256": "e19d1501559abc4849defd4d6e7c01fcd6861e936f2de6660faf799a94e5732b"
+          },
+          "addons/vrm/vrm_constants.gd": {
+            "source_sha256": "e65b98b8ae4a74111bf15e345ca62334ebc5fa04e9ee08feed8c916a61f9f9f1",
+            "gdc_sha256": "d816caedf31e1ed10aac9f0b3c47a844b6e1817f5c14ec6bdb13aa55214351a2"
+          },
+          "addons/vrm/vrm_extension.gd": {
+            "source_sha256": "0d0a4a72b1b89716143b2b45b00e898f90f8de08cb7b022a112240da55e3983b",
+            "gdc_sha256": "d00ae812f6420c5b5782c52c6e98edbaa6cfcb2a8d28012288bf53542d4b1760"
+          },
+          "addons/vrm/vrm_meta.gd": {
+            "source_sha256": "8ddafa2146be2d8c28f01ba9723b042619b480c0bce0ec597aee5cb7bdfe76a5",
+            "gdc_sha256": "86cbb1e08a0d928044969ab6381f69ff54cbd96d723e815e78d930b57d0e458f"
+          },
+          "addons/vrm/vrm_options_post_import_plugin.gd": {
+            "source_sha256": "2f105a47c9b525dfb207134ad260be9219d6d5ea29e7b1109df2b0f6e32e8673",
+            "gdc_sha256": "c8ac4e7f092f70f1f86b21582ac859a3c41a29db0548eda4c6c97c764987aeab"
+          },
+          "addons/vrm/vrm_secondary.gd": {
+            "source_sha256": "cc5b78de0523a372fa93f5f28685542aa3348caef35c8a43e838f6c2b367756e",
+            "gdc_sha256": "d955e2e2a2ffa6b4de70685acff7eee791f525d8e8948f902200df1596f64f10"
+          },
+          "addons/vrm/vrm_spring_bone.gd": {
+            "source_sha256": "f6200c07441b10a70269c3e1e51b664dedd56d5b2a0e279f66e9c03a38b24b8f",
+            "gdc_sha256": "a9c0d1c20f862880106a4c9ee62b55915c99a695069e01f96ef11d4f0c995ccf"
+          },
+          "addons/vrm/vrm_spring_bone_logic.gd": {
+            "source_sha256": "ae1a2b7e88c761139c6b78b1564830f378972f722b82f4b1378891671df7e392",
+            "gdc_sha256": "3c143b5178c48cf88c5d84cfada8de134a8ed63c939f27f258b128f7dac8268b"
+          },
+          "addons/vrm/vrm_toplevel.gd": {
+            "source_sha256": "f0670c0b797e0db6ab5082797d350cbc797f509333c2104e3bf7ec2e5dabc927",
+            "gdc_sha256": "a03b4bc8bd09ac1395e3e6ea27d124b25e43de198adc5ec9198ca1ed07b2d320"
+          },
+          "addons/vrm/vrm_utils.gd": {
+            "source_sha256": "0750c9411fb2857d85896c2285037d227005c4195bb7c8066b81d5ece4f6235c",
+            "gdc_sha256": "4887cb5ff898675fcd308dffae5138507325efe30e93d84c41e15cbf5ccf9562"
+          }
+        },
+        "reference_export_only": true,
+        "immutable_server_only_bytecode": {
+          "network/online_server.gd": {
+            "gdc_sha256": "e749ce3bfccffd6f26e98b7c0e21183a062b0c65334923be61237809f0ba30fb",
+            "source_read": false,
+            "baseline": "build/release0425/client/Orbstrike.pck"
+          },
+          "network/server_main.gd": {
+            "gdc_sha256": "0f2852d803d09ef6496c85601ece1e6a3c9385de6e5272ceb1a59fa188d7e1a1",
+            "source_read": false,
+            "baseline": "build/release0425/client/Orbstrike.pck"
+          }
+        },
+        "server_only_source_files_read": false,
+        "reference_export_environment_diagnostics": [
+          {
+            "phase": "import",
+            "exit_code": 0,
+            "diagnostics": [],
+            "log": "/home/loq/Документы/game/sfery_stikhiy/build/release0426-audit/reference-import.log"
+          },
+          {
+            "phase": "export",
+            "exit_code": 0,
+            "diagnostics": [],
+            "log": "/home/loq/Документы/game/sfery_stikhiy/build/release0426-audit/reference-export.log"
+          }
+        ]
+      },
+      "gate_wave": {
+        "approved_candidate_sha256": "485f1acf0f863a6d23b13c0be92c568743cdbd24c13f973bd5859f803800eb04",
+        "source_equals_candidate": true,
+        "wav": {
+          "channels": 2,
+          "sample_width_bytes": 3,
+          "sample_rate_hz": 48000,
+          "frames": 86400,
+          "compression": "NONE"
+        },
+        "imported_sample": ".godot/imported/gate_expand_wave.wav-b562da1ef352d69922072c22396a4ea2.sample",
+        "sample_sha256": "883c9625c8f127650c8d176b9f7b7e4073f1090ccdcc510a1262486956ac2bfa",
+        "sample_matches_last_workspace_import": true,
+        "import_stamp_matches_source_md5": true,
+        "license_in_pck_and_external_matches": true,
+        "preview_candidate_entries": []
+      },
+      "battle_music": {
+        "source_sha256": "4f897e5dc812c2ea682bb1a599142c68cb8b334eac366cd0bb5cfd5421a9eab6",
+        "runtime_target": ".godot/imported/battle.ogg-576bf3ec901858044b48cc31e9617e45.oggvorbisstr",
+        "runtime_sha256": "dea50a97d7db0ab3e38bc626954cdea448bb10e985c38eaa589d3d06c5696e4d",
+        "current_import_and_stamp_pass": true,
+        "author_backup_excluded": true,
+        "author_mp3_connected_to_runtime": false,
+        "listened": false
+      },
+      "source_models_sha256_pass": 49,
+      "imported_models_workspace_pass": 49,
+      "new_animation_and_skin_resources_sha256_pass": 14,
+      "animation_resources": {
+        "assets/animations/grifalon/fire.res": "3c4d9221cbc17a6895ac527dc04f2b7538396966f2f41b9c5913c8870441483f",
+        "assets/animations/grifalon/gale-wing-skin.res": "f6ae3843ab060a5483c691db1acfb381e84b6c08fed3dd37a34c6b6c9a1ecb3a",
+        "assets/animations/grifalon/gale.res": "5ea4bc28365b495a17e28bc9673d95c00b81af8f85ee17ef2e59fdaff339230b",
+        "assets/animations/grifalon/light.res": "ce2edac3269e4c60b4a91bcb7a7e61abd360bd750dd1a7a7a0a13ec60d9ce475",
+        "assets/animations/grifalon/shadow.res": "b4eb5b7ce428d8a3dbeac6760b4240ae562c98207f497935c9a46f0a16e5d029",
+        "assets/animations/grifalon/stone.res": "8e1dc1cab5208aeb3a248bf4c3fb8d8125f8eb241bea487a04d11565caabe81b",
+        "assets/animations/grifalon/tide.res": "964c27b92710d0f50fd769bdbb57f54e9f706930df3eb4f60a436166185c68a8",
+        "assets/animations/kolossar/fire.res": "be5cf29f8ba70982204ee5ff0d6010b5cb0a58a9a0f314986e206c010368d3b1",
+        "assets/animations/kolossar/gale.res": "e05bd4776596e912176de4e458daf6b78f1b1427c3285af756e3eaf3e3ea7a36",
+        "assets/animations/kolossar/light-heel-skin.res": "8371d01f0ff8ed85fad5f5a857dc83e520ba90ca7cca92b5e1e5bc66002c4ce0",
+        "assets/animations/kolossar/light.res": "3f1527329555306cf267e5311799cf3994e651090f5008172b70fab14f368297",
+        "assets/animations/kolossar/shadow.res": "581bfb5edc5cd656e0567e76d88031d5a1794dc569e1cbe117bc5931cf72c359",
+        "assets/animations/kolossar/stone.res": "d0fcf718807343ac395fa8c39e465f3f1a1d9ced4005ea2b9886cef9cb05c346",
+        "assets/animations/kolossar/tide.res": "745542ec795a36b21e992b50b5c5567c581fcd9d25e6444fcdb2762c21172ec8"
+      },
+      "new_runtime_scripts_present": {
+        "core/career.gd": "core/career.gdc",
+        "scenes/ui/career_panel.gd": "scenes/ui/career_panel.gdc",
+        "scenes/ui/device_settings.gd": "scenes/ui/device_settings.gdc",
+        "scenes/ui/device_motion.gd": "scenes/ui/device_motion.gdc",
+        "scenes/ui/opponent_panel.gd": "scenes/ui/opponent_panel.gdc",
+        "scenes/ui/creature_portrait.gd": "scenes/ui/creature_portrait.gdc",
+        "scenes/ui/portrait_matte.gd": "scenes/ui/portrait_matte.gdc",
+        "scenes/ui/portrait_background_regions.gd": "scenes/ui/portrait_background_regions.gdc",
+        "scenes/ui/card_hint.gd": "scenes/ui/card_hint.gdc",
+        "scenes/ui/card_hover.gd": "scenes/ui/card_hover.gdc",
+        "scenes/grifalon_motion.gd": "scenes/grifalon_motion.gdc",
+        "scenes/grifalon_gale_skin.gd": "scenes/grifalon_gale_skin.gdc",
+        "scenes/kolossar_motion.gd": "scenes/kolossar_motion.gdc",
+        "scenes/kolossar_light_skin.gd": "scenes/kolossar_light_skin.gdc",
+        "scenes/authored_ground_support.gd": "scenes/authored_ground_support.gdc"
+      },
+      "device_audio_imports": {
+        "assets/audio/sfx/device_click.wav": {
+          "source_sha256": "1747386ffc491a8dbef1ae1b179e97f0d181625ea25bf4e23f7e8398e4f801db",
+          "runtime_target": ".godot/imported/device_click.wav-bf454fcdfd3ec77f5dd44210fec1d544.sample",
+          "runtime_sha256": "ea9fd66dd21b1fe1b5f3ddb29afa43833dce1b1a1c3abba9bd7425539835b17b",
+          "import_stamp_current": true
+        },
+        "assets/audio/sfx/device_denied.wav": {
+          "source_sha256": "c70aac399d85e111f6d992038ac4d6fceae0eb1213a7490966f6acfc8df53b07",
+          "runtime_target": ".godot/imported/device_denied.wav-f260136424b850eb911b698dca0f2339.sample",
+          "runtime_sha256": "b5725ce21b0d01a37c2329c2a6232cfb7a15d72f95c6941ab5dca5f2dfb94eec",
+          "import_stamp_current": true
+        },
+        "assets/audio/sfx/device_hover.wav": {
+          "source_sha256": "18d7d6b91dfb38371c26ecb8f11a3811754417f5354351b343ed679f9cea8ae6",
+          "runtime_target": ".godot/imported/device_hover.wav-23975811728e7982486d9b2210a657f1.sample",
+          "runtime_sha256": "37053d560894487418a5db8785f8d3296baeb874052d9b70b5b276a991211afb",
+          "import_stamp_current": true
+        },
+        "assets/audio/sfx/device_power.wav": {
+          "source_sha256": "291b975fc509e8f25822352ea5897165ca89c45bc412acdbc6ea0ca46e78b026",
+          "runtime_target": ".godot/imported/device_power.wav-073844af0fee490abfdb1bab315ec6d3.sample",
+          "runtime_sha256": "1ecaada53613f89bd5dcbf30a09e438bcf16e8b149dcf453346367e6052fd509",
+          "import_stamp_current": true
+        },
+        "assets/audio/sfx/device_power_down.wav": {
+          "source_sha256": "44238435f0ce50a4e6ea13fc6c16a7d8c19907a385b2f73c99cba9cc6aa497eb",
+          "runtime_target": ".godot/imported/device_power_down.wav-6a7604abe3f18e0af94f67a3ce105a63.sample",
+          "runtime_sha256": "5a1c7596a1195dd1b12d92cc0465ccdb240e5ba2fd3044546cdbf5ef41f3886b",
+          "import_stamp_current": true
+        },
+        "assets/audio/sfx/device_power_up.wav": {
+          "source_sha256": "692102103efe003654637790b4e1df595cede94380fd72449c3072bf2070b943",
+          "runtime_target": ".godot/imported/device_power_up.wav-fe53d6b74c943306b563ff1f8bffcaa6.sample",
+          "runtime_sha256": "d6e4aab77f24f2ac21cea8ed8ca8dba99fb4088139e725cb5ca92a8704a730cd",
+          "import_stamp_current": true
+        },
+        "assets/audio/sfx/device_turn.wav": {
+          "source_sha256": "74648f459efffd3069844540fe795e5c66c4b1e298e9b70d704da55ecd86d73d",
+          "runtime_target": ".godot/imported/device_turn.wav-9dacd4a97d90109d37a6a1f67e8fa6fa.sample",
+          "runtime_sha256": "e5776e48c1eef14a470ecbb15a3c062a3d55a2bcb33dd8ead21951cd5572e021",
+          "import_stamp_current": true
+        }
+      },
+      "portrait_imports": {
+        "assets/portraits/creatures/dragnar_fire.png": {
+          "source_sha256": "09bd795755cafe06dd9d8b8531ac47c0b518ffe28c1968673279481138d4d822",
+          "runtime_target": ".godot/imported/dragnar_fire.png-2b06a2bf795ecab31e6489fcbfdecc01.ctex",
+          "runtime_sha256": "a6eddd4ef2f0f88f4476c180eacc93be38d44d9dd9aa85f24fe61cf8333d2270",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/dragnar_gale.png": {
+          "source_sha256": "102f10019ad02c2df75d97f5a587ecbdf61fd352c12ec773bea37f275506a7ed",
+          "runtime_target": ".godot/imported/dragnar_gale.png-99af307b5198a690fcc2d19889084d07.ctex",
+          "runtime_sha256": "fc84b5e84ccdb8367d670f21cc79625d17547347a43a2c2a8e867396f8a35286",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/dragnar_light.png": {
+          "source_sha256": "6f332ab7b1c0c64000beb2fdbb8bb3082add49a60a7c6d66b0ceed8c4d653397",
+          "runtime_target": ".godot/imported/dragnar_light.png-2764a12e15bbd084c2e1fb4a9c483d41.ctex",
+          "runtime_sha256": "e5547382b707b2370d9c43da41104ce245a2b52650e5ea552f8e40e9af25d08f",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/dragnar_shadow.png": {
+          "source_sha256": "59e198fc51757e62203a7cf044ba69672f53310479cd9c6de9aef912a779ed63",
+          "runtime_target": ".godot/imported/dragnar_shadow.png-73e665657496f86f13b64fbf27f2dc42.ctex",
+          "runtime_sha256": "79cb777160a85ad335adbd1ab4142c97ae5cf3e04d6390f86d035cdf59edde70",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/dragnar_stone.png": {
+          "source_sha256": "8fc7b5a6adde08dbc0822611361929673435448ff1f29213a459475ff29e1ab5",
+          "runtime_target": ".godot/imported/dragnar_stone.png-02546b7d3d7348af2a2686caf61297d2.ctex",
+          "runtime_sha256": "19bb5c5dcf19ebbccd93ae19e4743166dce6b1754a6449d0cfa5517769b189fa",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/dragnar_tide.png": {
+          "source_sha256": "6f41b9d05cacd8d724a65dba3d330cb626e6a05f0e43e13a66183909f8f945dc",
+          "runtime_target": ".godot/imported/dragnar_tide.png-607fd466bc9762c0b838e8c1b5b0005d.ctex",
+          "runtime_sha256": "22cfa72df17b839fa2b81271d4049854101ce0fe4d4e9f6abab480d4151a31e7",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/gorgul_fire.png": {
+          "source_sha256": "6db5c35491bfc38bcaaadf13dcb410a72af1da526913835cf691fcfef40e7e0c",
+          "runtime_target": ".godot/imported/gorgul_fire.png-875bf28ae5920c6db26355b8f60ea9e5.ctex",
+          "runtime_sha256": "015b86678ef899e49044824cf9438dddff7f1bb70bf387e33a7430ffbfb19d96",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/gorgul_gale.png": {
+          "source_sha256": "11f3b30eb9b44dde4b26887ad38ca5aef41bec263026618164995d00ef790728",
+          "runtime_target": ".godot/imported/gorgul_gale.png-1662e43718cc3ebf7643e2bfed62d803.ctex",
+          "runtime_sha256": "31170dc033353acb9125f63a8728789f05d3ac52bf285aa1173b31cf60d8876c",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/gorgul_light.png": {
+          "source_sha256": "d086ccdaee5a9162e6461691596d47b1316a5db91a882fb58f7e2a6f52f662c7",
+          "runtime_target": ".godot/imported/gorgul_light.png-2222430a8ce4a6e7b7b10a911e92ed74.ctex",
+          "runtime_sha256": "a58e3ae5de1205d89b77beaa66c6566b7f5286b890b26438f0b018f9335c65a5",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/gorgul_shadow.png": {
+          "source_sha256": "11e4fcb689389cf8031ba97ba0e3613faed2ff89ff80961671239f54f49c8a1f",
+          "runtime_target": ".godot/imported/gorgul_shadow.png-9b23b59e94ca64b56a2da283d5dc1ea3.ctex",
+          "runtime_sha256": "ef444ddf770819fb9a6d842526d1b0d58139a8bc356ef6afcd9771c5a7b32cd3",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/gorgul_stone.png": {
+          "source_sha256": "fc6aa5e5c0df54fe778a40eb7155e1bc0e3992574d14f04a0ff401ef2856ebe6",
+          "runtime_target": ".godot/imported/gorgul_stone.png-aed3f18d6699655f0c88928faf2779d9.ctex",
+          "runtime_sha256": "97e689acfbe9e49f5ea7e939fe08d620b4963da088deef640f59a8ae4f9fbc53",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/gorgul_tide.png": {
+          "source_sha256": "16676973ad8e906531ebac83cdadc1fbb65d33c52cd8c0096610989d280daa87",
+          "runtime_target": ".godot/imported/gorgul_tide.png-449843e4948fcedefaa29c98ec5d5bf7.ctex",
+          "runtime_sha256": "75859b7421388ca45fe57d9330f561667888cc4dcab1553844e1478889adf2dc",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/grifalon_fire.png": {
+          "source_sha256": "9ee3da379eab17b16b9fb4db966829d0ffa446b271621fece92894e769674022",
+          "runtime_target": ".godot/imported/grifalon_fire.png-2a456ad2400d85616c399da65e6493cf.ctex",
+          "runtime_sha256": "aefce1b27408b5eed5260f63e3421aed7ddf6fafbe260726b9318199a1051330",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/grifalon_gale.png": {
+          "source_sha256": "cf615c72998423157ca99f6fc575565a9437a78e4433827ed280cd7de8e236a3",
+          "runtime_target": ".godot/imported/grifalon_gale.png-2a34eb9761146cb588dd3b0370e7702e.ctex",
+          "runtime_sha256": "18720155d2a7f2bf1d0187a615d3f7e00f45b1c0b585341bc82f0bc53ab8e66a",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/grifalon_light.png": {
+          "source_sha256": "ed3edb3d68d6c226f3432a9955a5cc534a73746ec98eb88ece1724e08b95c760",
+          "runtime_target": ".godot/imported/grifalon_light.png-8795b89510ea238bc916a862de7fddfc.ctex",
+          "runtime_sha256": "54004439650f794c0f92d45da99ea9fa3c54b7fdbdc59a216c57f167f0f8fccd",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/grifalon_shadow.png": {
+          "source_sha256": "cca05869ea5ec767a04928b883f741e6ec426f4d5cd51aed2298fe35a89cbe52",
+          "runtime_target": ".godot/imported/grifalon_shadow.png-019648889854261c0904135abfc65dc9.ctex",
+          "runtime_sha256": "a41b0b98f187c4d57824eb8cffb5de73aab2ac26a2602465658546e8ad050f03",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/grifalon_stone.png": {
+          "source_sha256": "7397277f2d92dc312e356b3f31b5d1510bab99c4b195d9451de5005f0e3b91e8",
+          "runtime_target": ".godot/imported/grifalon_stone.png-c3d6a3ee76b7f17b257374f3c398ac2d.ctex",
+          "runtime_sha256": "7ec03945875b207e4dec1fd3dfeb366c8a148dd23b6c153c9e5be78b371060be",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/grifalon_tide.png": {
+          "source_sha256": "20c75ef06ad075593046ffdd97c358ffbf3ad8ba793ed4abc72d291d7ada3934",
+          "runtime_target": ".godot/imported/grifalon_tide.png-44780efc459261f66af127c78215c477.ctex",
+          "runtime_sha256": "dd01f237a23aa94cb881bbe4829c8110d53ce35428c8b864e2df66210607b946",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/klykar_fire.png": {
+          "source_sha256": "12c7f11c7272ad4abc72926287877009da1246577fedf607a2489bbeaa471ae6",
+          "runtime_target": ".godot/imported/klykar_fire.png-ce5507c509a8722db3aecca24e5b1013.ctex",
+          "runtime_sha256": "25f7daaeb8a7b51b7ce0efacd87ec18ba1962ab205316ee3cf80bdf7f830a39d",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/klykar_gale.png": {
+          "source_sha256": "347d96df4d6838369cbd399375463776c7905727144404ad940d51744dad613f",
+          "runtime_target": ".godot/imported/klykar_gale.png-7699ccc3127bb0b3dd725726f2dc9f6e.ctex",
+          "runtime_sha256": "dfcef247b6fe50b93711ce7283a74a58cce2d4ee0b8b5a16e50b907fe717a021",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/klykar_light.png": {
+          "source_sha256": "146dae00a52221a222c43bc9da700d6789ffc38274c76c0634f214741cda0bf7",
+          "runtime_target": ".godot/imported/klykar_light.png-142e01f36326eb556ab0e685085dec13.ctex",
+          "runtime_sha256": "884a9828267b950af95bab4f7f6d861842c1de0e9638b2951ef0b4c765c02c65",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/klykar_shadow.png": {
+          "source_sha256": "31431b731a43c4f58f04e45e1f4d219bbb23c18517058966b0e048b4fa846fa5",
+          "runtime_target": ".godot/imported/klykar_shadow.png-014a6a72bc183798a3ace54b4b60aefe.ctex",
+          "runtime_sha256": "cfc557b8233b36b4a37aaafdffe2bbd089bb3e17869948a917fedd33f0b17c54",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/klykar_stone.png": {
+          "source_sha256": "da5c5f5153ae38b95046f7008868dd01799082f859b98908e23c819caef446fe",
+          "runtime_target": ".godot/imported/klykar_stone.png-f3fe73d47eec42582f9bc58cd35c888d.ctex",
+          "runtime_sha256": "86cde1b044cf0a8ea5373b2700ee042c12104a5cd46df1e63d5f0e853e28ae6a",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/klykar_tide.png": {
+          "source_sha256": "b08890f5b258e4e746cdeb5788b1a5adc0d3e9045933fa0383fa68e3bc987d0f",
+          "runtime_target": ".godot/imported/klykar_tide.png-b20e6935c37883912d25583834543f27.ctex",
+          "runtime_sha256": "97584e1b7110e5908d8134b7049a558247474f27b0c03a36ccb11051ba558c13",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/kolossar_fire.png": {
+          "source_sha256": "8fd65b209cfe23c18a1565e451b16598ff590092b4ad1ec37db874e97fa4d1cc",
+          "runtime_target": ".godot/imported/kolossar_fire.png-14be54d5d19ac0a79e8a6117fb43fc2e.ctex",
+          "runtime_sha256": "846e1682afeec790c3e57814e6dc6df66415f108b4fcf21842d4c6f20d963d57",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/kolossar_gale.png": {
+          "source_sha256": "076a1ef388e5c35d140d748521c60f2adbf6a88edc4c7540507834e86cd3e9f8",
+          "runtime_target": ".godot/imported/kolossar_gale.png-221be62c8e400886deac9ce3f4ac19e1.ctex",
+          "runtime_sha256": "df80cb35f7f575ae654bfa816de12b428d05e1fc07aeccd797fbd2ac93065930",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/kolossar_light.png": {
+          "source_sha256": "d8c1baf0083d233dafe92988785b7a453246373708a1bb8128eb0a8645886433",
+          "runtime_target": ".godot/imported/kolossar_light.png-d0ca694db77d781d369760008b3668d8.ctex",
+          "runtime_sha256": "85ad2e7425303ac17cfe4d3387cf90389c208943a97ea8f202e1936e3bff82ed",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/kolossar_shadow.png": {
+          "source_sha256": "2272bf21b85a26a9a676fcbce668da953b0cb6ee434a72d59056f89a9fbdc371",
+          "runtime_target": ".godot/imported/kolossar_shadow.png-cba1d41e1fa66aade255a8a60e713a1f.ctex",
+          "runtime_sha256": "50fa3a86e41e4d12364735937b467082b4cc0d2d440700eaab6f76ffc30f33c8",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/kolossar_stone.png": {
+          "source_sha256": "d2159f76b766aa638ac07fb0a85141842d9843b32a7d3f2cb33b7876b9e4c8f3",
+          "runtime_target": ".godot/imported/kolossar_stone.png-60bfd78e742926099232e3e72b5697c3.ctex",
+          "runtime_sha256": "ebadfce3fb40aef9efc4567d6d88406b9ba40e4569bcf52b69d73db3cf7b5066",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/kolossar_tide.png": {
+          "source_sha256": "8ee6878ca01e8e3b6c39ae152d98102632b54a943850d911ac2a0ce83a89262b",
+          "runtime_target": ".godot/imported/kolossar_tide.png-6938899eb61a06b236a12231819aa8c6.ctex",
+          "runtime_sha256": "7dfa3621d50add9b59ff45dd807ac9cb0e6e79da1c31f58b5eb0161c47a2d1d3",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/levian_fire.png": {
+          "source_sha256": "9415738cdae8f6bb7651a21ed610fe0ea3f15f25e2597ec42ea08b208dd3ca91",
+          "runtime_target": ".godot/imported/levian_fire.png-06a126372ca0c0c65c1878eb7b68ae29.ctex",
+          "runtime_sha256": "5e9e25a774c7bb5311d5ce33067f0b76b2baf6d2557ae342f035d352ac65b291",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/levian_gale.png": {
+          "source_sha256": "306afd3d489042aeaddbcdecf78b0ce3159ce75a8c68d000b3695129a706a8ab",
+          "runtime_target": ".godot/imported/levian_gale.png-ea418fe00ec968d69f47e0a427d0b48a.ctex",
+          "runtime_sha256": "18f0b6053e12d892494fde2b471bbb68cfd745bb9d25a97ee9792d11ffc14641",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/levian_light.png": {
+          "source_sha256": "37033956290332be58ca67d98f7cc7667913fb884204ec28fee3d624bad63612",
+          "runtime_target": ".godot/imported/levian_light.png-7731cc02b971b164090635ffb3cdf01b.ctex",
+          "runtime_sha256": "0e5b000c0b02e43f72202d27bd134b78beaf3429816bd807f48827c41530272a",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/levian_shadow.png": {
+          "source_sha256": "fa9b6553d2a07675800dbd0985fe11c75802be8e6fed3069f01e5698c482a335",
+          "runtime_target": ".godot/imported/levian_shadow.png-54ebecfe483730ea68783c54715cf6e2.ctex",
+          "runtime_sha256": "06da59ec7df3435fda28ecc5ac06a1ebae740c3d070299694d78bdd1e28f2f6e",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/levian_stone.png": {
+          "source_sha256": "3853dcbbd5b9ad068e91f0f92d4b38771298bdd5d745edf4cc941dd7647970b4",
+          "runtime_target": ".godot/imported/levian_stone.png-9703157db8bcfa208b7be94b1df8bf8a.ctex",
+          "runtime_sha256": "2ae40732a397d8adcee62f22d0440ec9a0578b97fa59c3863f1abc7a404e7b2b",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/levian_tide.png": {
+          "source_sha256": "da72dfadcc07f3ddd9c9508ade64fc9965374fe3fa235cb252cfcdd69cd00f1d",
+          "runtime_target": ".godot/imported/levian_tide.png-159f74178eaa783f8b76fba41cad997c.ctex",
+          "runtime_sha256": "f5dac6d9492cbaef17f571bc56ae53de5c6a23c0bdde62b9f71c496050447ba7",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/likorez_shadow.png": {
+          "source_sha256": "bc60dcbdeaebe6b4f6239a384020e96cc6d7f014f07a7e677b78d3a54bc4157e",
+          "runtime_target": ".godot/imported/likorez_shadow.png-5f23b5080daec47a5ea7060ae55f5f5a.ctex",
+          "runtime_sha256": "71b0d0b1f206a4880fd64eef73a488d77b482bffa4cf4cfc274d934c8ebdb995",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/ratnik_fire.png": {
+          "source_sha256": "eb2dce1c7e2d3b862b8857c60b39a92ef0087b94668d6be9e59f37695ba0625a",
+          "runtime_target": ".godot/imported/ratnik_fire.png-f625571218c87a6560629f0c63fea9f8.ctex",
+          "runtime_sha256": "7e1cf26e15d69682635a700a3ec47baf7ed4ac218c3c202d75f670657f38381b",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/ratnik_gale.png": {
+          "source_sha256": "d28a6bab2af4531d19c6a5bde88797b5f104900695592c979b044224feda94f5",
+          "runtime_target": ".godot/imported/ratnik_gale.png-416d6009559c7c73ba25197750e0a9e3.ctex",
+          "runtime_sha256": "16d3e732eb2f48b4a302d441626f8dea35673c6952662d09f18203bb5dcfd79d",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/ratnik_light.png": {
+          "source_sha256": "1ea156c75cfc60f78d85710704c025bec0805c08e61a609b1e9d3666ac451601",
+          "runtime_target": ".godot/imported/ratnik_light.png-a9c67a217233273fe04666e4d2f23665.ctex",
+          "runtime_sha256": "44589bfab2b3f489d845df10583ea4116ab0422e6723c3e427206ed9eca70abe",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/ratnik_shadow.png": {
+          "source_sha256": "08f6487590108dc7d4d0fa1cf83b254be2d8c00c89491308f96e64c9de0dde85",
+          "runtime_target": ".godot/imported/ratnik_shadow.png-cc82731696e0c02663210b2b873f3f4d.ctex",
+          "runtime_sha256": "ae6a922b001ae1f9b3af82b7ccf6af7da2370fa35851d1f3376f91f2141f3b92",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/ratnik_stone.png": {
+          "source_sha256": "07e895e129ffc1d034ae1c4fcb8576826b7d3986e7a688ab3b3f246aa68112a7",
+          "runtime_target": ".godot/imported/ratnik_stone.png-a0fe75e0781bafd238e414e55c128cac.ctex",
+          "runtime_sha256": "e44da211a7fba7bbace4b3fd3973245610337cf19cd1fae5886e876e3e292b43",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/ratnik_tide.png": {
+          "source_sha256": "2bc41fe2a902f7c92b82f6912aca96685756d663ef708442c1d5c610dc2658d1",
+          "runtime_target": ".godot/imported/ratnik_tide.png-da67419fec8d4ef0a88fcc6d2eeacda7.ctex",
+          "runtime_sha256": "862bdb7929ed40513fa021de9bdfdb33988def98939e244cf48401ca1e1a0ee8",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/rogozhuk_fire.png": {
+          "source_sha256": "f94d8ea94dd07e82e2b5373146a0c48ff790561c05afd4bd3aced07366590b58",
+          "runtime_target": ".godot/imported/rogozhuk_fire.png-aa6638731906b0a7fc9a39ca2f0521d7.ctex",
+          "runtime_sha256": "0e5c52a8347b44356686618c7e65a15eb5d87582a81e64140999ee1f5df9abd8",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/rogozhuk_gale.png": {
+          "source_sha256": "348364392439ce8082e1c4e3c3d306a75541607a61f70b22d6c656d7e007a861",
+          "runtime_target": ".godot/imported/rogozhuk_gale.png-d0d25d3aa5ccc18cdae2692eb5c107ba.ctex",
+          "runtime_sha256": "c0b9a3937d04466bd6085adc731229f39e1b8088279ed6425a4a69a635d8447d",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/rogozhuk_light.png": {
+          "source_sha256": "e17ddede4bd405ecb4425180c0db2cbc12379632bb42b2f3c7aa93a6cb1b4b42",
+          "runtime_target": ".godot/imported/rogozhuk_light.png-77709ef4e9aea008072668b7443828ee.ctex",
+          "runtime_sha256": "6adcc6ba60c3bf40a49c78a2b8dc3867bd9c0ed28f6a5bbb691b8405650b6b2b",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/rogozhuk_shadow.png": {
+          "source_sha256": "4936803fe2a50cb08c51ab14a5619dd7cc7c27fee9265f85d6ce5b4055eab306",
+          "runtime_target": ".godot/imported/rogozhuk_shadow.png-25ffe858cb7bcfff7382e5042d1c64ff.ctex",
+          "runtime_sha256": "7960b66cf131622c623942a8b0bcdcd925ebcb632745f6a1b0745883e4caec95",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/rogozhuk_stone.png": {
+          "source_sha256": "47991d6815cedf4160d1c756a4bac3e44069e8e63ebc7991f6bdcfae4ae1e921",
+          "runtime_target": ".godot/imported/rogozhuk_stone.png-3f7a78f753446d643236510649b06e8d.ctex",
+          "runtime_sha256": "e02ab5f1f6ceba80182c69de328d767dff52f3205ea9f724237e82b864dd7b71",
+          "import_stamp_current": true
+        },
+        "assets/portraits/creatures/rogozhuk_tide.png": {
+          "source_sha256": "9178dfe6df5581fe43c3f6aa93fee383309828bf44e9e2ae1a71f8f1554b5f18",
+          "runtime_target": ".godot/imported/rogozhuk_tide.png-c70538f6f62bc60091304d8114331e50.ctex",
+          "runtime_sha256": "a87db168ba341995bd3aeed6b4c5d6b28eae8eacef33be73206a9851f336f6a3",
+          "import_stamp_current": true
+        }
+      },
+      "old_042_unchanged_original_portrait_pngs": 49,
+      "old_042_unchanged_animation_overlay_resources": 14,
+      "portrait_backdrop_shader_exact": true,
+      "prepared_pdat_sha256_pass": 68,
+      "prepared_manifest_sha256_pass": true,
+      "kevin_banks_sha256_pass": 2,
+      "editor_catalog_imports_sha256_pass": 2,
+      "required_runtime_resources": {
+        "project.binary": "project.binary",
+        "scenes/loading/boot.tscn": ".godot/exported/133200997/export-957917e049dbb644ce45c5cd4e97012e-boot.scn",
+        "scenes/main.tscn": ".godot/exported/133200997/export-3ad5c15c4f3250da0cc7c1af1770d85f-main.scn",
+        "scenes/main.gd": "scenes/main.gdc",
+        "scenes/loading/game_loading.gd": "scenes/loading/game_loading.gdc",
+        "scenes/loading/startup_catalog.gd": "scenes/loading/startup_catalog.gdc",
+        "scenes/ui/character_editor.gd": "scenes/ui/character_editor.gdc",
+        "core/campaign.gd": "core/campaign.gdc",
+        "core/tournament.gd": "core/tournament.gdc",
+        "data/tournament_session.gd": "data/tournament_session.gdc",
+        "scenes/online/online_game.gd": "scenes/online/online_game.gdc",
+        "network/online_client.gd": "network/online_client.gdc",
+        "network/online_protocol.gd": "network/online_protocol.gdc",
+        "network/online_physics.gd": "network/online_physics.gdc",
+        "network/state_codec.gd": "network/state_codec.gdc"
+      },
+      "forbidden_paths": [],
+      "kevin_runtime_only_paths": [
+        "assets/avatars/motions/kevin_local/fighter_0.res",
+        "assets/avatars/motions/kevin_local/fighter_1.res"
+      ],
+      "canonical_documents_licenses_sha256_pass": 9,
+      "zip_document_private_signature_findings": [],
+      "zip": {
+        "path": "build/Orbstrike_v0.4.2.6_win64.zip",
+        "bytes": 1035655235,
+        "sha256": "9cbf7f1c8ad35d8b4df94dfe625933710f440f009d1d044a1df88b9c75e42cde",
+        "crc_all_pass": 12,
+        "archive_root_prefix": "",
+        "exact_staging_files_sha256": {
+          "CHANGELOG.md": "1b024306afe1351ee4a97059c9f563c84e76d3b8bb930747e1100328cebc1cc8",
+          "CREDITS.md": "fc33751841ae940db09b712a15549fb022eb41dbcd870fc818c47ece93cb4c39",
+          "LICENSES/FIRA_SANS_OFL.txt": "e1b302b6eac8d0cdbc7786f84fb4fa953d8be4db37613789c1a06adb57d33222",
+          "LICENSES/GATE_WAVE_CC0.txt": "f34c3ccfea18b90f943bac6545b876ffaf73ea0530cceff2c5c416712c92f8dc",
+          "LICENSES/GODOT_VRM.txt": "d39666c721f8453445364e66a08d0edec6fbc5b8e30ee1d9d710e84a3094c101",
+          "LICENSES/GPU_CLOTH.txt": "3e53bd060020c64601b050a039d42a07f969eafd1085e16b4b93e0f97f7c7689",
+          "LICENSES/MTOON.txt": "fd0a82d7d32ad7e39948363114587a3290252ee9a57da0da1582f1e9f0e602f5",
+          "LICENSES/QUATERNIUS.txt": "6d01f55c6e4c49a2c9963e147e561945ae2c83958c8ca667d90a6bffdbfac061",
+          "Orbstrike.exe": "5659dc5fe98429cd2bc94b12e214a649cb9d89bf7b8e8bbec65aa7377147b9b3",
+          "Orbstrike.pck": "4447af8e9b7bfd9ae1ae6e7ed822a9d70a4484cf0d875ad6b8a84a4d1a3ac6b4",
+          "README.txt": "71e5675494bdc5f56331f88b9b4db28d24fae180ecf5bda429c4fb2d88323768",
+          "RULES.md": "13e4a06e3fc93b741e05b0fd047665e579b33daea1d647df063a4802ec86760f"
+        },
+        "sha256_sidecar_pass": true
+      }
+    }
+  },
+  "client_package": {
+    "archive": "/home/loq/Документы/game/sfery_stikhiy/build/Orbstrike_v0.4.2.6_win64.zip",
+    "bytes": 1035655235,
+    "sha256": "9cbf7f1c8ad35d8b4df94dfe625933710f440f009d1d044a1df88b9c75e42cde",
+    "build_seconds": 28.366558837999946,
+    "client_only": true,
+    "files": {
+      "CHANGELOG.md": {
+        "bytes": 157764,
+        "sha256": "1b024306afe1351ee4a97059c9f563c84e76d3b8bb930747e1100328cebc1cc8"
+      },
+      "CREDITS.md": {
+        "bytes": 40773,
+        "sha256": "fc33751841ae940db09b712a15549fb022eb41dbcd870fc818c47ece93cb4c39"
+      },
+      "LICENSES/FIRA_SANS_OFL.txt": {
+        "bytes": 4421,
+        "sha256": "e1b302b6eac8d0cdbc7786f84fb4fa953d8be4db37613789c1a06adb57d33222"
+      },
+      "LICENSES/GATE_WAVE_CC0.txt": {
+        "bytes": 735,
+        "sha256": "f34c3ccfea18b90f943bac6545b876ffaf73ea0530cceff2c5c416712c92f8dc"
+      },
+      "LICENSES/GODOT_VRM.txt": {
+        "bytes": 1391,
+        "sha256": "d39666c721f8453445364e66a08d0edec6fbc5b8e30ee1d9d710e84a3094c101"
+      },
+      "LICENSES/GPU_CLOTH.txt": {
+        "bytes": 1067,
+        "sha256": "3e53bd060020c64601b050a039d42a07f969eafd1085e16b4b93e0f97f7c7689"
+      },
+      "LICENSES/MTOON.txt": {
+        "bytes": 1141,
+        "sha256": "fd0a82d7d32ad7e39948363114587a3290252ee9a57da0da1582f1e9f0e602f5"
+      },
+      "LICENSES/QUATERNIUS.txt": {
+        "bytes": 332,
+        "sha256": "6d01f55c6e4c49a2c9963e147e561945ae2c83958c8ca667d90a6bffdbfac061"
+      },
+      "Orbstrike.exe": {
+        "bytes": 109127680,
+        "sha256": "5659dc5fe98429cd2bc94b12e214a649cb9d89bf7b8e8bbec65aa7377147b9b3"
+      },
+      "Orbstrike.pck": {
+        "bytes": 1153413620,
+        "sha256": "4447af8e9b7bfd9ae1ae6e7ed822a9d70a4484cf0d875ad6b8a84a4d1a3ac6b4"
+      },
+      "README.txt": {
+        "bytes": 1648,
+        "sha256": "71e5675494bdc5f56331f88b9b4db28d24fae180ecf5bda429c4fb2d88323768"
+      },
+      "RULES.md": {
+        "bytes": 48118,
+        "sha256": "13e4a06e3fc93b741e05b0fd047665e579b33daea1d647df063a4802ec86760f"
+      }
+    }
+  },
+  "visual_review": {
+    "reviewer": "Sol high",
+    "viewed_pngs": 19,
+    "scope": "9standby/49monsters,8exit layouts,2RUconfirm dialogs; scoped actualPCKUI not full match or allHUD",
+    "png_manifest": "docs/audits/2026-11-08-release0426/packed-png-manifest.json"
+  },
+  "limitations": [
+    "native Windows/Windows Vulkan not run",
+    "two full matches not repeated for this scoped UI release",
+    "listening not performed",
+    "server remains unchanged; public rules10 is incompatible with client rules11"
+  ],
+  "previous_draft_preserved": {
+    "tag": "v0.4.2.5",
+    "commit": "a5ccac42bfa5fd073361ab8e3c00e88726823bb7",
+    "draft_id": 438072604
+  },
+  "publication": null
+}

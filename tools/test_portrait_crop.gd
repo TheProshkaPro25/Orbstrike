@@ -88,7 +88,7 @@ func _run() -> void:
 		check(portrait._fallback.texture == presentation, "turning crop off restores full prepared silhouette immediately: " + key)
 		for panel: OpponentPanel in [own, opponent]:
 			panel.present(definition, 7, 420)
-			check(panel._portrait._hud_crop_enabled and panel._portrait._fallback.texture == hud, "real panel opts into same exact HUD ID on side" + str(panel.player_side) + ": " + key)
+			check(not panel._portrait._hud_crop_enabled and panel._portrait._fallback.texture == presentation, "real panel preserves full silhouette on side" + str(panel.player_side) + ": " + key)
 			check(panel._portrait._viewport == null and panel._portrait._camera == null and not panel._portrait.is_processing(), "known2D portrait allocates no render world/process on side" + str(panel.player_side) + ": " + key)
 	check(cropped == 42 and kept == 7, "42 per-ID crops plus7 deliberate fullbody decisions cover49")
 	check(CreaturePortrait.reference_texture(&"creature_unknown") == null and CreaturePortrait.hud_reference_texture(&"creature_unknown") == null, "unknown ID cannot borrow another exact portrait")

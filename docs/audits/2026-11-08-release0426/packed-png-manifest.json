@@ -1,0 +1,122 @@
+{
+  "battle_ui_followup/exit-0-1280-false.png": {
+    "bytes": 34651,
+    "sha256": "6c909dc79fd1864072f140e16afcd9067e7795ada558fb90d49023a2aac8e965"
+  },
+  "battle_ui_followup/exit-0-1280-true.png": {
+    "bytes": 45384,
+    "sha256": "ef36605f58b89ac0d3d2cf4ac0cb4e205fe4c58a9e980547a950a7051f61869c"
+  },
+  "battle_ui_followup/exit-0-960-false.png": {
+    "bytes": 31923,
+    "sha256": "56063871985d094d7e551934682b7112fb3c0e1e4a444261e26f7621b1371b12"
+  },
+  "battle_ui_followup/exit-0-960-true.png": {
+    "bytes": 43408,
+    "sha256": "854b6356756a3f2b33c55e9be50f9488caaaedc9192cfc830c48992885a9fc17"
+  },
+  "battle_ui_followup/exit-1-1280-false.png": {
+    "bytes": 25420,
+    "sha256": "a0f19dcb5e1bbe7b703b89c15652f4755fa9e12c24b93f5ee628af2ed6573bab"
+  },
+  "battle_ui_followup/exit-1-1280-true.png": {
+    "bytes": 30198,
+    "sha256": "77885194a722518fbd5a3259372a8f7d1d14a8859502f54ca68e60a2bab9e89d"
+  },
+  "battle_ui_followup/exit-1-960-false.png": {
+    "bytes": 23866,
+    "sha256": "153543a2e0b97d494f2ca3ab81855ab295bb4daae5c7463314661645a94ea29f"
+  },
+  "battle_ui_followup/exit-1-960-true.png": {
+    "bytes": 28150,
+    "sha256": "e351cd391f111a94380c5cbb0f71ed93a199f5674279901658454a4c1a899b20"
+  },
+  "portrait_standby/creatures-full-panel-0.png": {
+    "bytes": 180785,
+    "sha256": "aff4dab61c43b4249d291b53b247362e59ccb7c4f54c13528b5f86fd8e543b23"
+  },
+  "portrait_standby/creatures-full-panel-1.png": {
+    "bytes": 190182,
+    "sha256": "98f7c82cff17ee5990f86cc73eae818c34978c8d676237fe8b536d211119c4eb"
+  },
+  "portrait_standby/creatures-full-panel-2.png": {
+    "bytes": 132565,
+    "sha256": "3908894aab9f72541ff406984987e5e3c5b21e4ae9cf8699c2b9b0ad84a1beaa"
+  },
+  "portrait_standby/hero-original-0.png": {
+    "bytes": 28144,
+    "sha256": "c5608fa76ffbe69fcfcf10c10ce8f5f21567e4034708928f3c859a913c269ae7"
+  },
+  "portrait_standby/hero-original-1.png": {
+    "bytes": 27722,
+    "sha256": "0ecb7c4d6bf968af7d952f0956a26ec35d84acbde27d802a1a5d736b2c240576"
+  },
+  "portrait_standby/hero-portrait-0.png": {
+    "bytes": 19608,
+    "sha256": "134bc8ba3e41c7dd87a92800958a7f361982c3ad329c659c07e7cf6ba029744f"
+  },
+  "portrait_standby/hero-portrait-1.png": {
+    "bytes": 16282,
+    "sha256": "c0dce24da2dfc9177d2ec1a67ab208a8c1f82c86a575cd51a6ba9fb33b8f2238"
+  },
+  "portrait_standby/hero-standby-0.png": {
+    "bytes": 27658,
+    "sha256": "1122ba5b91e9a1b8988dc40d6cae7aa7dadc3c5799768bf9037b23817db3cd56"
+  },
+  "portrait_standby/hero-standby-1.png": {
+    "bytes": 28055,
+    "sha256": "fed186dd38e3ebaae846a718f281057cd9a78329f837936e60ccb513110dc8a2"
+  },
+  "ui/chain-overflow-pagedown.png": {
+    "bytes": 79040,
+    "sha256": "30457855333d25a636fb186629b833b2d5b9b06be897a9d949d225137d4f964d"
+  },
+  "ui/classic-1280-false.png": {
+    "bytes": 166973,
+    "sha256": "dd0b9906225d33fa4e0e0e80d901f6e7dc3d8c0ee5c352c15f286fedca4d207f"
+  },
+  "ui/classic-1280-true.png": {
+    "bytes": 167414,
+    "sha256": "38561f575bfd9d27bc0283e306f797b916d32516f57f8a120de1fb3023a4c73e"
+  },
+  "ui/classic-960-false.png": {
+    "bytes": 121824,
+    "sha256": "f60ecd1cc8b3a8d17812ac12471d82fc73c9cb1956d935109ee666df5f02a487"
+  },
+  "ui/classic-960-true.png": {
+    "bytes": 121801,
+    "sha256": "8a044253a590ff7c677f8e98b1e3865ce97e13837e13c310ff9680e0743ca1bc"
+  },
+  "ui/device-1280-false.png": {
+    "bytes": 157597,
+    "sha256": "1bd1c4d307544f34e6135dd5880f5b3b09a6699fa387a851c700f321d14815c7"
+  },
+  "ui/device-1280-true.png": {
+    "bytes": 157367,
+    "sha256": "ef82c1fe89056d2c19a854878b7dc32620f87571205724a25fdcf5361cc58576"
+  },
+  "ui/device-960-false.png": {
+    "bytes": 116319,
+    "sha256": "28c13fc23edb50ecb8a7c9130b1757c4801af64cd4be7707b811057a69165ded"
+  },
+  "ui/device-960-true.png": {
+    "bytes": 116307,
+    "sha256": "ed3af0b44d033b02f2b36190544a0c607b7697a71cfc12c5d17e5293c55310d4"
+  },
+  "ui/tournament-entry-0.png": {
+    "bytes": 267520,
+    "sha256": "871109d923455b4646d4fa0ea5cb2e76211235d1299e46935f8b24b9998a8438"
+  },
+  "ui/tournament-entry-1.png": {
+    "bytes": 257913,
+    "sha256": "a4328154be10ad8abf69a0e8e3e458339243f5139fa634715b4b6838bed8f92f"
+  },
+  "ui/tournament-exit-0.png": {
+    "bytes": 285473,
+    "sha256": "4107c73f8750bef0f16d738e63b339662beea5df0adf3cada593716b249c2354"
+  },
+  "ui/tournament-exit-1.png": {
+    "bytes": 275119,
+    "sha256": "32d1d5f58cd6e9246d3a21c778b8a692fc9217ddb0d07a11a62b5c766f05d318"
+  }
+}

@@ -50,7 +50,6 @@ func _init() -> void:
 	_portrait_row.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_content.add_child(_portrait_row)
 	_portrait = PORTRAIT.new()
-	_portrait.set_hud_crop_enabled(true)
 	_portrait.name = "ResidentCreaturePortrait"
 	_portrait.custom_minimum_size.x = 72
 	_portrait.size_flags_vertical = Control.SIZE_EXPAND_FILL

@@ -29,6 +29,7 @@ var _help_wait := 0.0
 var _help_lost := 0.0
 var _mouse_position := Vector2.ZERO
 var _keyboard_help := false
+var _dismissed_help_chip: PlayedCardChip
 var _entrance_tween: Tween
 var _power_tweens: Array[Tween] = [null, null]
 var _feedback_tweens: Array[Tween] = []
@@ -70,9 +71,13 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouseMotion:
-		_mouse_position = event.position
+	if event is InputEventMouseMotion or event is InputEventMouseButton:
 		_keyboard_help = false
+		if event is InputEventMouseMotion: _mouse_position = event.position
+	if event.is_action_pressed("ui_cancel"):
+		_dismissed_help_chip = _help_chip
+		_keyboard_help = false
+		_clear_chain_help()
 
 
 func _process(delta: float) -> void:
@@ -81,6 +86,9 @@ func _process(delta: float) -> void:
 		return
 	var hovered := get_viewport().gui_get_hovered_control()
 	var focused := get_viewport().gui_get_focus_owner()
+	if is_instance_valid(_dismissed_help_chip):
+		if hovered == _dismissed_help_chip: return
+		_dismissed_help_chip = null
 	if _keyboard_help and focused is PlayedCardChip and focused.get_parent() == _chain:
 		hovered = focused
 	if hovered is PlayedCardChip and hovered.get_parent() == _chain and not hovered.help.is_empty():
@@ -736,6 +744,7 @@ func _chip(text: String, side: int, dim: bool = false) -> PlayedCardChip:
 		c = c.darkened(0.35)
 	var pc := PlayedCardChip.new()
 	pc.focus_entered.connect(func() -> void:
+		_dismissed_help_chip = null
 		_keyboard_help = true
 		_clear_chain_help())
 	pc.mouse_filter = Control.MOUSE_FILTER_IGNORE

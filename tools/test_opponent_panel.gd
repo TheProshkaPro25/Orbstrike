@@ -222,7 +222,7 @@ func _check_portrait(panel: OpponentPanel) -> void:
 		check(texture != null and texture.resource_path == expected_path,"portrait catalog maps exact definition id " + String(id))
 		check(texture != null and texture.get_width() > 0 and texture.get_height() > 0,"portrait resource has real pixels " + String(id))
 		panel.present(definition,77,370)
-		check(portrait._fallback.texture == CreaturePortrait.hud_reference_texture(id) and portrait._viewport == null and portrait._camera == null,"present selects exact2D HUD composition without graphics setup " + String(id))
+		check(portrait._fallback.texture == CreaturePortrait.presentation_texture(id) and not portrait._hud_crop_enabled and portrait._viewport == null and portrait._camera == null,"present keeps full2D silhouette without graphics setup " + String(id))
 	check(mesh.layers == original and mesh.global_transform == transform,"complete49portrait iteration preserves resident actor")
 	game._present_battle_opponent(0,4,[420,510])
 

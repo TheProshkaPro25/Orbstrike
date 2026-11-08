@@ -114,18 +114,18 @@ func _new_match() -> void:
 		var expected_position := Vector3(-2.3 if side == 0 else 2.3,0,(main.THROW_Z+1.4)*(1 if side == 0 else -1))
 		var expected_basis := Basis(Vector3.UP,PI if side == 0 else 0.0)
 		var portrait: FighterPortrait = main.fighter_portraits[side]
-		var side_layer := 1 << (18+side)
 		if fighter.selected != int(expected_profile.vrm_model) or fighter.get_parent() != main.world or not fighter.position.is_equal_approx(expected_position) or not fighter.basis.is_equal_approx(expected_basis):
 			printerr("FAIL: боец привязан к неверной стороне после аренды: ",side)
 			_finish(1)
 			return
-		if portrait.fighter != fighter or portrait.camera.cull_mask != side_layer:
+		if portrait.fighter != fighter or portrait.world_3d == fighter.get_world_3d() or not is_instance_valid(portrait._standby_skeleton):
 			printerr("FAIL: портрет привязан к чужому бойцу после аренды: ",side)
 			_finish(1)
 			return
 		for mesh: MeshInstance3D in fighter.meshes:
-			if mesh.layers != side_layer:
-				printerr("FAIL: слой портрета бойца не соответствует стороне: ",side)
+			var copy: MeshInstance3D = portrait.replica_node(mesh)
+			if copy == mesh or copy.mesh != mesh.mesh or copy.skin != mesh.skin or mesh.layers != 1 << (18 + side):
+				printerr("FAIL: standby портрет не переиспользует ресурсы бойца: ",side)
 				_finish(1)
 				return
 	var leased: Array[int] = []

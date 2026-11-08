@@ -314,11 +314,16 @@ func _build_ui() -> void:
 
 
 func _place_duel_menu(battle: bool) -> void:
-	if DeviceSettings.is_device():
-		VisualUtil.place(_duel_menu,1.0,0.0,-16.0,60.0)
-		return
-	# В бою верхняя полоса свободна; правую силу и руку способностей не закрываем.
-	VisualUtil.place(_duel_menu, 0.5 if battle else 1.0, 0.0, 0.0 if battle else -16.0, 12.0 if battle else 164.0)
+	# Ordinary and tournament matches share one exit slot in the HUD toolbar.
+	for button in [_duel_menu, _tournament_exit]:
+		if not is_instance_valid(button): continue
+		if battle:
+			# Leave the phase label at y=52 and both battle side panels clear.
+			VisualUtil.place(button, 0.5, 0.0, 0.0, 4.0)
+		elif DeviceSettings.is_device():
+			VisualUtil.place(button, 1.0, 0.0, -16.0, 60.0)
+		else:
+			VisualUtil.place(button, 1.0, 0.0, -16.0, 164.0)
 
 
 func _on_deck_chosen(creatures: Array[StringName], arena_ids: Array[StringName], abilities: Array[StringName]) -> void:
@@ -2201,6 +2206,7 @@ func _play_tournament_match() -> void:
 	hud.show()
 	_tournament_exit = _make_tournament_exit_button()
 	ui_layer.add_child(_tournament_exit)
+	_place_duel_menu(hud._battle)
 	_preparing = true
 	_build_logic()
 	call_deferred("_start_game")
@@ -2212,7 +2218,7 @@ func _make_tournament_exit_button() -> Button:
 	button.custom_minimum_size = Vector2(0, 36)
 	button.text = "Выйти из турнира"
 	button.tooltip_text = "Этот незавершённый матч при продолжении начнётся заново"
-	button.position = Vector2(12, 74)
+	VisualUtil.place(button, 1.0, 0.0, -16.0, 60.0 if DeviceSettings.is_device() else 164.0)
 	button.pressed.connect(func() -> void:
 		var confirm := ConfirmationDialog.new()
 		confirm.theme = UiTheme.get_theme()

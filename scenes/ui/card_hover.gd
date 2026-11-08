@@ -31,6 +31,13 @@ static func close_active() -> void:
 	_active = null
 
 
+func _input(event: InputEvent) -> void:
+	# Focus may have been restored during a hand rebuild while the pointer was
+	# already outside this card. Its local mouse_exited signal will never fire.
+	if event is InputEventMouseMotion or event is InputEventMouseButton:
+		queue_free()
+
+
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not is_instance_valid(_source) or not _source.has_focus(): return
 	if event is InputEventKey and event.pressed and not event.echo:

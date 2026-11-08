@@ -1,0 +1,17 @@
+Godot Engine v4.7.2.stable.arch_linux.ed1daf0bf (2026-08-17 01:18:38 UTC) - https://godotengine.org
+
+BATTLE UI FOLLOWUP 58/14
+FAIL: tournament exit avoids @PanelContainer@12 style=0 battle=false
+FAIL: tournament exit avoids @VBoxContainer@29 style=0 battle=false
+FAIL: tournament exit avoids @PanelContainer@69 style=0 battle=true
+FAIL: tournament exit avoids @PanelContainer@12 style=0 battle=false
+FAIL: tournament exit avoids @VBoxContainer@29 style=0 battle=false
+FAIL: tournament exit avoids @PanelContainer@69 style=0 battle=true
+FAIL: tournament exit avoids @PanelContainer@12 style=1 battle=false
+FAIL: tournament exit avoids @VBoxContainer@29 style=1 battle=false
+FAIL: tournament exit avoids @PanelContainer@69 style=1 battle=true
+FAIL: tournament exit avoids @PanelContainer@12 style=1 battle=false
+FAIL: tournament exit avoids @VBoxContainer@29 style=1 battle=false
+FAIL: tournament exit avoids @PanelContainer@69 style=1 battle=true
+FAIL: switching to arena pointer dismisses keyboard disclosure
+FAIL: Esc dismisses hovered battle help without immediate reopening
