@@ -23,6 +23,8 @@ func _run() -> void:
 	DEVICE.settings_path = _out.path_join("device-settings.cfg")
 	DEVICE.reload_settings()
 	DEVICE.set_style(DEVICE.CLASSIC)
+	# Mirror Boot preparation for this isolated 2D fixture; getters do no work.
+	preload("res://scenes/ui/creature_portrait.gd").preload_catalog()
 	_panel = PANEL.new()
 	root.add_child(_panel)
 	_panel.create_requested.connect(func(element: int, difficulty: int) -> void: _create_args = [element, difficulty])
@@ -30,8 +32,8 @@ func _run() -> void:
 	_panel.display(null)
 	await _settle(Vector2i(960, 540))
 	_check(_panel._element_choice.item_count == 6, "первый шаг: шесть стихий")
-	_panel._element_choice.select(4)
-	_panel._difficulty_choice.select(2)
+	await _click(_panel.find_child("CareerElementTile4", true, false))
+	await _click(_panel.find_child("CareerDifficultyTile2", true, false))
 	_panel._action.pressed.emit()
 	_check(_create_args == [4, 2], "создание передаёт выбранные стихию и сложность")
 	await _shot("onboarding-960")
@@ -55,8 +57,8 @@ func _run() -> void:
 			await _shot("tab-%d-%d" % [tab, dimensions.x])
 	var before: int = career.state.credits
 	var item := &""
-	for id in CardDB.arena_ids() + CardDB.ability_ids():
-		if not career.state.owned_cards.has(String(id)) and career.price(id) > 0 and career.price(id) <= before:
+	for id in CardDB.ability_ids():
+		if CardDB.card_class(CardDB.card(id)) == &"blue" and not career.state.owned_cards.has(String(id)) and career.price(id) > 0 and career.price(id) <= before:
 			item = id
 			break
 	_check(item != &"", "есть точная покупка по средствам")
@@ -66,6 +68,51 @@ func _run() -> void:
 		_check(career.state.credits == before - price and career.state.owned_cards.has(String(item)), "кнопка покупки выдаёт указанный предмет за указанную цену")
 		_panel._purchase(item)
 		_check(career.state.credits == before - price, "повторная покупка не списывает кредиты")
+	_panel.show_error("")
+	_panel._switch_tab(1)
+	await _click(_panel.find_child("CareerDeckKind1", true, false))
+	await process_frame
+	_check(_panel.find_child("CareerCard_blue", true, false) != null and _panel.find_child("CareerCard_gold", true, false) == null, "способности переключаются отдельным явным действием")
+	await _shot("abilities-1280")
+	await _click(_panel.find_child("CareerCard_blue", true, false))
+	await process_frame
+	await _shot("choose-card-1280")
+	# The conditions window must be a modal child of the card chooser.
+	_panel._show_card(StringName(_panel._picks[&"blue"]))
+	await process_frame
+	var nested := _panel.find_children("*", "AcceptDialog", true, false)
+	_check(nested.size() == 2 and nested[1].get_parent() == nested[0], "полные условия вложены в выбор карты без конфликта modal")
+	nested[1].hide()
+	nested[1].queue_free()
+	await process_frame
+	var selected_card := item
+	_check(selected_card != _panel._picks[&"blue"], "для замены выбран новый id карты")
+	await _click(_panel.find_child("CareerPick_" + String(selected_card), true, false))
+	await process_frame
+	_check(_panel.find_child("CareerPick_" + String(selected_card), true, false) == null, "реальный щелчок закрывает выбор карты")
+	_check(_panel._picks[&"blue"] == selected_card, "выбор варианта меняет карту нужного класса")
+	_panel._action.pressed.emit()
+	_check(_registration[2].has(selected_card), "новая карта передана в регистрацию кубка")
+	_panel._show_card(selected_card)
+	await process_frame
+	await _shot("card-conditions-1280")
+	for dialog in _panel.find_children("*", "AcceptDialog", true, false):
+		dialog.hide()
+		dialog.queue_free()
+	await process_frame
+	_panel._show_guide()
+	await process_frame
+	await _shot("career-guide-1280")
+	for dialog in _panel.find_children("*", "AcceptDialog", true, false):
+		dialog.hide()
+		dialog.queue_free()
+	await process_frame
+	_panel._switch_tab(2)
+	await process_frame
+	for kind in 3:
+		await _click(_panel.find_child("CareerShopKind%d" % kind, true, false))
+		_check(_panel._shop_kind == kind, "реальный щелчок переключает категорию магазина")
+		await _shot("shop-kind-%d-1280" % kind)
 	_panel._tab = 0
 	_panel._toggle_creature(_panel._team[0])
 	_check(_panel._team.size() == 2 and _panel._action.disabled, "нельзя зарегистрировать неполную команду")
@@ -88,7 +135,52 @@ func _run() -> void:
 	await process_frame
 	_check_layout(Vector2i(1280, 720))
 	await _shot("device-cards-1280")
+	# Cup completion fixtures only test dashboard transitions, not physical matches.
+	while not career.cup.completed():
+		var duel: Dictionary = career.cup.next_match()
+		_check(career.record_result(String(duel.id), int(duel.a), [3, 0], "ui-fixture", {"throws": 3, "battles": 1}) == OK, "фикстура завершает встречу для экрана прогресса")
+	_panel.display(career)
+	_panel._switch_tab(3)
+	await process_frame
+	_check(_panel._action.text == "Следующая лига" and _panel._extra.visible, "после кубка явные действия следующей лиги и повтора")
+	await _shot("completed-cup-1280")
+	_check(career.advance_cup() == OK, "переход к следующей регистрации")
+	_panel.display(career)
+	_panel._switch_tab(0)
+	await process_frame
+	_check(not _panel._roster_locked() and not _panel._action.disabled, "новая лига разрешает состав и готовую регистрацию")
+	await _shot("next-league-1280")
 	_finish()
+
+
+func _click(button: Control) -> void:
+	await process_frame
+	var ancestor := button.get_parent()
+	while ancestor != null and not ancestor is ScrollContainer:
+		ancestor = ancestor.get_parent()
+	if ancestor is ScrollContainer:
+		ancestor.ensure_control_visible(button)
+		await process_frame
+		await process_frame
+	var point := button.get_global_rect().get_center()
+	if button.get_window() != root:
+		point += Vector2(button.get_window().position)
+	var motion := InputEventMouseMotion.new()
+	motion.position = point
+	Input.parse_input_event(motion)
+	var press := InputEventMouseButton.new()
+	press.position = point
+	press.button_index = MOUSE_BUTTON_LEFT
+	press.pressed = true
+	Input.parse_input_event(press)
+	await process_frame
+	var release := InputEventMouseButton.new()
+	release.position = point
+	release.button_index = MOUSE_BUTTON_LEFT
+	release.pressed = false
+	Input.parse_input_event(release)
+	await process_frame
+	await process_frame
 
 
 func _settle(dimensions: Vector2i) -> void:
@@ -104,6 +196,10 @@ func _check_layout(dimensions: Vector2i) -> void:
 	_check(footer.get_global_rect().end.y <= dimensions.y + 1, "footer помещается при %dx%d, вкладка %d" % [dimensions.x, dimensions.y, _panel._tab])
 	_check(_panel._scroll.size.y > 120, "область прокрутки остаётся доступной")
 	_check(_panel._action.get_global_rect().end.x <= dimensions.x, "главное действие в окне")
+	if _panel._tab == 0 and _panel._career != null:
+		for id in _panel._team:
+			var select := _panel.find_child("CareerCreature_" + String(id), true, false) as Button
+			_check(select.get_global_rect().end.y <= _panel._scroll.get_global_rect().end.y + 1, "выбор тройки без прокрутки при %dpx" % dimensions.x)
 	for button in _panel.find_children("Career*", "Button", true, false):
 		_check(button.focus_mode != Control.FOCUS_NONE, "кнопка %s доступна клавиатурой" % button.name)
 

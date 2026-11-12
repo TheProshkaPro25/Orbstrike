@@ -97,6 +97,8 @@ var _sparks: CPUParticles3D   ## частицы стихии от контакт
 var _streak: CPUParticles3D   ## светящийся след по полу
 var _trail: CPUParticles3D    ## частицы стихии в полёте
 var _ribbon: BallTrail        ## лента следа
+var flight_trails: Node3D     ## пул стихийных шлейфов, который готовит Boot
+var _flight_trail: Node3D
 var _el := -1
 var _home := Vector3.ZERO     ## откуда бросали (туда сфера улетает при возврате)
 var _home_set := false
@@ -378,19 +380,20 @@ func set_label_shift(px: float) -> void:
 	_sync_icon()
 
 
-## След летящего шара: лента цвета стихии и частицы стихии; при первом броске — ещё и наземные эффекты.
+## Основной след арендуется из Boot. Изолированные сцены используют простую ленту и частицы.
 func _start_trail() -> void:
-	var el := maxi(_el, 0)
-	if _trail == null:
-		_trail = BallFx.particles(el, "trail", _shell_r())
-		_visual.add_child(_trail)
-		_ribbon = BallTrail.new()
-		_ribbon.target = _shell
-		_ribbon.color = _ecol()
-		_ribbon.width = maxf(.08,_shell_r() * 1.5)
-		add_child(_ribbon)
-	_trail.emitting = true
-	_ribbon.emitting = true
+	if not is_instance_valid(_flight_trail):
+		if _trail == null:
+			_trail = BallFx.particles(maxi(_el, 0), "trail", _shell_r())
+			_visual.add_child(_trail)
+			_ribbon = BallTrail.new()
+			_ribbon.target = _shell
+			_ribbon.color = _ecol()
+			_ribbon.width = maxf(.08, _shell_r() * 1.5)
+			add_child(_ribbon)
+		_trail.show()
+		_trail.restart()
+		_ribbon.emitting = true
 	if _sparks == null:
 		_build_ground_fx()
 
@@ -491,6 +494,8 @@ func figure_size() -> float:
 
 
 func launch(impulse: Vector3) -> void:
+	if _launched:
+		_stop_fx()
 	_release_landing_shell()
 	physical_shot = false
 	custom_integrator = false
@@ -513,6 +518,8 @@ func launch(impulse: Vector3) -> void:
 
 
 func launch_towards(destination: Vector3) -> void:
+	if _launched:
+		_stop_fx()
 	_release_landing_shell()
 	physical_shot = true
 	bounce_count = 0
@@ -536,6 +543,8 @@ func launch_towards(destination: Vector3) -> void:
 	_slow = 0.0
 	linear_velocity = ShotMotion.velocity_to(global_position, destination, RADIUS)
 	angular_velocity = Vector3(-linear_velocity.z, 0, linear_velocity.x) / _shell_r() * .38
+	if is_instance_valid(flight_trails):
+		_flight_trail = flight_trails.take(_el, _shell)
 	_start_trail()
 	_throw_fx(linear_velocity)
 
@@ -569,8 +578,13 @@ func _physical_shot_effects(delta: float) -> void:
 	var speed := Vector2(velocity.x, velocity.z).length()
 	var on_floor := (_shot_on_surface or global_position.y < RADIUS + .10) and absf(velocity.y) < ShotMotion.REST_VERTICAL
 	SoundFx.i().set_roll(speed if on_floor else 0.0)
-	if _trail != null: _trail.emitting = not on_floor
-	if _ribbon != null: _ribbon.emitting = not on_floor or speed > 5.0
+	if is_instance_valid(_flight_trail):
+		flight_trails.set_airborne(_flight_trail, not on_floor)
+		if not on_floor:
+			_flight_trail.sample(_shell.global_position, delta)
+	else:
+		_trail.emitting = not on_floor
+		_ribbon.emitting = not on_floor or speed > 5.0
 	if _sparks != null:
 		_sparks.global_position = Vector3(global_position.x, .05, global_position.z)
 		_streak.global_position = Vector3(global_position.x, .035, global_position.z)
@@ -595,9 +609,11 @@ func _throw_fx(impulse: Vector3) -> void:
 	var dir := Vector3(impulse.x, impulse.length() * 0.25, impulse.z)
 	BallFx.speed_ring(w, p + dir.normalized() * _shell_r() * 1.5, dir, c, _shell_r() * 3.0, 0.32)
 	var epoch := _fx_epoch
+	var world_ref: WeakRef = weakref(w)
 	get_tree().create_timer(0.07).timeout.connect(func() -> void:
-		if epoch == _fx_epoch and is_inside_tree() and is_instance_valid(w):
-			BallFx.speed_ring(w, _shell_center(), dir, c.lightened(0.4), _shell_r() * 2.0, 0.25))
+		var world_node: Node = world_ref.get_ref()
+		if epoch == _fx_epoch and is_inside_tree() and is_instance_valid(world_node):
+			BallFx.speed_ring(world_node, _shell_center(), dir, c.lightened(0.4), _shell_r() * 2.0, 0.25))
 	var tw := create_tween()
 	_throw_tween = tw
 	tw.tween_method(_set_glow, 2.2, 0.0, 0.6).set_ease(Tween.EASE_OUT)
@@ -630,7 +646,7 @@ func open_animated(pose: bool = true) -> Signal:
 	_drive = false
 	var pc := _ecol()
 	var el := maxi(_el, 0)
-	VisualUtil.light_pillar(self, Vector3(0, -RADIUS, 0), pc, Arena.FIG_H * 2.0, Arena.FIG_W * 0.16, 0.9)
+	VisualUtil.light_pillar(self, Vector3(0, -RADIUS, 0), pc, Arena.FIG_H * 2.0, Arena.FIG_W * 0.16, 0.9, 0.35 if el == Attr.A.LIGHT else 1.0)
 	if is_inside_tree():
 		var w := _fx_parent()
 		var fp := Vector3(global_position.x, 0.07, global_position.z)
@@ -749,6 +765,8 @@ func close_up() -> void:
 ## Фиксирует тело в точке (без вращения); используется и для удержания шара перед броском.
 ## Замороженный шар не сталкивается с катящимися: иначе в слот с существом нельзя попасть (отскок).
 func freeze_at(pos: Vector3, reset_pose: bool = true) -> void:
+	if _launched:
+		_stop_fx()
 	_release_landing_shell()
 	physical_shot = false
 	custom_integrator = false
@@ -1020,10 +1038,16 @@ func _knockout_steps(tw: Tween) -> void:
 
 func _stop_fx() -> void:
 	SoundFx.i().set_roll(0.0)
+	if is_instance_valid(_flight_trail) and is_instance_valid(flight_trails):
+		flight_trails.release(_flight_trail)
+	_flight_trail = null
 	if _trail != null:
 		_trail.emitting = false
+		_trail.hide()
 	if _ribbon != null:
 		_ribbon.emitting = false
+		_ribbon.clear()
+		_ribbon.set_process(false)
 	if _sparks != null:
 		_sparks.emitting = false
 		_streak.emitting = false

@@ -81,10 +81,11 @@ shader_type spatial;
 render_mode unshaded, blend_add, cull_disabled, depth_draw_never, shadows_disabled;
 instance uniform vec4 col : source_color = vec4(1.0);
 instance uniform float fade = 1.0;
+instance uniform float strength = 1.0;
 void fragment() {
 	float v = UV.y;                        // 0 верх, 1 низ
 	float edge = pow(abs(sin(UV.x * 3.14159)), 1.5);
-	float a = smoothstep(0.0, 0.7, v) * edge * fade;
+	float a = smoothstep(0.0, 0.7, v) * edge * fade * strength;
 	ALBEDO = col.rgb * (1.5 + 2.0 * v);
 	ALPHA = clamp(a, 0.0, 1.0);
 }
@@ -94,7 +95,7 @@ static var _pillar_meshes: Dictionary = {}
 
 
 ## Столб света (появление существа, открытие карты): вспыхивает, сужается и гаснет за dur секунд.
-static func light_pillar(parent: Node3D, local_pos: Vector3, c: Color, height: float, radius: float, dur: float = 0.6) -> void:
+static func light_pillar(parent: Node3D, local_pos: Vector3, c: Color, height: float, radius: float, dur: float = 0.6, strength: float = 1.0) -> void:
 	if parent == null or not parent.is_inside_tree():
 		return
 	if _pillar_mat == null:
@@ -117,6 +118,7 @@ static func light_pillar(parent: Node3D, local_pos: Vector3, c: Color, height: f
 	mi.mesh = _pillar_meshes[key]
 	mi.material_override = _pillar_mat
 	mi.set_instance_shader_parameter("col", c)
+	mi.set_instance_shader_parameter("strength", clampf(strength, 0.0, 1.0))
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mi.top_level = true
 	parent.add_child(mi)

@@ -36,6 +36,8 @@ var _rim_light: OmniLight3D
 var _card_box: CenterContainer
 var _full_card_scroll: ScrollContainer
 var _full_card: CardView
+var _full_card_definition: CardDef
+var _full_card_style := -1
 var _info_head: HBoxContainer
 var _loading: Label
 var _drag_hint: Label
@@ -51,6 +53,7 @@ var _status: Label
 var _shown_id: StringName = &""      ## существо, чья модель сейчас на сцене
 var _want: CreatureDef               ## существо, которое нужно показать
 var _want_pose := false
+var _creature_style := -1
 var _pending := ""                   ## путь, который грузится фоном
 var _cache: Dictionary = {}          ## путь -> PackedScene (показываемая + команда)
 var _keep: Array[StringName] = []    ## существа, чьи модели держим в памяти
@@ -215,6 +218,17 @@ func _build_world() -> void:
 func show_creature(d: CreatureDef, pose: bool = false, in_team: bool = false, note: String = "") -> void:
 	if d == null:
 		return
+	# Focus, delayed hover and click can request the same definition in one frame.
+	# Status/pose remain live; the immutable description keeps its nodes and scroll.
+	if _want == d and _stage.visible and not _full_card_scroll.visible and _creature_style == DeviceSettings.current():
+		_set_status(in_team, note)
+		_want_pose = pose
+		if _shown_id == d.id:
+			if pose and _anim != null: _anim.appear()
+		elif _pending.is_empty():
+			_request(d) # Retry a previously unavailable resident preview.
+		return
+	_creature_style = DeviceSettings.current()
 	_full_card_scroll.visible = false
 	_stage.visible = true
 	_info_head.visible = true
@@ -260,53 +274,50 @@ func show_creature(d: CreatureDef, pose: bool = false, in_team: bool = false, no
 func show_card(def: CardDef, picked: bool = false, note: String = "") -> void:
 	if def == null:
 		return
+	var width := maxf(224, size.x - 40)
+	var style := DeviceSettings.current()
+	# One pointer click can request the same preview through hover, focus and
+	# selection. CardDB definitions are immutable; status does not change the face.
+	# Keep its node/material and reading position until its content/context changes.
+	if is_instance_valid(_full_card) and not _full_card.is_queued_for_deletion() and _full_card_scroll.visible and _full_card_definition == def and _full_card_style == style and is_equal_approx(_full_card._card_size.x,width):
+		_set_card_status(picked,note)
+		preload("res://scenes/performance_metrics.gd").add("preview_card_reuses")
+		return
 	_want = null
 	_drop_model()
 	_vpc.visible = false
 	_drag_hint.visible = false
 	_loading.visible = false
 	_vp.render_target_update_mode = SubViewport.UPDATE_DISABLED
-	_card_box.visible = true
+	_card_box.visible = false
 	VisualUtil.clear_children(_card_box)
-	var help: Array = UiTheme.card_help(def)
-	var cc: Color = help[2]
-	_bg_mat.set_shader_parameter("tint", cc.darkened(0.2))
-	var h: float = clampf(_stage.size.y - 16.0, 150.0, 300.0)
-	var cv := CardView.new().for_card(def, Vector2(round(h / 1.4), round(h)))
-	cv.tooltip_text = ""
-	cv.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_card_box.add_child(cv)
-	var els: Array = UiTheme.card_elements(def)
-	_icon.visible = not els.is_empty()
-	if not els.is_empty():
-		_icon.set_element(int(els[0]))
-	_set_name(def.display_name)
-	_sub.text = String(help[1])
-	_power.text = UiTheme.card_badge(def)
 	VisualUtil.clear_children(_lines)
-	_explanation.scroll_vertical = 0
-	_line(def.full_text(), UiTheme.TEXT, 14)
-	if String(help[6]) != "":
-		_line(String(help[6]), Color(1.0, 0.85, 0.5), 13)
-	_line(String(help[3]), UiTheme.TEXT_DIM, 12)
-	_set_status(picked, note)
+	_set_card_status(picked,note)
 	_stage.visible = false
 	_info_head.visible = false
 	_explanation.visible = false
 	_full_card_scroll.visible = true
 	VisualUtil.clear_children(_full_card_scroll)
-	var width := maxf(224, size.x - 40)
 	_full_card = CardView.new().for_card(def, Vector2(width, 0), true)
+	_full_card_definition = def
+	_full_card_style = style
+	preload("res://scenes/performance_metrics.gd").add("preview_card_builds")
 	_full_card.mouse_filter = Control.MOUSE_FILTER_STOP
 	_full_card.mouse_default_cursor_shape = Control.CURSOR_HELP
-	_status.text += "\nНаведите на карту — крупное раскрытие."
 	_full_card_scroll.add_child(_full_card)
 	_full_card_scroll.scroll_vertical = 0
 
 
+func _set_card_status(picked: bool, note: String) -> void:
+	_set_status(picked,note)
+	_status.text += "\nНаведите на карту — крупное раскрытие."
+
+
 func _resize_card() -> void:
 	if is_instance_valid(_full_card) and _full_card_scroll.visible:
-		_full_card._compose_card(CardDB.card(_full_card.card_id), Vector2(maxf(224, size.x - 40), 0), true)
+		_full_card._compose_card(_full_card_definition, Vector2(maxf(224, size.x - 40), 0), true)
+	elif _want != null and _stage.visible:
+		_set_name(_want.display_name)
 
 
 ## Пустая панель с подсказкой.
@@ -394,7 +405,7 @@ func _prune() -> void:
 
 func _request(d: CreatureDef) -> void:
 	var pool := GameLoading.i()
-	if pool.ready_to_play:
+	if pool.has_prepared_catalog():
 		_drop_model()
 		_loading.visible = false
 		# В обычной игре подготовка закончена до меню. Нехватка экземпляра не

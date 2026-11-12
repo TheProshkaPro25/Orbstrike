@@ -24,6 +24,7 @@ func run() -> void:
 	main.team_menu.hide()
 	main.ui_layer.visible=false
 	main.arena._motes.emitting=false
+	main.arena._motes.hide()
 	main.cam.snap_overview()
 	await frames(10)
 	var on := await shot(out_dir.path_join("on.png"))
@@ -47,6 +48,22 @@ func run() -> void:
 	main.cam.cut()
 	await frames(8)
 	await shot(out_dir.path_join("ground.png"))
+	var shafts: Array = main.arena._sanctuary_shafts
+	assert(shafts.size() == lights.size())
+	var shaft_noise: Texture2D
+	for index in shafts.size():
+		var shaft: MeshInstance3D = shafts[index]
+		var material := shaft.material_override as ShaderMaterial
+		assert(shaft.visible and shaft.get_meta("window_projector") == index)
+		assert(material.shader.resource_path == "res://assets/vfx_vendor/effects_lab/shaft.gdshader")
+		assert(shaft.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
+		var noise := material.get_shader_parameter("noise_texture") as Texture2D
+		if shaft_noise == null:
+			shaft_noise = noise
+		assert(noise != null and noise == shaft_noise)
+		shaft.hide()
+	await frames(8)
+	await shot(out_dir.path_join("ground-no-shafts.png"))
 	GraphicsSettings.level=GraphicsSettings.Level.LOW
 	main.apply_graphics()
 	var low_count := 0
@@ -55,6 +72,13 @@ func run() -> void:
 			low_count += 1
 			assert(light.shadow_enabled and light.shadow_caster_mask == 0)
 	assert(low_count == 2)
+	var low_shafts := 0
+	for index in shafts.size():
+		assert(shafts[index].visible == lights[index].visible)
+		if shafts[index].visible:
+			low_shafts += 1
+	assert(low_shafts == 2)
+	print("WINDOW SHAFTS effects_lab=", shafts.size(), " low=", low_shafts)
 	await frames(8)
 	await shot(out_dir.path_join("low.png"))
 	main.queue_free()

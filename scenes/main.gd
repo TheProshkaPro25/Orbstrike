@@ -1,11 +1,17 @@
 extends Node
-## Корень игры: владеет MatchController и AIPlayer, строит 3D-мир и UI, связывает сигналы.
-## Все сигналы контроллера -> EventPlayer. Ввод/ход ИИ - только после drained (см. _pump).
-
+## Composition root: world/UI construction, explicit component wiring and scene navigation.
+## Rules=MatchController; modes=GameModes; choices=Interaction; visible sequence=Presentation.
+const ResourcesT := preload("res://scenes/match_resources.gd")
+const MatchLifecycleT := preload("res://scenes/match_lifecycle.gd")
+const PresentationT := preload("res://scenes/presentation/match_presentation.gd")
+const InteractionT := preload("res://scenes/interaction/interaction_controller.gd")
+const InteractionViewT := preload("res://scenes/interaction/interaction_view.gd")
+const Request := preload("res://scenes/interaction/interaction_request.gd")
+const ModesT := preload("res://scenes/modes/game_modes.gd")
+const MatchSpec := preload("res://scenes/modes/match_spec.gd")
 const Locations := preload("res://data/arena_locations.gd")
 const ARENA_SCENE: PackedScene = preload("res://scenes/arena.tscn")
 const BALL_SCENE: PackedScene = preload("res://scenes/creature_ball.tscn")
-const AttackFx := preload("res://scenes/attack_fx.gd")
 const CARD_SCENE: PackedScene = preload("res://scenes/arena_card_node.tscn")
 const HUD_SCENE: PackedScene = preload("res://scenes/ui/hud.tscn")
 const SETUP_SCENE: PackedScene = preload("res://scenes/ui/setup_panel.tscn")
@@ -13,112 +19,231 @@ const ABILITY_SCENE: PackedScene = preload("res://scenes/ui/ability_panel.tscn")
 const BATTLE_SCENE: PackedScene = preload("res://scenes/ui/battle_overlay.tscn")
 const GAMEOVER_SCENE: PackedScene = preload("res://scenes/ui/game_over.tscn")
 const TEAM_MENU_SCENE: PackedScene = preload("res://scenes/ui/team_menu.tscn")
-
+const AttackFx := preload("res://scenes/attack_fx.gd")
 const HUMAN := 0
 const AI_PLAYER := 1
-## Точка броска — перед ближним краем крупных ворот (Arena.STEP_Z * 0.5 + CARD_H * 0.5 ≈ 31.7).
 const THROW_Z := Arena.STEP_Z * 0.5 + Arena.CARD_H * 0.5 + 0.8 * Arena.WORLD
 const BALL_Y := 0.36
-
-var ctrl: MatchController
-var ai: AIPlayer
+var presentation := PresentationT.new()
+var interaction := InteractionT.new()
+var modes := ModesT.new()
 var rng := RandomNumberGenerator.new()
-
 var world: Node3D
-var arena: Arena
 var cam: CameraRig
 var events: EventPlayer
 var director: ArenaDirector
-var fighters: Array[VrmFighter] = []
-var fighter_portraits: Array[FighterPortrait] = []
-var _previous_time_scale := 1.0
-var _time_scale_restored := false
 var ui_layer: CanvasLayer
 var hud: HudUI
 var battle_hud: BattleHud
 var setup_panel: SetupPanel
+var ability_panel: AbilityPanel
 var ability_target_picker: AbilityTargetPicker
 var arena_slot_picker: ArenaSlotPicker
-var _launch_target: Button
-var _local_keyboard_navigation := false
-var _ability_target_card: StringName = &""
-var ability_panel: AbilityPanel
 var battle_overlay: BattleOverlay
 var game_over_ui: GameOverUI
 var team_menu: TeamMenu
 var hover_tips: HoverTips
+var _launch_target: Button
+var _duel_menu: Button
 var _env: Environment
 var _sun: DirectionalLight3D
 var _fill: DirectionalLight3D
 var _arena_sky: ShaderMaterial
+var _resources: ResourcesT
+var _lifecycle: MatchLifecycleT
+var _view_configured := false
+var _modes_configured := false
+var _match_ui_bound := false
+var _previous_time_scale := 1.0
+var _time_scale_restored := false
+var _online_game_over := false
+var ctrl: MatchController:
+	get: return interaction.ctrl
+	set(value):
+		interaction.ctrl = value
+		presentation.ctrl = value
+var ai: AIPlayer:
+	get: return interaction.ai
+	set(value): interaction.ai = value
+var arena: Arena:
+	get: return _ensure_resources().arena
+	set(value): _ensure_resources().arena = value
+var balls: Dictionary:
+	get: return _ensure_resources().active
+	set(value): _ensure_resources().active.assign(value)
+var _prepared_balls: Dictionary:
+	get: return _ensure_resources().reserve
+var preparation_times_ms: Dictionary:
+	get: return _ensure_resources().preparation_times_ms
+var fighters: Array[VrmFighter]:
+	get: return _ensure_resources().fighters
+var fighter_portraits: Array[FighterPortrait]:
+	get: return presentation.fighter_portraits
+var _location_intro: LocationIntro:
+	get: return _lifecycle.intro if is_instance_valid(_lifecycle) else null
+var _preparing: bool:
+	get: return is_instance_valid(_lifecycle) and _lifecycle.preparing()
+var _game_over: bool:
+	get: return _lifecycle.is_finished() if is_instance_valid(_lifecycle) else _online_game_over
+	set(value):
+		if is_instance_valid(_lifecycle):
+			if value: _lifecycle.finish()
+		else:
+			_online_game_over = value
+			presentation.set_finished(value)
+var _pending: Dictionary:
+	get: return interaction.pending.to_legacy()
+	set(value): interaction.assign_legacy(value)
+var _gate_pick: Dictionary:
+	get: return interaction.gate_pick.to_legacy()
+	set(value): interaction.gate_pick.assign_legacy(value)
+var _ability_target_card: StringName:
+	get: return interaction.ability_target_card
+	set(value): interaction.ability_target_card = value
+var _ai_target_slot: int:
+	get: return interaction.ai_target_slot
+	set(value): interaction.ai_target_slot = value
+var _local_keyboard_navigation: bool:
+	get: return interaction.keyboard_enabled
+	set(value): interaction.keyboard_enabled = value
+var _defs: Dictionary:
+	get: return presentation.state.definitions
+	set(value): presentation.state.definitions.assign(value)
+var _owners: Dictionary:
+	get: return presentation.state.owners
+	set(value): presentation.state.owners.assign(value)
+var _active_ball: CreatureBall:
+	get: return presentation.state.active_ball
+	set(value): presentation.state.active_ball = value
+var card_nodes: Dictionary:
+	get: return presentation.state.card_nodes
+	set(value): presentation.state.card_nodes.assign(value)
+var captures: Array[int]:
+	get: return presentation.state.captures
+	set(value): presentation.state.captures = value
+var _pip_idx: Dictionary:
+	get: return presentation.state.pip_indices
+	set(value): presentation.state.pip_indices.assign(value)
+var _stats: Dictionary:
+	get: return presentation.state.stats
+	set(value): presentation.state.stats = value
+var _alive: Array[int]:
+	get: return presentation.state.alive
+	set(value): presentation.state.alive = value
+var _turn: int:
+	get: return presentation.state.turn
+	set(value): presentation.state.turn = value
+var _active: int:
+	get: return presentation.state.active_player
+	set(value): presentation.state.active_player = value
+var _opponent_uid: int:
+	get: return presentation.state.opponent_uid
+	set(value): presentation.state.opponent_uid = value
+var _opponent_power: int:
+	get: return presentation.state.opponent_power
+	set(value): presentation.state.opponent_power = value
+var _own_uid: int:
+	get: return presentation.state.own_uid
+	set(value): presentation.state.own_uid = value
+var _own_power: int:
+	get: return presentation.state.own_power
+	set(value): presentation.state.own_power = value
+var _label_focus: Array:
+	get: return presentation.state.label_focus
+	set(value): presentation.state.label_focus = value
+var _battle_uids: Array[int]:
+	get: return presentation.state.battle_uids
+	set(value): presentation.state.battle_uids = value
+var campaign: Campaign:
+	get: return modes.campaign
+	set(value): modes.campaign = value
+var career: Career:
+	get: return modes.career
+	set(value): modes.career = value
+var tournament: Tournament:
+	get: return modes.tournament
+	set(value): modes.tournament = value
+var career_panel: CareerPanel:
+	get: return modes.career_panel
+	set(value): modes.career_panel = value
+var tournament_panel: TournamentPanel:
+	get: return modes.tournament_panel
+	set(value): modes.tournament_panel = value
+var _tournament_match: Dictionary:
+	get: return modes.fixture
+	set(value): modes.fixture = value
+var _tournament_registration: bool:
+	get: return modes.registration
+	set(value): modes.registration = value
+var _campaign_registration: bool:
+	get: return modes.campaign_registration
+	set(value): modes.campaign_registration = value
+var _player_deck: Array:
+	get: return modes.player_deck
+	set(value): modes.player_deck = value
+var _tournament_exit: Button:
+	get: return modes.exit_button
+	set(value): modes.exit_button = value
+var _leaving_duel: bool:
+	get: return modes.leaving
+	set(value): modes.leaving = value
+var _duel_exit_confirm: ConfirmationDialog:
+	get: return modes.exit_confirm
+	set(value): modes.exit_confirm = value
+var _player_ids: Array[StringName]:
+	get:
+		var ids: Array[StringName] = []
+		if modes.player_deck.size() == 3: ids.assign(modes.player_deck[0])
+		return ids
+	set(value):
+		if modes.player_deck.size() != 3: modes.player_deck = [[],[],[]]
+		modes.player_deck[0] = value
 
-var balls: Dictionary = {}
-## Шесть существ матча арендованы из стартового каталога; скрытые узлы не обрабатываются.
-var _preparing := false
-var _prepared_balls: Dictionary = {}
-var preparation_times_ms: Dictionary = {}  # uid -> миллисекунды CPU подготовки
-var card_nodes: Dictionary = {}   # slot -> ArenaCardNode
-var captures: Array[int] = [0, 0]
-var _defs: Dictionary = {}        # uid -> CreatureDef (строится один раз из get_view)
-var _owners: Dictionary = {}      # uid -> int (владелец)
-var _pending: Dictionary = {}
-var _active_ball: CreatureBall = null
-var _ai_target_slot: int = -1
-var _turn: int = 0
-var _active: int = 0
-var _game_over := false
-var campaign: Campaign
-## Независимая локальная карьера; старые кампания/турнир и сетевые правила не меняются.
-var career: Career
-var career_panel: CareerPanel
-var _campaign_registration := false
-var tournament: Tournament
-var tournament_panel: TournamentPanel
-var _tournament_match: Dictionary = {}
-var _tournament_registration := false
-var _tournament_exit: Button
-var _tournament_notice: Label
-var _duel_menu: Button
-var _duel_exit_confirm: ConfirmationDialog
-var _leaving_duel := false
-var _player_ids: Array[StringName] = []
-var _player_deck: Array = []  # [существа, ворота, способности] из конструктора колоды
-var _gate_pick: Dictionary = {}   # «ворота + бросок»: выбранные карта и слот, ждём выбора существа
-var _pip_idx: Dictionary = {}     # uid -> номер шарика на плашке бойца
-var _stats: Dictionary = {"wins": [0, 0], "abilities": [0, 0], "traps": 0, "battles": []}  # итоги для экрана результата
+func _init() -> void:
+	add_child(presentation)
+	add_child(interaction)
+	add_child(modes)
 
+func _ensure_resources() -> ResourcesT:
+	if _resources == null: _resources = ResourcesT.new(world,GameLoading.i(),BALL_SCENE,ARENA_SCENE)
+	return _resources
 
-## Выход возвращает арендованные объекты; сам каталог живёт до закрытия игры.
+func _ready() -> void:
+	_previous_time_scale = Engine.time_scale
+	BattleTempo.load_settings()
+	if is_equal_approx(Engine.time_scale,1.0): BattleTempo.apply()
+	SoundFx.i()
+	rng.randomize()
+	_build_world()
+	_build_ui()
+	_lifecycle = MatchLifecycleT.new()
+	add_child(_lifecycle)
+	_lifecycle.configure(_resources,cam,ui_layer)
+	interaction.lifecycle = _lifecycle
+	_lifecycle.prepared.connect(presentation.present_match_roster)
+	_lifecycle.started.connect(_on_match_started)
+	_lifecycle.finishing.connect(_hide_match_docks)
+	_lifecycle.finishing.connect(interaction.stop)
+	_lifecycle.finished.connect(_close_match_actions)
+	_lifecycle.finished.connect(func() -> void: presentation.set_finished(true))
+	_lifecycle.released.connect(_on_match_released)
+	_lifecycle.failed.connect(_on_match_failed)
+	_configure_modes()
+	if not GameLoading.i().preparing:
+		SoundFx.i().play_music(SoundFx.MUSIC_TEAM)
+		enter_requested_mode.call_deferred()
+
 func _exit_tree() -> void:
-	if is_instance_valid(GameLoading._inst) and GameLoading._inst.moving_scene:
-		return
+	if is_instance_valid(GameLoading._inst) and GameLoading._inst.moving_scene: return
 	_release_game_resources()
 	_restore_time_scale()
 	CreatureModels.clear()
-
 
 func _restore_time_scale() -> void:
 	if not _time_scale_restored:
 		Engine.time_scale = _previous_time_scale
 		_time_scale_restored = true
 
-
-func _ready() -> void:
-	_previous_time_scale = Engine.time_scale
-	BattleTempo.load_settings()
-	if is_equal_approx(Engine.time_scale, 1.0):
-		BattleTempo.apply()
-	SoundFx.i()
-	rng.randomize()
-	_build_world()
-	_build_ui()
-	team_menu.deck_chosen.connect(_on_deck_chosen)
-	if not GameLoading.i().preparing:
-		SoundFx.i().play_music(SoundFx.MUSIC_TEAM)
-		call_deferred("enter_requested_mode")
-
-
-# ---------------------------------------------------------------- построение
 
 ## Небо статично (без TIME): иначе Godot пересчитывает кубическую карту отражений каждый кадр.
 const SKY_SHADER := """
@@ -149,6 +274,8 @@ func _build_world() -> void:
 	world = Node3D.new()
 	world.name = "World"
 	add_child(world)
+	_resources = ResourcesT.new(world,GameLoading.i(),BALL_SCENE,ARENA_SCENE)
+	# Compatibility views for presentation/tools; ownership/transfers live in the lease.
 
 	# Небо-туманность: пространство боя вне обычного мира (по мотивам аниме)
 	var sky_mat := ShaderMaterial.new()
@@ -219,30 +346,24 @@ func _build_world() -> void:
 	cam.snap_overview()
 	cam.current = true
 
-	arena = GameLoading.i().take_arena(Locations.current()) if GameLoading.i().ready_to_play else null
-	if arena == null:
-		arena = ARENA_SCENE.instantiate() as Arena
-		arena.location_id = Locations.current()
-		world.add_child(arena)
-	else:
-		arena.reparent(world, false)
-	_apply_arena_environment(arena.location_id)
+	_resources.select_arena(Locations.current())
+	arena = _resources.arena
+	if arena != null: _apply_arena_environment(arena.location_id)
 	apply_graphics()
 
 	events = EventPlayer.new()
 	add_child(events)
 	director = ArenaDirector.new()
-	director.game = self
 	add_child(director)
 
 
 ## Применить уровень графики (при старте и после смены в меню команды).
+
 func apply_graphics() -> void:
 	GraphicsSettings.apply_world(get_viewport(), _env, _sun)
 	if arena != null:
 		arena.apply_quality()
 		_apply_arena_environment(arena.location_id)
-
 
 func _build_ui() -> void:
 	ui_layer = CanvasLayer.new()
@@ -275,21 +396,23 @@ func _build_ui() -> void:
 	_launch_target.text = "Выбрать ворота для броска…"
 	_launch_target.tooltip_text = "Карта поля: Tab / стрелки — место, Enter — бросить, Esc — вернуться к способностям"
 	_launch_target.custom_minimum_size = Vector2(272, 44)
-	VisualUtil.place(_launch_target, 0.5, 0.0, 0.0, 166.0)
 	_launch_target.hide()
 	_launch_target.pressed.connect(_request_launch_slot)
 	ui_layer.add_child(_launch_target)
+	_place_launch_target()
+	get_viewport().size_changed.connect(_place_launch_target)
+	DeviceSettings.events().changed.connect(func(_style: int) -> void: _place_launch_target())
 	arena_slot_picker = ArenaSlotPicker.new()
 	ui_layer.add_child(arena_slot_picker)
 	arena_slot_picker.chosen.connect(_on_slot_picked)
-	arena_slot_picker.slot_hovered.connect(arena.set_hover)
+	arena_slot_picker.slot_hovered.connect(func(slot: int) -> void:
+		if is_instance_valid(arena): arena.set_hover(slot))
 	battle_overlay = BATTLE_SCENE.instantiate() as BattleOverlay
 	ui_layer.add_child(battle_overlay)
 	game_over_ui = GAMEOVER_SCENE.instantiate() as GameOverUI
 	ui_layer.add_child(game_over_ui)
 	team_menu = TEAM_MENU_SCENE.instantiate() as TeamMenu
 	ui_layer.add_child(team_menu)
-	team_menu.location_previewed.connect(_preview_arena_location)
 	team_menu.location_preview_closed.connect(func() -> void: cam.snap_overview(); hud.visible = true)
 	hover_tips = HoverTips.new()
 	hover_tips.resolver = _tip_at
@@ -303,1684 +426,17 @@ func _build_ui() -> void:
 	_duel_menu.custom_minimum_size = Vector2(112, 38)
 	VisualUtil.place(_duel_menu, 1.0, 0.0, -16.0, 164.0)
 	_duel_menu.hide()
-	_duel_menu.pressed.connect(_request_duel_menu)
 	ui_layer.add_child(_duel_menu)
 	hud.register_interface(_duel_menu)
 	hud.register_interface(_launch_target)
-	hud.battle_mode_changed.connect(_place_duel_menu)
-	DeviceSettings.events().changed.connect(_opponent_style_changed)
-	ability_panel._panel.visibility_changed.connect(_opponent_panel_layout)
-	hud.battle_mode_changed.connect(func(_on: bool) -> void: _opponent_panel_layout())
+	_configure_views()
 
-
-func _place_duel_menu(battle: bool) -> void:
-	# Ordinary and tournament matches share one exit slot in the HUD toolbar.
-	for button in [_duel_menu, _tournament_exit]:
-		if not is_instance_valid(button): continue
-		if battle:
-			# Leave the phase label at y=52 and both battle side panels clear.
-			VisualUtil.place(button, 0.5, 0.0, 0.0, 4.0)
-		elif DeviceSettings.is_device():
-			VisualUtil.place(button, 1.0, 0.0, -16.0, 60.0)
-		else:
-			VisualUtil.place(button, 1.0, 0.0, -16.0, 164.0)
-
-
-func _on_deck_chosen(creatures: Array[StringName], arena_ids: Array[StringName], abilities: Array[StringName]) -> void:
-	if _tournament_registration:
-		_register_tournament(creatures, arena_ids, abilities)
-		return
-	_preparing = true
-	_player_ids = creatures
-	_player_deck = [creatures, arena_ids, abilities]
-	_build_logic()
-	call_deferred("_start_game")
-
-
-func _build_logic() -> void:
-	_local_keyboard_navigation = true
-	setup_panel._slot_btn.show()
-	CardDB.load_all()
-	var decks: Array[DeckDef] = _build_decks()
-	var seed_value: int = int(_tournament_match.seed) if not _tournament_match.is_empty() else int(rng.randi())
-	if not _tournament_match.is_empty(): rng.seed = seed_value
-	ctrl = MatchController.new(decks[0], decks[1], seed_value)
-	if career != null:
-		PowerCalc.apply_power_snapshot(ctrl.state, HUMAN, career.power_snapshot(0))
-		PowerCalc.apply_power_snapshot(ctrl.state, AI_PLAYER, career.power_snapshot(_tournament_opponent()))
-	ctrl.landing_window = true  # окно прикрепления способности после приземления на пустые ворота
-	ai = AIPlayer.new(AI_PLAYER, seed_value + 1, -1.0, int(tournament.state.difficulty) if tournament != null else TeamMenu.difficulty)
-	if tournament != null:
-		ai.configure_personality(campaign.ai_preferences(_tournament_opponent()) if campaign != null else Tournament.personality(_tournament_opponent()))
-	_index_creatures()
-
-	ctrl.card_drawn.connect(_on_card_drawn)
-	ctrl.phase_changed.connect(_on_phase_changed)
-	ctrl.setup_requested.connect(_on_setup_requested)
-	ctrl.arena_card_placed.connect(_on_arena_card_placed)
-	ctrl.throw_requested.connect(_on_throw_requested)
-	ctrl.creature_selected.connect(_on_creature_selected)
-	ctrl.creature_returned.connect(_on_creature_returned)
-	ctrl.creature_stood.connect(_on_creature_stood)
-	ctrl.battle_started.connect(_on_battle_started)
-	ctrl.card_revealed.connect(_on_card_revealed)
-	ctrl.ability_window.connect(_on_ability_window)
-	ctrl.ability_played.connect(_on_ability_played)
-	ctrl.ability_cancelled.connect(_on_ability_cancelled)
-	ctrl.battle_resolved.connect(_on_battle_resolved)
-	ctrl.creature_eliminated.connect(_on_creature_eliminated)
-	ctrl.card_captured.connect(_on_card_captured)
-	ctrl.turn_started.connect(_on_turn_started)
-	ctrl.game_over.connect(_on_game_over)
-	ctrl.ability_attached.connect(_on_ability_attached)
-	ctrl.attach_window.connect(_on_attach_window)
-	ctrl.gate_thrown.connect(_on_gate_thrown)
-	ctrl.gate_trap_triggered.connect(_on_gate_trap)
-	ctrl.momentum_changed.connect(_on_momentum_changed)
-	ctrl.final_round_started.connect(_on_final_round)
-
-	events.drained.connect(_pump)
-	hud.creature_chosen.connect(_on_creature_chosen)
-	setup_panel.placed.connect(_on_setup_placed)
-	setup_panel.skipped.connect(_on_setup_skipped)
-	setup_panel.placed_throw.connect(_on_setup_placed_throw)
-	setup_panel.slot_hovered.connect(arena.set_hover)
-	setup_panel.slot_pick_requested.connect(_request_setup_slot)
-	arena.slot_clicked.connect(_on_slot_picked)
-	arena.invalid_pick.connect(func() -> void: hud.reject_action("Выберите одно из подсвеченных мест на поле"))
-	ability_panel.unavailable.connect(func(reason: String) -> void: hud.reject_action(reason))
-	ability_panel.reason_for_card = func(cid: StringName) -> String: return ctrl.ability_unavailable_reason(HUMAN, cid)
-	ability_panel.warning_for_card = MatchController.ability_play_warning
-	hud.creature_cancelled.connect(_on_gate_throw_cancelled)
-	ctrl.creature_relocated.connect(func(uid: int, a: int, b: int) -> void:
-		if a != b:
-			_log("%s переходит на другие ворота" % _cname(uid))
-		events.push(_anim_relocated.bind(uid, a, b)))
-	ctrl.creature_revived.connect(_on_creature_revived)
-	ctrl.creature_marked.connect(_on_creature_marked)
-	ctrl.fighter_swapped.connect(_on_fighter_swapped)
-	ctrl.gates_swapped.connect(_on_gates_swapped)
-	ctrl.gate_discarded.connect(_on_gate_discarded)
-	ctrl.abilities_recalled.connect(_on_abilities_recalled)
-	ctrl.abilities_recharged.connect(_on_abilities_recharged)
-	ctrl.gates_recycled.connect(func() -> void: events.push(func() -> void:
-		hud.flash("Ворота кончились: выигранные карты вернулись в руки")
-		await hud.wait_read(HudUI.read_time(1.2, "Ворота кончились: выигранные карты вернулись в руки"))
-		hud.clear_flash()))
-	ctrl.creatures_refilled.connect(func(p: int) -> void: events.push(_anim_refilled.bind(p)))
-	ctrl.standoff.connect(func(a: int, d: int) -> void: events.push(func() -> void:
-		var msg := "Тупик: жребий выбрал атакующего — %s идёт на %s!" % [_cname(a), _cname(d)]
-		hud.flash(msg)
-		await hud.wait_read(HudUI.read_time(1.4, msg))
-		hud.clear_flash()))
-	ctrl.turn_skipped.connect(func(p: int) -> void: events.push(func() -> void:
-		var msg2 := "Все ваши существа на воротах — ход переходит сопернику" if p == HUMAN else "Все существа соперника на воротах — ваш ход"
-		hud.flash(msg2)
-		await hud.wait_read(HudUI.read_time(1.2, msg2))
-		hud.clear_flash()))
-	ability_panel.ability_chosen.connect(_on_ability_chosen)
-	ability_panel.passed.connect(_on_ability_passed)
-	ability_panel.gate_open_requested.connect(_on_gate_open_requested)
-	game_over_ui.restart_requested.connect(_on_restart)
-
-
-func _start_game() -> void:
-	var pool := GameLoading.i()
-	_prepare_match_fighters()
-	if pool.ready_to_play:
-		for uid in _defs:
-			var def: CreatureDef = _creature_def(uid)
-			var ball := pool.take_ball(def.id, uid, _start_pos(_owner_of(uid)))
-			if ball == null:
-				push_error("В стартовом каталоге нет свободного существа: " + String(def.id))
-				return
-			ball.set_presentation_definition(def)
-			ball.reparent(world, false)
-			ball.visible = false
-			ball.process_mode = Node.PROCESS_MODE_DISABLED
-			_prepared_balls[uid] = ball
-			preparation_times_ms[uid] = pool.preparation_times_ms.get(def.id, 0.0)
+func _place_launch_target() -> void:
+	if DeviceSettings.is_device():
+		var card_height := UiTheme.device_hand_card(get_viewport().get_visible_rect().size).y
+		VisualUtil.place(_launch_target, 0.5, 1.0, 0.0, -card_height - 76.0)
 	else:
-		# Изолированные стенды могут запускать main.tscn без стартовой сцены.
-		# Обычный вход игры проходит Boot и использует только резидентный каталог.
-		CreatureModels.preload_match(_defs.values())
-		for uid in _defs:
-			await get_tree().process_frame
-			var begin := Time.get_ticks_usec()
-			var ball := BALL_SCENE.instantiate() as CreatureBall
-			ball.visible = false
-			world.add_child(ball)
-			ball.setup(_creature_def(uid), uid)
-			ball.freeze_at(_start_pos(_owner_of(uid)))
-			ball.process_mode = Node.PROCESS_MODE_DISABLED
-			_prepared_balls[uid] = ball
-			preparation_times_ms[uid] = (Time.get_ticks_usec() - begin) / 1000.0
-	hud.set_hint("Orbstrike")
-	SoundFx.i().play_music(SoundFx.i().turn_music())  # матч начался — музыка ходов
-	var view: MatchState = ctrl.get_view(HUMAN)
-	var cols: Array = [[], []]
-	var elems: Array = [[], []]
-	for p in range(2):
-		var idx := 0
-		for uid in view.players[p].creature_uids:
-			cols[p].append(VisualUtil.attr_color(_creature_def(uid).attribute))
-			elems[p].append(_creature_def(uid).attribute)
-			_pip_idx[uid] = idx
-			idx += 1
-	hud.setup_plates(cols[0], cols[1], elems)
-	hud.set_names(tournament.participant_name(0) if tournament != null else fighters[0].appearance_profile.name, tournament.participant_name(_tournament_opponent()) if tournament != null else "Соперник · %s" % AIPlayer.difficulty_name(TeamMenu.difficulty))
-	hud.set_captures(0, 0)
-	_preparing = false
-	ctrl.start(_tournament_first_side() if tournament != null else 0)
-	_refresh_hand()
-	ability_panel.set_dock_visible(true)
-	setup_panel.set_dock_visible(true)
-	_duel_menu.visible = tournament == null
-	hud.begin_match_interface([setup_panel, ability_panel])
-
-
-func _request_duel_menu() -> void:
-	if _leaving_duel or tournament != null or ctrl == null:
-		return
-	arena_slot_picker.dismiss()
-	if _game_over:
-		_leave_duel_to_menu()
-		return
-	if is_instance_valid(_duel_exit_confirm):
-		_duel_exit_confirm.popup_centered()
-		return
-	_duel_exit_confirm = ConfirmationDialog.new()
-	_duel_exit_confirm.theme = UiTheme.get_theme()
-	_duel_exit_confirm.title = "Вернуться в главное меню?"
-	_duel_exit_confirm.dialog_text = "Текущая дуэль завершится. Можно будет начать новую."
-	_duel_exit_confirm.ok_button_text = "В меню"
-	_duel_exit_confirm.cancel_button_text = "Продолжить дуэль"
-	_duel_exit_confirm.confirmed.connect(_leave_duel_to_menu)
-	_duel_exit_confirm.canceled.connect(func() -> void: _resume_keyboard_focus.call_deferred())
-	ui_layer.add_child(_duel_exit_confirm)
-	_duel_exit_confirm.popup_centered()
-
-
-func _leave_duel_to_menu() -> void:
-	if _leaving_duel or tournament != null:
-		return
-	_leaving_duel = true
-	_pending.clear()
-	_gate_pick.clear()
-	events.stop()
-	SoundFx.i().cancel_match_sfx()
-	_duel_menu.disabled = true
-	# Сначала удаляется вся сцена (включая владельцев await и твинов).
-	# _exit_tree возвращает актёров/арену через _release_game_resources().
-	# Не ждём drained: результат боя может ждать подтверждения бесконечно.
-	get_tree().change_scene_to_file("res://scenes/menu/main_menu.tscn")
-
-
-## Сохранённый образ применяется к готовой паре из стартового каталога.
-func _prepare_match_fighters() -> void:
-	var saved := PlayerProfile.new()
-	saved.load_from()
-	var rival := PlayerProfile.npc_profile(_tournament_opponent() if tournament != null else 2)
-	if tournament != null: rival.name = tournament.participant_name(_tournament_opponent())
-	for side in 2:
-		var profile: Dictionary = saved.value if side == 0 else rival
-		var fighter := GameLoading.i().take_fighter(profile)
-		if fighter == null:
-			assert(not GameLoading.i().ready_to_play,"Missing resident fighter")
-			fighter = VrmFighter.new() # Isolated test scenes without Boot only.
-			world.add_child(fighter)
-			fighter.apply_profile(profile)
-		else: fighter.reparent(world,false)
-		fighter.position = Vector3(-2.3 if side == 0 else 2.3,0,(THROW_Z+1.4)*(1 if side == 0 else -1))
-		fighter.rotation.y = PI if side == 0 else 0.0
-		fighters.append(fighter)
-		var portrait := FighterPortrait.new()
-		add_child(portrait)
-		portrait.bind(fighter,side)
-		fighter_portraits.append(portrait)
-		hud.set_portrait(side,portrait.get_texture())
-		portrait.watch_consumer(hud.portrait_consumer(side),hud)
-
-
-## Подписи существ: только перечисленные uid (пустой список - все).
-## В бою (два uid) остальные существа скрываются: бой изолирован, как в аниме.
-func _focus_labels(uids: Array) -> void:
-	_label_focus = uids.duplicate()
-	for u in balls.keys():
-		var b: CreatureBall = balls[u]
-		b.set_label_allowed((uids.is_empty() or (uids.has(u) and uids.size() < 2)) and not DeviceSettings.is_device())
-		b.visible = uids.size() < 2 or uids.has(u)
-
-
-## 3D-эффект способности у своего существа (и у соперника, если карта бьёт по нему).
-func _ability_fx(player: int, def: CardDef) -> void:
-	if def == null or _battle_uids.size() != 2:
-		return
-	var mine: int = _battle_uids[0] if _owner_of(_battle_uids[0]) == player else _battle_uids[1]
-	var foe: int = _battle_uids[1] if mine == _battle_uids[0] else _battle_uids[0]
-	var mb: CreatureBall = balls.get(mine)
-	var fb: CreatureBall = balls.get(foe)
-	if mb == null:
-		return
-	var h: float = Arena.FIG_H * 0.7
-	var r: float = Arena.FIG_W * 0.32
-	var base: Vector3 = mb.global_position - Vector3(0, CreatureBall.RADIUS, 0)
-	var foe_base: Vector3 = fb.global_position - Vector3(0, CreatureBall.RADIUS, 0) if fb != null else base
-	var cls: StringName = CardDB.card_class(def)
-	var eff := String(def.effect_id)
-	# Одна карта — один короткий обмен: движение, ответ, затем новое число силы.
-	if eff in ["negate", "cap_own_base", "aloft"]:
-		mb.ability_pulse()
-	elif eff in ["siphon", "strip", "reset_base", "weaken_mark", "drain", "scorch", "radiance", "eclipse", "pact", "doom"]:
-		if fb != null:
-			await mb.counter_lunge(fb.global_position)
-			if not is_instance_valid(mb) or not is_instance_valid(fb):
-				return
-			fb.take_hit(VisualUtil.attr_color(_creature_def(mine).attribute).lightened(0.2))
-		else:
-			mb.ability_pulse()
-	else:
-		mb.ability_pulse()
-	if CardEffects.is_fusion(def):
-		var tc := UiTheme.FUSION_GLOW
-		VisualUtil.ring_wave(world, base + Vector3(0, 0.1, 0), tc, r * 2.2, 0.6)
-		get_tree().create_timer(0.2).timeout.connect(func() -> void: VisualUtil.ring_wave(world, base + Vector3(0, 0.1, 0), tc, r * 3.0, 0.7))
-		VisualUtil.spiral(world, base, tc, h, r, 1.0)
-	elif cls == &"red":
-		var lock: int = CardEffects.lock_attr(def)
-		var ec: Color = VisualUtil.attr_color(lock if lock >= 0 else _creature_def(mine).attribute).lightened(0.25)
-		VisualUtil.light_pillar(mb, Vector3(0, -CreatureBall.RADIUS, 0), ec, h * 1.8, r * 0.9, 0.9)
-		VisualUtil.spiral(world, base, ec, h * 1.2, r * 1.2, 1.1)
-		VisualUtil.ring_wave(world, base + Vector3(0, 0.1, 0), ec, r * 3.0, 0.7)
-		if eff in ["drain", "scorch", "radiance", "eclipse", "pact", "doom"]:
-			VisualUtil.burst(world, foe_base + Vector3(0, h * 0.5, 0), Color(0.8, 0.15, 0.2), Arena.WORLD * 0.7)
-		if eff in ["purge_gate", "eclipse", "shift_gate"]:
-			_gate_fx(base, foe_base)
-	elif cls == &"blue":
-		var bc: Color = VisualUtil.attr_color(CardEffects.lock_attr(def)).lightened(0.3) if CardEffects.lock_attr(def) >= 0 else Color(1.0, 0.8, 0.35)
-		VisualUtil.spiral(world, base, bc, h * 1.1, r, 1.0)
-		VisualUtil.ring_wave(world, base + Vector3(0, 0.1, 0), bc, r * 2.5, 0.6)
-	else:
-		var gc := UiTheme.SPECIES_GLOW
-		match eff:
-			"negate", "cap_own_base":
-				VisualUtil.dome(world, base, gc, r * 1.9, 1.6)
-			"nullify_gate", "aloft":
-				_gate_fx(base, foe_base)
-			"siphon", "strip", "reset_base", "weaken_mark", "scorch":
-				VisualUtil.spiral(world, foe_base, Color(0.85, 0.15, 0.2), h, r, 1.0)
-				VisualUtil.burst(world, foe_base + Vector3(0, h * 0.5, 0), Color(0.8, 0.1, 0.15), Arena.WORLD * 0.7)
-				if eff == "reset_base":
-					VisualUtil.spiral(world, base, gc, h, r, 1.0)
-			_:
-				VisualUtil.spiral(world, base, gc, h, r, 1.0)
-				VisualUtil.ring_wave(world, base + Vector3(0, 0.1, 0), gc, r * 2.5, 0.7)
-
-
-## Вспышка на воротах между бойцами (отмена или сдвиг ворот).
-func _gate_fx(base: Vector3, foe_base: Vector3) -> void:
-	var cardpos: Vector3 = (base + foe_base) * 0.5
-	VisualUtil.ring_wave(world, cardpos + Vector3(0, 0.1, 0), Color(0.9, 0.95, 1.0), Arena.CARD_H * 0.9, 0.8)
-	VisualUtil.burst(world, cardpos + Vector3(0, 0.5, 0), Color(0.8, 0.9, 1.0), Arena.WORLD)
-
-
-## Крик существа по uid (с задержкой, чтобы совпасть с анимацией).
-func _cry(uid: int, kind: String, delay: float = 0.0, db: float = -1.0) -> void:
-	var d: CreatureDef = _creature_def(uid)
-	if d != null:
-		SoundFx.i().cry(d.id, kind, delay, db)
-
-
-## Рука способностей игрока внизу справа.
-func _refresh_hand() -> void:
-	if ctrl == null:
-		return
-	ability_panel.set_hand(ctrl.get_view(HUMAN).players[HUMAN].ability_hand)
-	setup_panel.set_hand(ctrl.get_view(HUMAN).players[HUMAN].arena_hand)
-
-
-func _on_restart() -> void:
-	if tournament != null:
-		_reload_tournament()
-		return
-	if GameLoading.i().ready_to_play:
-		_release_game_resources()
-		_restore_time_scale()
-		GameLoading.i().show_game()
-	else:
-		get_tree().reload_current_scene()
-
-
-## Возвращаем живые модели до освобождения сцены; каталог принадлежит загрузчику.
-func _release_game_resources() -> void:
-	if is_instance_valid(hud):
-		if is_instance_valid(hud.opponent_panel): hud.opponent_panel.reset()
-		if is_instance_valid(hud.own_panel): hud.own_panel.reset()
-	_own_uid = -1
-	_own_power = -1
-	var pool := GameLoading._inst
-	for portrait in fighter_portraits:
-		portrait.fighter = null
-		portrait.render_target_update_mode = SubViewport.UPDATE_DISABLED
-		portrait.queue_free()
-	fighter_portraits.clear()
-	if is_instance_valid(hud):
-		for side in 2: hud.set_portrait(side,null)
-	for fighter in fighters:
-		if is_instance_valid(pool) and pool.ready_to_play: pool.return_fighter(fighter)
-		else: fighter.queue_free()
-	fighters.clear()
-	if not is_instance_valid(pool) or not pool.ready_to_play:
-		return
-	process_mode = Node.PROCESS_MODE_DISABLED
-	if is_instance_valid(team_menu):
-		team_menu._preview.release()
-	for ball in balls.values() + _prepared_balls.values():
-		pool.return_ball(ball)
-	balls.clear()
-	_prepared_balls.clear()
-	if is_instance_valid(arena):
-		pool.return_arena(arena)
-		arena = null
-
-
-# ---------------------------------------------------------------- колоды и справочник uid
-
-## Колоды строит ядро: пресет игрока и случайная колода ИИ из общего пула (CardDB).
-func _build_decks() -> Array[DeckDef]:
-	if career != null and not _tournament_match.is_empty():
-		return [career.participant_deck(0), career.participant_deck(_tournament_opponent())]
-	if tournament != null and not _tournament_match.is_empty():
-		return [tournament.participant_deck(0), tournament.participant_deck(_tournament_opponent())]
-	var mine: DeckDef = null
-	if _player_deck.size() == 3 and CardDB.deck_error(_player_deck[0], _player_deck[1], _player_deck[2]) == "":
-		mine = CardDB.build_deck(_player_deck[0], _player_deck[1], _player_deck[2])
-	if mine == null:
-		push_warning("Недопустимая команда, берётся пресет")
-		mine = CardDB.preset_deck(0)
-	return [mine, CardDB.opponent_deck(rng)]
-
-
-## uid -> определение и владелец. Существа в get_view не маскируются, uid не меняются за матч.
-func _index_creatures() -> void:
-	var view: MatchState = ctrl.get_view(HUMAN)
-	for p in range(2):
-		for uid in view.players[p].creature_uids:
-			var cs: CreatureState = view.creature(uid)
-			var definition: CreatureDef = CardDB.creature(cs.def_id)
-			if career != null:
-				definition = definition.duplicate() as CreatureDef
-				definition.base_power = PowerCalc.base_power(view, uid)
-			_defs[uid] = definition
-			_owners[uid] = cs.owner
-
-
-func _creature_def(uid: int) -> CreatureDef:
-	return _defs.get(uid) as CreatureDef
-
-
-func _owner_of(uid: int) -> int:
-	return int(_owners.get(uid, -1))
-
-
-func _cname(uid: int) -> String:
-	var d: CreatureDef = _creature_def(uid)
-	if d == null:
-		return "Существо #%d" % uid
-	return d.display_name
-
-
-func _names_for(r: BattleResult) -> Dictionary:
-	var out: Dictionary = {}
-	for u in [r.attacker_uid, r.defender_uid]:
-		var d: CreatureDef = _creature_def(u)
-		if d != null:
-			out[u] = "%s (%s)" % [d.display_name, VisualUtil.attr_name(d.attribute)]
-	return out
-
-
-func _wait(sec: float) -> void:
-	await get_tree().create_timer(sec).timeout
-
-
-# ---------------------------------------------------------------- подсказки для 3D-объектов
-
-## Что под мышью: существо/шар (ближайшее по проекции) или карта ворот. {} — ничего.
-func _tip_at(mp: Vector2) -> Dictionary:
-	if ctrl == null or _game_over or _preparing or hud._battle or team_menu.visible or cam == null or events.is_busy() or director.flying:
-		return {}
-	var view: MatchState = ctrl.get_view(HUMAN)
-	# существа и шар перед броском
-	var best_uid := -1
-	var best_d := 1e9
-	var best_rect := Rect2()
-	for u in balls.keys():
-		var b: CreatureBall = balls[u]
-		if b == null or not is_instance_valid(b) or not b.visible:
-			continue
-		var base: Vector3 = b.global_position - Vector3(0, CreatureBall.RADIUS, 0)
-		var on_field: bool = view.creature(u).slot >= 0
-		var h: float = b.figure_height() if on_field else CreatureBall.RADIUS * 2.0
-		var top: Vector3 = base + Vector3(0, h, 0)
-		if cam.is_position_behind(base) or cam.is_position_behind(top):
-			continue
-		var p0: Vector2 = cam.unproject_position(base)
-		var p1: Vector2 = cam.unproject_position(top)
-		var rad: float = maxf(24.0, p0.distance_to(p1) * 0.22)
-		var d: float = Geometry2D.get_closest_point_to_segment(mp, p0, p1).distance_to(mp)
-		if d < rad and d / rad < best_d:
-			best_d = d / rad
-			best_uid = u
-			best_rect = Rect2(p0, Vector2.ZERO).expand(p1).grow(rad)
-	if best_uid >= 0:
-		return {"key": "c%d" % best_uid, "lines": _creature_tip(best_uid, view), "rect": best_rect}
-	# карты ворот: попадание в проекцию прямоугольника карты
-	for i in range(view.slots.size()):
-		var sl: SlotState = view.slots[i]
-		var c: Vector3 = arena.slot_position(i)
-		var hw: float = Arena.CARD_W * 0.5
-		var hh: float = Arena.CARD_H * 0.5
-		var poly := PackedVector2Array()
-		var ok := true
-		for corner in [Vector3(-hw, 0, -hh), Vector3(hw, 0, -hh), Vector3(hw, 0, hh), Vector3(-hw, 0, hh)]:
-			var wp: Vector3 = c + corner
-			if cam.is_position_behind(wp):
-				ok = false
-				break
-			poly.append(cam.unproject_position(wp))
-		if not ok or not Geometry2D.is_point_in_polygon(mp, poly):
-			continue
-		var lines: Array = _slot_tip(i, sl, view)
-		if not lines.is_empty():
-			var sr := Rect2(poly[0], Vector2.ZERO)
-			for q in poly:
-				sr = sr.expand(q)
-			return {"key": "s%d:%s" % [i, str(sl.card_id) + str(sl.revealed)], "lines": lines, "rect": sr}
-	return {}
-
-
-func _slot_tip(i: int, sl: SlotState, view: MatchState) -> Array:
-	if not sl.has_card:
-		if ctrl.get_phase() == MatchController.Phase.SETUP and ctrl.get_active_player() == HUMAN and ctrl.legal_setup_slots().has(i):
-			return ["Свободное место", "Выкладка ворот", UiTheme.GOLD, "Сюда можно положить карту ворот: рядом с уже лежащими картами.", "Бросок на пустое место — промах.", "", ""]
-		return []
-	var mine: bool = sl.card_owner == HUMAN
-	var occ := ""
-	if sl.occupant_uid >= 0:
-		occ = "На воротах стоит: %s (%s)." % [_cname(sl.occupant_uid), "ваше" if _owner_of(sl.occupant_uid) == HUMAN else "существо соперника"]
-	var def: CardDef = CardDB.card(sl.card_id)
-	if def == null:
-		return ["Закрытые ворота соперника", "Ворота · рубашкой вверх", UiTheme.GOLD_DIM,
-			"Владелец может открыть карту во время боя. Пока ворота закрыты, их бонусы и ловушки не действуют.", "Закрытая карта соперника.", "", occ]
-	var lines: Array = UiTheme.card_help(def)
-	if not sl.revealed:
-		lines[1] = "%s · ваша закрытая карта" % lines[1] if mine else lines[1]
-		lines[5] = "Соперник не видит эту карту до боя. " + str(lines[5]) if mine else lines[5]
-	lines[6] = (str(lines[6]) + "\n" + occ).strip_edges() if occ != "" else lines[6]
-	return lines
-
-
-func _creature_tip(uid: int, view: MatchState) -> Array:
-	var d: CreatureDef = _creature_def(uid)
-	var cs: CreatureState = view.creature(uid)
-	var lines: Array = UiTheme.creature_help(d)
-	var mine: bool = _owner_of(uid) == HUMAN
-	lines[1] = "%s · %s" % [lines[1], "ваше существо" if mine else "существо соперника"]
-	var power: int = d.base_power
-	var extra: Array[String] = ["Базовая сила: %d" % power]
-	if cs.slot >= 0:
-		var sl: SlotState = view.slots[cs.slot]
-		var cd: CardDef = CardDB.card(sl.card_id)
-		# сила с воротами: бонус открытой карты (те же правила, что в PowerCalc, роль защитника)
-		if sl.revealed and cd != null:
-			var gate: int = PowerCalc.gate_bonus_for(view, uid, cs.slot)
-			if gate != 0:
-				extra.append("Сила %d %s %d ворота = %d" % [power, "+" if gate > 0 else "−", absi(gate), power + gate])
-			else:
-				extra.append("Сила %d (ворота бонуса не дают)" % power)
-		else:
-			extra.append("Сила %d (ворота закрыты)" % power)
-		extra.append("Стоит на воротах №%d%s" % [cs.slot + 1, (": «%s»" % cd.display_name) if cd != null else " (карта закрыта)"])
-	else:
-		extra.append("Выберите подсвеченные ворота для броска сферы" if mine else "Шар соперника")
-	for mk in cs.marks:
-		extra.append("Метка «%s»: %s в следующем бою" % [_card_name(StringName(mk.get("src", ""))),
-			("сила ровно %d" % int(mk["fix"])) if mk.has("fix") else "%+d" % int(mk.get("delta", 0))])
-	if not cs.attached.is_empty():
-		var names: Array[String] = []
-		for a in cs.attached:
-			names.append("«%s»" % _card_name(StringName(a[1])))
-		extra.append("Прикреплено: " + ", ".join(names))
-	lines[6] = "\n".join(extra)
-	return lines
-
-
-## Строка в ленту событий — в порядке очереди анимаций.
-func _log(text: String, c: Color = UiTheme.TEXT) -> void:
-	events.push(func() -> void: hud.log_event(text, c))
-
-
-func _say(player: int, you: String, foe: String) -> String:
-	return you if player == HUMAN else foe
-
-
-# ---------------------------------------------------------------- обработчики сигналов контроллера
-# Состояние контроллера уже изменено; здесь только ставим анимации в очередь.
-
-func _on_phase_changed(phase: int, active_player: int) -> void:
-	# Устаревшая карта поля не может пережить смену фазы/владельца ответа.
-	_launch_target.hide()
-	arena_slot_picker.dismiss()
-	events.push(_anim_phase.bind(phase, active_player))
-
-
-func _on_setup_requested(player: int) -> void:
-	events.push(_anim_set_pending.bind({"kind": "setup", "player": player}))
-
-
-func _on_arena_card_placed(player: int, slot: int) -> void:
-	_log(_say(player, "Вы кладёте карту ворот", "Соперник кладёт карту ворот"))
-	events.push(_anim_card_placed.bind(player, slot))
-
-
-func _on_throw_requested(player: int) -> void:
-	events.push(_anim_set_pending.bind({"kind": "throw", "player": player}))
-
-
-func _on_creature_selected(player: int, uid: int, recalled: bool) -> void:
-	_log("%s: %s" % [_say(player, "Вы бросаете", "Соперник бросает"), _cname(uid)])
-	events.push(_anim_selected.bind(player, uid, recalled))
-
-
-func _on_creature_returned(uid: int, reason: StringName) -> void:
-	if reason == &"miss":
-		_log("Промах: %s" % _cname(uid), Color(1.0, 0.7, 0.6))
-	events.push(_anim_returned.bind(uid, reason))
-
-
-func _on_creature_stood(uid: int, slot: int) -> void:
-	_log("%s встаёт на ворота" % _cname(uid))
-	events.push(_anim_stood.bind(uid, slot))
-
-
-func _on_battle_started(slot: int, attacker_uid: int, defender_uid: int) -> void:
-	var pre: BattleResult = ctrl.get_battle_preview()
-	var pw: Array = [pre.powers[0], pre.powers[1]] if pre != null else []
-	var mo: Array = [pre.momentum[0], pre.momentum[1]] if pre != null else [0, 0]
-	_log("Бой: %s против %s" % [_cname(attacker_uid), _cname(defender_uid)], UiTheme.GOLD)
-	events.push(_anim_battle_started.bind(slot, attacker_uid, defender_uid, pw, mo))
-	if pre != null:
-		events.push(battle_hud.set_chain.bind(pre.plays.duplicate(true), [false, false], -1, pre.cancelled_plays.duplicate(true), pre.ability_counts.duplicate(), _battle_blocks(pre)))  # прикреплённые карты
-
-
-func _on_card_revealed(slot: int, card_id: StringName) -> void:
-	var owner: int = ctrl.get_view(HUMAN).slots[slot].card_owner
-	events.push(_anim_card_revealed.bind(slot, card_id, owner))
-
-
-func _on_ability_window(player: int, _options: Array) -> void:
-	# Список карт берётся при ответе из ctrl.legal_abilities(player).
-	events.push(_anim_set_pending.bind({"kind": "ability", "player": player}))
-
-
-func _battle_blocks(result: BattleResult) -> Array:
-	return [MatchController.battle_ability_block_reason(result, 0), MatchController.battle_ability_block_reason(result, 1)]
-
-
-func _on_ability_played(player: int, card_id: StringName) -> void:
-	_refresh_hand()
-	_stats["abilities"][player] += 1
-	_log("%s «%s»" % [_say(player, "Вы играете", "Соперник играет"), _card_name(card_id)], Color(0.75, 0.6, 1.0))
-	var pre: BattleResult = ctrl.get_battle_preview()
-	var pw: Array = [pre.powers[0], pre.powers[1]] if pre != null else []
-	events.push(_anim_ability_msg.bind(player, card_id, false, pw))
-	if pre != null:
-		events.push(battle_hud.set_chain.bind(pre.plays.duplicate(true), pre.passed.duplicate(), -1, pre.cancelled_plays.duplicate(true), pre.ability_counts.duplicate(), _battle_blocks(pre)))
-
-
-func _on_ability_cancelled(player: int, card_id: StringName) -> void:
-	events.push(_anim_ability_msg.bind(player, card_id, true))
-
-
-func _on_battle_resolved(result: BattleResult) -> void:
-	_refresh_hand()
-	if result.winner_uid < 0:
-		var what: String = "Бой прерван: Отлив" if result.interrupted else "Выбывают оба бойца"
-		_stats["battles"].append({"turn": ctrl.get_turn(), "winner": "—", "loser": "%s и %s" % [_cname(result.attacker_uid), _cname(result.defender_uid)],
-			"wp": result.powers[0], "lp": result.powers[1], "mine": false})
-		events.push(_anim_battle_resolved.bind(result))
-		_log(what, UiTheme.GOLD)
-		return
-	var win_p: int = _owner_of(result.winner_uid)
-	var atk_won: bool = result.winner_uid == result.attacker_uid
-	var wp: int = result.powers[0 if atk_won else 1]
-	var lp: int = result.powers[1 if atk_won else 0]
-	_stats["wins"][win_p] += 1
-	_stats["battles"].append({"turn": ctrl.get_turn(), "winner": _cname(result.winner_uid), "loser": _cname(result.loser_uid),
-		"wp": wp, "lp": lp, "mine": win_p == HUMAN})
-	events.push(_anim_battle_resolved.bind(result))
-	_log("Побеждает %s (%d : %d)" % [_cname(result.winner_uid), wp, lp], Color(0.6, 1.0, 0.6) if win_p == HUMAN else Color(1.0, 0.6, 0.55))
-
-
-func _on_creature_eliminated(uid: int) -> void:
-	events.push(_anim_remove_ball.bind(uid, true))
-	events.push(func() -> void: hud.kill_creature(_owner_of(uid), int(_pip_idx.get(uid, -1))))
-
-
-func _on_card_captured(player: int, slot: int, _card_id: StringName) -> void:
-	_log("%s: ворота захвачены" % _say(player, "Вы", "Соперник"), UiTheme.GOLD)
-	events.push(_anim_captured.bind(player, slot))
-
-
-func _on_turn_started(player: int, turn: int) -> void:
-	_refresh_hand()
-	events.push(_anim_turn.bind(player, turn))
-
-
-func _on_ability_attached(player: int, uid: int, card_id: StringName) -> void:
-	_refresh_hand()
-	_stats["abilities"][player] += 1
-	_log("%s «%s» → %s" % [_say(player, "Вы прикрепляете", "Соперник прикрепляет"), _card_name(card_id), _cname(uid)], Color(0.75, 0.6, 1.0))
-	events.push(_anim_attached.bind(player, uid, card_id))
-
-
-func _on_attach_window(player: int, _uid: int, _options: Array) -> void:
-	events.push(_anim_set_pending.bind({"kind": "attach", "player": player}))
-
-
-func _on_gate_thrown(player: int, slot: int, uid: int) -> void:
-	_log("%s: ворота + бросок" % _say(player, "Вы", "Соперник"), UiTheme.GOLD)
-	events.push(_anim_gate_thrown.bind(player, slot, uid))
-
-
-func _on_gate_trap(slot: int, card_id: StringName, effect: StringName) -> void:
-	_stats["traps"] += 1
-	_log("ЛОВУШКА: %s" % _card_name(card_id), Color(1.0, 0.45, 0.35))
-	events.push(_anim_trap.bind(slot, card_id, effect))
-
-
-func _on_momentum_changed(player: int, value: int) -> void:
-	events.push(_anim_momentum.bind(player, value))
-
-
-func _on_final_round(player: int) -> void:
-	if not MatchRules.author_bonuses(ctrl.get_view(HUMAN).ruleset):
-		return
-	_log("ФИНАЛЬНЫЙ БОЙ", Color(1.0, 0.45, 0.35))
-	events.push(_anim_final_round.bind(player))
-
-
-## Выбывшее существо вернулось в игру (в зону использованных): шарик на плашке снова горит.
-func _on_creature_revived(uid: int) -> void:
-	_log("%s возвращается в игру" % _cname(uid), Color(1.0, 0.95, 0.6))
-	events.push(func() -> void:
-		var p: int = _owner_of(uid)
-		_alive[p] += 1
-		_refresh_status()
-		hud.revive_creature(p, int(_pip_idx.get(uid, -1)))
-		SoundFx.i().play("power_up", -4.0)
-		hud.screen_flash(Color(1.0, 0.95, 0.7, 0.3))
-		await hud.banner("ВОЗВРАЩЕНИЕ", "%s снова в игре (зона использованных)" % _cname(uid), Color(1.0, 0.92, 0.55), 0.8))
-
-
-## Метка на следующий бой: строка в ленте и вспышка у шара.
-func _on_creature_marked(uid: int, card_id: StringName, mark: Dictionary) -> void:
-	var txt: String = "сила ровно %d" % int(mark["fix"]) if mark.has("fix") else "%+d" % int(mark.get("delta", 0))
-	_log("%s: %s в следующем бою («%s»)" % [_cname(uid), txt, _card_name(card_id)], Color(0.85, 0.75, 1.0))
-	events.push(func() -> void:
-		var b: CreatureBall = balls.get(uid)
-		if b != null and is_instance_valid(b):
-			b.ability_pulse()
-			var good: bool = mark.has("fix") or int(mark.get("delta", 0)) > 0
-			VisualUtil.ring_wave(world, b.global_position - Vector3(0, CreatureBall.RADIUS - 0.1, 0), Color(0.6, 1.0, 0.6) if good else Color(1.0, 0.35, 0.3), Arena.FIG_W * 0.5, 0.5))
-
-
-## «Вихревая подмена»: прежний боец исчезает, новый появляется на его месте в бою.
-func _on_fighter_swapped(old_uid: int, new_uid: int, slot: int) -> void:
-	_log("Подмена: %s вместо %s" % [_cname(new_uid), _cname(old_uid)], Color(0.75, 0.6, 1.0))
-	events.push(_anim_fighter_swapped.bind(old_uid, new_uid, slot))
-
-
-func _anim_fighter_swapped(old_uid: int, new_uid: int, _slot: int) -> void:
-	var ob: CreatureBall = balls.get(old_uid)
-	var pos: Vector3 = ob.global_position if ob != null else Vector3.ZERO
-	var facing: Vector3 = Vector3.ZERO
-	if _battle_uids.size() == 2:
-		var foe: int = _battle_uids[1] if _battle_uids[0] == old_uid else _battle_uids[0]
-		var fb: CreatureBall = balls.get(foe)
-		if fb != null:
-			facing = fb.global_position
-		_battle_uids[_battle_uids.find(old_uid)] = new_uid
-	hud.flash("Вихревая подмена: %s врывается в бой" % _cname(new_uid))
-	if ob != null:
-		await _anim_remove_ball(old_uid)
-	var nb: CreatureBall = balls.get(new_uid)
-	if nb == null:
-		nb = _spawn_ball(new_uid)
-	nb.freeze_at(pos)
-	if facing != Vector3.ZERO:
-		nb.face_toward(facing)
-	nb.open_animated()  # выход со стойкой и рёвом (CreatureAnim.appear)
-	_public_creature_opened(new_uid)
-	_cry(new_uid, "appear", 0.2)
-	VisualUtil.ring_wave(world, pos - Vector3(0, CreatureBall.RADIUS - 0.1, 0), VisualUtil.attr_color(_creature_def(new_uid).attribute), Arena.FIG_W * 0.7, 0.55)
-	_focus_labels(_battle_uids)
-	await hud.wait_read(0.9)
-	hud.clear_flash()
-
-
-## «Сдвиг плит»: карты ворот меняются местами (узлы карт переезжают, существа остаются).
-func _on_gates_swapped(a: int, b: int) -> void:
-	_log("Сдвиг плит: ворота меняются местами", Color(0.75, 0.6, 1.0))
-	events.push(func() -> void:
-		var na: ArenaCardNode = card_nodes.get(a)
-		var nb: ArenaCardNode = card_nodes.get(b)
-		card_nodes.erase(a)
-		card_nodes.erase(b)
-		if na != null:
-			card_nodes[b] = na
-			na.slot = b
-			na.create_tween().tween_property(na, "position", arena.slot_position(b), 0.45).set_trans(Tween.TRANS_QUAD)
-		if nb != null:
-			card_nodes[a] = nb
-			nb.slot = a
-			nb.create_tween().tween_property(nb, "position", arena.slot_position(a), 0.45).set_trans(Tween.TRANS_QUAD)
-		cam.shake(0.4, 0.3)
-		SoundFx.i().play("card_place")
-		await _wait(0.55))
-
-
-## Ворота сгорели без захвата (оба бойца выбыли).
-func _on_gate_discarded(slot: int, _card_id: StringName) -> void:
-	_log("Ворота сгорают", Color(1.0, 0.6, 0.4))
-	events.push(func() -> void:
-		var node: ArenaCardNode = card_nodes.get(slot)
-		card_nodes.erase(slot)
-		if node == null:
-			return
-		VisualUtil.burst(world, node.global_position + Vector3(0, 0.3, 0), Color(1.0, 0.5, 0.25), Arena.WORLD * 0.6)
-		var tw := node.create_tween()
-		tw.tween_property(node, "scale", Vector3(0.01, 0.01, 0.01), 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
-		await tw.finished
-		node.queue_free())
-
-
-## Сыгранные способности вернулись в руку («Второе дыхание», карты камбэка).
-func _on_abilities_recalled(player: int, card_ids: Array) -> void:
-	_refresh_hand()
-	var names: PackedStringArray = PackedStringArray()
-	for id in card_ids:
-		names.append(_card_name(StringName(id)))
-	_log("%s в руку: %s" % [_say(player, "Карты возвращаются", "К сопернику возвращаются"), ", ".join(names)], Color(0.75, 0.6, 1.0))
-
-
-## Перезарядка: карты, отдыхавшие один бой, снова в руке.
-func _on_abilities_recharged(player: int, card_ids: Array) -> void:
-	_refresh_hand()
-	var names: PackedStringArray = PackedStringArray()
-	for id in card_ids:
-		names.append(_card_name(StringName(id)))
-	_log("%s: %s" % [_say(player, "Перезарядка, снова в руке", "Перезарядка соперника"), ", ".join(names)], Color(0.6, 0.75, 1.0))
-
-
-func _on_game_over(winner: int, reason: StringName) -> void:
-	# Persist the controller result immediately, before the presentation queue drains.
-	if tournament != null:
-		_accept_tournament_result()
-	ability_panel.set_dock_visible(false)
-	if is_instance_valid(setup_panel): setup_panel.set_dock_visible(false)
-	events.push(_anim_game_over.bind(winner, reason))
-
-
-# ---------------------------------------------------------------- анимации (выполняются EventPlayer)
-
-var _alive: Array[int] = [3, 3]
-var _opponent_uid := -1
-var _opponent_power := -1
-var _own_uid := -1
-var _own_power := -1
-var _label_focus: Array = []
-var _battle_uids: Array[int] = []  # [атакующий, защитник] текущего боя (для эффектов способностей)  # живые существа по ходу анимаций (для строки статуса)
-
-
-func _refresh_status() -> void:
-	hud.set_status(_turn, _active, _alive[0], _alive[1])
-	hud.set_captures(captures[0], captures[1])
-
-
-func _anim_phase(_phase: int, active_player: int) -> void:
-	hud.set_phase(_phase)
-	_active = active_player
-	_refresh_status()
-
-
-func _anim_turn(player: int, turn: int) -> void:
-	if player == AI_PLAYER and is_instance_valid(hud.opponent_panel): hud.opponent_panel.feedback("turn")
-	for side in fighters.size(): fighters[side].active_turn = side == player
-	_active = player
-	_turn = turn
-	_refresh_status()
-	if turn > 0:
-		SoundFx.i().play("turn_yours" if player == HUMAN else "turn_opponent", -5.0)
-
-
-func _anim_set_pending(p: Dictionary) -> void:
-	_pending = p
-
-
-func _card_name(id: StringName) -> String:
-	var c: CardDef = CardDB.card(id)
-	return c.display_name if c != null else String(id)
-
-
-## Карта прикреплена к существу вне боя: вспышка у шара, карта соперника показывается обоим.
-func _anim_attached(player: int, uid: int, card_id: StringName) -> void:
-	await director.ability_action(player,card_id,uid)
-	cam.overview()
-	_refresh_hand()
-	ability_panel.show_played(card_id, player != HUMAN)
-	var b: CreatureBall = balls.get(uid)
-	if b != null:
-		b.ability_pulse()
-		var c: Color = VisualUtil.attr_color(_creature_def(uid).attribute).lightened(0.3)
-		VisualUtil.ring_wave(world, b.global_position - Vector3(0, CreatureBall.RADIUS - 0.1, 0), c, Arena.FIG_W * 0.6, 0.6)
-	hud.flash("%s «%s»" % [_say(player, "Вы прикрепляете", "Соперник прикрепляет"), _card_name(card_id)])
-	await hud.wait_read(1.0)
-	hud.clear_flash()
-	if player == HUMAN and ctrl.get_phase() == MatchController.Phase.AWAIT_LANDING and _active_ball != null and not director.flying:
-		_show_pre_throw()
-
-
-func _anim_gate_thrown(player: int, _slot: int, uid: int) -> void:
-	SoundFx.i().play("card_select")
-	hud.set_hint("Ворота + бросок: %s летит на новую карту" % _cname(uid))
-	await hud.banner("ВОРОТА + БРОСОК", "%s: карта и бросок за один ход" % _say(player, "Вы", "Соперник"), UiTheme.GOLD, 0.55)
-
-
-func _anim_trap(slot: int, card_id: StringName, effect: StringName) -> void:
-	var sub: String = "Ловушка сработала"
-	match effect:
-		&"mute":
-			sub = "Сопернику владельца способности запрещены"
-		&"mirror":
-			sub = "Силы бойцов меняются местами"
-		&"limit":
-			sub = "Кто сильнее 400 — проигрывает"
-		&"clash":
-			sub = "Оба бойца выбывают"
-	SoundFx.i().play("gate_trap", -2.0)
-	cam.impact(arena.slot_position(slot) + Vector3(0, Arena.FIG_H * 0.2, 0))
-	cam.shake(0.7, 0.4)
-	hud.screen_flash(Color(1.0, 0.3, 0.2, 0.35))
-	await hud.banner("ЛОВУШКА!  %s" % _card_name(card_id).to_upper(), sub, Color(1.0, 0.35, 0.3), 0.9)
-	cam.battle_wide()
-
-
-func _anim_momentum(player: int, value: int) -> void:
-	if not MatchRules.author_bonuses(ctrl.get_view(HUMAN).ruleset):
-		hud.set_momentum(player, 0)
-		return
-	hud.set_momentum(player, value)
-	if value > 0:
-		SoundFx.i().play("power_up", -8.0)
-		hud.log_event("%s: натиск +%d к силе" % [_say(player, "Вы", "Соперник"), value * PowerCalc.MOMENTUM_STEP], Color(1.0, 0.7, 0.3))
-
-
-func _anim_final_round(_player: int) -> void:
-	if not MatchRules.author_bonuses(ctrl.get_view(HUMAN).ruleset):
-		return
-	hud.set_final_round(true)
-	SoundFx.i().play("battle_start", 0.0)
-	cam.shake(0.8, 0.5)
-	hud.screen_flash(Color(1.0, 0.5, 0.3, 0.3))
-	await hud.banner("ФИНАЛЬНЫЙ БОЙ", "Остались последние существа: преимущество стихии ×2", Color(1.0, 0.5, 0.25), 1.2)
-
-
-func _anim_card_placed(player: int, slot: int) -> void:
-	await director.card_placed(player, slot)
-
-
-func _spawn_ball(uid: int) -> CreatureBall:
-	var b: CreatureBall = _prepared_balls.get(uid)
-	if b != null:
-		_prepared_balls.erase(uid)
-		b.process_mode = Node.PROCESS_MODE_INHERIT
-		b.freeze_at(_start_pos(_owner_of(uid)))
-		b.close_up()
-		b._shape.disabled = false
-		b.slot = -1
-		b._figure.rotation = Vector3.ZERO
-		b.visible = true
-	else:
-		# Стенды и восстановление неполной сцены могут создавать существо без подготовки матча.
-		b = BALL_SCENE.instantiate() as CreatureBall
-		world.add_child(b)
-		b.setup(_creature_def(uid), uid)
-	balls[uid] = b
-	return b
-
-
-func _start_pos(player: int) -> Vector3:
-	return Vector3(0.0, BALL_Y, THROW_Z if player == HUMAN else -THROW_Z)
-
-
-func _anim_selected(player: int, uid: int, recalled: bool) -> void:
-	if player == AI_PLAYER: _clear_opponent_panel()
-	else: _clear_own_panel()
-	var b: CreatureBall = balls.get(uid)
-	if b == null:
-		b = _spawn_ball(uid)
-	elif recalled:
-		b.unfreeze()
-		b.close_up()
-		b.slot = -1
-	b.freeze_at(_start_pos(player))
-	cam.overview()
-	_focus_labels([])
-	_active_ball = b
-	_pending = {"kind": "launch", "player": player, "uid": uid}
-	await _wait(0.25)
-
-
-## Существо уходит в зону использованных: промах, после боя или со своих засчитанных ворот.
-func _anim_returned(uid: int, reason: StringName) -> void:
-	match reason:
-		&"miss":
-			SoundFx.i().play("miss", -2.0)
-			hud.set_hint("Промах: %s уходит в зону использованных" % _cname(uid))
-		&"gate_won":
-			hud.set_hint("Свои ворота: карта засчитана")
-		&"lost":
-			await _anim_remove_ball(uid, true)
-			return
-	cam.overview()
-	_focus_labels([])
-	await _anim_remove_ball(uid)
-
-
-## Попадание на свои ворота: существо переходит на другие ворота.
-func _anim_relocated(uid: int, _from: int, to: int) -> void:
-	var b: CreatureBall = balls.get(uid)
-	hud.set_hint("%s остаётся на воротах" % _cname(uid) if _from == to else "%s переходит на другие ворота" % _cname(uid))
-	if b == null:
-		return
-	var target := arena.slot_position(to) + Vector3(0.0, BALL_Y + 0.02, 0.0)
-	b.freeze_at(b.global_position)
-	cam.overview()
-	var tw := create_tween() # Владелец — матч, а не сохраняемый каталогом шар.
-	tw.tween_property(b, "global_position", target + Vector3(0, Arena.FIG_W * 0.4, 0), 0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tw.tween_property(b, "global_position", target, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	await tw.finished
-	b.freeze_at(target)
-
-
-func _anim_refilled(player: int) -> void:
-	hud.coach("used", "Зона использованных: существа после промаха или боя отдыхают. Когда бросать некого, они все возвращаются в руку.")
-	hud.flash("Существа вернулись из зоны использованных" if player == HUMAN else "У соперника вернулись существа")
-	await hud.wait_read(1.4)
-	hud.clear_flash()
-
-
-func _anim_remove_ball(uid: int, eliminated: bool = false) -> void:
-	if uid == _opponent_uid: _clear_opponent_panel()
-	if uid == _own_uid: _clear_own_panel()
-	var b: CreatureBall = balls.get(uid)
-	if b == null:
-		return
-	SoundFx.i().play("eliminated" if eliminated else "vanish", -2.0 if eliminated else -6.0)
-	if eliminated:
-		_alive[_owner_of(uid)] -= 1
-		_refresh_status()
-		VisualUtil.burst(world, b.global_position + Vector3(0, Arena.FIG_H * 0.2, 0), _creature_def(uid).color, Arena.WORLD * 0.8)
-	balls.erase(uid)
-	# Актёр остаётся учтённым и во время vanish: выход должен вернуть и его.
-	_prepared_balls[uid] = b
-	if b == _active_ball:
-		_active_ball = null
-	await b.vanish(eliminated)
-	b.visible = false
-	b.process_mode = Node.PROCESS_MODE_DISABLED
-
-
-func _anim_stood(uid: int, slot: int) -> void:
-	var b: CreatureBall = balls.get(uid)
-	if b == null:
-		return
-	b.slot = slot
-	hud.set_hint("%s встаёт на карту" % _cname(uid))
-	# короткий наезд на фактическую точку остановки, потом кат на облёт
-	if cam.mode == CameraRig.Mode.STATIC and not cam.is_overview():
-		await _wait(0.4)
-	var facing := Vector3(0.0, 0.0, -1.0 if _owner_of(uid) == HUMAN else 1.0)
-	b.hold_landing_pose()
-	b.face_toward(b.global_position + facing)
-	var orbit_t: float = cam.reveal_orbit(b.global_position - Vector3(0, BALL_Y, 0), b.figure_height(), facing, b.figure_size())
-	_focus_labels([uid])
-	SoundFx.i().play("ball_land", -3.0)
-	VisualUtil.ring_wave(world, Vector3(b.global_position.x, .08, b.global_position.z), VisualUtil.attr_color(_creature_def(uid).attribute), Arena.FIG_W * 0.7, 0.55)
-	SoundFx.i().play_later("capsule_open", 0.05)
-	_cry(uid, "appear", 0.4)
-	b.open_animated()  # выход со стойкой и рёвом (CreatureAnim.appear), пик — к тряске камеры
-	_public_creature_opened(uid)
-	get_tree().create_timer(0.8).timeout.connect(func() -> void: cam.shake(0.3, 0.2))
-	await _wait(orbit_t)
-	# Плавный возврат после раскрытия.
-	cam.overview()
-	await _wait(0.3)
-
-
-func _anim_battle_started(slot: int, attacker_uid: int, defender_uid: int, powers: Array = [], momentum: Array = [0, 0]) -> void:
-	await director.battle_started(slot, attacker_uid, defender_uid, powers, momentum)
-
-
-func _anim_card_revealed(slot: int, card_id: StringName, owner: int = -1) -> void:
-	await director.fighter_action(owner,"gate")
-	cam.battle_wide(true)
-	var node: ArenaCardNode = card_nodes.get(slot)
-	if node != null:
-		node.reveal(CardDB.card(card_id))
-		SoundFx.i().play("card_flip")
-	await _wait(1.0)
-	var preview := ctrl.get_battle_preview()
-	if preview != null:
-		battle_hud.set_powers(preview.powers)
-		_present_battle_powers(preview.powers)
-
-
-func _anim_ability_msg(player: int, card_id: StringName, cancelled: bool, powers: Array = []) -> void:
-	if player == AI_PLAYER and is_instance_valid(hud.opponent_panel): hud.opponent_panel.feedback("activation")
-	if not cancelled: await director.ability_action(player,card_id)
-	var c: CardDef = CardDB.card(card_id)
-	var cname: String = c.display_name if c != null else str(card_id)
-	if cancelled: SoundFx.i().ability(c,true)
-	if not cancelled:
-		ability_panel.show_played(card_id, player != HUMAN)
-		if player == HUMAN and DeviceSettings.is_device() and _battle_uids.size() == 2:
-			var side := 0 if _owner_of(_battle_uids[0]) == HUMAN else 1
-			hud.own_panel.feedback("activation")
-		if c != null and CardEffects.is_fusion(c):
-			_anim_ability_cam(player)
-		else:
-			cam.battle_wide()
-		await _ability_fx(player, c)
-	else:
-		# Срыв карты виден на самом бойце, даже без изменения силы.
-		for uid in _battle_uids:
-			if _owner_of(uid) == player:
-				var b: CreatureBall = balls.get(uid)
-				if b != null:
-					b.take_hit(Color(0.65, 0.7, 0.85))
-					VisualUtil.ring_wave(world, b.global_position, Color(0.6, 0.68, 0.8), Arena.FIG_W * 0.6, 0.45)
-		cam.shake(0.16, 0.18)
-	await _wait(0.22)
-	if powers.size() == 2:
-		battle_hud.set_powers(powers)
-		_present_battle_powers(powers)
-	if cancelled:
-		hud.flash("%s «%s» отменена" % ["Ваша карта" if player == HUMAN else "Карта соперника", cname])
-	else:
-		hud.flash(("Вы играете «%s»" if player == HUMAN else "Соперник играет «%s»") % cname)
-	await hud.wait_read(0.75)
-	hud.clear_flash()
-	if not cancelled and _battle_uids.size() == 2:
-		cam.battle_wide()
-
-
-## Кат на автора способности с рывком камеры.
-func _anim_ability_cam(player: int) -> void:
-	if _battle_uids.size() != 2:
-		return
-	var mine: int = _battle_uids[0] if _owner_of(_battle_uids[0]) == player else _battle_uids[1]
-	var foe: int = _battle_uids[1] if mine == _battle_uids[0] else _battle_uids[0]
-	var mb: CreatureBall = balls.get(mine)
-	var fb: CreatureBall = balls.get(foe)
-	if mb == null:
-		return
-	var facing: Vector3 = (fb.global_position - mb.global_position) if fb != null else Vector3(0, 0, 1)
-	cam.ability_jerk(mb.global_position - Vector3(0, CreatureBall.RADIUS, 0), facing, mb.figure_height(), mb.figure_size())
-
-
-func _anim_battle_resolved(result: BattleResult) -> void:
-	_present_battle_powers(result.powers)
-	if fighters.size() == 2 and result.winner_uid >= 0:
-		var winning_side := _owner_of(result.winner_uid)
-		fighters[winning_side].play_motion("victory")
-		fighters[1-winning_side].play_motion("defeat")
-	await director.battle_resolved(result)
-
-
-func _anim_no_winner(result: BattleResult) -> void:
-	await director.no_winner(result)
-
-
-func _anim_captured(player: int, slot: int) -> void:
-	var node: ArenaCardNode = card_nodes.get(slot)
-	cam.overview()
-	_focus_labels([])
-	captures[player] += 1
-	_refresh_status()
-	if node == null:
-		return
-	card_nodes.erase(slot)
-	SoundFx.i().play("card_capture")
-	node.tray_offset = float(captures[player] - 1) * 1.0 * Arena.WORLD
-	await node.play_capture(player)
-
-
-func _reason_text(reason: StringName) -> String:
-	match reason:
-		&"knockout":
-			return "Все три существа проигравшего выбиты"
-		&"turn_limit":
-			return "Лимит ходов (%d): по числу оставшихся существ" % MatchController.MAX_TURNS
-		&"stalemate", &"no_gates":
-			return "Бросать больше некому: по числу оставшихся существ"
-	return String(reason)
-
-
-func _anim_game_over(winner: int, reason: StringName) -> void:
-	_clear_opponent_panel()
-	_clear_own_panel()
-	if fighters.size() == 2:
-		for side in 2:
-			if winner < 0: fighters[side].reset_motion()
-			else: fighters[side].play_motion("victory" if side == winner else "defeat")
-	ctrl.save_debug_trace()
-	_game_over = true
-	_pending = {}
-	hud.hide_creatures()
-	setup_panel.hide_panel()
-	ability_panel.hide_panel()
-	_launch_target.hide()
-	arena_slot_picker.dismiss()
-	SoundFx.i().stop_music(1.0)
-	SoundFx.i().play("victory" if winner == HUMAN else "defeat")
-	_stats["alive"] = [_alive[0], _alive[1]]
-	_stats["captures"] = [captures[0], captures[1]]
-	_stats["turns"] = ctrl.get_turn()
-	var reason_text := _reason_text(reason)
-	if tournament != null:
-		var error := _accept_tournament_result()
-		if error != OK:
-			reason_text += "\nНе удалось сохранить результат. «К турниру» повторит сохранение."
-		else:
-			reason_text += "\nРезультат турнира сохранён."
-			if career != null:
-				reason_text += _career_reward_text()
-		game_over_ui.set_restart_text("К карьере" if career != null else "К турниру")
-	game_over_ui.show_result(winner, reason_text, _stats)
-
-
-# ---------------------------------------------------------------- физика / ввод
-
-## Слоты с лежащими картами ворот (цели броска).
-func _gate_slots() -> Array:
-	var out: Array = []
-	var view: MatchState = ctrl.get_view(HUMAN)
-	for i in range(view.slots.size()):
-		if (view.slots[i] as SlotState).has_card:
-			out.append(i)
-	return out
-
-
-func _report(uid: int, slot: int) -> void:
-	if _game_over:
-		return
-	ctrl.report_landing(uid, slot)
-
-
-# ---------------------------------------------------------------- ответы игроков (только после drained)
-
-func _pump() -> void:
-	if _leaving_duel or _game_over or events.is_busy() or _pending.is_empty():
-		return
-	var phase: int = ctrl.get_phase()
-	if phase == MatchController.Phase.GAME_OVER:
-		return
-	var p: Dictionary = _pending
-	_pending = {}
-	var player: int = int(p["player"])
-	var want: int = -1
-	match str(p["kind"]):
-		"setup":
-			want = MatchController.Phase.SETUP
-		"throw":
-			want = MatchController.Phase.AWAIT_THROW
-		"launch":
-			want = MatchController.Phase.AWAIT_LANDING
-		"ability":
-			want = MatchController.Phase.ABILITY_WINDOW
-		"attach":
-			want = MatchController.Phase.AFTER_LANDING
-	if phase != want or (str(p["kind"]) != "launch" and ctrl.get_active_player() != player):
-		push_warning("Пропущен запрос %s: фаза %d, активный игрок %d" % [str(p["kind"]), phase, ctrl.get_active_player()])
-		return
-	match str(p["kind"]):
-		"setup":
-			_do_setup(player)
-		"throw":
-			_do_throw_select(player)
-		"launch":
-			_do_launch(player)
-			if player == HUMAN:
-				_show_pre_throw()
-		"ability":
-			_do_ability(player)
-		"attach":
-			_do_attach(player)
-
-
-func _do_setup(player: int) -> void:
-	if player == HUMAN:
-		var cards: Array = []
-		for cid in ctrl.get_view(HUMAN).players[HUMAN].arena_hand:
-			var c: CardDef = CardDB.card(cid)
-			cards.append({"id": c.id, "name": c.display_name, "text": c.text})
-		var legal: Array[int] = ctrl.legal_setup_slots()
-		arena.set_highlight(legal, true)
-		hud.set_hint("Карта ворот на поле? Положите карту или пропустите" if ctrl.can_skip_gate() else "Положите карту ворот на поле")
-		setup_panel.begin(cards, legal, ctrl.can_skip_gate(), not _throwable_entries().is_empty())
-		_focus_action.call_deferred(setup_panel._card_buttons.values()[0] if not setup_panel._card_buttons.is_empty() else setup_panel._skip_btn)
-		hud.coach("gate", "Карта ворот — поле боя: выбери карту и место (подсвечено). Соперник не видит её до боя — там могут быть ловушки. «Ворота + бросок» — положить карту и сразу бросить на неё существо.")
-	else:
-		hud.set_hint("Соперник выбирает карту ворот...")
-		var choice: Dictionary = ai.choose_setup(ctrl.get_view(AI_PLAYER), ctrl.legal_setup_slots(), ctrl.can_skip_gate())
-		var err: int = OK
-		if choice.is_empty():
-			err = ctrl.skip_gate(AI_PLAYER)
-		elif int(choice.get("throw_uid", -1)) >= 0:
-			# «ворота + бросок»: цель броска — только что положенная карта
-			_ai_target_slot = int(choice["slot"])
-			err = ctrl.throw_with_gate(AI_PLAYER, choice["card_id"], int(choice["slot"]), int(choice["throw_uid"]))
-		else:
-			err = ctrl.place_arena_card(AI_PLAYER, choice["card_id"], int(choice["slot"]))
-		if err != OK:
-			ctrl.save_debug_trace("user://replays/last_error.json")
-			push_error("ИИ: выкладка ворот вернула ошибку %d" % err)
-
-
-func _do_throw_select(player: int) -> void:
-	if player == HUMAN:
-		var view: MatchState = ctrl.get_view(HUMAN)
-		var entries: Array = []
-		for u in ctrl.legal_creatures(HUMAN):
-			var d: CreatureDef = _creature_def(u)
-			var note := "с карты" if view.creature(u).slot >= 0 else ""
-			entries.append({"uid": u, "def": d, "text": "Существо #%d" % u, "note": note})
-		hud.set_hint("Ваш бросок: выберите шар-существо")
-		hud.show_creatures(entries)
-		if not hud._creature_box.get_children().is_empty():
-			_focus_action.call_deferred(hud._creature_box.get_child(0))
-	else:
-		hud.set_hint("Соперник выбирает существо…")
-		var c: Dictionary = ai.choose_throw(ctrl.get_view(AI_PLAYER))
-		_ai_target_slot = int(c["target_slot"])
-		var err: int = ctrl.select_creature(AI_PLAYER, int(c["uid"]))
-		if err != OK:
-			ctrl.save_debug_trace("user://replays/last_error.json")
-			push_error("ИИ: select_creature вернул ошибку %d" % err)
-
-
-func _do_launch(player: int) -> void:
-	var uid: int = ctrl.get_selected_uid()
-	var ball: CreatureBall = balls.get(uid)
-	if ball == null:
-		push_error("Нет шара для uid %d" % uid)
-		return
-	_active_ball = ball
-	_focus_labels([])
-	cam.overview()
-	if ctrl.get_throw_gate_slot() >= 0:
-		await director.launch_to(ctrl.get_throw_gate_slot())
-	elif player == HUMAN:
-		hud.set_hint("РАЗМЕЩЕНИЕ · выберите подсвеченные ворота для сферы")
-		hud.coach("throw", "Выбери цель броска — карту ворот на поле. Сфера отскакивает и катится; учитывается место остановки, возможен промах. Способность можно прикрепить до выбора цели.")
-		arena.set_highlight(_gate_slots(), true)
-		_launch_target.show()
-		_focus_action.call_deferred(_launch_target)
-	else:
-		hud.set_hint("Соперник выбирает цель…")
-		await _wait(0.45)
-		var target: int = _ai_target_slot
-		if not _gate_slots().has(target):
-			target = int(_gate_slots()[0])
-		await director.launch_to(target)
-
-
-func _on_slot_picked(slot: int) -> void:
-	if not _human_field_input_allowed():
-		return
-	if ctrl.get_phase() == MatchController.Phase.SETUP and ctrl.get_active_player() == HUMAN:
-		setup_panel.pick_slot(slot)
-	elif ctrl.get_phase() == MatchController.Phase.AWAIT_LANDING and ctrl.get_active_player() == HUMAN:
-		if not _gate_slots().has(slot): return
-		_launch_target.hide()
-		arena_slot_picker.dismiss()
-		await director.launch_to(slot)
-
-
-func _human_field_input_allowed() -> bool:
-	return ctrl != null and not _preparing and not _game_over and not _leaving_duel and not events.is_busy() and not director.flying and ctrl.get_active_player() == HUMAN and not _blocking_modal()
-
-
-## Фокус передаётся только после постановки; справка, подтверждение и цели сохраняют свой ввод.
-func _blocking_modal() -> bool:
-	if is_instance_valid(_duel_exit_confirm) and _duel_exit_confirm.visible: return true
-	if ability_target_picker.visible or battle_overlay._open: return true
-	if hud._tempo.get_popup().visible: return true
-	for child in ui_layer.get_children():
-		if (child is HelpOverlay or child is MenuSettings) and child.is_visible_in_tree(): return true
-	return false
-
-
-## Соседние корневые Controls под CanvasLayer иначе замыкают Tab каждый в себе.
-## Список строится при нажатии: пересозданные карты и скрытые действия не дают старых путей.
-func _input(event: InputEvent) -> void:
-	if not _local_keyboard_navigation or _preparing or _leaving_duel or team_menu.visible: return
-	if not event is InputEventKey or not event.pressed or event.echo or event.keycode != KEY_TAB: return
-	if _blocking_modal() or arena_slot_picker.visible or game_over_ui._panel.visible: return
-	var choices: Array[Control] = []
-	for region in [hud, setup_panel, ability_panel, _launch_target, _duel_menu]:
-		_collect_keyboard_controls(region, choices)
-	if is_instance_valid(_tournament_exit): _collect_keyboard_controls(_tournament_exit, choices)
-	if choices.is_empty(): return
-	var index := choices.find(get_viewport().gui_get_focus_owner())
-	var next := posmod(index + (-1 if event.shift_pressed else 1), choices.size())
-	choices[next].grab_focus()
-	get_viewport().set_input_as_handled()
-
-
-func _collect_keyboard_controls(node: Node, choices: Array[Control]) -> void:
-	if node.is_queued_for_deletion() or node is Window: return
-	if node is Control:
-		if not node.is_visible_in_tree(): return
-		if node.focus_mode == Control.FOCUS_ALL and not (node is BaseButton and node.disabled): choices.append(node)
-	for child in node.get_children(): _collect_keyboard_controls(child, choices)
-
-
-func _focus_action(control: Control) -> void:
-	if is_instance_valid(control) and control.is_visible_in_tree() and not _blocking_modal() and not arena_slot_picker.visible:
-		control.grab_focus()
-
-
-func _resume_keyboard_focus() -> void:
-	if _blocking_modal():
-		if battle_overlay._open: battle_overlay.focus_primary()
-		return
-	if game_over_ui._panel.visible:
-		game_over_ui.focus_primary()
-	elif arena_slot_picker.visible:
-		return  # Модальная карта поля сама владеет навигацией.
-	elif ctrl != null and ctrl.get_active_player() == HUMAN and not events.is_busy():
-		if hud._creature_panel.visible and hud._creature_box.get_child_count() > 0:
-			_focus_action(hud._creature_box.get_child(0))
-			return
-		match ctrl.get_phase():
-			MatchController.Phase.SETUP: setup_panel.focus_selected_card()
-			MatchController.Phase.AWAIT_THROW:
-				if hud._creature_box.get_child_count() > 0: _focus_action(hud._creature_box.get_child(0))
-			MatchController.Phase.AWAIT_LANDING:
-				_focus_action(_launch_target)
-			MatchController.Phase.ABILITY_WINDOW, MatchController.Phase.AFTER_LANDING: _focus_ability_action()
-
-
-func _request_setup_slot() -> void:
-	if not _human_field_input_allowed() or ctrl.get_phase() != MatchController.Phase.SETUP or setup_panel._selected == &"": return
-	arena_slot_picker.show_slots(ctrl.legal_setup_slots(), ctrl.get_view(HUMAN), "Куда положить выбранные ворота?", _field_slot_description)
-
-
-func _request_launch_slot() -> void:
-	if not _human_field_input_allowed() or ctrl.get_phase() != MatchController.Phase.AWAIT_LANDING: return
-	arena_slot_picker.show_slots(_gate_slots(), ctrl.get_view(HUMAN), "Выберите ворота для броска", _field_slot_description)
-
-
-func _field_slot_description(slot: int) -> String:
-	var view := ctrl.get_view(HUMAN)
-	var lines := _slot_tip(slot, view.slots[slot], view)
-	return "\n".join(PackedStringArray([str(lines[0]), str(lines[1]), str(lines[3]), str(lines[4]), str(lines[6])])) if lines.size() >= 7 else "Свободное место для карты ворот"
-
-
-func _do_ability(player: int) -> void:
-	var preview: BattleResult = ctrl.get_battle_preview()
-	if preview == null:
-		push_error("Окно способностей без предпросмотра боя")
-		return
-	battle_hud.set_chain(preview.plays, preview.passed, 0 if _owner_of(preview.attacker_uid) == player else 1, preview.cancelled_plays, preview.ability_counts, _battle_blocks(preview))
-	if player == HUMAN:
-		var entries: Array = []
-		for cid in ctrl.legal_abilities(HUMAN):
-			var c: CardDef = CardDB.card(cid)
-			entries.append({"id": c.id, "name": c.display_name, "text": c.text})
-		var hdr := "Ваш ответ: способность или пас"
-		var fusion_only := not entries.is_empty()
-		for e in entries:
-			if not CardEffects.is_fusion(CardDB.card(e["id"])):
-				fusion_only = false
-		if fusion_only:
-			hdr = "Ваш ответ: слияние или пас"
-		var my_side: int = 0 if _owner_of(preview.attacker_uid) == HUMAN else 1
-		var note := "Два паса подряд завершат бой. На карту соперника можно ответить."
-		if preview.passed.size() == 2 and preview.passed[1 - my_side]:
-			note = "Соперник спасовал. Ваш пас завершит бой."
-		if not ctrl.state.slots[preview.slot].revealed:
-			note = ("Ворота закрыты. " if ctrl.can_reveal_gate(HUMAN) else "Закрытые ворота соперника. ") + note
-		hud.set_hint("Слияние?" if fusion_only else "Ваша способность?")
-		# Справка доступна наведением на блок ответа; отдельная большая карточка
-		# наставника закрывала ленту и управление на невысоком экране.
-		ability_panel.show_options(entries, hdr, {"moment": &"battle", "used": MatchController.MAX_BATTLE_ABILITIES - ctrl.abilities_left(HUMAN),
-			"can_open_gate": ctrl.can_reveal_gate(HUMAN), "pass_text": "Пас", "pass_tip": "Пропустить ход обмена. Спасуют оба подряд — бой решится.", "note": note})
-		_focus_ability_action.call_deferred()
-	else:
-		hud.set_hint("Соперник думает...")
-		if ctrl.can_reveal_gate(AI_PLAYER) and ai.should_open_gate(ctrl.get_view(AI_PLAYER), preview):
-			ctrl.reveal_gate(AI_PLAYER)
-			return
-		var cid: StringName = ai.choose_ability(ctrl.get_view(AI_PLAYER), preview, ctrl.legal_abilities(AI_PLAYER))
-		var err: int = OK
-		if cid == &"":
-			err = ctrl.pass_ability(AI_PLAYER)
-		else:
-			var target := ai.choose_ability_target(ctrl.get_view(AI_PLAYER), preview, cid, ctrl.legal_ability_targets(AI_PLAYER, cid))
-			err = ctrl.play_ability(AI_PLAYER, cid, target)
-		if err != OK:
-			ctrl.save_debug_trace("user://replays/last_error.json")
-			push_error("ИИ: ошибка способности %d" % err)
-
-
-## Окно «после приземления»: прикрепить способность к существу, что встало на пустые ворота, или завершить ход.
-func _do_attach(player: int) -> void:
-	var uid: int = ctrl.get_landed_uid()
-	if player == HUMAN:
-		var entries: Array = []
-		for cid in ctrl.legal_abilities(HUMAN):
-			var c: CardDef = CardDB.card(cid)
-			entries.append({"id": c.id, "name": c.display_name, "text": c.text})
-		hud.set_hint("%s на воротах: прикрепить способность?" % _cname(uid))
-		hud.coach("attach", "Существо встало на пустые ворота. Можно прикрепить карту: она сработает в его следующем бою (видна сопернику). Или завершить ход без неё.")
-		ability_panel.show_options(entries, "Прикрепить способность к «%s»?" % _cname(uid), {"moment": &"after_landing",
-			"used": MatchController.MAX_BATTLE_ABILITIES - ctrl.abilities_left(HUMAN), "pass_text": "Завершить ход",
-			"pass_tip": "Не прикреплять карту — ход переходит сопернику.",
-			"note": "Прикреплённая карта входит в лимит 3 карт на бой."})
-		_focus_ability_action.call_deferred()
-	else:
-		hud.set_hint("Соперник думает...")
-		var cid: StringName = ai.choose_attach(ctrl.get_view(AI_PLAYER), uid, ctrl.legal_abilities(AI_PLAYER))
-		var err: int = OK
-		if cid == &"":
-			err = ctrl.pass_ability(AI_PLAYER)
-		else:
-			err = ctrl.play_ability(AI_PLAYER, cid)
-		if err != OK:
-			ctrl.save_debug_trace("user://replays/last_error.json")
-			push_error("ИИ: ошибка прикрепления %d" % err)
-
-
-## До броска: рука приподнята, играбельные карты светятся; карта прикрепится к выбранному существу.
-func _show_pre_throw() -> void:
-	if _game_over or director.flying or ctrl.get_phase() != MatchController.Phase.AWAIT_LANDING:
-		return
-	var legal: Array[StringName] = ctrl.legal_abilities(HUMAN)
-	if legal.is_empty():
-		return
-	var entries: Array = []
-	for cid in legal:
-		var c: CardDef = CardDB.card(cid)
-		entries.append({"id": c.id, "name": c.display_name, "text": c.text})
-	var uid: int = ctrl.get_selected_uid()
-	hud.coach("prethrow", "Перед броском можно прикрепить способность к шару: она сработает в его бое. Это необязательно — просто выбери ворота.")
-	ability_panel.show_options(entries, "До броска: прикрепить карту к «%s» (необязательно)" % _cname(uid), {"moment": &"pre_throw",
-		"used": MatchController.MAX_BATTLE_ABILITIES - ctrl.abilities_left(HUMAN), "note": ""})
-
-
-## Существа, которых можно бросить в фазе выкладки (в руке, не на воротах и не в зоне использованных).
-func _throwable_entries() -> Array:
-	var view: MatchState = ctrl.get_view(HUMAN)
-	var entries: Array = []
-	for u in view.players[HUMAN].creature_uids:
-		var cs: CreatureState = view.creature(u)
-		if cs.alive and cs.slot < 0 and not cs.used:
-			entries.append({"uid": u, "def": _creature_def(u), "text": "Существо #%d" % u, "note": ""})
-	return entries
-
-
-func _on_setup_placed_throw(card_id: StringName, slot: int) -> void:
-	var entries: Array = _throwable_entries()
-	if entries.is_empty():
-		_on_setup_placed(card_id, slot)
-		return
-	_gate_pick = {"card": card_id, "slot": slot}
-	setup_panel.hide_panel()
-	arena.set_highlight([slot])
-	hud.set_hint("Ворота + бросок: кого бросить на новую карту?")
-	hud.show_creatures(entries, "Кого бросить на новые ворота?", true)
-	arena_slot_picker.dismiss()
-	if not hud._creature_box.get_children().is_empty(): _focus_action.call_deferred(hud._creature_box.get_child(0))
-
-
-func _focus_ability_action() -> void:
-	if ability_panel._owns_focus(): return
-	if ability_panel._gate_btn.visible:
-		_focus_action(ability_panel._gate_btn)
-	elif ability_panel._pass_btn.visible:
-		_focus_action(ability_panel._pass_btn)
-	elif not ability_panel._cards.is_empty():
-		_focus_action(ability_panel._cards[0])
-
-
-func _on_gate_throw_cancelled() -> void:
-	if _game_over or events.is_busy() or ctrl.get_phase() != MatchController.Phase.SETUP or ctrl.get_active_player() != HUMAN: return
-	_gate_pick = {}
-	hud.hide_creatures()
-	_do_setup(HUMAN)
-
-
-func _on_creature_chosen(uid: int) -> void:
-	hud.hide_creatures()
-	if not _gate_pick.is_empty():
-		var pick: Dictionary = _gate_pick
-		_gate_pick = {}
-		arena.set_highlight([])
-		var gerr: int = ctrl.throw_with_gate(HUMAN, pick["card"], int(pick["slot"]), uid)
-		if gerr != OK:
-			ctrl.save_debug_trace("user://replays/last_error.json")
-			hud.reject_action("Не получилось: ворота + бросок")
-			_do_setup(HUMAN)
-		return
-	var err: int = ctrl.select_creature(HUMAN, uid)
-	if err != OK:
-		ctrl.save_debug_trace("user://replays/last_error.json")
-		hud.reject_action("Нельзя выбрать это существо")
-		_pending = {"kind": "throw", "player": HUMAN}
-		_pump()
-
-
-func _on_setup_skipped() -> void:
-	if ctrl.skip_gate(HUMAN) != OK:
-		hud.reject_action("Ворот на поле нет: карту нужно положить")
-		_pending = {"kind": "setup", "player": HUMAN}
-		_pump()
-		return
-	setup_panel.hide_panel()
-	arena.set_highlight([])
-
-
-func _on_setup_placed(card_id: StringName, slot: int) -> void:
-	var err: int = ctrl.place_arena_card(HUMAN, card_id, slot)
-	if err != OK:
-		ctrl.save_debug_trace("user://replays/last_error.json")
-		hud.reject_action("Нельзя положить карту в этот слот")
-		_pending = {"kind": "setup", "player": HUMAN}
-		_pump()
-		return
-	setup_panel.hide_panel()
-	arena.set_highlight([])
-
-
-func _on_ability_chosen(card_id: StringName) -> void:
-	arena_slot_picker.dismiss()
-	var targets := ctrl.legal_ability_targets(HUMAN, card_id)
-	if not targets.is_empty():
-		_ability_target_card = card_id
-		ability_panel.hide_panel()
-		ability_target_picker.show_targets(card_id, targets, ctrl.get_view(HUMAN))
-		return
-	_play_chosen_ability(card_id)
-
-
-func _on_ability_target_chosen(target: Dictionary) -> void:
-	var card_id := _ability_target_card
-	_ability_target_card = &""
-	_play_chosen_ability(card_id, target)
-
-
-func _on_ability_target_cancelled() -> void:
-	_ability_target_card = &""
-	_do_ability(HUMAN)
-
-
-func _play_chosen_ability(card_id: StringName, target: Dictionary = {}) -> void:
-	var moment: StringName = ctrl.get_ability_moment()
-	ability_panel.hide_panel()
-	var err: int = ctrl.play_ability(HUMAN, card_id, target)
-	if err != OK:
-		ctrl.save_debug_trace("user://replays/last_error.json")
-		hud.reject_action(ctrl.ability_unavailable_reason(HUMAN, card_id))
-		match moment:
-			&"after_landing":
-				_pending = {"kind": "attach", "player": HUMAN}
-			&"pre_throw":
-				_show_pre_throw()
-				return
-			_:
-				_pending = {"kind": "ability", "player": HUMAN}
-		_pump()
-
-
-func _on_gate_open_requested() -> void:
-	if events.is_busy():
-		return
-	ability_panel.hide_panel()
-	if ctrl.reveal_gate(HUMAN) != OK:
-		hud.reject_action("Свои ворота можно открыть только в свой ответ во время боя")
-		_pending = {"kind": "ability", "player": HUMAN}
-		_pump()
-
-
-func _on_ability_passed() -> void:
-	ability_panel.hide_panel()
-	ctrl.pass_ability(HUMAN)
-
-
-func _on_card_drawn(player: int, card_id: StringName) -> void:
-	events.push(func() -> void:
-		_refresh_hand()
-		SoundFx.i().play("card_select", -6.0)
-		hud.draw_notice(_card_name(card_id) if player == HUMAN else "Соперник получает карту")
-		await _wait(0.25))
-	if player == HUMAN:
-		_log("Получена карта «%s»" % CardDB.card(card_id).display_name, UiTheme.GOLD)
-	else:
-		_log("Соперник получает карту", UiTheme.TEXT_DIM)
+		VisualUtil.place(_launch_target, 0.5, 0.0, 0.0, 166.0)
 
 
 func _apply_arena_environment(index: int) -> void:
@@ -2004,424 +460,752 @@ func _apply_arena_environment(index: int) -> void:
 	_sun.rotation_degrees = Vector3(-38, -105, 0) if index == 2 else Vector3(-52, -30, 0)
 
 
-func _preview_arena_location(index: int, save_choice: bool = true) -> void:
-	if ctrl != null:
-		return
-	if save_choice:
-		Locations.choose(index)
-	if arena.location_id != index:
-		if GameLoading.i().ready_to_play:
-			GameLoading.i().return_arena(arena)
-			arena = GameLoading.i().take_arena(index)
-			arena.reparent(world, false)
-		else:
-			world.remove_child(arena)
-			arena.queue_free()
-			arena = ARENA_SCENE.instantiate() as Arena
-			arena.location_id = index
-			world.add_child(arena)
-		# После замены арены переподключаем ввод при создании логики матча.
-		apply_graphics()
-	_apply_arena_environment(index)
-	cam.location_preview_view(index == 0)
-	hud.visible = false
+func _configure_views() -> void:
+	if _view_configured: return
+	_view_configured = true
+	presentation.configure(_ensure_resources(),world,cam,events,director,hud,battle_hud,setup_panel,ability_panel,battle_overlay,game_over_ui,rng)
+	var ui := InteractionViewT.new()
+	ui.hud = hud
+	ui.setup = setup_panel
+	ui.ability = ability_panel
+	ui.arena_picker = arena_slot_picker
+	ui.ability_picker = ability_target_picker
+	ui.launch = _launch_target
+	ui.layer = ui_layer
+	ui.team_menu = team_menu
+	ui.game_over = game_over_ui
+	ui.mode_modal_open = modes.modal_open
+	ui.mode_focus_controls = modes.focus_controls
+	interaction.configure(ui,presentation,_resources,_lifecycle,events,cam,director)
+	presentation.input_requested.connect(interaction.queue_request)
+	presentation.pre_throw_requested.connect(interaction.show_pre_throw)
+	presentation.landing_ready.connect(interaction.report)
+	presentation.runtime_failed.connect(func(message: String) -> void:
+		if is_instance_valid(_lifecycle): _lifecycle.fail(message)
+		else: hud.reject_action(message))
+	presentation.result_ready.connect(_present_result)
+	presentation.exit_layout_requested.connect(modes.place_exit)
+	hover_tips.resolver = presentation.tip_at
+	team_menu.visibility_changed.connect(func() -> void: _update_interaction_visibility())
 
+func _configure_modes() -> void:
+	if _modes_configured: return
+	_modes_configured = true
+	modes.configure(team_menu,hud,ui_layer,rng,_duel_menu)
+	modes.match_requested.connect(_request_match)
+	modes.arena_selection_requested.connect(_preview_arena_location)
+	modes.restart_requested.connect(_restart_scene)
+	modes.restart_rejected.connect(func(message: String) -> void: game_over_ui.show_result(ctrl.winner,message,presentation.state.stats))
+	modes.exit_requested.connect(_exit_mode)
+	modes.duel_menu_requested.connect(_request_duel_menu)
+	modes.modal_opening.connect(arena_slot_picker.dismiss)
+	modes.focus_restore_requested.connect(interaction.resume_keyboard_focus)
 
-## Entry is explicit because Boot constructs this scene before the player opens a mode.
-func enter_requested_mode() -> void:
-	var mode := TournamentSession.entry_mode
-	TournamentSession.entry_mode = ""
-	if mode == "career":
-		_enter_career()
+func _request_match(spec: MatchSpec) -> void:
+	if is_instance_valid(_lifecycle) and _lifecycle.stage != MatchLifecycleT.Stage.SELECTING:
+		modes.match_rejected("Предыдущий матч ещё не завершён.")
 		return
-	_campaign_registration = mode == "campaign_new"
-	if mode in ["new", "campaign_new"]:
-		_tournament_registration = true
-		team_menu._go_btn.text = "Зарегистрироваться"
-		team_menu._go_btn.tooltip_text = "Команда, колода и сложность закрепятся на всю кампанию" if _campaign_registration else "Команда, колода и сложность закрепятся на весь турнир"
-		team_menu._arena_btn.disabled = true
-		team_menu._arena_btn.text = "Арены по этапам"
-		team_menu._arena_btn.tooltip_text = "Группы — Каньон; полуфиналы — Гавань; финал — Святилище"
-		for label in team_menu.find_children("*", "Label", true, false):
-			if label.text == "Соперник": label.text = "Сложность кампании" if _campaign_registration else "Сложность турнира"
-			elif label.text.contains("Enter — в бой"): label.text = "1–3 шаги · ←/→ · Enter — регистрация · R — случайная"
-		var title := team_menu.find_children("*", "Label", true, false)
-		if not title.is_empty(): title[0].text = "Кампания · регистрация" if _campaign_registration else "Турнир · регистрация"
-		var back := Button.new()
-		back.text = "В меню"
-		back.pressed.connect(_exit_tournament)
-		team_menu._graphics_button.get_parent().add_child(back)
+	if not _preview_arena_location(spec.arena_id,false):
+		modes.match_rejected("Арена матча сейчас недоступна. Попробуйте снова.")
 		return
-	if mode not in ["continue", "campaign_continue"]: return
-	var loaded := Campaign.load_file() if mode == "campaign_continue" else Tournament.load_file()
-	if not String(loaded.error).is_empty():
-		team_menu.hide()
-		_show_tournament_error(String(loaded.error))
-		return
-	if mode == "campaign_continue":
-		campaign = loaded.campaign
-		tournament = campaign.cup
+	if not _lifecycle.request_start(): return
+	modes.match_accepted(spec)
+	_build_logic(spec)
+	_start_game.call_deferred()
+
+func _build_logic(spec: MatchSpec = null) -> void:
+	_configure_modes()
+	setup_panel._slot_btn.show()
+	CardDB.load_all()
+	if spec == null: spec = modes.prepare_match_spec()
+	modes.current_spec = spec
+	ctrl = MatchController.new(spec.decks[0],spec.decks[1],spec.seed)
+	spec.apply_power_snapshots(ctrl)
+	ctrl.landing_window = true
+	ai = AIPlayer.new(AI_PLAYER,spec.seed+1,-1.0,spec.difficulty)
+	if not spec.ai_preferences.is_empty(): ai.configure_personality(spec.ai_preferences)
+	presentation.bind_controller(ctrl,modes.career != null)
+	presentation.set_roster_names(spec.names[0],spec.names[1])
+	presentation.set_finished(false)
+	presentation.connect_controller()
+	interaction.bind_controller(ctrl,ai)
+	ctrl.phase_changed.connect(_on_phase_changed)
+	ctrl.setup_requested.connect(_on_setup_requested)
+	ctrl.throw_requested.connect(_on_throw_requested)
+	ctrl.ability_window.connect(_on_ability_window)
+	ctrl.attach_window.connect(_on_attach_window)
+	ctrl.game_over.connect(_on_game_over)
+	_connect_match_interface()
+	if is_instance_valid(arena):
+		if not arena.slot_clicked.is_connected(_on_slot_picked): arena.slot_clicked.connect(_on_slot_picked)
+		if not arena.invalid_pick.is_connected(_invalid_slot): arena.invalid_pick.connect(_invalid_slot)
+
+func _connect_match_interface() -> void:
+	if _match_ui_bound: return
+	_match_ui_bound = true
+	events.drained.connect(_pump)
+	hud.creature_chosen.connect(_on_creature_chosen)
+	hud.creature_cancelled.connect(_on_gate_throw_cancelled)
+	setup_panel.placed.connect(_on_setup_placed)
+	setup_panel.skipped.connect(_on_setup_skipped)
+	setup_panel.placed_throw.connect(_on_setup_placed_throw)
+	setup_panel.slot_pick_requested.connect(_request_setup_slot)
+	setup_panel.slot_hovered.connect(func(slot: int) -> void: arena.set_hover(slot))
+	ability_panel.unavailable.connect(hud.reject_action)
+	ability_panel.reason_for_card = func(card: StringName) -> String: return ctrl.ability_unavailable_reason(HUMAN,card)
+	ability_panel.warning_for_card = MatchController.ability_play_warning
+	ability_panel.ability_chosen.connect(_on_ability_chosen)
+	ability_panel.passed.connect(_on_ability_passed)
+	ability_panel.gate_open_requested.connect(_on_gate_open_requested)
+	game_over_ui.restart_requested.connect(_on_restart)
+
+func _start_game() -> void:
+	var spec := modes.current_spec
+	var origins: Array[Vector3] = [presentation.start_pos(HUMAN),presentation.start_pos(AI_PLAYER)]
+	var fighter_origins: Array[Vector3] = [Vector3(-2.3,0,THROW_Z+1.4),Vector3(2.3,0,-THROW_Z-1.4)]
+	_update_interaction_visibility()
+	var result := await _lifecycle.start(ctrl,presentation.state.definitions,presentation.state.owners,spec.profiles,origins,fighter_origins,spec.first_side)
+	if not result.is_ok() and _lifecycle.stage != MatchLifecycleT.Stage.RELEASED:
+		ctrl = null
+		ai = null
+		presentation.bind_controller(null)
+		interaction.stop()
+		_close_match_actions()
+		modes.start_failed(result.message)
+	_update_interaction_visibility()
+
+func _on_match_started() -> void:
+	presentation.refresh_hand()
+	ability_panel.set_dock_visible(true)
+	setup_panel.set_dock_visible(true)
+	_duel_menu.visible = modes.tournament == null
+	modes.place_exit(false, _duel_menu)
+	hud.begin_match_interface([setup_panel,ability_panel])
+	_update_interaction_visibility()
+
+func _hide_match_docks() -> void:
+	ability_panel.set_dock_visible(false)
+	setup_panel.set_dock_visible(false)
+
+func _close_match_actions() -> void:
+	interaction.stop()
+	hud.hide_creatures()
+	setup_panel.hide_panel()
+	ability_panel.hide_panel()
+	_hide_match_docks()
+	_launch_target.hide()
+	arena_slot_picker.dismiss()
+
+func _on_match_failed(message: String) -> void:
+	events.stop()
+	_close_match_actions()
+	presentation.clear_match_portraits()
+	presentation.set_finished(true)
+	SoundFx.i().cancel_match_sfx()
+	SoundFx.i().stop_music(.2)
+	game_over_ui.show_failure(message+"\nНачните заново или вернитесь в меню.","Повторить встречу" if modes.tournament != null else "Начать заново")
+
+func _present_result(_winner: int, _reason: StringName) -> void:
+	ctrl.save_debug_trace()
+	if is_instance_valid(_lifecycle): _lifecycle.finish()
 	else:
-		tournament = loaded.tournament
-	_show_tournament()
+		_game_over = true
+		_close_match_actions()
+	presentation.set_result_context(modes.result_suffix(ctrl,presentation.state.stats),modes.restart_label())
 
+func _on_game_over(winner: int, reason: StringName) -> void:
+	if is_instance_valid(_lifecycle) and _lifecycle.stage == MatchLifecycleT.Stage.FAILED: return
+	if modes.tournament != null: modes.accept_result(ctrl,presentation.state.stats)
+	if is_instance_valid(_lifecycle): _lifecycle.begin_finish()
+	else: _hide_match_docks()
+	events.push(presentation.anim_game_over.bind(winner,reason))
 
-func _register_tournament(creatures: Array[StringName], gates: Array[StringName], abilities: Array[StringName]) -> void:
-	team_menu.show()
-	var error := CardDB.deck_error(creatures, gates, abilities)
-	if not error.is_empty():
-		team_menu._error.text = error
-		return
-	var save_path := Campaign.SAVE_PATH if _campaign_registration else Tournament.SAVE_PATH
-	var invalid_save := FileAccess.file_exists(save_path) and not String((Campaign.load_file() if _campaign_registration else Tournament.load_file()).error).is_empty()
-	var confirm := ConfirmationDialog.new()
-	confirm.theme = UiTheme.get_theme()
-	confirm.title = "Кампания · три кубка" if _campaign_registration else "Регистрация на турнир"
-	confirm.dialog_text = "8 участников · 2 группы · полуфиналы и финал.\nКоманда, 3 карты ворот, 3 способности и сложность «%s»\nзакрепятся до конца турнира. Арены выбираются этапом.\nНезавершённый матч повторяется с начала с тем же начальным раскладом." % AIPlayer.difficulty_name(TeamMenu.difficulty)
-	if _campaign_registration:
-		confirm.dialog_text = "Три последовательных кубка: Каньон → Гавань → Стихии.\nТе же семь соперников; каждый кубок — группы и плей-офф.\nСледующий кубок открывается после завершения текущего, независимо от места.\nКоманда и сложность закрепятся на кампанию; соперники помнят только завершённые встречи с вами.\nСкрытого усиления характеристик и карт нет. Старый отдельный турнир сохранится."
-	if invalid_save:
-		confirm.dialog_text += "\nПрежнее сохранение не читается: оно останется отдельной резервной копией."
-	elif FileAccess.file_exists(save_path):
-		confirm.dialog_text += "\nПредыдущее активное сохранение будет заменено. История останется."
-	confirm.ok_button_text = "Начать кампанию" if _campaign_registration else "Начать турнир"
-	confirm.cancel_button_text = "Назад"
-	ui_layer.add_child(confirm)
-	confirm.confirmed.connect(func() -> void:
-		if invalid_save and (Campaign.archive_invalid() if _campaign_registration else Tournament.archive_invalid()) != OK:
-			team_menu._error.text = "Не удалось сохранить резервную копию прежнего турнира"
-			confirm.queue_free()
-			return
-		var profile := PlayerProfile.new()
-		profile.load_from()
-		if _campaign_registration:
-			campaign = Campaign.create(CardDB.build_deck(creatures, gates, abilities), TeamMenu.difficulty, (int(rng.randi()) & 0x7fffffff), profile.value.name)
-			tournament = campaign.cup if campaign != null else null
-		else:
-			tournament = Tournament.create(CardDB.build_deck(creatures, gates, abilities), TeamMenu.difficulty, (int(rng.randi()) & 0x7fffffff), profile.value.name)
-		if tournament == null:
-			team_menu._error.text = "Не удалось сохранить: " + (Campaign.creation_error if _campaign_registration else Tournament.creation_error)
-		else:
-			_tournament_registration = false
-			_show_tournament()
-		confirm.queue_free())
-	confirm.canceled.connect(confirm.queue_free)
-	confirm.popup_centered()
+func _on_phase_changed(phase: int, player: int) -> void:
+	interaction.invalidate(phase,player)
+	events.push(presentation.anim_phase.bind(phase,player))
 
+func _on_setup_requested(player: int) -> void:
+	events.push(interaction.queue_request.bind(Request.make(Request.Kind.SETUP,player) as Request))
 
-func _show_tournament_error(message: String) -> void:
-	var panel := PanelContainer.new()
-	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	ui_layer.add_child(panel)
-	var box := VBoxContainer.new()
-	panel.add_child(box)
-	var label := VisualUtil.label(message, 20)
-	label.custom_minimum_size.x = 580
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	box.add_child(label)
-	var back := Button.new()
-	back.text = "В главное меню"
-	back.pressed.connect(_exit_tournament)
-	box.add_child(back)
-	panel.reset_size()
-	panel.position = (get_viewport().get_visible_rect().size - panel.size) * .5
+func _on_throw_requested(player: int) -> void:
+	events.push(interaction.queue_request.bind(Request.make(Request.Kind.THROW,player) as Request))
 
+func _on_ability_window(player: int, _options: Array) -> void:
+	events.push(interaction.queue_request.bind(Request.make(Request.Kind.ABILITY,player) as Request))
 
-func _show_tournament() -> void:
-	team_menu.hide()
-	hud.hide()
-	if not is_instance_valid(tournament_panel):
-		tournament_panel = TournamentPanel.new()
-		ui_layer.add_child(tournament_panel)
-		tournament_panel.play_requested.connect(_play_tournament_match)
-		tournament_panel.advance_requested.connect(_advance_tournament)
-		tournament_panel.exit_requested.connect(func() -> void:
-			if career != null: _show_career()
-			else: _exit_tournament())
-	var history := {"entries": []} if career != null else (Campaign.history() if campaign != null else Tournament.history())
-	tournament_panel.display(tournament, history.get("entries", []), campaign)
-	if career != null:
-		tournament_panel.exit_button.text = "К карьере"
-		_career_tournament_heading()
-		UiTheme.apply_device_frame(tournament_panel, "ТУРНИР / КАРЬЕРА")
-	if not String(tournament.state.get("in_progress", "")).is_empty():
-		tournament_panel.show_notice("Матч был прерван. Он начнётся заново с теми же участниками, первым ходом и начальным раскладом.")
+func _on_attach_window(player: int, _uid: int, _options: Array) -> void:
+	events.push(interaction.queue_request.bind(Request.make(Request.Kind.ATTACH,player) as Request))
 
+func _release_game_resources() -> void:
+	presentation.clear()
+	interaction.stop()
+	if is_instance_valid(team_menu): team_menu._preview.release()
+	if is_instance_valid(_lifecycle): _lifecycle.release()
+	elif _resources != null:
+		_resources.release()
+		_on_match_released()
 
-func _advance_tournament() -> void:
-	if career != null and tournament.completed():
-		_show_career()
-		return
-	if campaign != null and campaign.can_advance():
-		if campaign.advance_cup() != OK:
-			tournament_panel.show_notice(campaign.last_error, true)
-			return
-		tournament = campaign.cup
-		_show_tournament()
-		return
-	# One bounded match per frame keeps the menu responsive even after elimination.
-	tournament_panel.set_busy(true)
-	while not tournament.completed():
-		var fixture := tournament.next_match()
-		if fixture.is_empty() or int(fixture.a) == 0 or int(fixture.b) == 0: break
-		var simulated := career.simulate_next_npc() if career != null else (campaign.simulate_next_npc() if campaign != null else tournament.simulate_next_npc())
-		if not String(simulated.error).is_empty():
-			tournament_panel.display(tournament, [], campaign)
-			_career_tournament_heading()
-			tournament_panel.show_notice(String(simulated.error), true)
-			return
-		await get_tree().process_frame
-		if not is_inside_tree(): return
-	var history := {"entries": []} if career != null else (Campaign.history() if campaign != null else Tournament.history())
-	tournament_panel.display(tournament, history.get("entries", []), campaign)
-	_career_tournament_heading()
+func _on_match_released() -> void:
+	interaction.stop()
+	process_mode = Node.PROCESS_MODE_DISABLED
 
+func _on_restart() -> void:
+	modes.request_restart(ctrl,presentation.state.stats,is_instance_valid(_lifecycle) and _lifecycle.stage == MatchLifecycleT.Stage.FAILED)
 
-func _career_tournament_heading() -> void:
-	if career != null:
-		tournament_panel._title.text = "Карьера · " + career.cup_title()
-		tournament_panel.exit_button.text = "К карьере"
-
-
-func _tournament_opponent() -> int:
-	return int(_tournament_match.b) if int(_tournament_match.a) == 0 else int(_tournament_match.a)
-
-
-func _tournament_first_side() -> int:
-	var participant: int = int(_tournament_match.a) if int(_tournament_match.first_player) == 0 else int(_tournament_match.b)
-	return 0 if participant == 0 else 1
-
-
-func _play_tournament_match() -> void:
-	_tournament_match = tournament.next_match()
-	if _tournament_match.is_empty() or (int(_tournament_match.a) != 0 and int(_tournament_match.b) != 0): return
-	if (career.begin_match(String(_tournament_match.id)) if career != null else (campaign.begin_match(String(_tournament_match.id)) if campaign != null else tournament.begin_match(String(_tournament_match.id)))) != OK:
-		tournament_panel.show_notice("Не удалось сохранить начало матча. " + (career.last_error if career != null else (campaign.last_error if campaign != null else tournament.last_error)))
-		return
-	# All three arenas are already in Boot's resident catalog.
-	var location: int = [1,2,0][int(career.state.league)] if career != null else ([1,2,0][campaign.cup_index()] if campaign != null else (1 if String(_tournament_match.stage).begins_with("group") else (2 if _tournament_match.stage == "semifinal" else 0)))
-	_preview_arena_location(location, false)
-	cam.snap_overview()
-	tournament_panel.hide()
-	hud.show()
-	_tournament_exit = _make_tournament_exit_button()
-	ui_layer.add_child(_tournament_exit)
-	_place_duel_menu(hud._battle)
-	_preparing = true
-	_build_logic()
-	call_deferred("_start_game")
-
-
-func _make_tournament_exit_button() -> Button:
-	var button := Button.new()
-	button.theme = UiTheme.get_theme()
-	button.custom_minimum_size = Vector2(0, 36)
-	button.text = "Выйти из турнира"
-	button.tooltip_text = "Этот незавершённый матч при продолжении начнётся заново"
-	VisualUtil.place(button, 1.0, 0.0, -16.0, 60.0 if DeviceSettings.is_device() else 164.0)
-	button.pressed.connect(func() -> void:
-		var confirm := ConfirmationDialog.new()
-		confirm.theme = UiTheme.get_theme()
-		confirm.title = "Выход из турнира"
-		confirm.cancel_button_text = "Назад"
-		confirm.dialog_text = "Выйти в меню? Незавершённый матч начнётся заново\nс теми же участниками, первым ходом и начальным раскладом."
-		confirm.ok_button_text = "Выйти"
-		ui_layer.add_child(confirm)
-		confirm.confirmed.connect(_exit_tournament)
-		confirm.canceled.connect(confirm.queue_free)
-		confirm.popup_centered())
-	return button
-
-
-func _accept_tournament_result() -> Error:
-	if tournament == null or _tournament_match.is_empty(): return ERR_UNAVAILABLE
-	# An accepted result is never applied a second time when the result button is used.
-	if String(tournament.next_match().get("id", "")) != String(_tournament_match.id): return OK
-	var winner := -1 if ctrl.winner < 0 else (0 if ctrl.winner == 0 else _tournament_opponent())
-	var alive := [ctrl.state.alive_count(0), ctrl.state.alive_count(1)]
-	if int(_tournament_match.a) != 0: alive.reverse()
-	if career != null:
-		var human_throws := 0
-		for action in ctrl.action_trace:
-			if action[0] in ["select_creature", "throw_with_gate"] and not action[1].is_empty() and int(action[1][0]) == HUMAN:
-				human_throws += 1
-		var observation := {"throws": human_throws, "battles": _stats.battles.size()}
-		return career.record_result(String(_tournament_match.id), winner, alive, String(ctrl.game_over_reason), observation)
-	if campaign != null:
-		return campaign.record_result(String(_tournament_match.id), winner, alive, String(ctrl.game_over_reason), Campaign.observations_from_actions(ctrl.action_trace, HUMAN))
-	return tournament.record_result(String(_tournament_match.id), winner, alive, String(ctrl.game_over_reason))
-
-
-func _reload_tournament() -> void:
-	if _accept_tournament_result() != OK:
-		game_over_ui.show_result(ctrl.winner, "Не удалось сохранить результат. Повторите «К турниру». " + (career.last_error if career != null else (campaign.last_error if campaign != null else tournament.last_error)), _stats)
-		return
-	TournamentSession.entry_mode = "career" if career != null else ("campaign_continue" if campaign != null else "continue")
+func _restart_scene(entry: String) -> void:
 	if GameLoading.i().ready_to_play:
 		_release_game_resources()
 		_restore_time_scale()
 		GameLoading.i().show_game()
-		get_tree().current_scene.enter_requested_mode()
-	else:
-		get_tree().reload_current_scene()
+		if not entry.is_empty(): get_tree().current_scene.enter_requested_mode()
+	else: get_tree().reload_current_scene()
 
-
-func _exit_tournament() -> void:
+func _exit_mode() -> void:
+	interaction.stop()
+	events.stop()
+	SoundFx.i().cancel_match_sfx()
 	get_tree().change_scene_to_file("res://scenes/menu/main_menu.tscn")
 
+func _request_duel_menu() -> void:
+	modes.request_duel_menu(ctrl,_game_over)
 
-# -------------------------------------------------------- отдельная локальная карьера
-func _enter_career() -> void:
-	team_menu.hide()
-	hud.hide()
-	var loaded := Career.load_file()
-	if not String(loaded.get("error", "")).is_empty() and not bool(loaded.get("missing", false)):
-		_show_tournament_error("Карьера: " + String(loaded.error) + "\nИсходное сохранение оставлено без изменений.")
-		return
-	career = loaded.get("career")
-	tournament = career.cup if career != null else null
-	_show_career()
+func _leave_duel_to_menu() -> void:
+	modes.leave_duel()
 
+func _invalid_slot() -> void:
+	hud.reject_action("Выберите одно из подсвеченных мест на поле")
 
-func _show_career(notice: String = "") -> void:
-	team_menu.hide()
-	hud.hide()
-	if is_instance_valid(tournament_panel): tournament_panel.hide()
-	if not is_instance_valid(career_panel):
-		career_panel = CareerPanel.new()
-		ui_layer.add_child(career_panel)
-		career_panel.create_requested.connect(_create_career)
-		career_panel.registration_requested.connect(_register_career)
-		career_panel.continue_requested.connect(func() -> void:
-			if career == null or career.cup == null: return
-			tournament = career.cup
-			career_panel.hide()
-			_show_tournament())
-		career_panel.advance_requested.connect(func() -> void:
-			if career.advance_cup() != OK:
-				career_panel.show_error(career.last_error)
-				return
-			tournament = career.cup
-			_show_career("Новый кубок открыт. Можно изменить команду и колоду."))
-		career_panel.replay_requested.connect(func() -> void:
-			if career.replay_cup() != OK:
-				career_panel.show_error(career.last_error)
-				return
-			tournament = career.cup
-			_show_career("Повторный кубок. Награды за знакомых соперников уменьшены."))
-		career_panel.exit_requested.connect(_exit_tournament)
-	career_panel.display(career, notice)
+func _preview_arena_location(index: int, save_choice: bool = true) -> bool:
+	if ctrl != null: return false
+	var result := _ensure_resources().select_arena(index)
+	if not result.is_ok():
+		modes.arena_selection_completed(arena.location_id if is_instance_valid(arena) else Locations.current(),false,result.message)
+		return false
+	if save_choice: Locations.choose(index)
+	apply_graphics()
+	_apply_arena_environment(index)
+	cam.location_preview_view(index == 0)
+	hud.visible = false
+	return true
 
+func _update_interaction_visibility() -> void:
+	presentation.set_interaction_blocked(_preparing or is_instance_valid(team_menu) and team_menu.visible)
 
-func _create_career(element: int, difficulty: int) -> void:
-	var profile := PlayerProfile.new()
-	profile.load_from()
-	career = Career.create(GameData.ATTR_KEYS[clampi(element,0,5)], difficulty, int(rng.randi()) & 0x7fffffff, String(profile.value.name))
-	if career == null:
-		career_panel.show_error(Career.creation_error)
-		return
-	tournament = null
-	_show_career("Стартовая команда и шесть карт получены. Выберите «Начать кубок». ")
+func _index_creatures() -> void:
+	_compat_presentation_ports()
+	presentation.bind_controller(ctrl,modes.career != null)
 
+func _place_duel_menu(battle: bool) -> void:
+	modes.duel_button = _duel_menu
+	modes.place_exit(battle)
 
-func _register_career(creatures: Array[StringName], gates: Array[StringName], abilities: Array[StringName], levels: Dictionary) -> void:
-	if career == null: return
-	var error := career.start_cup(CardDB.build_deck(creatures,gates,abilities),levels)
-	if error != OK:
-		career_panel.show_error(career.last_error)
-		return
-	tournament = career.cup
-	career_panel.hide()
-	_show_tournament()
+func _compat_presentation_ports() -> void:
+	if _view_configured: return
+	presentation.resources = _ensure_resources()
+	presentation.world = world
+	presentation.cam = cam
+	presentation.events = events
+	presentation.director = director
+	presentation.hud = hud
+	presentation.battle_hud = battle_hud
+	presentation.setup_panel = setup_panel
+	presentation.ability_panel = ability_panel
+	presentation.battle_overlay = battle_overlay
+	presentation.game_over_ui = game_over_ui
+	presentation.rng = rng
+	presentation.set_interaction_blocked(_preparing or is_instance_valid(team_menu) and team_menu.visible)
 
+# Thin legacy adapters for client inheritance and existing focused tools.
+# They never hold state or implement a second decision path.
+func _present_match_roster() -> void:
+	_compat_presentation_ports()
+	presentation.present_match_roster()
 
-func _career_reward_text() -> String:
-	if career == null or career.last_reward.is_empty(): return ""
-	var reward: Dictionary = career.last_reward
-	return "\nКарьера: +%d кредитов, +%d XP существам команды. Новые уровни — со следующего кубка." % [int(reward.get("credits",0)),int(reward.get("xp",0))]
+func _bind_match_portraits() -> void:
+	_compat_presentation_ports()
+	presentation.bind_match_portraits()
 
+func _focus_labels(uids: Array) -> void:
+	_compat_presentation_ports()
+	presentation.focus_labels(uids)
 
-# Opponent presentation uses only the currently revealed actor and the same
-# captured power arrays passed to BattleHud. Roster/closed cards never select it.
+func _ability_fx(player: int, def: CardDef) -> void:
+	_compat_presentation_ports()
+	await presentation.ability_fx(player,def)
+
+func _gate_fx(base: Vector3, foe_base: Vector3) -> void:
+	_compat_presentation_ports()
+	presentation.gate_fx(base,foe_base)
+
+func _cry(uid: int, kind: String, delay: float = 0.0, db: float = -1.0) -> void:
+	_compat_presentation_ports()
+	presentation.cry(uid,kind,delay,db)
+
+func _refresh_hand() -> void:
+	_compat_presentation_ports()
+	presentation.refresh_hand()
+
+func _clear_match_portraits() -> void:
+	_compat_presentation_ports()
+	presentation.clear_match_portraits()
+
+func _creature_def(uid: int) -> CreatureDef:
+	_compat_presentation_ports()
+	return presentation.creature_def(uid)
+
+func _owner_of(uid: int) -> int:
+	_compat_presentation_ports()
+	return presentation.owner_of(uid)
+
+func _cname(uid: int) -> String:
+	_compat_presentation_ports()
+	return presentation.cname(uid)
+
+func _names_for(r: BattleResult) -> Dictionary:
+	_compat_presentation_ports()
+	return presentation.names_for(r)
+
+func _wait(sec: float) -> void:
+	_compat_presentation_ports()
+	await presentation.wait(sec)
+
+func _tip_at(mp: Vector2) -> Dictionary:
+	_compat_presentation_ports()
+	return presentation.tip_at(mp)
+
+func _tip_at_uncached(mp: Vector2, cached_view: MatchState = null) -> Dictionary:
+	_compat_presentation_ports()
+	return presentation.tip_at_uncached(mp,cached_view)
+
+func _slot_tip(i: int, sl: SlotState, view: MatchState) -> Array:
+	_compat_presentation_ports()
+	return presentation.slot_tip(i,sl,view)
+
+func _creature_tip(uid: int, view: MatchState) -> Array:
+	_compat_presentation_ports()
+	return presentation.creature_tip(uid,view)
+
+func _log(text: String, c: Color = UiTheme.TEXT) -> void:
+	_compat_presentation_ports()
+	presentation.log_event(text,c)
+
+func _say(player: int, you: String, foe: String) -> String:
+	_compat_presentation_ports()
+	return presentation.say(player,you,foe)
+
+func _on_arena_card_placed(player: int, slot: int) -> void:
+	_compat_presentation_ports()
+	presentation.on_arena_card_placed(player,slot)
+
+func _on_creature_selected(player: int, uid: int, recalled: bool) -> void:
+	_compat_presentation_ports()
+	presentation.on_creature_selected(player,uid,recalled)
+
+func _on_creature_returned(uid: int, reason: StringName) -> void:
+	_compat_presentation_ports()
+	presentation.on_creature_returned(uid,reason)
+
+func _on_creature_stood(uid: int, slot: int) -> void:
+	_compat_presentation_ports()
+	presentation.on_creature_stood(uid,slot)
+
+func _on_battle_started(slot: int, attacker_uid: int, defender_uid: int) -> void:
+	_compat_presentation_ports()
+	presentation.on_battle_started(slot,attacker_uid,defender_uid)
+
+func _on_card_revealed(slot: int, card_id: StringName) -> void:
+	_compat_presentation_ports()
+	presentation.on_card_revealed(slot,card_id)
+
+func _on_ability_played(player: int, card_id: StringName) -> void:
+	_compat_presentation_ports()
+	presentation.on_ability_played(player,card_id)
+
+func _on_ability_cancelled(player: int, card_id: StringName) -> void:
+	_compat_presentation_ports()
+	presentation.on_ability_cancelled(player,card_id)
+
+func _on_battle_resolved(result: BattleResult) -> void:
+	_compat_presentation_ports()
+	presentation.on_battle_resolved(result)
+
+func _on_creature_eliminated(uid: int) -> void:
+	_compat_presentation_ports()
+	presentation.on_creature_eliminated(uid)
+
+func _on_card_captured(player: int, slot: int, _card_id: StringName) -> void:
+	_compat_presentation_ports()
+	presentation.on_card_captured(player,slot,_card_id)
+
+func _on_turn_started(player: int, turn: int) -> void:
+	_compat_presentation_ports()
+	presentation.on_turn_started(player,turn)
+
+func _on_ability_attached(player: int, uid: int, card_id: StringName) -> void:
+	_compat_presentation_ports()
+	presentation.on_ability_attached(player,uid,card_id)
+
+func _on_gate_thrown(player: int, slot: int, uid: int) -> void:
+	_compat_presentation_ports()
+	presentation.on_gate_thrown(player,slot,uid)
+
+func _on_gate_trap(slot: int, card_id: StringName, effect: StringName) -> void:
+	_compat_presentation_ports()
+	presentation.on_gate_trap(slot,card_id,effect)
+
+func _on_momentum_changed(player: int, value: int) -> void:
+	_compat_presentation_ports()
+	presentation.on_momentum_changed(player,value)
+
+func _on_final_round(player: int) -> void:
+	_compat_presentation_ports()
+	presentation.on_final_round(player)
+
+func _on_creature_revived(uid: int) -> void:
+	_compat_presentation_ports()
+	await presentation.on_creature_revived(uid)
+
+func _on_creature_marked(uid: int, card_id: StringName, mark: Dictionary) -> void:
+	_compat_presentation_ports()
+	presentation.on_creature_marked(uid,card_id,mark)
+
+func _on_fighter_swapped(old_uid: int, new_uid: int, slot: int) -> void:
+	_compat_presentation_ports()
+	presentation.on_fighter_swapped(old_uid,new_uid,slot)
+
+func _on_gates_swapped(a: int, b: int) -> void:
+	_compat_presentation_ports()
+	await presentation.on_gates_swapped(a,b)
+
+func _on_gate_discarded(slot: int, _card_id: StringName) -> void:
+	_compat_presentation_ports()
+	await presentation.on_gate_discarded(slot,_card_id)
+
+func _on_abilities_recalled(player: int, card_ids: Array) -> void:
+	_compat_presentation_ports()
+	presentation.on_abilities_recalled(player,card_ids)
+
+func _on_abilities_recharged(player: int, card_ids: Array) -> void:
+	_compat_presentation_ports()
+	presentation.on_abilities_recharged(player,card_ids)
+
+func _anim_fighter_swapped(old_uid: int, new_uid: int, _slot: int) -> void:
+	_compat_presentation_ports()
+	await presentation.anim_fighter_swapped(old_uid,new_uid,_slot)
+
+func _anim_phase(_phase: int, active_player: int) -> void:
+	_compat_presentation_ports()
+	presentation.anim_phase(_phase,active_player)
+
+func _anim_turn(player: int, turn: int) -> void:
+	_compat_presentation_ports()
+	presentation.anim_turn(player,turn)
+
+func _anim_set_pending(p: Dictionary) -> void:
+	_compat_presentation_ports()
+	presentation.anim_set_pending(Request.from_legacy(p) as Request)
+
+func _anim_attached(player: int, uid: int, card_id: StringName) -> void:
+	_compat_presentation_ports()
+	await presentation.anim_attached(player,uid,card_id)
+
+func _anim_gate_thrown(player: int, _slot: int, uid: int) -> void:
+	_compat_presentation_ports()
+	await presentation.anim_gate_thrown(player,_slot,uid)
+
+func _anim_trap(slot: int, card_id: StringName, effect: StringName) -> void:
+	_compat_presentation_ports()
+	await presentation.anim_trap(slot,card_id,effect)
+
+func _anim_momentum(player: int, value: int) -> void:
+	_compat_presentation_ports()
+	presentation.anim_momentum(player,value)
+
+func _anim_final_round(_player: int) -> void:
+	_compat_presentation_ports()
+	await presentation.anim_final_round(_player)
+
+func _anim_card_placed(player: int, slot: int) -> void:
+	_compat_presentation_ports()
+	await presentation.anim_card_placed(player,slot)
+
+func _anim_selected(player: int, uid: int, recalled: bool) -> void:
+	_compat_presentation_ports()
+	await presentation.anim_selected(player,uid,recalled)
+
+func _anim_returned(uid: int, reason: StringName) -> void:
+	_compat_presentation_ports()
+	await presentation.anim_returned(uid,reason)
+
+func _anim_relocated(uid: int, _from: int, to: int) -> void:
+	_compat_presentation_ports()
+	await presentation.anim_relocated(uid,_from,to)
+
+func _anim_refilled(player: int) -> void:
+	_compat_presentation_ports()
+	await presentation.anim_refilled(player)
+
+func _anim_remove_ball(uid: int, eliminated: bool = false) -> void:
+	_compat_presentation_ports()
+	await presentation.anim_remove_ball(uid,eliminated)
+
+func _anim_stood(uid: int, slot: int) -> void:
+	_compat_presentation_ports()
+	await presentation.anim_stood(uid,slot)
+
+func _anim_battle_started(slot: int, attacker_uid: int, defender_uid: int, powers: Array = [], momentum: Array = [0, 0]) -> void:
+	_compat_presentation_ports()
+	await presentation.anim_battle_started(slot,attacker_uid,defender_uid,powers,momentum)
+
+func _anim_card_revealed(slot: int, card_id: StringName, owner: int = -1) -> void:
+	_compat_presentation_ports()
+	await presentation.anim_card_revealed(slot,card_id,owner)
+
+func _anim_ability_msg(player: int, card_id: StringName, cancelled: bool, powers: Array = []) -> void:
+	_compat_presentation_ports()
+	await presentation.anim_ability_msg(player,card_id,cancelled,powers)
+
+func _anim_ability_cam(player: int) -> void:
+	_compat_presentation_ports()
+	presentation.anim_ability_cam(player)
+
+func _anim_battle_resolved(result: BattleResult) -> void:
+	_compat_presentation_ports()
+	await presentation.anim_battle_resolved(result)
+
+func _anim_no_winner(result: BattleResult) -> void:
+	_compat_presentation_ports()
+	await presentation.anim_no_winner(result)
+
+func _anim_captured(player: int, slot: int) -> void:
+	_compat_presentation_ports()
+	await presentation.anim_captured(player,slot)
+
+func _anim_game_over(winner: int, reason: StringName) -> void:
+	_compat_presentation_ports()
+	presentation.anim_game_over(winner,reason)
+
+func _refresh_status() -> void:
+	_compat_presentation_ports()
+	presentation.refresh_status()
+
+func _card_name(id: StringName) -> String:
+	_compat_presentation_ports()
+	return presentation.card_name(id)
+
+func _spawn_ball(uid: int) -> CreatureBall:
+	_compat_presentation_ports()
+	return presentation.spawn_ball(uid)
+
+func _start_pos(player: int) -> Vector3:
+	_compat_presentation_ports()
+	return presentation.start_pos(player)
+
+func _reason_text(reason: StringName) -> String:
+	_compat_presentation_ports()
+	return presentation.reason_text(reason)
+
+func _gate_slots() -> Array:
+	_compat_presentation_ports()
+	return presentation.gate_slots()
+
+func _on_card_drawn(player: int, card_id: StringName) -> void:
+	_compat_presentation_ports()
+	await presentation.on_card_drawn(player,card_id)
+
 func _clear_opponent_panel() -> void:
-	_opponent_uid = -1
-	_opponent_power = -1
-	if is_instance_valid(hud) and is_instance_valid(hud.opponent_panel): hud.opponent_panel.show_unknown()
-
+	_compat_presentation_ports()
+	presentation.clear_opponent_panel()
 
 func _clear_own_panel() -> void:
-	_own_uid = -1
-	_own_power = -1
-	if is_instance_valid(hud) and is_instance_valid(hud.own_panel): hud.own_panel.show_unknown()
-
+	_compat_presentation_ports()
+	presentation.clear_own_panel()
 
 func _present_own(uid: int, power: int) -> void:
-	var actor: CreatureBall = balls.get(uid)
-	if _owner_of(uid) != HUMAN or actor == null or not actor._open or not actor.visible:
-		_clear_own_panel()
-		return
-	_own_uid = uid
-	_own_power = power
-	hud.own_panel.present(_creature_def(uid),uid,power)
-	hud.own_panel.bind_actor(actor)
-
+	_compat_presentation_ports()
+	presentation.present_own(uid,power)
 
 func _public_creature_opened(uid: int) -> void:
-	if ctrl == null: return
-	var power := PowerCalc.base_power(ctrl.get_view(HUMAN),uid)
-	if _owner_of(uid) == HUMAN:
-		_present_own(uid,power)
-		if _own_uid == uid: hud.own_panel.show_context("reveal")
-	elif _owner_of(uid) == AI_PLAYER:
-		_present_opponent(uid,power)
-		if _opponent_uid == uid: hud.opponent_panel.show_context("reveal")
-
+	_compat_presentation_ports()
+	presentation.public_creature_opened(uid)
 
 func _present_opponent(uid: int, power: int) -> void:
-	var actor: CreatureBall = balls.get(uid)
-	if _owner_of(uid) != AI_PLAYER or actor == null or not actor._open or not actor.visible:
-		_clear_opponent_panel()
-		return
-	_opponent_uid = uid
-	_opponent_power = power
-	hud.opponent_panel.present(_creature_def(uid),uid,power)
-	hud.opponent_panel.bind_actor(actor)
-	_opponent_panel_layout()
-
+	_compat_presentation_ports()
+	presentation.present_opponent(uid,power)
 
 func _present_battle_opponent(attacker: int, defender: int, powers: Array) -> void:
-	var index := 0 if _owner_of(attacker) == AI_PLAYER else 1
-	battle_hud.set_opponent_side(index)
-	var uid := attacker if index == 0 else defender
-	if powers.size() == 2:
-		_present_opponent(uid,int(powers[index]))
-		if _opponent_uid == uid: hud.opponent_panel.show_context("battle")
-		var own_uid := defender if index == 0 else attacker
-		_present_own(own_uid,int(powers[1-index]))
-		if _own_uid == own_uid: hud.own_panel.show_context("battle")
-	battle_hud.set_external_panels(hud.own_panel,hud.opponent_panel,index)
-
+	_compat_presentation_ports()
+	presentation.present_battle_opponent(attacker,defender,powers)
 
 func _present_battle_powers(powers: Array) -> void:
-	if _battle_uids.size() != 2 or powers.size() != 2: return
-	_present_battle_opponent(_battle_uids[0],_battle_uids[1],powers)
-
+	_compat_presentation_ports()
+	presentation.present_battle_powers(powers)
 
 func _opponent_panel_layout() -> void:
-	if not is_instance_valid(hud) or not is_instance_valid(hud.opponent_panel): return
-	hud.opponent_panel.set_compact(ability_panel._panel.visible and not hud._battle)
-
+	_compat_presentation_ports()
+	presentation.opponent_panel_layout()
 
 func _opponent_style_changed(_style: int) -> void:
-	_focus_labels(_label_focus)
-	_place_duel_menu(hud._battle)
-	if _opponent_uid >= 0: _present_opponent(_opponent_uid,_opponent_power)
-	if _own_uid >= 0: _present_own(_own_uid,_own_power)
-	_opponent_panel_layout()
-
+	_compat_presentation_ports()
+	presentation.opponent_style_changed(_style)
 
 func _finish_opponent_battle() -> void:
-	_clear_opponent_panel()
-	_clear_own_panel()
-	battle_hud.set_external_panels(null,null,-1)
-	battle_hud.set_opponent_side(-1)
+	_compat_presentation_ports()
+	presentation.finish_opponent_battle()
+
+func _battle_blocks(result: BattleResult) -> Array:
+	_compat_presentation_ports()
+	return presentation.battle_blocks(result)
+
+func _report(uid: int, slot: int) -> void:
+	interaction.report(uid,slot)
+
+func _pump() -> void:
+	interaction.pump()
+
+func _do_setup(player: int) -> void:
+	interaction.do_setup(player)
+
+func _do_throw_select(player: int) -> void:
+	interaction.do_throw_select(player)
+
+func _do_launch(player: int) -> void:
+	await interaction.do_launch(player)
+
+func _on_slot_picked(slot: int) -> void:
+	await interaction.on_slot_picked(slot)
+
+func _human_field_input_allowed() -> bool:
+	return interaction.human_field_input_allowed()
+
+func _blocking_modal() -> bool:
+	return interaction.blocking_modal()
+
+func _input(event: InputEvent) -> void:
+	interaction.input(event)
+
+func _collect_keyboard_controls(node: Node, choices: Array[Control]) -> void:
+	interaction.collect_keyboard_controls(node,choices)
+
+func _focus_action(control: Control) -> void:
+	interaction.focus_action(control)
+
+func _resume_keyboard_focus() -> void:
+	interaction.resume_keyboard_focus()
+
+func _request_setup_slot() -> void:
+	interaction.request_setup_slot()
+
+func _request_launch_slot() -> void:
+	interaction.request_launch_slot()
+
+func _field_slot_description(slot: int) -> String:
+	return interaction.field_slot_description(slot)
+
+func _do_ability(player: int) -> void:
+	interaction.do_ability(player)
+
+func _do_attach(player: int) -> void:
+	interaction.do_attach(player)
+
+func _show_pre_throw() -> void:
+	interaction.show_pre_throw()
+
+func _throwable_entries() -> Array:
+	return interaction.throwable_entries()
+
+func _on_setup_placed_throw(card_id: StringName, slot: int) -> void:
+	interaction.on_setup_placed_throw(card_id,slot)
+
+func _focus_ability_action() -> void:
+	interaction.focus_ability_action()
+
+func _on_gate_throw_cancelled() -> void:
+	interaction.on_gate_throw_cancelled()
+
+func _on_creature_chosen(uid: int) -> void:
+	interaction.on_creature_chosen(uid)
+
+func _on_setup_skipped() -> void:
+	interaction.on_setup_skipped()
+
+func _on_setup_placed(card_id: StringName, slot: int) -> void:
+	interaction.on_setup_placed(card_id,slot)
+
+func _on_ability_chosen(card_id: StringName) -> void:
+	interaction.on_ability_chosen(card_id)
+
+func _on_ability_target_chosen(target: Dictionary) -> void:
+	interaction.on_ability_target_chosen(target)
+
+func _on_ability_target_cancelled() -> void:
+	interaction.on_ability_target_cancelled()
+
+func _play_chosen_ability(card_id: StringName, target: Dictionary = {}) -> void:
+	interaction.play_chosen_ability(card_id,target)
+
+func _on_gate_open_requested() -> void:
+	interaction.on_gate_open_requested()
+
+func _on_ability_passed() -> void:
+	interaction.on_ability_passed()
+
+func enter_requested_mode() -> void:
+	modes.enter_requested_mode()
+
+func _on_deck_chosen(creatures: Array[StringName], arena_ids: Array[StringName], abilities: Array[StringName]) -> void:
+	modes.submit_deck(creatures,arena_ids,abilities)
+
+func _build_decks() -> Array[DeckDef]:
+	return modes.choose_decks()
+
+func _register_tournament(creatures: Array[StringName], gates: Array[StringName], abilities: Array[StringName]) -> void:
+	modes.register_tournament(creatures,gates,abilities)
+
+func _show_tournament_error(message: String) -> void:
+	modes.show_error(message)
+
+func _show_tournament() -> void:
+	modes.show_tournament()
+
+func _advance_tournament() -> void:
+	await modes.advance_tournament()
+
+func _career_tournament_heading() -> void:
+	modes.career_tournament_heading()
+
+func _tournament_opponent() -> int:
+	return modes.opponent()
+
+func _tournament_first_side() -> int:
+	return modes.first_side()
+
+func _play_tournament_match() -> void:
+	modes.play_tournament_match()
+
+func _make_tournament_exit_button() -> Button:
+	return modes.make_exit_button()
+
+func _enter_career() -> void:
+	modes.enter_career()
+
+func _show_career(notice: String = "") -> void:
+	modes.show_career(notice)
+
+func _create_career(element: int, difficulty: int) -> void:
+	modes.create_career(element,difficulty)
+
+func _register_career(creatures: Array[StringName], gates: Array[StringName], abilities: Array[StringName], levels: Dictionary) -> void:
+	modes.register_career(creatures,gates,abilities,levels)
+
+func _career_reward_text() -> String:
+	return modes.reward_text()
+
+func _accept_tournament_result() -> Error:
+	return modes.accept_result(ctrl,presentation.state.stats).error
+
+func _reload_tournament() -> void:
+	_on_restart()
+
+func _exit_tournament() -> void:
+	modes.request_exit()

@@ -124,7 +124,7 @@ func run() -> void:
 		await process_frame
 	if not check(not main.events.is_busy(), "очередь стартовых эффектов завершилась"):
 		await finish(); return
-	main._pending.clear()
+	main.interaction.clear_request()
 	main.setup_panel.hide_panel()
 	main.ability_panel.hide_panel()
 	main.ability_panel.set_dock_visible(true)
@@ -133,8 +133,8 @@ func run() -> void:
 	main.hud._close_coach()
 	main.hover_tips.resolver = Callable()
 	main.ui_layer.visible = true
-	GraphicsSettings.max_fps = 0
-	Engine.max_fps = 0
+	GraphicsSettings.max_fps = 60
+	Engine.max_fps = 60
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 	seed(SEED)
 	var slot := 0
@@ -295,7 +295,7 @@ func finish() -> void:
 	if _csv != null: _csv.close()
 	var result := {
 		"variant":variant,"seed":SEED,"resolution":[1920,1080],"quality":"HIGH",
-		"time_scale":1.0,"physics_ticks":60,"fps_limit":0,"vsync":"disabled",
+		"time_scale":1.0,"physics_ticks":60,"fps_limit":60,"vsync":"disabled",
 		"interface":"normal HUD and ability hand; team/setup/help/hover overlays closed",
 		"warmup_seconds":warmup_seconds,"measure_seconds":measure_seconds,
 		"stages":stage,"creatures":roster,"shots":results,"failures":failures,

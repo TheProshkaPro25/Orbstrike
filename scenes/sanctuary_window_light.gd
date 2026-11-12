@@ -1,7 +1,14 @@
 extends RefCounted
 ## Свет идёт от конкретного витража; его цвет и переплёт проецируются на геометрию.
 const RADIUS := 102.5
+const SHAFT_SHADER := preload("res://assets/vfx_vendor/effects_lab/shaft.gdshader")
+# При изменении _pattern увеличивать версию. Хэш сохраняет совместимость с
+# готовыми текстурами прежней версии, параметры каждого витража входят в ключ.
+const PATTERN_VERSION := 1
+const PATTERN_BASELINE := "f95ac95b0ebc076adf403d1f9ed498c5384b9c1676ed75c9f29560fb3f588eb3"
 static var _textures: Dictionary = {}
+static var _shaft_noise: Texture2D
+static var _shaft_mesh: ArrayMesh
 
 static func build(arena: Node3D) -> void:
 	# Два дальних витража и два боковых дают холодные и золотистые пятна по краям поля.
@@ -55,8 +62,8 @@ static func _pattern(bay: int, tint: Color, resolution: int = 128) -> Texture2D:
 	var key := Vector2i(bay, resolution)
 	if _textures.has(key): return _textures[key]
 	var prepared_key := ""
-	if PreparationStore.enabled and FileAccess.file_exists("res://scenes/sanctuary_window_light.gd"):
-		prepared_key = str([1,FileAccess.get_sha256("res://scenes/sanctuary_window_light.gd"),bay,tint,resolution]).sha256_text()
+	if PreparationStore.enabled:
+		prepared_key = str([PATTERN_VERSION, PATTERN_BASELINE, bay, tint, resolution]).sha256_text()
 		var prepared: Variant = PreparationStore.read_cache("window-pattern",prepared_key)
 		if prepared is PackedByteArray:
 			var cached_image := Image.create_from_data(resolution,resolution,true,Image.FORMAT_RGBA8,prepared)
@@ -97,37 +104,39 @@ static func _pattern(bay: int, tint: Color, resolution: int = 128) -> Texture2D:
 	return texture
 
 static func _shaft(arena: Node3D, origin: Vector3, target: Vector3, tint: Color, index: int) -> void:
-	# Мягкий плоский сноп начинается в плоскости окна, а не из центра купола.
-	var mesh := CylinderMesh.new()
-	mesh.top_radius = 2.8
-	mesh.bottom_radius = 12
-	mesh.height = 1
-	mesh.radial_segments = 32
-	mesh.cap_top = false
-	mesh.cap_bottom = false
+	if _shaft_mesh == null:
+		_shaft_mesh = _build_shaft_mesh()
+		var noise := FastNoiseLite.new()
+		noise.seed = 9
+		noise.frequency = .05
+		_shaft_noise = ImageTexture.create_from_image(noise.get_seamless_image(64, 64))
 	var material := ShaderMaterial.new()
 	material.shader = SHAFT_SHADER
-	material.set_shader_parameter("tint", tint)
-	var mi: MeshInstance3D = arena._mi(mesh, material, (origin + target) * .5)
-	mi.basis = Basis(Quaternion(Vector3.UP,(origin-target).normalized())) * Basis.from_scale(Vector3(1,origin.distance_to(target),.55))
+	material.set_shader_parameter("color", tint)
+	material.set_shader_parameter("intensity", .070)
+	material.set_shader_parameter("noise_texture", _shaft_noise)
+	var mi: MeshInstance3D = arena._mi(_shaft_mesh, material, (origin + target) * .5)
+	var axis := (origin - target).normalized()
+	var tangent := Vector3.UP.cross(axis).normalized()
+	mi.basis = Basis(tangent, axis, tangent.cross(axis)).scaled_local(Vector3(1, origin.distance_to(target), 1))
+	mi.name = "WindowShaft%d" % index
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mi.set_meta("window_shaft", true)
 	mi.set_meta("window_projector", index)
 	arena._sanctuary_shafts.append(mi)
 
-static var SHAFT_SHADER: Shader = _shaft_shader()
-static func _shaft_shader() -> Shader:
-	var shader := Shader.new()
-	shader.code = """
-shader_type spatial;
-render_mode unshaded, blend_add, depth_draw_never, cull_disabled, shadows_disabled;
-uniform vec4 tint : source_color;
-void fragment() {
-	float side=pow(abs(dot(normalize(NORMAL),normalize(VIEW))),2.1);
-	float ends=smoothstep(0.0,.18,UV.y)*(1.0-smoothstep(.55,1.0,UV.y));
-	float streak=.75+.25*sin(UV.x*32.0);
-	ALBEDO=tint.rgb;
-	ALPHA=side*ends*streak*.022;
-}
-"""
-	return shader
+
+static func _build_shaft_mesh() -> ArrayMesh:
+	# Две расширяющиеся плоскости сохраняют объём с обзорной и низкой камер.
+	var corners := [Vector2(-2.8, .5), Vector2(2.8, .5), Vector2(-10, -.5), Vector2(10, -.5)]
+	var uvs := [Vector2.ZERO, Vector2.RIGHT, Vector2.DOWN, Vector2.ONE]
+	var mesh := SurfaceTool.new()
+	mesh.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for direction: Vector3 in [Vector3.RIGHT, Vector3.BACK * .55]:
+		var normal := direction.normalized().cross(Vector3.UP)
+		for index in [0, 1, 2, 1, 3, 2]:
+			var corner: Vector2 = corners[index]
+			mesh.set_normal(normal)
+			mesh.set_uv(uvs[index])
+			mesh.add_vertex(direction * corner.x + Vector3.UP * corner.y)
+	return mesh.commit()

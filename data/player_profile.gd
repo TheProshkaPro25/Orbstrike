@@ -3,8 +3,8 @@ extends RefCounted
 ## Только данные. Редактор работает с копией, запись происходит по «Сохранить».
 const PATH := "user://player_profile.json"
 const VERSION := 2
-const DEFAULT := {"version": VERSION, "name": "Haru Akiyama", "vrm_model": 0, "vrm_case": 0, "vrm_denim": 0, "vrm_style": 0, "vrm_clothes": 0, "vrm_eye_shape": 0, "vrm_brows": 0, "vrm_mouth": 0, "vrm_hair": 0, "vrm_eyes": 0, "vrm_skin": 0, "vrm_outfit": 0, "vrm_height": 1, "body": 0, "face": 0, "hair": 0, "skin": 1, "hair_color": 0, "eyes": 0, "jacket": 0, "element": 0}
-const LIMITS := {"vrm_case": 2, "vrm_denim": 15, "vrm_style": 11, "vrm_clothes": 8, "vrm_eye_shape": 3, "vrm_brows": 3, "vrm_mouth": 3,"vrm_model": 2, "vrm_hair": 6, "vrm_eyes": 6, "vrm_skin": 4, "vrm_outfit": 5, "vrm_height": 3,"body": 3, "face": 3, "hair": 3, "skin": 6, "hair_color": 6, "eyes": 6, "jacket": 4, "element": 6}
+const DEFAULT := {"version": VERSION, "name": "Haru Akiyama", "vrm_model": 0, "vrm_case": 0, "vrm_denim": 0, "vrm_style": 0, "vrm_clothes": 0, "vrm_eye_shape": 0, "vrm_brows": 0, "vrm_mouth": 0, "vrm_hair": 0, "vrm_eyes": 0, "vrm_skin": 0, "vrm_outfit": 0, "vrm_outfit_color": "", "vrm_height": 1, "body": 0, "face": 0, "hair": 0, "skin": 1, "hair_color": 0, "eyes": 0, "jacket": 0, "element": 0}
+const LIMITS := {"vrm_case": 2, "vrm_denim": 15, "vrm_style": 11, "vrm_clothes": WardrobeCatalog.SLOT_COUNT, "vrm_eye_shape": 3, "vrm_brows": 3, "vrm_mouth": 3,"vrm_model": 2, "vrm_hair": 6, "vrm_eyes": 6, "vrm_skin": 4, "vrm_outfit": 5, "vrm_height": 3,"body": 3, "face": 3, "hair": 3, "skin": 6, "hair_color": 6, "eyes": 6, "jacket": 4, "element": 6}
 # Permanent tournament identities, in participant ID order (1–7). Each look uses
 # one complete prepared costume: no remembered player denim or case overlays.
 # Hair silhouettes and clothing colours remain stable when resident actors reuse a base.
@@ -36,8 +36,10 @@ static func normalized(source: Dictionary) -> Dictionary:
 		var v: Variant = source.get(key, DEFAULT[key])
 		if (v is int or v is float) and is_finite(float(v)) and float(v) >= 0 and float(v) < LIMITS[key]:
 			result[key] = int(v)
-	if result.vrm_clothes >= (7 if result.vrm_model == 0 else 8): result.vrm_clothes = 0
-	if result.vrm_model == 1 and result.vrm_clothes < 3: result.vrm_denim = 0
+	var outfit_color: Variant = source.get("vrm_outfit_color", "")
+	if outfit_color is String and outfit_color.length() == 6 and Color.html_is_valid(outfit_color):
+		result.vrm_outfit_color = outfit_color.to_lower()
+	if not WardrobeCatalog.has_outfit(result.vrm_model, result.vrm_clothes): result.vrm_clothes = 0
 	return result
 
 func load_from(path: String = PATH) -> void:
@@ -57,7 +59,13 @@ func load_from(path: String = PATH) -> void:
 		notice = "Эта версия профиля не поддерживается. Исходный файл сохранён."
 		return
 	value = normalized(parsed)
-	if parsed.version == 1: notice = "Имя сохранено. Выберите образ на новой аниме-основе."
+	if parsed.version == 1:
+		notice = "Имя сохранено. Выберите образ на новой аниме-основе."
+	elif value.vrm_model == 0:
+		var previous_id: Variant = parsed.get("vrm_clothes", 0)
+		if previous_id is int or previous_id is float:
+			if is_finite(float(previous_id)) and int(previous_id) in WardrobeCatalog.RETIRED_SAKURADA_IDS:
+				notice = "Комплект перенесён к Вите. Сакурада в стандартном костюме, цвет сохранён."
 
 func save_to(draft: Dictionary, path: String = PATH) -> Error:
 	if not writable: return ERR_UNAVAILABLE

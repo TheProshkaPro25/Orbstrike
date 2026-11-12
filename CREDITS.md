@@ -1,5 +1,16 @@
 # Авторы и лицензии
 
+## Визуальные эффекты игры и стенда
+
+- PSCactux — Godot Effects Lab, MIT. [Исходный пакет](https://github.com/PSCactux/godot-effects-lab).
+- REEBOO Labs — REEBOO Stylized VFX Free, MIT. [Исходный пакет](https://github.com/reeboolabs/reeboo-stylized-vfx-free).
+- Sean Elovirta — Godot Elemental Impact VFX Lite, MIT. [Исходный пакет](https://github.com/seloc0des/godot-elemental-impact-vfx-lite).
+- Orbstrike — процедурные шлейфы сфер. [Реализация и происхождение](assets/vfx/trails/README.md).
+- Vefects — Trails VFX 1.0.3, Vefects Free EULA, локальный визуальный референс в стенде. [Карточка пакета](https://store.godotengine.org/asset/vefects/trails-vfx/).
+- Kenney Vleugels — Particle Pack 1.1, CC0. [Карточка пакета](https://kenney.nl/assets/particle-pack).
+
+[Версии, хэши архивов и файлы лицензий](assets/vfx_vendor/sources.json).
+
 ## Звуковые эффекты
 
 Все звуки собраны скриптом `tools/audio/build_sfx.py` из записанных паков ниже (обработка: обрезка, сдвиг высоты,
@@ -304,6 +315,26 @@ pixiv (Sakurada Fumiriya, Vita, HairSample_Male). Собственные про�
 Новых сторонних ресурсов не загружалось. Источники/условия исходных образцов —
 assets/avatars/vrm/README.md; генератор и SHA — assets/avatars/street/README.md,
 tools/avatars/build_street_set.gd, assets/avatars/street/manifest.json.
+
+
+## Костюмы BOOTH (2026-11-12)
+
+| Игровая основа | Костюм | Автор и источник |
+|---|---|---|
+| Сакурада | Кимоно с хаори | [siroihakumai](https://booth.pm/ja/items/6848282) |
+| Сакурада | Фэнтезийная мантия | [弓屋 晶都 (@yumiya), こるきゅ！](https://coruq.booth.pm/items/3665122) |
+| Сакурада | Хаори с оленями | [鹿ノ雨林堂](https://rereamazon.booth.pm/items/4982783) |
+| Сакурада | Доспех | [事務所Orchid](https://unityorchid.booth.pm/items/7112764) |
+| Сакурада | Мундир | [事務所Orchid](https://unityorchid.booth.pm/items/7105675) |
+| Вита | Форма OC | [insertshopname](https://booth.pm/ja/items/4081684) |
+| Вита | Дирндль | [T.0 (@T_DOT_0), VRoid Dirndl Onepiece Set](https://booth.pm/ja/items/4182708) |
+| Вита | Пальто оператора | [Picklebarrel3D, Silver’s Operator Coat](https://booth.pm/en/items/5485010) |
+| Вита | Жакет и брюки | [くろの倉庫](https://kurosakiworks.booth.pm/items/6576359) |
+| Вита | Dreamy Angel | [ShibuTyazuke](https://shibutyazuke.booth.pm/items/6391932) |
+
+Условия отдельных наборов и подготовка игровых ресурсов описаны в
+[assets/avatars/booth/README.md](assets/avatars/booth/README.md). Геометрия и
+пресеты pixiv используются по [условиям VRoid Studio](https://vroid.com/en/studio/guidelines).
 
 
 ## Звук волны карты (обновлён 2026-11-03)

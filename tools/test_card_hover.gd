@@ -121,6 +121,7 @@ func _run() -> void:
 	battle.queue_free();await frames()
 	# Actual Main registration/exit handlers, cancel only: no save/match/model creation.
 	var team:=TeamFixture.new();root.add_child(team);game.team_menu=team;await frames()
+	game.modes.configure(team,hud,canvas,game.rng)
 	var deck:=CardDB.preset_deck(0);var ids:=Tournament.deck_ids(deck)
 	var creature_ids:Array[StringName]=[];var gate_ids:Array[StringName]=[];var ability_ids:Array[StringName]=[]
 	for id in ids[0]:creature_ids.append(StringName(id))

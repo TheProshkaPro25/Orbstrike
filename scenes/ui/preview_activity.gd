@@ -11,11 +11,13 @@ var _running := true
 var _covered := false
 var _closed := false
 var _layers: Array[CanvasLayer] = []
+var _active_update_mode := SubViewport.UPDATE_ALWAYS
 
-func _init(viewport: SubViewport, consumer: CanvasItem, processor: Node = null) -> void:
+func _init(viewport: SubViewport, consumer: CanvasItem, processor: Node = null, update_mode: int = SubViewport.UPDATE_ALWAYS) -> void:
 	_viewport = viewport
 	_consumer = consumer
 	_processor = processor if processor != null else viewport
+	_active_update_mode = update_mode
 	_viewport_mode = viewport.process_mode
 	_processor_mode = _processor.process_mode
 	consumer.visibility_changed.connect(sync)
@@ -38,12 +40,16 @@ func sync() -> void:
 	var active := not _closed and not _covered and is_instance_valid(_consumer) and _consumer.is_visible_in_tree()
 	for layer in _layers:
 		if is_instance_valid(layer) and not layer.visible: active = false
-	_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS if active else SubViewport.UPDATE_DISABLED
+	_viewport.render_target_update_mode = _active_update_mode if active else SubViewport.UPDATE_DISABLED
 	if active == _running: return
 	_running = active
 	_viewport.process_mode = _viewport_mode if active else Node.PROCESS_MODE_DISABLED
 	_processor.process_mode = _processor_mode if active else Node.PROCESS_MODE_DISABLED
 	if active: resumed.emit()
+
+func set_update_mode(value: int) -> void:
+	_active_update_mode = value
+	sync()
 
 func stop() -> void:
 	_closed = true

@@ -148,6 +148,14 @@ func set_restart_text(text: String) -> void:
 	_restart_button.text = text
 
 
+func show_failure(message: String, restart_text: String) -> void:
+	show_result(-1,message)
+	_title.text = "МАТЧ ОСТАНОВЛЕН"
+	_title.add_theme_color_override("font_color",Color(1.0,0.5,0.45))
+	_battle_title.hide()
+	set_restart_text(restart_text)
+
+
 func focus_primary() -> void:
 	if not _panel.visible: return
 	for sibling in get_parent().get_children():

@@ -1,8 +1,12 @@
 class_name GameLoading
 extends Node
 ## Владелец резидентных ресурсов. Тяжёлая подготовка происходит единожды до меню.
+const FlightTrails := preload("res://scenes/fx/flight_trails.gd")
+
 static var _inst: GameLoading
 var ready_to_play := false
+var _catalog_prepared := false
+var last_error := ""
 var preparing := false
 var moving_scene := false
 var preparation_count := 0
@@ -16,6 +20,7 @@ var _balls: Dictionary = {} # id -> два экземпляра; не узлы �
 var _arenas: Dictionary = {}
 var _leased: Dictionary = {}
 var _storage: Node3D
+var _flight_trails: FlightTrails
 var _viewport: SubViewport
 var _game: Node
 var _menu: Node
@@ -24,6 +29,7 @@ var _warm_draw: Callable
 
 static func i() -> GameLoading:
 	if not is_instance_valid(_inst):
+		preload("res://scenes/performance_metrics.gd").install()
 		_inst = GameLoading.new()
 		_inst.name = "GameLoading"
 		(Engine.get_main_loop() as SceneTree).root.add_child(_inst)
@@ -37,6 +43,7 @@ func prepare(progress: Callable = Callable()) -> void:
 		return
 	if ready_to_play:
 		return
+	last_error = ""
 	preparing = true
 	preparation_count += 1
 	# Обычный запуск тоже может быть свёрнут. Компиляция материалов должна
@@ -49,24 +56,22 @@ func prepare(progress: Callable = Callable()) -> void:
 		get_tree().process_frame.connect(_warm_draw)
 	AudioSettings.load_and_apply()
 	CreatureModels.resident_catalog = true
-	resources = await StartupCatalog.preload_resources(func(done: int, total: int, _path: String) -> void:
+	var loaded := await _load_startup_resources(func(done: int, total: int, _path: String) -> void:
 		_report(progress, .22 * float(done) / total, "Загрузка ресурсов · %d / %d" % [done, total]))
+	resources = loaded.resources
+	if not loaded.error.is_empty():
+		_fail_preparation(progress, loaded.error)
+		return
+	var required_error := StartupCatalog.required_error(resources)
+	if not required_error.is_empty():
+		_fail_preparation(progress, required_error)
+		return
 	SoundFx.i().preload_catalog()
 	await preload("res://scenes/ui/creature_portrait.gd").preload_catalog_async(get_tree(), func(done: int, total: int) -> void:
 		_report(progress, .22 + .02 * float(done) / total, "Подготовка портретов · %d / %d" % [done, total]))
-	CreatureModels.preload_all_catalog()
-	# The accepted six-way set is required: do not silently publish legacy actors.
-	if not CreatureModels.GrifalonMotion.preload_required() or not CreatureModels.GrifalonGaleSkin.preload_required():
-		preparing = false
-		CreatureModels.resident_catalog = false
-		_report(progress, .22, "Не удалось загрузить анимации Грифалона. Проверьте файлы игры.")
-		_stop_warm_draw()
-		return
-	if not CreatureModels.KolossarMotion.preload_required() or not CreatureModels.KolossarLightSkin.preload_required():
-		preparing = false
-		CreatureModels.resident_catalog = false
-		_report(progress, .22, "Не удалось загрузить анимации Колоссара. Проверьте файлы игры.")
-		_stop_warm_draw()
+	var catalog_error := _preload_creature_catalog()
+	if not catalog_error.is_empty():
+		_fail_preparation(progress, catalog_error)
 		return
 	_viewport = SubViewport.new()
 	_viewport.size = Vector2i(256, 256)
@@ -75,6 +80,9 @@ func prepare(progress: Callable = Callable()) -> void:
 	add_child(_viewport)
 	_storage = Node3D.new()
 	_viewport.add_child(_storage)
+	_flight_trails = FlightTrails.new()
+	_flight_trails.name = &"FlightTrails"
+	_storage.add_child(_flight_trails)
 	var camera := Camera3D.new()
 	camera.position = Vector3(0, 9, 34)
 	_storage.add_child(camera)
@@ -83,7 +91,7 @@ func prepare(progress: Callable = Callable()) -> void:
 	light.rotation_degrees = Vector3(-40, -30, 0)
 	_storage.add_child(light)
 	await prepare_fighters(_storage)
-	var defs := CreatureModels.catalog_defs()
+	var defs := _catalog_definitions()
 	var ball_scene: PackedScene = resources["res://scenes/creature_ball.tscn"]
 	var warm_batch: Array[CreatureBall] = []
 	var frame_budget := Time.get_ticks_usec()
@@ -94,15 +102,17 @@ func prepare(progress: Callable = Callable()) -> void:
 			_report(progress, .22 + .65 * float(index * 2 + copy) / (defs.size() * 2),
 				"Подготовка существ · %d / %d" % [index * 2 + copy + 1, defs.size() * 2])
 			var begin := Time.get_ticks_usec()
-			var ball := ball_scene.instantiate() as CreatureBall
+			var instance := ball_scene.instantiate()
+			var ball := instance as CreatureBall
+			if ball == null:
+				if instance != null: instance.free()
+				_fail_preparation(progress, "Несовместимая сцена сферы.")
+				return
 			_storage.add_child(ball)
+			ball.flight_trails = _flight_trails
 			ball.setup(d, -1)
 			if d.species in [&"grifalon", &"kolossar"] and (ball._anim == null or not ball._anim._authored_fullset):
-				preparing = false
-				CreatureModels.resident_catalog = false
-				_report(progress, .22, "Не удалось подготовить анимации существ. Проверьте файлы игры.")
-				_stop_warm_draw()
-				preload("res://scenes/model_lifetime.gd").release(ball, get_tree())
+				_fail_preparation(progress, "Не удалось подготовить анимации существ. Проверьте файлы игры.")
 				return
 			ball.freeze_at(Vector3(0, CreatureBall.RADIUS, 0))
 			ball._apply_owner_marks()
@@ -123,11 +133,17 @@ func prepare(progress: Callable = Callable()) -> void:
 		for prepared in warm_batch: _park_ball(prepared)
 	var arena_scene: PackedScene = resources["res://scenes/arena.tscn"]
 	_report(progress, .87, "Подготовка эффектов…")
+	await _flight_trails.prepare()
 	await StartupCatalog.warm_effects(_storage)
 	for index in 3:
 		_report(progress, .87 + float(index) * .025, "Подготовка арен · %d / 3" % [index + 1])
 		await get_tree().process_frame
-		var arena := arena_scene.instantiate() as Arena
+		var instance := arena_scene.instantiate()
+		var arena := instance as Arena
+		if arena == null:
+			if instance != null: instance.free()
+			_fail_preparation(progress, "Несовместимая сцена арены.")
+			return
 		arena.location_id = index
 		_storage.add_child(arena)
 		arena.apply_quality()
@@ -136,10 +152,13 @@ func prepare(progress: Callable = Callable()) -> void:
 		return_arena(arena)
 	_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	# Меню и интерфейс команды тоже создаются под единственным экраном загрузки.
-	ready_to_play = true
+	_catalog_prepared = true
 	_report(progress, .96, "Подготовка интерфейса…")
 	var menu_time_scale := Engine.time_scale
-	_game = (resources["res://scenes/main.tscn"] as PackedScene).instantiate()
+	_game = _instantiate_startup_scene("res://scenes/main.tscn")
+	if _game == null:
+		_fail_preparation(progress, "Не удалось создать игровой интерфейс.")
+		return
 	add_child(_game)
 	Engine.time_scale = menu_time_scale
 	_game.process_mode = Node.PROCESS_MODE_DISABLED
@@ -156,13 +175,80 @@ func prepare(progress: Callable = Callable()) -> void:
 	_game.hud.visible = true
 	_set_scene_enabled(_game, false)
 	await get_tree().process_frame
-	_menu = (resources["res://scenes/menu/main_menu.tscn"] as PackedScene).instantiate()
+	_menu = _instantiate_startup_scene("res://scenes/menu/main_menu.tscn")
+	if _menu == null:
+		_fail_preparation(progress, "Не удалось создать главное меню.")
+		return
 	add_child(_menu)
 	await get_tree().process_frame
 	_set_scene_enabled(_menu, false)
+	ready_to_play = true
 	preparing = false
 	_stop_warm_draw()
 	_report(progress, 1.0, "Готово")
+
+
+## The hidden Main borrows actors/arenas while Boot still owns scene preparation.
+## Only ready_to_play authorizes leaving Boot after both interfaces succeed.
+func has_prepared_catalog() -> bool:
+	return ready_to_play or _catalog_prepared
+
+
+func _load_startup_resources(progress: Callable) -> StartupCatalog.LoadResult:
+	return await StartupCatalog.preload_resources(progress)
+
+
+func _catalog_definitions() -> Array[CreatureDef]:
+	return CreatureModels.catalog_defs()
+
+
+func _instantiate_startup_scene(path: String) -> Node:
+	var scene := resources.get(path) as PackedScene
+	return scene.instantiate() if scene != null and scene.can_instantiate() else null
+
+
+func _preload_creature_catalog() -> String:
+	CreatureModels.preload_all_catalog()
+	if not CreatureModels.GrifalonMotion.preload_required() or not CreatureModels.GrifalonGaleSkin.preload_required():
+		return "Не удалось загрузить анимации Грифалона. Проверьте файлы игры."
+	if not CreatureModels.KolossarMotion.preload_required() or not CreatureModels.KolossarLightSkin.preload_required():
+		return "Не удалось загрузить анимации Колоссара. Проверьте файлы игры."
+	return ""
+
+
+func _fail_preparation(progress: Callable, message: String) -> void:
+	last_error = message
+	_stop_warm_draw()
+	if is_instance_valid(_viewport):
+		_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+	# Keep the catalog alive until scene exit hooks return every borrowed actor.
+	# The viewport owns parked actors AND the unfinished warm batch/current ball.
+	for scene in [_menu, _game]:
+		if is_instance_valid(scene):
+			_set_scene_enabled(scene, false)
+			ModelLifetime.release(scene, get_tree())
+	_menu = null
+	_game = null
+	ready_to_play = false
+	_catalog_prepared = false
+	if is_instance_valid(_viewport): ModelLifetime.release(_viewport, get_tree())
+	_viewport = null
+	_storage = null
+	_flight_trails = null
+	_balls.clear()
+	_arenas.clear()
+	_fighters.clear()
+	_leased.clear()
+	resources.clear()
+	preparation_times_ms.clear()
+	actor_build_count = 0
+	arena_build_count = 0
+	fighter_build_count = 0
+	CreatureModels.resident_catalog = false
+	CreatureModels.clear()
+	PreparationStore.clear()
+	preparing = false
+	_report(progress, 0.0, message)
 
 
 func prepare_fighters(parent: Node3D) -> void:

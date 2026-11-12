@@ -51,6 +51,7 @@ func show_targets(card_id: StringName, targets: Array, view: MatchState) -> void
 	w = minf(w, maxf(96.0, (vp.y - 200.0) / 1.4))
 	for target in targets:
 		var cv := CardView.new()
+		cv.set_meta("ability_target_card", true)
 		if target.has("target_uid"):
 			var uid := int(target.target_uid)
 			cv.for_creature(CardDB.creature(view.creature(uid).def_id), uid, "", Vector2(w, w * 1.4))

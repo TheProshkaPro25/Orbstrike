@@ -13,6 +13,7 @@ var _flames: _Flames
 var _accent := Color(0.5, 0.7, 1.0)
 var _active := false
 var _portrait: TextureRect
+var _captured := 0
 
 
 func _init(side: int = 0, title: String = "") -> void:
@@ -71,9 +72,11 @@ func _ready() -> void:
 
 
 func _device_style_changed(_style: int) -> void:
-	_name.custom_minimum_size.x = 120.0 if DeviceSettings.is_device() else 140.0
-	_name.add_theme_font_size_override("font_size", 18 if DeviceSettings.is_device() else 20)
-	_portrait.custom_minimum_size = Vector2(48,56) if DeviceSettings.is_device() else Vector2(64,72)
+	var device := DeviceSettings.is_device()
+	_name.custom_minimum_size.x = 157.0 if device else 140.0
+	_name.add_theme_font_size_override("font_size", 18 if device else 20)
+	_portrait.custom_minimum_size = Vector2(52,60) if device else Vector2(64,72)
+	_gates.text = "%s %d" % ["Захвачено" if device else "Ворота:", _captured]
 	_apply_style(_active)
 	_gates.add_theme_color_override("font_color", UiTheme.accent())
 	_pips.queue_redraw()
@@ -151,8 +154,9 @@ func revive(idx: int) -> void:
 
 
 func set_gates(n: int) -> void:
-	var changed: bool = _gates.text != "Ворота: %d" % n
-	_gates.text = "Ворота: %d" % n
+	var changed := _captured != n
+	_captured = n
+	_gates.text = "%s %d" % ["Захвачено" if DeviceSettings.is_device() else "Ворота:", n]
 	if changed and n > 0:
 		_pop(_gates)
 

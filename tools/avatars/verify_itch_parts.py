@@ -14,7 +14,7 @@ args = parser.parse_args()
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
-generators = ['tools/avatars/prepare_itch_parts.gd', 'tools/avatars/export_modular_hair.py',
+generators = ['tools/avatars/prepare_itch_parts.gd', 'tools/avatars/trim_covered_upper_arms.gd', 'tools/avatars/export_modular_hair.py',
               'tools/avatars/prepare_denim.py', 'tools/avatars/itch_character_sources.json']
 if args.record:
     paths = sorted(p for p in BASE.rglob('*') if p.suffix in ['.res', '.vrm', '.glb', '.png'])

@@ -28,6 +28,10 @@ var _pager: HBoxContainer
 var _page_label: Label
 var _previous: Button
 var _next: Button
+var _device_dock: Panel
+var _device_actions: Panel
+var _dock_title: Label
+var _actions: HBoxContainer
 
 func _ready() -> void:
 	_build()
@@ -38,6 +42,14 @@ func _build() -> void:
 	_built = true
 	VisualUtil.full_rect_ignore(self)
 	theme = UiTheme.get_theme()
+	_device_dock = UiTheme.device_hand_background()
+	add_child(_device_dock)
+	_dock_title = VisualUtil.label("ВОРОТА", 14)
+	_dock_title.add_theme_color_override("font_color", UiTheme.DEVICE_ACCENT)
+	_dock_title.position = Vector2(10, 3)
+	_device_dock.add_child(_dock_title)
+	_device_actions = UiTheme.device_hand_background()
+	add_child(_device_actions)
 	_dock = Control.new()
 	_dock.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_dock)
@@ -47,6 +59,7 @@ func _build() -> void:
 	_panel = VBoxContainer.new()
 	_panel.add_theme_constant_override("separation", 5)
 	add_child(_panel)
+	_panel.resized.connect(_place_device_actions)
 	_title = VisualUtil.label("ВОРОТА · выберите карту слева", 14)
 	_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_title.custom_minimum_size.x = 340
@@ -59,23 +72,23 @@ func _build() -> void:
 	_slot_btn.pressed.connect(func() -> void:
 		if _panel.visible and _selected != &"": slot_pick_requested.emit())
 	_panel.add_child(_slot_btn)
-	var actions := HBoxContainer.new()
-	actions.add_theme_constant_override("separation", 6)
-	_panel.add_child(actions)
+	_actions = HBoxContainer.new()
+	_actions.add_theme_constant_override("separation", 6)
+	_panel.add_child(_actions)
 	_throw_btn = Button.new()
 	_throw_btn.text = "Ворота + бросок"
 	_throw_btn.toggle_mode = true
 	_throw_btn.tooltip_text = "После выбора места на поле выберите существо. Назад / Esc вернёт к карте без расхода хода."
-	actions.add_child(_throw_btn)
+	_actions.add_child(_throw_btn)
 	_back_btn = Button.new()
 	_back_btn.text = "Отмена"
 	_back_btn.tooltip_text = "Снять выбор карты (Esc / правая кнопка мыши)"
 	_back_btn.pressed.connect(_cancel_selection)
-	actions.add_child(_back_btn)
+	_actions.add_child(_back_btn)
 	_skip_btn = Button.new()
 	_skip_btn.text = "Не класть"
 	_skip_btn.pressed.connect(func() -> void: skipped.emit())
-	actions.add_child(_skip_btn)
+	_actions.add_child(_skip_btn)
 	_pager = HBoxContainer.new()
 	_pager.tooltip_text = "Страницы ворот: кнопки, ← / → при фокусе в этой руке или колёсико над картой. Tab — сменить руку."
 	add_child(_pager)
@@ -93,23 +106,52 @@ func _build() -> void:
 	_pager.add_child(_next)
 	_panel.visible = false
 	get_viewport().size_changed.connect(_layout)
+	DeviceSettings.events().changed.connect(func(_style: int) -> void: _layout())
 	_layout()
 
 func _layout() -> void:
 	if not _built: return
 	var vp := get_viewport_rect().size
+	var device := DeviceSettings.is_device()
 	var w := clampf((vp.x * .46 - 40.0) / 3.0, 96.0, 142.0)
-	_size = Vector2(w, roundf(w * 1.4))
-	_dock.position = Vector2(16, vp.y - (_size.y + (58 if _hand.size() > 3 else 26) if _panel.visible else 72))
-	_panel.position = Vector2(16, vp.y - _size.y - (130 if _hand.size() > 3 else 98) - (_slot_btn.get_combined_minimum_size().y + 5 if _slot_btn.visible else 0.0))
-	_title.custom_minimum_size.x = vp.x * .46 - 20
+	_size = UiTheme.device_hand_card(vp) if device else Vector2(w, roundf(w * 1.4))
+	var throw_parent: Container = _panel if device else _actions
+	if _throw_btn.get_parent() != throw_parent:
+		_throw_btn.reparent(throw_parent, false)
+		throw_parent.move_child(_throw_btn, 2 if device else 0)
+	_actions.alignment = BoxContainer.ALIGNMENT_CENTER if device else BoxContainer.ALIGNMENT_BEGIN
+	_cards_box.alignment = BoxContainer.ALIGNMENT_CENTER if device else BoxContainer.ALIGNMENT_BEGIN
+	_title.custom_minimum_size.x = 274.0 if device else vp.x * .46 - 20
 	_panel.reset_size()
-	for cv in _card_buttons.values():
-		cv.custom_minimum_size = _size
-		cv.size = _size
+	for cv: CardView in _card_buttons.values():
+		cv.resize_face(_size)
 	_dock.visible = _dock_visible and not _hand.is_empty()
-	_pager.position = Vector2(16,vp.y-44)
+	_device_dock.visible = _dock.visible and device
+	_device_actions.visible = _panel.visible and device
+	_pager.position = Vector2(16, vp.y - 44)
 	_pager.visible = _dock_visible and _hand.size() > 3
+	if device:
+		var lane := UiTheme.device_hand_lane(vp)
+		_device_dock.position = Vector2(14, vp.y - _size.y - 76.0)
+		_device_dock.size = Vector2(lane, _size.y + 68.0)
+		_dock.position = Vector2(24, vp.y - _size.y - 50.0)
+		_cards_box.size.x = lane - 20.0
+		_pager.reset_size()
+		_pager.position = Vector2(24, vp.y - 8.0 - _pager.size.y)
+		_dock_title.text = "ВОРОТА · %d" % _hand.size()
+		_place_device_actions()
+	else:
+		_cards_box.reset_size()
+		_dock.position = Vector2(16, vp.y - (_size.y + (58 if _hand.size() > 3 else 26) if _panel.visible else 72))
+		_panel.position = Vector2(16, vp.y - _size.y - (130 if _hand.size() > 3 else 98) - (_slot_btn.get_combined_minimum_size().y + 5 if _slot_btn.visible else 0.0))
+
+
+func _place_device_actions() -> void:
+	if not DeviceSettings.is_device(): return
+	var vp := get_viewport_rect().size
+	_panel.position = Vector2((vp.x - _panel.size.x) * 0.5, vp.y - _panel.size.y - 17.0)
+	_device_actions.position = _panel.position - Vector2(8, 8)
+	_device_actions.size = _panel.size + Vector2(16, 16)
 
 func set_hand(ids: Array) -> void:
 	_build()
@@ -133,10 +175,14 @@ func _rebuild() -> void:
 		var def := CardDB.card(cid)
 		if def == null: continue
 		var b := CardView.new().for_card(def, _size)
+		b.set_meta("device_hand_card", true)
 		b.toggle_mode = true
 		b.button_pressed = cid == _selected
 		b.pressed.connect(_on_card_pressed.bind(cid))
 		b.set_meta("silent_select", not _panel.visible)
+		if not _panel.visible:
+			var help := str(b._help[6])
+			b._help[6] = help + ("\n" if not help.is_empty() else "") + "Ворота можно выбрать во время выкладки."
 		b.gui_input.connect(_page_input)
 		_cards_box.add_child(b)
 		_card_buttons[cid] = b
@@ -172,7 +218,9 @@ func hide_panel() -> void:
 	_rebuild()
 
 func _on_card_pressed(cid: StringName) -> void:
-	if not _panel.visible: return
+	if not _panel.visible:
+		if _card_buttons.has(cid): _card_buttons[cid].set_pressed_no_signal(false)
+		return
 	_selected = cid
 	_refresh_selection()
 
@@ -215,6 +263,7 @@ func _change_page(delta: int) -> void:
 	var next_page := clampi(_page + delta, 0, pages - 1)
 	if next_page == _page: return
 	_page = next_page
+	_selected = &""
 	_rebuild()
 	_refresh_selection()
 

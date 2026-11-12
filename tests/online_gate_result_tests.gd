@@ -9,9 +9,9 @@ class ObserveDirector extends ArenaDirector:
 	var present_at_result := false
 	var present_during_result := false
 	func battle_resolved(result: BattleResult) -> void:
-		present_at_result = game.card_nodes.has(result.slot) and game.card_nodes[result.slot].is_inside_tree()
+		present_at_result = state.card_nodes.has(result.slot) and state.card_nodes[result.slot].is_inside_tree()
 		await get_tree().create_timer(.05).timeout
-		present_during_result = game.card_nodes.has(result.slot) and not game.card_nodes[result.slot].is_queued_for_deletion()
+		present_during_result = state.card_nodes.has(result.slot) and not state.card_nodes[result.slot].is_queued_for_deletion()
 func check(ok: bool, label: String) -> void:
 	checks += 1
 	if not ok:
@@ -31,12 +31,16 @@ func run() -> void:
 	view.turn = 2
 	game._match_ready = true
 	game._index_creatures()
+	var state := game.presentation.state
+	game._help_policy = game.HelpPolicy.new(game.presentation)
+	game.ability_target_picker = AbilityTargetPicker.new()
+	game.ui_layer.add_child(game.ability_target_picker)
 	game.hud.setup_plates([Color.BLUE,Color.BLUE,Color.BLUE],[Color.RED,Color.RED,Color.RED],[[0,0,0],[1,1,1]])
 	game.cam = CameraRig.new()
 	game.world.add_child(game.cam)
 	game.director.queue_free()
 	var director := ObserveDirector.new()
-	director.game = game
+	director.state = game.presentation.state
 	game.add_child(director)
 	game.director = director
 	game._battle_key = "already introduced"
@@ -51,7 +55,7 @@ func run() -> void:
 	var card := ArenaCardNode.new()
 	game.world.add_child(card)
 	card.set_field_surface(true)
-	game.card_nodes[0] = card
+	state.card_nodes[0] = card
 	var result := BattleResult.new()
 	result.slot = 0
 	result.attacker_uid = 0
@@ -61,11 +65,11 @@ func run() -> void:
 	result.powers = [410,390]
 	view.creatures[3].alive = false
 	var snapshot := {"player":0,"view":Codec.encode_view(view),"battle_serial":1,"last_battle":Codec.preview(result),"selected_uid":-1,"busy":false,"preview":{},"winner":-2,"legal":{},"reason":""}
-	check(not view.slots[0].has_card and game.card_nodes.has(0),"final rules removed gate while prior presentation still has it")
+	check(not view.slots[0].has_card and state.card_nodes.has(0),"final rules removed gate while prior presentation still has it")
 	await game._apply_snapshot(JSON.parse_string(JSON.stringify(snapshot)))
 	check(director.present_at_result,"gate exists when result animation starts")
 	check(director.present_during_result,"gate remains throughout result confirmation")
-	check(not game.card_nodes.has(0),"gate removed from scene registry after confirmation")
+	check(not state.card_nodes.has(0),"gate removed from scene registry after confirmation")
 	check(card.is_queued_for_deletion(),"visual gate released after result")
 	check(card._field_body.collision_layer == 0,"removed gate physical surface disabled")
 	check(game._last_battle_serial == 1,"public result processed once")

@@ -51,6 +51,9 @@ func _run() -> void:
 	game._duel_menu = Button.new()
 	canvas.add_child(game._duel_menu)
 	game._duel_menu.hide()
+	var team := TeamMenu.new()
+	game.add_child(team)
+	game.modes.configure(team,hud,canvas,game.rng,game._duel_menu)
 	var exit: Button = game._make_tournament_exit_button()
 	game._tournament_exit = exit
 	canvas.add_child(exit)

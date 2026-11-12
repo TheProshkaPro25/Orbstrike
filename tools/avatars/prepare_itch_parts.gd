@@ -21,11 +21,18 @@ func relaxed(path: String) -> Dictionary:
 func run() -> void:
 	DirAccess.make_dir_recursive_absolute(OUT)
 	var kai := relaxed("res://assets/avatars/itch/Kai.vrm")
+	var vita_hair_only := "--vita-kai-hair" in OS.get_cmdline_user_args()
 	for model in 2:
+		if vita_hair_only and model != 1: continue
 		var target := relaxed("res://assets/avatars/vrm/"+["Sakurada_Fumiriya","Vita"][model]+".vrm")
 		var fit: Vector3 = target.bounds.size/kai.bounds.size
 		fit.y = target.head.origin.y/kai.head.origin.y
 		var transform := Transform3D(Basis.from_scale(fit),Vector3.ZERO)
+		var hair := build_kai_hair(kai, target, model, transform)
+		assert(ResourceSaver.save(hair,OUT+"hair_%d.res" % model,ResourceSaver.FLAG_COMPRESS)==OK)
+		if vita_hair_only:
+			target.actor.queue_free()
+			continue
 		var body := ArrayMesh.new()
 		var names := PackedStringArray()
 		var material_sources := {}
@@ -49,24 +56,19 @@ func run() -> void:
 		body.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,skin)
 		names.append(own.get_meta("surface_materials")[0])
 		material_sources[0] = model
-		var hair_groups := {}
 		var cloth_groups := {}
 		for mesh: MeshInstance3D in kai.meshes:
 			if "Face" in str(mesh.name): continue
 			var body_bake := cpu_bake(mesh,kai.skel,target.skel,transform,false,true)
-			var hair_bake := cpu_bake(mesh,kai.skel)
 			for surface in mesh.mesh.get_surface_count():
 				var material: ShaderMaterial = mesh.mesh.surface_get_material(surface)
 				var name := material.resource_name
-				if "_SKIN" in name: continue
-				var hair: bool = "_HAIR" in name
-				var groups: Dictionary = hair_groups if hair else cloth_groups
-				if not groups.has(name):
+				if "_SKIN" in name or "_HAIR" in name: continue
+				if not cloth_groups.has(name):
 					var tool := SurfaceTool.new()
 					tool.begin(Mesh.PRIMITIVE_TRIANGLES)
-					groups[name] = tool
-				var into_head: Transform3D = target.head.affine_inverse()*transform*mesh.global_transform
-				groups[name].append_from(hair_bake if hair else body_bake,surface,into_head if hair else transform*mesh.global_transform)
+					cloth_groups[name] = tool
+				cloth_groups[name].append_from(body_bake,surface,transform*mesh.global_transform)
 		for name in cloth_groups:
 			var tool: SurfaceTool = cloth_groups[name]
 			tool.deindex()
@@ -77,17 +79,6 @@ func run() -> void:
 		body.set_meta("surface_materials",names)
 		body.set_meta("surface_sources",material_sources)
 		assert(ResourceSaver.save(body,OUT+"body_%d.res" % model,ResourceSaver.FLAG_COMPRESS)==OK)
-		var hair := ArrayMesh.new()
-		var hair_names := PackedStringArray()
-		for name in hair_groups:
-			var tool: SurfaceTool = hair_groups[name]
-			tool.deindex()
-			tool.index()
-			tool.commit(hair)
-			hair_names.append(name)
-		hair.set_meta("part_source",5)
-		hair.set_meta("surface_materials",hair_names)
-		assert(ResourceSaver.save(hair,OUT+"hair_%d.res" % model,ResourceSaver.FLAG_COMPRESS)==OK)
 		for style in ["bob","short","twins","pony"]:
 			var actor: Node3D = load("res://assets/avatars/itch/modular_"+style+".glb").instantiate()
 			root.add_child(actor)
@@ -182,3 +173,47 @@ func run() -> void:
 	kai.actor.queue_free()
 	for i in 3: await process_frame
 	quit()
+
+func build_kai_hair(kai: Dictionary, target: Dictionary, model: int, body_fit: Transform3D) -> ArrayMesh:
+	var into_head: Transform3D = target.head.affine_inverse()*body_fit
+	if model == 1:
+		# Vita's body is shorter than Kai's, but her scalp rises higher
+		# relative to Head. Fit the crown in head space, independently of clothes.
+		var scale := body_fit.basis.get_scale()
+		scale.y = crown_height(target)/crown_height(kai)
+		into_head = Transform3D(Basis.from_scale(scale),Vector3.ZERO)*kai.head.affine_inverse()
+	var groups := {}
+	for mesh: MeshInstance3D in kai.meshes:
+		if "Face" in str(mesh.name): continue
+		var baked := cpu_bake(mesh,kai.skel)
+		for surface in mesh.mesh.get_surface_count():
+			var name := mesh.mesh.surface_get_material(surface).resource_name
+			if not "_HAIR" in name: continue
+			if not groups.has(name):
+				var tool := SurfaceTool.new()
+				tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+				groups[name] = tool
+			groups[name].append_from(baked,surface,into_head*mesh.global_transform)
+	var hair := ArrayMesh.new()
+	var names := PackedStringArray()
+	for name in groups:
+		var tool: SurfaceTool = groups[name]
+		tool.deindex()
+		tool.index()
+		tool.commit(hair)
+		names.append(name)
+	hair.set_meta("part_source",5)
+	hair.set_meta("surface_materials",names)
+	return hair
+
+func crown_height(source: Dictionary) -> float:
+	var height := 0.0
+	for mesh: MeshInstance3D in source.meshes:
+		if not "Body" in str(mesh.name): continue
+		var baked := cpu_bake(mesh,source.skel)
+		var local: Transform3D = source.head.affine_inverse()*mesh.global_transform
+		for slot in mesh.mesh.get_surface_count():
+			if not "_SKIN" in mesh.mesh.surface_get_material(slot).resource_name: continue
+			var points: PackedVector3Array = baked.surface_get_arrays(slot)[Mesh.ARRAY_VERTEX]
+			for point in points: height = maxf(height,(local*point).y)
+	return height

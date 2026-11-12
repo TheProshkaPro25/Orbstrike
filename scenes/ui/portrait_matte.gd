@@ -6,7 +6,7 @@ const WHITE_FLOOR := 244
 const WHITE_CHROMA := 10
 static var generation_count := 0
 
-static func prepare(source: Texture2D, debug_mask: bool = false, interior_regions: Dictionary = {}) -> Dictionary:
+static func prepare(source: Texture2D, debug_mask: bool = false, interior_regions: Dictionary = {}, battle_regions: Dictionary = {}) -> Dictionary:
 	if source == null:
 		return {}
 	var image := source.get_image()
@@ -47,45 +47,9 @@ static func prepare(source: Texture2D, debug_mask: bool = false, interior_region
 			background[next] = 1
 			queue[tail] = next
 			tail += 1
-	var interior_pixels := 0
-	if not interior_regions.is_empty():
-		var fingerprint := HashingContext.new()
-		fingerprint.start(HashingContext.HASH_SHA256)
-		fingerprint.update(pixels)
-		if fingerprint.finish().hex_encode() != String(interior_regions.rgba_sha256):
-			push_error("Portrait source changed: reviewed interior background seeds were not applied")
-		else:
-			for component: Dictionary in interior_regions.components:
-				var seed: Vector2i = component.seed
-				if seed.x < 0 or seed.y < 0 or seed.x >= width or seed.y >= height:
-					push_error("Portrait interior background seed outside source")
-					continue
-				var start := tail
-				var seed_at := seed.y * width + seed.x
-				if candidates[seed_at] == 0 or background[seed_at] != 0:
-					push_error("Portrait interior seed no longer identifies enclosed neutral background")
-					continue
-				background[seed_at] = 1
-				queue[tail] = seed_at
-				tail += 1
-				head = start
-				while head < tail:
-					var at := queue[head]
-					head += 1
-					var x := at % width
-					for next in [at - width, at + width, at - 1 if x > 0 else -1, at + 1 if x < width - 1 else -1]:
-						if next < 0 or next >= count or background[next] != 0 or candidates[next] == 0:
-							continue
-						background[next] = 1
-						queue[tail] = next
-						tail += 1
-				if tail - start != int(component.pixels):
-					for index in range(start, tail):
-						background[queue[index]] = 0
-					tail = start
-					push_error("Portrait interior component changed: source pixels preserved")
-				else:
-					interior_pixels += tail - start
+	var exterior_tail := tail
+	tail = _mark_interior(pixels, width, height, candidates, background, queue, tail, interior_regions)
+	var interior_pixels := tail - exterior_tail
 	# Antialiased edge pixels were composited onto white by the source render.
 	# Recover their coverage from a nearby opaque contour; leave the source core
 	# and every enclosed near-white detail byte-for-byte intact.
@@ -144,8 +108,59 @@ static func prepare(source: Texture2D, debug_mask: bool = false, interior_region
 				mask[offset + channel] = alpha
 			mask[offset + 3] = 255
 	var result := Image.create_from_data(width, height, false, Image.FORMAT_RGBA8, pixels)
+	var battle_texture: Texture2D
+	var battle_tail := _mark_interior(original, width, height, candidates, background, queue, tail, battle_regions)
+	if battle_tail > tail:
+		# The battle shader handles the new boundary. Share the base matte's
+		# segmentation and leave every pixel outside the reviewed gaps intact.
+		var battle_pixels := pixels.duplicate()
+		for index in range(tail, battle_tail):
+			battle_pixels[queue[index] * 4 + 3] = 0
+		battle_texture = ImageTexture.create_from_image(Image.create_from_data(width, height, false, Image.FORMAT_RGBA8, battle_pixels))
 	generation_count += 1
-	return {"texture": ImageTexture.create_from_image(result), "mask": ImageTexture.create_from_image(Image.create_from_data(width, height, false, Image.FORMAT_RGBA8, mask)) if debug_mask else null, "background_pixels": tail, "interior_background_pixels": interior_pixels, "softened_edge_pixels": softened_edges, "retained_closed_white_pixels": retained_white, "source_pixels": count, "policy": "border-connected neutral near-white; closed white preserved; source core unchanged; only white-matted contour coverage recovered"}
+	return {"texture": ImageTexture.create_from_image(result), "battle_texture": battle_texture, "mask": ImageTexture.create_from_image(Image.create_from_data(width, height, false, Image.FORMAT_RGBA8, mask)) if debug_mask else null, "background_pixels": tail, "interior_background_pixels": interior_pixels, "softened_edge_pixels": softened_edges, "retained_closed_white_pixels": retained_white, "source_pixels": count, "policy": "border-connected neutral near-white; closed white preserved; source core unchanged; only white-matted contour coverage recovered"}
+
+
+static func _mark_interior(pixels: PackedByteArray, width: int, height: int, candidates: PackedByteArray, background: PackedByteArray, queue: PackedInt32Array, tail: int, regions: Dictionary) -> int:
+	var count := width * height
+	if not regions.is_empty():
+		var fingerprint := HashingContext.new()
+		fingerprint.start(HashingContext.HASH_SHA256)
+		fingerprint.update(pixels)
+		if fingerprint.finish().hex_encode() != String(regions.rgba_sha256):
+			push_error("Portrait source changed: reviewed interior background seeds were not applied")
+		else:
+			for component: Dictionary in regions.components:
+				var seed: Vector2i = component.seed
+				if seed.x < 0 or seed.y < 0 or seed.x >= width or seed.y >= height:
+					push_error("Portrait interior background seed outside source")
+					continue
+				var start := tail
+				var seed_at := seed.y * width + seed.x
+				if candidates[seed_at] == 0 or background[seed_at] != 0:
+					push_error("Portrait interior seed no longer identifies enclosed neutral background")
+					continue
+				background[seed_at] = 1
+				queue[tail] = seed_at
+				tail += 1
+				var head := start
+				while head < tail:
+					var at := queue[head]
+					head += 1
+					var x := at % width
+					for next in [at - width, at + width, at - 1 if x > 0 else -1, at + 1 if x < width - 1 else -1]:
+						if next < 0 or next >= count or background[next] != 0 or candidates[next] == 0:
+							continue
+						background[next] = 1
+						queue[tail] = next
+						tail += 1
+				if tail - start != int(component.pixels):
+					for index in range(start, tail):
+						background[queue[index]] = 0
+					tail = start
+					push_error("Portrait interior component changed: source pixels preserved")
+	return tail
+
 
 static func _background_candidate(pixels: PackedByteArray, at: int) -> bool:
 	var offset := at * 4

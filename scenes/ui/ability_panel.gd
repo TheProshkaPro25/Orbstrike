@@ -33,6 +33,7 @@ var _step := 122.0
 var _hand_center := 450.0
 var _fan: Control
 var _caption: Label
+var _device_dock: Panel
 var _panel: PanelContainer   # заголовок окна, счётчик карт и «Пас»; виден только в окне
 var _title: Label
 var _note: Label
@@ -57,12 +58,20 @@ func _ready() -> void:
 
 ## Размер карт зависит от высоты окна: в 1080p крупнее, в 768p компактнее.
 func _calc_sizes() -> void:
-	var vh: float = get_viewport_rect().size.y
+	var vp := get_viewport_rect().size
+	if DeviceSettings.is_device():
+		_card = UiTheme.device_hand_card(vp)
+		_fan_h = _card.y + 82.0
+		_step = _card.x + 8.0
+		var lane := UiTheme.device_hand_lane(vp)
+		_capacity = clampi(int((lane - 4.0) / _step), 1, 4)
+		_hand_center = vp.x - 14.0 - lane * 0.5
+		return
+	var vh: float = vp.y
 	var h: float = clampf(vh * 0.255, 190.0, 262.0)
 	_card = Vector2(roundf(h * 0.715), roundf(h))
 	_fan_h = _card.y + 110.0
 	_step = _card.x * 1.06
-	var vp := get_viewport_rect().size
 	var available := maxf(250.0, vp.x * .48 - 32.0)
 	_step = _card.x * 1.04
 	_capacity = clampi(int(available / _step), 1, 4)
@@ -76,6 +85,8 @@ func _build() -> void:
 	VisualUtil.full_rect_ignore(self)
 	theme = UiTheme.get_theme()
 	_calc_sizes()
+	_device_dock = UiTheme.device_hand_background()
+	add_child(_device_dock)
 
 	_fan = Control.new()
 	_fan.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -90,13 +101,17 @@ func _build() -> void:
 	_fan.visible = false
 	add_child(_fan)
 
-	_caption = VisualUtil.label("Ваши способности", 13)
+	_caption = VisualUtil.label("СПОСОБНОСТИ", 14)
+	_caption.add_theme_color_override("font_color", UiTheme.DEVICE_ACCENT)
+	_caption.position = Vector2(10, 3)
 	_caption.visible = false
-	_fan.add_child(_caption)
+	_device_dock.add_child(_caption)
+	_fan.visibility_changed.connect(_place_device_dock)
 
 	_panel = PanelContainer.new()
 	VisualUtil.place(_panel, 1.0, 1.0, -16.0, -_card.y - 96.0)
 	add_child(_panel)
+	_panel.resized.connect(_place_device_actions)
 	var hb := VBoxContainer.new()
 	hb.add_theme_constant_override("separation", 8)
 	_panel.add_child(hb)
@@ -153,21 +168,56 @@ func _build() -> void:
 	_pager.tooltip_text = "Страницы способностей: кнопки, ← / → при фокусе в этой руке или колёсико над картой. Tab — сменить руку. Фокус / наведение — полный текст."
 	_pager.visible = false
 	get_viewport().size_changed.connect(_on_resized)
+	DeviceSettings.events().changed.connect(func(_style: int) -> void: _on_resized())
+	_place_device_dock()
 
 
 ## В бою блок лежит над опущенной рукой ворот, не закрывая бойцов и ленту карт.
 func _place_panel() -> void:
-	if StringName(str(_info.get("moment", &""))) == &"battle":
+	if DeviceSettings.is_device():
+		_panel.add_theme_stylebox_override("panel", UiTheme.box(UiTheme.DEVICE_INK, UiTheme.DEVICE_DIM, 1, 5, 10))
+		_panel.set_anchors_preset(Control.PRESET_TOP_LEFT)
+		_panel.reset_size()
+		_place_device_actions()
+	elif StringName(str(_info.get("moment", &""))) == &"battle":
+		_panel.remove_theme_stylebox_override("panel")
 		VisualUtil.place(_panel, 0.0, 1.0, 16.0, -110.0)
 	else:
+		_panel.remove_theme_stylebox_override("panel")
 		VisualUtil.place(_panel, 1.0, 1.0, -16.0, -_card.y - 96.0)
 
 
+func _place_device_actions() -> void:
+	if not DeviceSettings.is_device(): return
+	var vp := get_viewport_rect().size
+	_panel.position = Vector2((vp.x - _panel.size.x) * 0.5, vp.y - _panel.size.y - 8.0)
+
+
+func _place_device_dock() -> void:
+	if _pager == null: return
+	var device := DeviceSettings.is_device()
+	_device_dock.visible = device and _fan.visible and not _hand.is_empty()
+	_caption.visible = device
+	_caption.text = "СПОСОБНОСТИ · %d" % _hand.size()
+	if device:
+		var vp := get_viewport_rect().size
+		var lane := UiTheme.device_hand_lane(vp)
+		_device_dock.position = Vector2(vp.x - lane - 14.0, vp.y - _card.y - 76.0)
+		_device_dock.size = Vector2(lane, _card.y + 68.0)
+		VisualUtil.place(_pager, 1.0, 1.0, -24.0, -8.0)
+	else:
+		VisualUtil.place(_pager, 1.0, 1.0, -18.0, -20.0)
+	_pager.visible = _fan.visible and _hand.size() > (_capacity if device else 0)
+
+
 func _on_resized() -> void:
+	var focused := get_viewport().gui_get_focus_owner() as CardView
+	var focused_id := focused.card_id if focused != null and focused.get_parent() == _fan else &""
 	_calc_sizes()
 	_fan.offset_top = -_fan_h
 	_place_panel()
-	_rebuild()
+	_update_option_note()
+	_rebuild(focused_id)
 
 
 ## Карты способностей в руке игрока (ещё не сыгранные).
@@ -202,7 +252,7 @@ func show_options(entries: Array, header: String = "Окно способнос�
 	_title.text = header
 	_note.text = str(info.get("note", ""))
 	# Длинная справка не должна растить боевой блок поверх последней сыгранной карты.
-	_note.visible = _note.text != "" and moment != &"battle"
+	_update_option_note()
 	_panel.tooltip_text = _note.text + ("\nКарты играются по очереди, до трёх за бой. Наведите на название сыгранной карты, чтобы прочитать полные условия. Отдых — два следующих боя, даже после отмены. Последнему сразу возвращаются только синие усиления; явный возврат карты действует раньше." if moment == &"battle" else "")
 	_gate_btn.visible = bool(info.get("can_open_gate", false))
 	_pass_btn.visible = _mode == Mode.WINDOW
@@ -238,6 +288,13 @@ func _fill_pips(used: int) -> void:
 	_pips.add_child(cnt)
 
 
+func _update_option_note() -> void:
+	var battle := StringName(str(_info.get("moment", &""))) == &"battle"
+	_pips.get_parent().visible = not (DeviceSettings.is_device() and battle)
+	_note.visible = not _note.text.is_empty() and (not battle or DeviceSettings.is_device())
+	_note.add_theme_font_size_override("font_size", 13 if DeviceSettings.is_device() else 12)
+
+
 func hide_panel() -> void:
 	_build()
 	_mode = Mode.IDLE
@@ -257,7 +314,7 @@ func set_dock_visible(on: bool) -> void:
 		_pending_focus_id = &""
 		_pending_focus_index = -1
 	_fan.visible = on
-	_pager.visible = on and not _hand.is_empty()
+	_place_device_dock()
 
 
 ## Карта, сыгранная соперником: появляется сверху по центру и гаснет.
@@ -292,7 +349,8 @@ func show_played(card_id: StringName, by_opponent: bool) -> void:
 
 
 func _rebuild(focus_id: StringName = &"") -> void:
-	var restore_focus := _owns_focus()
+	var focused := get_viewport().gui_get_focus_owner() as CardView
+	var restore_focus := focused != null and focused.get_parent() == _fan
 	for tw in _layout_tweens.values():
 		if tw.is_valid():
 			tw.kill()
@@ -313,7 +371,7 @@ func _rebuild(focus_id: StringName = &"") -> void:
 	if focus_id != &"" and ordered.has(focus_id):
 		_page = int(ordered.find(focus_id) / _capacity)
 	_page = clampi(_page, 0, pages - 1)
-	_pager.visible = _fan.visible and not _hand.is_empty()
+	_place_device_dock()
 	_page_label.text = "  %d карт · %d/%d  " % [_hand.size(), _page + 1, pages]
 	_previous.disabled = _page == 0
 	_next.disabled = _page >= pages - 1
@@ -324,6 +382,7 @@ func _rebuild(focus_id: StringName = &"") -> void:
 		if def == null:
 			continue
 		var cv := CardView.new().for_card(def, _card)
+		cv.set_meta("device_hand_card", true)
 		cv.pivot_offset = Vector2(_card.x * 0.5, _card.y)
 		cv.mouse_entered.connect(_on_hover.bind(cv, true))
 		cv.mouse_exited.connect(_on_hover.bind(cv, false))
@@ -369,10 +428,14 @@ func _layout(animate: bool) -> void:
 		var pos := Vector2(_hand_center + k * _step - _card.x * 0.5, top + k * k * 1.4)
 		var rot: float = 0.0 if cv == _hovered else deg_to_rad(k * 1.8)
 		var sc: Vector2 = Vector2(1.12, 1.12) if cv == _hovered else Vector2.ONE
+		if DeviceSettings.is_device():
+			pos.y = _fan_h - _card.y - 50.0
+			rot = 0.0
+			sc = Vector2.ONE
 		cv.z_index = 50 if cv == _hovered else i
 		if _layout_tweens.has(cv) and _layout_tweens[cv].is_valid():
 			_layout_tweens[cv].kill()
-		if animate:
+		if animate and not DeviceSettings.is_device():
 			var tw := cv.create_tween().set_parallel(true)
 			_layout_tweens[cv] = tw
 			tw.tween_property(cv, "position", pos, 0.16).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
@@ -430,7 +493,13 @@ func _on_card_pressed(cv: CardView) -> void:
 	_hovered = null
 	_cards.erase(cv)
 	_hand.erase(cid)
-	_pager.visible = not _hand.is_empty()
+	_place_device_dock()
+	if DeviceSettings.is_device():
+		_fan.remove_child(cv)
+		cv.queue_free()
+		_rebuild()
+		ability_chosen.emit(cid)
+		return
 	var gp := cv.global_position
 	_fan.remove_child(cv)
 	add_child(cv)

@@ -1,19 +1,20 @@
 {
   "generators": {
     "tools/avatars/build_wardrobe_variants.gd": "2f7a4d8e4caddea955e19123940325ee6b4739ac6e04cfb88fe222668f560524",
-    "tools/avatars/prepare_vrm_parts.gd": "16fc40164703c5518dd3ee64c503f283a7b1e61bef73fdcd17c53449658944f6"
+    "tools/avatars/prepare_vrm_parts.gd": "b44b8116b67c1147b9b9e3ed6253fc2158756a509fba370ef76efc46cd460c27",
+    "tools/avatars/trim_covered_upper_arms.gd": "cb53334d1f4aa30efa8a350dc737bf7fac114d89c1f16ec35f234a3f4151b5fa"
   },
-  "base_manifest_sha256": "4676355ff1c0c7f2214c8617fefccb9817cbf638a014820c68f2e58a830c466d",
+  "base_manifest_sha256": "653c3f6361044a72dd2c6a96dcf145350ff29a2542055e63184e835c48722a96",
   "files": {
     "wardrobe_cloth.res": "96c62a0b979a4cfe0cb394b9c505b9d54d35634857ef0704380c7da26a6c66e4",
     "hair_0_5.res": "511e204f63cb37bba8faa7c60041a6f39f7096250d70a612edf0d3fea580383a",
     "hair_0_6.res": "5906ec61e8325acaff0c1bf700f01b35293cc13dec979369cfd1193f000cdb10",
     "hair_1_5.res": "a170eecae9764af20856a127d172af6b2a127d3533a23ef9472ec84c6cd4495f",
     "hair_1_6.res": "ebb9742de11e2640c429af227c542fde1668f32f7eb9815d0fbcd3ee57d8b8fa",
-    "body_0_2.res": "022d193aeafe1c1f2a198c851f3da82d084864d1fde917960be56411bdb7bcb0",
-    "body_0_3.res": "9826696d0fb61e3d754a0746ff6d12bca78591341fcfc76c8d119669ac74ea95",
-    "body_1_3.res": "d2d86b5fd35668bf12281cf0979da3b66247cebfba771871fa4b06f252ee4be1",
-    "body_1_4.res": "2f01c1b132bdf258005e966270b731963f80de44109fee51f132f5ef33b57608"
+    "body_0_2.res": "80bb27fcf171f9cf91f2da8a2f2b3e89189222ac5096379724be6e3c6bcf3f6d",
+    "body_0_3.res": "c0c46897de4524431e13352939169dd3b41dce6345708d4da6fd19f290049f49",
+    "body_1_3.res": "c61694f3e4cbc834e4a063a132c7d0de02839162dec0a31b07d7236eeb5b3ddf",
+    "body_1_4.res": "017b70ba169ee8914f1f9b84865241de22c5bcc4c415b433569dbb74a8879651"
   },
   "license": "Derivatives of the pinned CC0 VRM samples; see ../README.md",
   "counts": {

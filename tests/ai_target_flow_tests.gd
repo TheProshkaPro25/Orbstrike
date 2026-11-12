@@ -1,6 +1,7 @@
 extends "res://tests/cards033_tests.gd"
 ## Настоящие main/sim входы ИИ, без Boot, моделей, графики и матчевых серий.
 const Main = preload("res://scenes/main.gd")
+const InputView := preload("res://scenes/interaction/interaction_view.gd")
 const Sim = preload("res://tools/sim.gd")
 const Autoplay = preload("res://tools/autoplay.gd")
 
@@ -8,7 +9,7 @@ class QuietHud extends HudUI:
 	func set_hint(_text: String) -> void: pass
 
 class QuietBattleHud extends BattleHud:
-	func set_chain(_plays: Array, _passed: Array, _turn: int = -1, _cancelled: Array = [], _counts: Array = []) -> void: pass
+	func set_chain(_plays: Array, _passed: Array, _turn: int = -1, _cancelled: Array = [], _counts: Array = [], _blocks: Array = []) -> void: pass
 
 class QuietAbilityPanel extends AbilityPanel:
 	func hide_panel() -> void: pass
@@ -64,20 +65,30 @@ func _run_target_flow(id: StringName, difficulty: int, player: int, live: bool, 
 		game.add_child(game.hud)
 		game.add_child(game.battle_hud)
 		game._index_creatures()
+		game.ability_panel = QuietAbilityPanel.new()
+		game.add_child(game.ability_panel)
+		var picker := ArenaSlotPicker.new()
+		root.add_child(picker)
+		var ports := InputView.new()
+		ports.hud = game.hud
+		ports.ability = game.ability_panel
+		ports.arena_picker = picker
+		ports.ability_picker = AbilityTargetPicker.new()
+		root.add_child(ports.ability_picker)
+		game.ability_target_picker = ports.ability_picker
+		game.interaction.configure(ports,game.presentation,game._resources,null,null,null,null)
+		game.interaction.bind_controller(ctrl,ai)
 		if human:
-			game.ability_panel = QuietAbilityPanel.new()
-			game.add_child(game.ability_panel)
-			game.ability_target_picker = AbilityTargetPicker.new()
-			root.add_child(game.ability_target_picker)
 			game.ability_target_picker.chosen.connect(game._on_ability_target_chosen)
 			game._on_ability_chosen(id)
 			_check(game.ability_target_picker.visible and ctrl.state.players[player].ability_hand.has(id), label + ": настоящий выбор открылся до траты карты")
 			_check(Autoplay.choose_pending_target(game, ai), label + ": autoplay выбрал цель")
 			_check(not game.ability_target_picker.visible and game._ability_target_card == &"", label + ": сигнал выбора завершил ожидание")
-			game.ability_target_picker.free()
 		else:
 			game._do_ability(player)
-		game.free()
+		game.ability_target_picker.queue_free()
+		picker.queue_free()
+		game.queue_free()
 	elif npc:
 		_check(TournamentNpcSimulator.play_ai_ability(ctrl, ai, player, pick) == OK, label + ": команда принята")
 	else:

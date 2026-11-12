@@ -1,0 +1,72 @@
+{
+  "downloaded_on": "2026-11-12",
+  "archive_directory": "build/vfx_vendor/downloads",
+  "packs": [
+    {
+      "id": "effects_lab",
+      "name": "Godot Effects Lab",
+      "author": "PSCactux",
+      "source": "https://github.com/PSCactux/godot-effects-lab",
+      "revision": "6af3c856ad8745a655121d11d55a60a03201a145",
+      "download": "https://codeload.github.com/PSCactux/godot-effects-lab/zip/6af3c856ad8745a655121d11d55a60a03201a145",
+      "archive": "effects_lab.zip",
+      "sha256": "f082c52ad5cb487e61e0577a445900ee56b5867eb827d6a4a5332de0d99c9bf8",
+      "license": "MIT",
+      "license_file": "effects_lab/LICENSE",
+      "selection": ["effects/fog/shaft.gdshader"]
+    },
+    {
+      "id": "reeboo",
+      "name": "REEBOO Stylized VFX Free",
+      "author": "REEBOO Labs",
+      "source": "https://github.com/reeboolabs/reeboo-stylized-vfx-free",
+      "revision": "fddedf658887add1aa62c8bc532f08b43b23528a",
+      "download": "https://codeload.github.com/reeboolabs/reeboo-stylized-vfx-free/zip/fddedf658887add1aa62c8bc532f08b43b23528a",
+      "archive": "reeboo.zip",
+      "sha256": "fdce15d3f7b59b04730715b4d8511be7668c29f5ed86840fffdf058eaff875f3",
+      "license": "MIT",
+      "license_file": "reeboo/LICENSE",
+      "selection": ["hit_spark.tscn", "slash.tscn", "pickup_sparkle.tscn"]
+    },
+    {
+      "id": "elemental_impact",
+      "name": "Godot Elemental Impact VFX Lite",
+      "author": "Sean Elovirta",
+      "source": "https://github.com/seloc0des/godot-elemental-impact-vfx-lite",
+      "revision": "dc0ff36dac2e2b13329e114789a6bdf0c9d9954b",
+      "download": "https://codeload.github.com/seloc0des/godot-elemental-impact-vfx-lite/zip/dc0ff36dac2e2b13329e114789a6bdf0c9d9954b",
+      "archive": "elemental_impact.zip",
+      "sha256": "b99a7d8f80e958a648bf7a8d47be9fec1dee51fc17206a4af75b96dc466e9f28",
+      "license": "MIT",
+      "license_file": "elemental_impact/LICENSE",
+      "selection": ["elem_fire.tscn"]
+    },
+    {
+      "id": "vefects_trails",
+      "name": "Vefects Trails VFX",
+      "author": "Vefects",
+      "source": "https://store.godotengine.org/asset/vefects/trails-vfx/",
+      "revision": "1.0.3",
+      "download": "https://store.godotengine.org/asset/vefects/trails-vfx/download/7517/",
+      "archive": "vefects_trails.zip",
+      "sha256": "c6d99c4f9417b4f61f8fdddd31bb5aab4a6f02376a6a687fcfe807edb0caa561",
+      "license": "Vefects Free EULA",
+      "license_file": "local/vefects/LICENSE.txt",
+      "local_only": true,
+      "selection": ["Cosmos", "Dark", "Earth", "Electric", "Fire", "Ice", "Nature", "Sound", "Void", "Water"]
+    },
+    {
+      "id": "kenney",
+      "name": "Kenney Particle Pack",
+      "author": "Kenney Vleugels",
+      "source": "https://kenney.nl/assets/particle-pack",
+      "revision": "1.1 (archive license)",
+      "download": "https://kenney.nl/media/pages/assets/particle-pack/f8fe0f8cb8-1677578741/kenney_particle-pack.zip?download=1",
+      "archive": "kenney.zip",
+      "sha256": "b631d4b07f7002549fdcf155f01141ad482f79f3440e4e301eed49ce5f1d8958",
+      "license": "CC0-1.0",
+      "license_file": "kenney/LICENSE.txt",
+      "selection": ["fire_01.png", "flare_01.png", "magic_02.png", "scorch_01.png", "smoke_04.png", "spark_04.png", "spark_05.png", "trace_03.png"]
+    }
+  ]
+}

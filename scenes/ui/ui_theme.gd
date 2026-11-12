@@ -33,6 +33,28 @@ static func panel_color() -> Color:
 	return DEVICE_INK if DeviceSettings.is_device() else INK
 
 
+static func device_hand_lane(viewport: Vector2) -> float:
+	return minf(478.0, (viewport.x - 320.0) * 0.5 - 14.0)
+
+
+static func device_status_width(viewport: Vector2) -> float:
+	return clampf(viewport.x - 528.0, 320.0, 550.0)
+
+
+static func device_hand_card(viewport: Vector2) -> Vector2:
+	var width := minf(clampf(viewport.y * 0.151, 78.0, 111.0), (device_hand_lane(viewport) - 36.0) / 3.0)
+	return Vector2(roundf(width), roundf(width * 1.4))
+
+
+static func device_hand_background() -> Panel:
+	var panel := Panel.new()
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var frame := box(DEVICE_INK, DEVICE_DIM, 1, 6, 0)
+	frame.border_width_top = 2
+	panel.add_theme_stylebox_override("panel", frame)
+	return panel
+
+
 static func _refresh_theme(_style: int) -> void:
 	# Keep the shared Theme identity: Boot's resident screens already reference it.
 	_theme.clear()

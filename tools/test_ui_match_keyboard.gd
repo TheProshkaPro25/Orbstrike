@@ -44,15 +44,15 @@ class PredictableAI extends AIPlayer:
 class DeterministicDirector extends ArenaDirector:
 	var landings: Array = []
 	func launch_to(slot: int) -> void:
-		if flying or game._active_ball == null or not game._gate_slots().has(slot): return
+		if flying or state.active_ball == null or not gate_slots().has(slot): return
 		flying = true
-		var uid: int = game._active_ball.uid
-		game.arena.set_highlight([])
-		game.ability_panel.hide_panel()
+		var uid: int = state.active_ball.uid
+		arena.set_highlight([])
+		ability_panel.hide_panel()
 		await get_tree().process_frame
 		flying = false
 		landings.append({"uid": uid, "slot": slot})
-		game._report(uid, slot)
+		landing_ready.emit(uid,slot)
 
 class PresentationQueue extends EventPlayer:
 	var game: Node
@@ -60,20 +60,20 @@ class PresentationQueue extends EventPlayer:
 		# Keep the actual sequential EventPlayer/drained barrier. Replace only
 		# presentation entries that load/stage models, delay, or play 3D effects.
 		var method := String(animation.get_method())
-		if method in ["_anim_phase", "_anim_turn", "_anim_set_pending"]:
+		if method in ["anim_phase", "anim_turn", "anim_set_pending", "queue_request"]:
 			super.push(animation)
-		elif method == "_anim_game_over":
+		elif method == "anim_game_over":
 			super.push(game.stage_game_over.bind(animation))
-		elif method == "_anim_selected":
+		elif method == "anim_selected":
 			var args := animation.get_bound_arguments()
 			super.push(game.stage_selected.bind(int(args[0]), int(args[1])))
-		elif method == "_anim_battle_resolved":
+		elif method == "anim_battle_resolved":
 			super.push(game.stage_result.bind(animation.get_bound_arguments()[0]))
-		elif method == "_anim_remove_ball":
+		elif method == "anim_remove_ball":
 			super.push(game.stage_removed.bind(int(animation.get_bound_arguments()[0])))
-		elif method == "_anim_captured":
+		elif method == "anim_captured":
 			super.push(game.stage_capture.bind(int(animation.get_bound_arguments()[0])))
-		elif method == "_anim_attached":
+		elif method == "anim_attached":
 			super.push(game.stage_attached.bind(int(animation.get_bound_arguments()[0])))
 
 class MatchFixture extends "res://scenes/main.gd":
@@ -92,7 +92,6 @@ class MatchFixture extends "res://scenes/main.gd":
 		events.game = self
 		add_child(events)
 		director = DeterministicDirector.new()
-		director.game = self
 		add_child(director)
 		# A deliberately empty prepared catalog suppresses TeamMenu's GLB fallback
 		# during the real _build_ui. The hidden team menu is outside this scenario.

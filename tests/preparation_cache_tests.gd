@@ -32,7 +32,7 @@ func snapshot(d: CreatureDef) -> Dictionary:
 func run() -> void:
 	CardDB.load_all()
 	verify_disk = OS.get_cmdline_user_args().has("disk")
-	for id in [&"creature_ratnik_light",&"creature_kolossar_stone",&"creature_rogozhuk_stone",&"creature_klykar_shadow",&"creature_levian_tide",&"creature_dragnar_fire"]:
+	for id in [&"creature_ratnik_light",&"creature_kolossar_stone",&"creature_rogozhuk_stone",&"creature_rogozhuk_tide",&"creature_klykar_shadow",&"creature_levian_tide",&"creature_dragnar_fire"]:
 		var d := CardDB.creature(id)
 		CreatureModels.preparation_cache.clear()
 		if verify_disk: PreparationStore.enabled = false

@@ -59,8 +59,18 @@ func run() -> void:
 		check(expanded.save_to(newest,path+"-wardrobe") == OK,"new wardrobe choices save")
 		expanded.load_from(path+"-wardrobe")
 		check(expanded.value.vrm_case == 1 and expanded.value.vrm_style == 9 and expanded.value.vrm_clothes == newest.vrm_clothes and expanded.value.vrm_denim == 14,"new wardrobe and denim choices survive reload")
-	check(PlayerProfile.normalized({"vrm_model":0,"vrm_clothes":7}).vrm_clothes == 0,"female-only last slot falls back on male base")
-	check(PlayerProfile.normalized({"vrm_model":1,"vrm_clothes":0,"vrm_denim":14}).vrm_denim == 0,"denim is not applied over skirts")
+	check(PlayerProfile.normalized({"vrm_model":0,"vrm_clothes":WardrobeCatalog.SLOT_COUNT}).vrm_clothes == 0,"out-of-range costume falls back on male base")
+	for retired in [9, 10]:
+		var old_wardrobe := JSON.stringify({"version": 2, "name": "Хару", "vrm_model": 0, "vrm_clothes": retired, "vrm_style": 8, "vrm_outfit_color": "6683c1"})
+		write(path, old_wardrobe)
+		profile.load_from(path)
+		check(profile.writable and profile.value.vrm_model == 0 and profile.value.vrm_clothes == 0,"retired costume falls back without changing the character base")
+		check(profile.value.name == "Хару" and profile.value.vrm_style == 8 and profile.value.vrm_outfit_color == "6683c1","retired costume preserves character appearance and color")
+		check(not profile.notice.is_empty() and FileAccess.get_file_as_string(path) == old_wardrobe,"migration shows a notice and leaves the file intact until Save")
+		check(profile.save_to(profile.value, path) == OK and FileAccess.get_file_as_string(path+".bak") == old_wardrobe,"saving migration preserves the original profile backup")
+		profile.load_from(path)
+		check(profile.value.vrm_model == 0 and profile.value.vrm_clothes == 0 and profile.notice.is_empty(),"migrated profile reopens without repeating the migration")
+	check(PlayerProfile.normalized({"vrm_model":1,"vrm_clothes":0,"vrm_denim":14}).vrm_denim == 14 and not VrmParts.supports_denim(1,0),"denim preference survives an incompatible outfit")
 	check(PlayerProfile.normalized({"vrm_style":4,"vrm_clothes":1}).vrm_style == 4,"existing hair IDs stay stable")
 	for model in 2:
 		var sport := PlayerProfile.DEFAULT.duplicate(true)
@@ -303,6 +313,8 @@ func run() -> void:
 	menu._on_character()
 	await frames(4)
 	check(menu._character_editor.avatar is VrmAvatar and not menu._column.visible,"menu opens new VRM editor")
+	check_shared_outfits(menu._character_editor)
+	await check_remembered_denim(menu)
 	menu._character_editor.request_close()
 	await frames(3)
 	check(menu._column.visible and root.gui_get_focus_owner() is Button and (root.gui_get_focus_owner() as Button).text == "Мой персонаж","return restores menu focus")
@@ -325,3 +337,58 @@ func run() -> void:
 	await frames(6)
 	print("Character editor: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)
+
+func check_shared_outfits(editor: CharacterEditor) -> void:
+	editor.category_buttons.clothes.pressed.emit()
+	editor.model_select.item_selected.emit(0)
+	editor.selectors.vrm_denim.item_selected.emit(14)
+	editor.selectors.vrm_case.item_selected.emit(1)
+	editor.outfit_color.color_changed.emit(Color("12a5fc"))
+	for pair in [[2, 3], [3, 4], [4, 5], [5, 6], [6, 7]]:
+		editor.gallery_buttons.vrm_clothes[pair[0]].pressed.emit()
+		editor.model_select.item_selected.emit(1)
+		check(editor.draft.vrm_clothes == pair[1] and editor.avatar.body_part.mesh == VrmParts.BODY[1][pair[1]],"Vita keeps shared outfit %d" % pair[0])
+		if pair[1] == VrmParts.BOMBER_IDS[1]:
+			check(editor.avatar.case_part.visible and uses_saved_denim(editor.avatar),"Vita's bomber keeps visible case and denim")
+		editor.model_select.item_selected.emit(0)
+		check(editor.draft.vrm_clothes == pair[0] and editor.avatar.body_part.mesh == VrmParts.BODY[0][pair[0]],"Sakurada keeps shared outfit %d" % pair[0])
+		if pair[0] == VrmParts.BOMBER_IDS[0]:
+			check(editor.avatar.case_part.visible and uses_saved_denim(editor.avatar),"Sakurada's bomber keeps visible case and denim")
+	check(editor.draft.vrm_denim == 14 and editor.draft.vrm_case == 1 and editor.draft.vrm_outfit_color == "12a5fc","base switch preserves wardrobe preferences")
+	for unique in [[0, 1], [1, 2]]:
+		editor.model_select.item_selected.emit(unique[0])
+		editor.gallery_buttons.vrm_clothes[unique[1]].pressed.emit()
+		editor.model_select.item_selected.emit(1 - unique[0])
+		check(editor.draft.vrm_clothes == 0 and editor.avatar.selected == 1 - unique[0],"base-exclusive outfit uses the destination default")
+
+func check_remembered_denim(menu: MainMenu) -> void:
+	var editor: CharacterEditor = menu._character_editor
+	editor.category_buttons.clothes.pressed.emit()
+	editor.model_select.item_selected.emit(0)
+	editor.gallery_buttons.vrm_clothes[5].pressed.emit()
+	editor.selectors.vrm_denim.item_selected.emit(14)
+	editor.selectors.vrm_case.item_selected.emit(1)
+	editor.outfit_color.color_changed.emit(Color("12a5fc"))
+	check(uses_saved_denim(editor.avatar) and editor.avatar.case_part.visible,"bomber shows selected denim and case")
+	editor.gallery_buttons.vrm_clothes[7].pressed.emit()
+	check(editor.draft.vrm_denim == 14 and editor.selectors.vrm_denim.disabled and not uses_saved_denim(editor.avatar),"kimono keeps the denim preference without applying it")
+	editor.model_select.item_selected.emit(1)
+	check(editor.draft.vrm_model == 1 and editor.draft.vrm_clothes == 0 and editor.draft.vrm_denim == 14 and not uses_saved_denim(editor.avatar),"Vita's default outfit keeps the preference hidden")
+	editor.save_button.pressed.emit()
+	editor.request_close()
+	await frames(4)
+	menu._on_character()
+	await frames(4)
+	editor = menu._character_editor
+	check(editor.draft.vrm_model == 1 and editor.draft.vrm_clothes == 0 and editor.draft.vrm_denim == 14 and editor.draft.vrm_outfit_color == "12a5fc","reopening Vita restores the profile and hidden denim")
+	editor.model_select.item_selected.emit(0)
+	editor.gallery_buttons.vrm_clothes[5].pressed.emit()
+	check(uses_saved_denim(editor.avatar) and editor.avatar.case_part.visible and editor.draft.vrm_outfit_color == "12a5fc","returning to Sakurada's bomber restores denim, custom color and case")
+	editor.save_button.pressed.emit()
+
+func uses_saved_denim(avatar: VrmAvatar) -> bool:
+	var body := avatar.body_part
+	for slot in body.mesh.get_surface_count():
+		var material := body.get_surface_override_material(slot) as ShaderMaterial
+		if material != null and material.get_shader_parameter("_MainTex") == DenimWardrobe.TEXTURES[13]: return true
+	return false

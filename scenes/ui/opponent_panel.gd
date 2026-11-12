@@ -8,11 +8,15 @@ const INK := UiTheme.DEVICE_INK
 const BORDER := UiTheme.DEVICE_DIM
 const CYAN := UiTheme.DEVICE_ACCENT
 const REVEAL_SECONDS := 2.2
+const ELEMENT_ICON := preload("res://scenes/element_icon.gd")
+const SIDE_TOP := 147.0
 
 var _portrait: CreaturePortrait
 var _name: Label
 var _element: Label
+var _glyph: TextureRect
 var _power: Label
+var _power_band: PanelContainer
 var _definition: CreatureDef
 var _uid := -1
 var _current_power := -1
@@ -23,13 +27,13 @@ var _context_deadline_usec := 0
 var _context_timer: Timer
 var _shown_uid := -1
 var _content: VBoxContainer
-var _portrait_row: HBoxContainer
-var _identity: VBoxContainer
+var _element_row: HBoxContainer
 var _tween: Tween
 var _power_tween: Tween
 var _accent_tween: Tween
 var _frame_style: StyleBoxFlat
 var _base_position := Vector2.ZERO
+var _element_color := CYAN
 
 
 func _init() -> void:
@@ -42,35 +46,44 @@ func _init() -> void:
 	add_theme_stylebox_override("panel", _frame_style)
 	_content = VBoxContainer.new()
 	_content.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_content.add_theme_constant_override("separation", 4)
+	_content.add_theme_constant_override("separation", 3)
 	add_child(_content)
-	_portrait_row = HBoxContainer.new()
-	_portrait_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_portrait_row.add_theme_constant_override("separation", 4)
-	_portrait_row.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_content.add_child(_portrait_row)
+	_name = _label("", 17)
+	_name.name = "PublicOpponentName"
+	_name.autowrap_mode = TextServer.AUTOWRAP_OFF
+	_content.add_child(_name)
+	_element_row = HBoxContainer.new()
+	_element_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_element_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	_element_row.add_theme_constant_override("separation", 5)
+	_content.add_child(_element_row)
+	_glyph = TextureRect.new()
+	_glyph.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_glyph.custom_minimum_size = Vector2(15, 15)
+	_glyph.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_glyph.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_element_row.add_child(_glyph)
+	_element = _label("", 13)
+	_element.name = "PublicOpponentElement"
+	_element.autowrap_mode = TextServer.AUTOWRAP_OFF
+	_element.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+	_element_row.add_child(_element)
 	_portrait = PORTRAIT.new()
 	_portrait.name = "ResidentCreaturePortrait"
-	_portrait.custom_minimum_size.x = 72
 	_portrait.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_portrait_row.add_child(_portrait)
-	_identity = VBoxContainer.new()
-	_identity.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_identity.alignment = BoxContainer.ALIGNMENT_CENTER
-	_identity.add_theme_constant_override("separation", 2)
-	_identity.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_portrait_row.add_child(_identity)
-	_name = _label("", 14)
-	_name.name = "PublicOpponentName"
-	_identity.add_child(_name)
-	_element = _label("", 14)
-	_element.name = "PublicOpponentElement"
-	_element.add_theme_color_override("font_color", CYAN)
-	_identity.add_child(_element)
-	_power = _label("", 28)
+	_content.add_child(_portrait)
+	_power_band = PanelContainer.new()
+	_power_band.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_content.add_child(_power_band)
+	_power = _label("", 36)
 	_power.name = "PublicOpponentPower"
-	_power.add_theme_color_override("font_color", CYAN)
-	_content.add_child(_power)
+	_power.autowrap_mode = TextServer.AUTOWRAP_OFF
+	var figures := FontVariation.new()
+	figures.base_font = UiTheme.heading_font()
+	figures.opentype_features = {"tnum": 1}
+	_power.add_theme_font_override("font", figures)
+	_power_band.add_child(_power)
+	_apply_element_style()
 	_context_timer = Timer.new()
 	_context_timer.one_shot = true
 	_context_timer.ignore_time_scale = true
@@ -109,6 +122,9 @@ func present(definition: CreatureDef, uid: int, power: int, _label_text: String 
 	_portrait.set_definition(definition, uid)
 	_name.text = definition.display_name.trim_suffix(" " + str(GameData.ATTR_GENITIVE[definition.attribute]))
 	_element.text = Attr.display_name(definition.attribute)
+	_glyph.texture = ELEMENT_ICON.glyph(definition.attribute)
+	_element_color = VisualUtil.attr_color(definition.attribute).lightened(0.34)
+	if changed: _apply_element_style()
 	if changed:
 		_set_power_immediate(power)
 	else:
@@ -119,10 +135,14 @@ func show_context(mode: String = "reveal") -> void:
 	if not _valid_public() or mode not in ["reveal", "battle"]:
 		hide_context()
 		return
-	if _context_mode != mode or mode == "reveal":
+	var context_changed := _context_mode != mode
+	if context_changed or mode == "reveal":
 		_settle()
 		if mode == "reveal": _shown_uid = -1
 	_context_mode = mode
+	if context_changed:
+		_portrait.set_battle_style(mode == "battle")
+		_layout()
 	_context_timer.stop()
 	_context_deadline_usec = 0
 	if mode == "reveal":
@@ -133,6 +153,7 @@ func show_context(mode: String = "reveal") -> void:
 
 func hide_context() -> void:
 	_context_mode = ""
+	_portrait.set_battle_style(false)
 	_context_deadline_usec = 0
 	_context_timer.stop()
 	_shown_uid = -1
@@ -190,7 +211,7 @@ func set_power(value: int) -> void:
 		return
 	_power.pivot_offset = _power.size * 0.5
 	_power_tween = create_tween().set_ignore_time_scale(true).set_parallel(true)
-	_power_tween.tween_method(func(number: float) -> void: _power.text = "%d G" % roundi(number), float(previous), float(value), 0.35)
+	_power_tween.tween_method(func(number: float) -> void: _power.text = str(roundi(number)), float(previous), float(value), 0.35)
 	_power_tween.tween_method(func(progress: float) -> void:
 		_power.scale = Vector2.ONE * (1.0 + 0.12 * sin(PI * progress))
 		_power.modulate = Color.WHITE * (1.0 + 0.45 * (1.0 - progress))
@@ -208,7 +229,7 @@ func feedback(kind: String, attribute: int = -1) -> void:
 	if kind in ["turn", "activation", "ability", "power", "appearance", "swap"]:
 		_frame_style.border_color = accent
 		_accent_tween = create_tween().set_ignore_time_scale(true)
-		_accent_tween.tween_property(_frame_style, "border_color", BORDER, 0.35)
+		_accent_tween.tween_property(_frame_style, "border_color", _element_color.darkened(0.44), 0.35)
 		_play_motion("activation" if kind == "ability" else kind, accent)
 
 
@@ -255,7 +276,7 @@ func _set_power_immediate(value: int) -> void:
 	_kill(_power_tween)
 	_power_tween = null
 	_current_power = value
-	_power.text = "%d G" % value
+	_power.text = str(value)
 	_power.modulate = Color.WHITE
 	_power.scale = Vector2.ONE
 
@@ -284,22 +305,26 @@ func get_settled_global_rect() -> Rect2:
 func _layout() -> void:
 	_settle()
 	var viewport := get_viewport_rect().size
-	var width := 156.0
-	var height := 156.0
-	_base_position = Vector2(14 if player_side == 0 else viewport.x - width - 14, 110)
-	var text_width := width - 12.0
-	_content.size.x = text_width
-	_portrait_row.size.x = text_width
-	var identity_width := text_width - 72.0 - 4.0
-	_identity.size.x = identity_width
-	for label in [_name, _element]:
-		label.custom_minimum_size.x = identity_width
-		label.size.x = identity_width
-	_power.custom_minimum_size.x = text_width
-	_power.size.x = text_width
-	custom_minimum_size = Vector2(width, height)
-	size = Vector2(width, height)
+	var fighting := _context_mode == "battle"
+	var width := roundf(clampf(viewport.x * 0.146, 132.0, 206.0))
+	var portrait_height := roundf(clampf(72.0 + (viewport.y - 540.0) * 0.27, 64.0, 150.0)) if fighting else 64.0
+	var power_points := 42 if fighting and viewport.y >= 650 else (35 if fighting else 27)
+	_portrait.custom_minimum_size = Vector2(0, portrait_height)
+	_power.add_theme_font_size_override("font_size", power_points)
+	_base_position = Vector2(14 if player_side == 0 else viewport.x - width - 14, SIDE_TOP)
+	custom_minimum_size = Vector2(width, portrait_height + power_points + 75.0)
+	size = custom_minimum_size
 	position = _base_position
+
+
+func _apply_element_style() -> void:
+	_frame_style.border_color = _element_color.darkened(0.44)
+	_glyph.modulate = _element_color
+	_element.add_theme_color_override("font_color", _element_color)
+	_power.add_theme_color_override("font_color", _element_color.lightened(0.48))
+	var band := UiTheme.box(UiTheme.DEVICE_INK.lerp(_element_color, 0.20), _element_color.darkened(0.36), 1, 2, 3)
+	band.border_width_bottom = 2
+	_power_band.add_theme_stylebox_override("panel", band)
 
 
 func _settle() -> void:
@@ -316,9 +341,9 @@ func _settle() -> void:
 	_power.modulate = Color.WHITE
 	_power.scale = Vector2.ONE
 	if _current_power >= 0 and _definition != null:
-		_power.text = "%d G" % _current_power
+		_power.text = str(_current_power)
 	_frame_style = get_theme_stylebox("panel") as StyleBoxFlat
-	_frame_style.border_color = BORDER
+	_frame_style.border_color = _element_color.darkened(0.44)
 	if is_inside_tree(): position = _base_position
 
 
@@ -354,6 +379,7 @@ func _label(text: String, font_size: int) -> Label:
 	label.text = text
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	label.add_theme_font_size_override("font_size", font_size)
 	return label

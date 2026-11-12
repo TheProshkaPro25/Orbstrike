@@ -21,7 +21,7 @@ func frames(count: int) -> void:
 	for _i in count: await process_frame
 
 func sample(label: String) -> void:
-	var controls: Array[Control] = [hud.own_panel, hud.opponent_panel, battle._chain, battle._vs]
+	var controls: Array[Control] = [hud.own_panel, hud.opponent_panel, battle._chain, hud._turn_clip, hud._phase_label]
 	var values: Array = []
 	for control in controls:
 		var rect := control.get_global_rect()
@@ -38,8 +38,7 @@ func capture(label: String) -> void:
 	await RenderingServer.frame_post_draw
 	var image := viewport.get_texture().get_image()
 	check(image.get_size() == viewport.size, label + " complete viewport")
-	# Portrait anchors detect the previous black/incomplete frame even when Controls
-	# still report visible. Their artwork and white backgrounds must remain present.
+	# Detect a black/incomplete render while the Controls still report visible.
 	for panel in [hud.own_panel, hud.opponent_panel]:
 		var rect: Rect2 = panel._portrait.get_global_rect()
 		var maximum := 0.0
@@ -57,6 +56,8 @@ func _run() -> void:
 	DeviceSettings.reload_settings()
 	DeviceSettings.set_style(DeviceSettings.DEVICE)
 	CardDB.load_all()
+	CreaturePortrait._prepare_reference(&"creature_ratnik_light")
+	CreaturePortrait._prepare_reference(&"creature_kolossar_shadow")
 	viewport = SubViewport.new()
 	viewport.size = Vector2i(1280,720)
 	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
@@ -70,6 +71,8 @@ func _run() -> void:
 	viewport.add_child(battle)
 	viewport.add_child(hud)
 	hud.setup_plates([Color.RED], [Color.BLUE])
+	hud.set_phase(MatchController.Phase.ABILITY_WINDOW)
+	hud.set_status(2, 0, 3, 3)
 	var plays: Array = [[0,&"ability_fire_drain"],[1,&"ability_klykar_bite"],[0,&"ability_dragnar_heart"],[1,&"ability_light_purge"],[0,&"ability_rogozhuk_shell"],[1,&"ability_stone_copy"]]
 	for reduced in [false,true]:
 		DeviceSettings.set_reduce_motion(reduced)
@@ -94,10 +97,11 @@ func _run() -> void:
 			if frame in [1,8,12,24]: sample(label + "-delta-frame" + str(frame))
 			if frame == 8:
 				check(battle._floating_numbers.size() == 2, label + " simultaneous deltas alive")
+				check(battle._floating_numbers.map(func(number: Label) -> String: return number.text) == ["+260", "−120"], label + " signed deltas display numbers only")
 				if not reduced:
 					check(hud.own_panel._power_tween != null and hud.own_panel._power_tween.get_total_elapsed_time() > 0.0, "normal tween actually advances")
 				await capture(label + "-delta")
-		check(hud.own_panel._power.text == "680 G" and hud.opponent_panel._power.text == "390 G", label + " exact final public powers")
+		check(hud.own_panel._power.text == "680" and hud.opponent_panel._power.text == "390", label + " exact final public powers")
 		battle.close()
 		await frames(18)
 	hud.queue_free()

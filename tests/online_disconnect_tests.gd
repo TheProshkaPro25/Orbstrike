@@ -28,7 +28,7 @@ class CleanupFixture extends Online:
 		events = EventPlayer.new()
 		add_child(events)
 		director = ArenaDirector.new()
-		director.game = self
+		director.state = presentation.state
 		add_child(director)
 		for row in [["hud",HudUI.new()],["setup_panel",SetupPanel.new()],["ability_panel",AbilityPanel.new()],["game_over_ui",GameOverUI.new()],["battle_overlay",BattleOverlay.new()],["team_menu",MinimalTeam.new()],["battle_hud",BattleHud.new()]]:
 			set(row[0],row[1])

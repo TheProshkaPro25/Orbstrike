@@ -457,6 +457,12 @@ func for_card(def: CardDef, size_px: Vector2 = Vector2(150, 210), complete: bool
 	return self
 
 
+func resize_face(size_px: Vector2) -> void:
+	if _card_size == size_px: return
+	var definition := CardDB.card(card_id)
+	if definition != null: _compose_card(definition, size_px, false)
+
+
 ## В каждом контексте все карты имеют один прямоугольник. Текст меняет только
 ## кегль: ни содержание, ни боевой статус не меняют ширину/высоту карточки.
 func _compose_card(def: CardDef, requested: Vector2, complete: bool, display_help: Array = []) -> void:

@@ -4,6 +4,10 @@ extends Control
 ## (имя, стихия, сила с бегущим счётчиком) и «VS» по центру. Итог: победитель вспыхивает, проигравший гаснет.
 
 const BAR_H := 64.0
+const EFFECT_TOP := 72.0
+const DEVICE_CHAIN_TOP := 112.0
+
+signal effect_visibility_changed(on: bool)
 
 var _top: ColorRect
 var _bot: ColorRect
@@ -16,6 +20,11 @@ var _powers: Array[Label] = []
 var _counts: Array[Label] = []        # «СПОСОБНОСТИ ●●○ 2/3» под силой (лимит карт на бой)
 var _shown: Array[float] = [0.0, 0.0]
 var _vs: Label
+var _effect: PanelContainer
+var _effect_title: Label
+var _effect_summary: Label
+var _effect_source: Label
+var _effect_target: Label
 var _target: Array[int] = [0, 0]     # последние заданные силы (для всплывающих +/−)
 var _chain: HFlowContainer            # лента карт боя: «Пожирающий жар → Волчья хватка → ПАС»
 var _chain_state: Array = []
@@ -91,6 +100,9 @@ func _process(delta: float) -> void:
 		_dismissed_help_chip = null
 	if _keyboard_help and focused is PlayedCardChip and focused.get_parent() == _chain:
 		hovered = focused
+	if not _keyboard_help and is_instance_valid(_chain_help) and _chain_help.get_global_rect().has_point(_mouse_position):
+		_help_lost = 0.0
+		return
 	if hovered is PlayedCardChip and hovered.get_parent() == _chain and not hovered.help.is_empty():
 		_help_lost = 0.0
 		if hovered != _help_chip:
@@ -162,6 +174,7 @@ func _build() -> void:
 		pw.add_theme_constant_override("outline_size", 10)
 		var cn := VisualUtil.label("", 15)
 		cn.add_theme_color_override("font_color", UiTheme.TEXT_DIM)
+		cn.add_theme_constant_override("outline_size", 3)
 		cn.custom_minimum_size = Vector2(300, 0)  # ширина не скачет от «ПАС»/«▶»
 		for l in [n, a, pw, cn]:
 			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT if side == 0 else HORIZONTAL_ALIGNMENT_RIGHT
@@ -189,6 +202,7 @@ func _build() -> void:
 	_chain.offset_top = BAR_H + 170.0
 	_chain.offset_bottom = BAR_H + 208.0
 	add_child(_chain)
+	_build_effect()
 	get_viewport().size_changed.connect(_resize_chain)
 	UiTheme.apply_device_frame(self, "БОЕВОЙ КОНТУР", false)
 	DeviceSettings.events().changed.connect(_device_style_changed)
@@ -210,6 +224,9 @@ func _bar(top: bool) -> ColorRect:
 
 
 func _device_style_changed(_style: int) -> void:
+	_top.visible = not DeviceSettings.is_device()
+	_bot.visible = not DeviceSettings.is_device()
+	if not DeviceSettings.is_device(): clear_effect()
 	_top.color = Color(0.01, 0.045, 0.065, 0.94) if DeviceSettings.is_device() else Color(0, 0, 0, 0.92)
 	_bot.color = _top.color
 	_vs.text = "СХВАТКА" if DeviceSettings.is_device() else "VS"
@@ -328,8 +345,91 @@ func _layout_chain() -> void:
 				left = maxf(left, rect.end.x + 14.0)
 			else:
 				right = minf(right, rect.position.x - 14.0)
+		var vp_width := get_viewport_rect().size.x
+		var inset := maxf(left, vp_width - right)
+		left = inset
+		right = vp_width - inset
+		_layout_effect()
+		_chain.offset_top = _effect.get_rect().end.y + 5.0 if _effect.visible else DEVICE_CHAIN_TOP
+		_chain.offset_bottom = _chain.offset_top
+	else:
+		_chain.offset_top = BAR_H + 170.0
+	_chain.offset_bottom = _chain.offset_top + 24.0
 	_chain.offset_left = left
 	_chain.offset_right = right - get_viewport_rect().size.x
+
+
+func _build_effect() -> void:
+	_effect = PanelContainer.new()
+	_effect.name = "BattleEffect"
+	_effect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_effect.hide()
+	var box := VBoxContainer.new()
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_theme_constant_override("separation", 1)
+	_effect.add_child(box)
+	_effect_title = _effect_label("", 22)
+	_effect_title.add_theme_color_override("font_color", UiTheme.DEVICE_ACCENT)
+	box.add_child(_effect_title)
+	_effect_summary = _effect_label("", 15)
+	_effect_summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_effect_summary.max_lines_visible = 2
+	box.add_child(_effect_summary)
+	var parties := HBoxContainer.new()
+	parties.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parties.add_theme_constant_override("separation", 8)
+	box.add_child(parties)
+	_effect_source = _effect_label("", 13)
+	_effect_target = _effect_label("", 13)
+	for label in [_effect_source, _effect_target]:
+		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		label.max_lines_visible = 2
+		label.add_theme_color_override("font_color", UiTheme.TEXT_DIM)
+		parties.add_child(label)
+	add_child(_effect)
+	_effect.resized.connect(_layout_chain, CONNECT_DEFERRED)
+	_effect.minimum_size_changed.connect(_layout_chain, CONNECT_DEFERRED)
+
+
+func _effect_label(title: String, points: int) -> Label:
+	var label := VisualUtil.label(title, points)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	return label
+
+
+func show_effect(title: String, summary: String, source: String, target: String, color: Color = UiTheme.DEVICE_ACCENT) -> void:
+	if not DeviceSettings.is_device(): return
+	_effect_title.text = title
+	_effect_title.add_theme_color_override("font_color", color)
+	_effect_summary.text = summary
+	_effect_source.text = "Источник · " + source if not source.is_empty() else ""
+	_effect_target.text = "Цель · " + target if not target.is_empty() else ""
+	_effect_source.visible = not source.is_empty()
+	_effect_target.visible = not target.is_empty()
+	var frame := UiTheme.box(UiTheme.DEVICE_INK, color.darkened(0.48), 1, 5, 7)
+	frame.border_width_top = 2
+	_effect.add_theme_stylebox_override("panel", frame)
+	_effect.show()
+	_vs.hide()
+	_layout_chain()
+	effect_visibility_changed.emit(true)
+
+
+func clear_effect() -> void:
+	if _effect == null or not _effect.visible: return
+	_effect.hide()
+	_layout_chain()
+	effect_visibility_changed.emit(false)
+
+
+func _layout_effect() -> void:
+	if not _effect.visible: return
+	var viewport := get_viewport_rect().size
+	var width := UiTheme.device_status_width(viewport)
+	_effect.size = Vector2(width, _effect.get_combined_minimum_size().y)
+	_effect.position = Vector2((viewport.x - width) * 0.5, EFFECT_TOP)
 
 
 func _plate_slot(side: int) -> int:
@@ -425,7 +525,7 @@ func _settle_open_layout() -> void:
 	for side in range(2):
 		var plate := _plates[side]
 		plate.reset_size()
-		plate.position = Vector2(30.0 if _plate_slot(side) == 0 else vp.x-plate.size.x-30.0, BAR_H+18.0)
+		plate.position = Vector2(30.0 if _plate_slot(side) == 0 else vp.x-plate.size.x-30.0, OpponentPanel.SIDE_TOP if DeviceSettings.is_device() else BAR_H+18.0)
 		plate.scale = Vector2.ONE
 		plate.visible = not _has_external_opponent(side)
 		_align_plate(side)
@@ -440,7 +540,7 @@ func _settle_open_layout() -> void:
 	_vs.position = Vector2(vp.x*.5-100.0, BAR_H+22.0)
 	_vs.scale = Vector2.ONE
 	_vs.modulate = Color.WHITE
-	_vs.visible = not _resolved
+	_vs.visible = not _resolved and not DeviceSettings.is_device()
 
 
 func _hide_layout() -> void:
@@ -471,7 +571,7 @@ func _open_device(names: Array, attrs: Array, powers: Array, momentum: Array) ->
 		_attrs[side].add_theme_color_override("font_color", color.lightened(.35))
 		_set_shown(_target[side],side)
 	_settle_open_layout()
-	if DeviceSettings.reduce_motion(): return
+	if DeviceSettings.reduce_motion() or (_has_external_opponent(0) and _has_external_opponent(1)): return
 	var tween := _new_entrance_tween()
 	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	for side in range(2):
@@ -482,14 +582,6 @@ func _open_device(names: Array, attrs: Array, powers: Array, momentum: Array) ->
 		plate.modulate.a = 0.0
 		tween.tween_property(plate,"position",destination,.28)
 		tween.tween_property(plate,"modulate:a",1.0,.28)
-	var title_position := _vs.position
-	_vs.position.y += 12.0
-	_vs.modulate.a = 0.0
-	tween.tween_property(_vs,"position",title_position,.28)
-	tween.tween_property(_vs,"modulate:a",1.0,.28)
-	for bar in [_top,_bot]:
-		bar.modulate.a = 0.0
-		tween.tween_property(bar,"modulate:a",1.0,.28)
 
 
 func _plate_style(c: Color, side: int) -> StyleBoxFlat:
@@ -617,7 +709,7 @@ func _float_number(side: int, delta: int) -> void:
 ## Изменение реального итогового G; начальные силы задаются в open без этого вызова.
 func _float_device_power(side: int, delta: int) -> void:
 	if _has_power_anchor(side) and not _power_anchors[side].is_visible_in_tree(): return
-	var label := VisualUtil.label(("+%d G" if delta > 0 else "−%d G") % absi(delta), 32)
+	var label := VisualUtil.label(("+%d" if delta > 0 else "−%d") % absi(delta), 25)
 	label.name = "PowerDelta" + str(side)
 	label.set_meta("battle_side", side)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -628,13 +720,13 @@ func _float_device_power(side: int, delta: int) -> void:
 	label.size = label.get_minimum_size()
 	label.pivot_offset = label.size * .5
 	var rect := _power_anchor_rect(side)
-	var below := _counts[side].size.y + 10.0 if _has_power_anchor(side) else 4.0
-	var row := 0
-	for previous in _floating_numbers:
+	var delta_y := rect.end.y - 80.0 if _has_power_anchor(side) else rect.end.y + 4.0
+	for previous in _floating_numbers.duplicate():
 		if is_instance_valid(previous) and int(previous.get_meta("battle_side", -1)) == side:
-			row += 1
+			_floating_numbers.erase(previous)
+			previous.queue_free()
 	var vp := get_viewport_rect().size
-	label.position = Vector2(clampf(rect.get_center().x - label.size.x * .5, 8.0, maxf(8.0, vp.x - label.size.x - 8.0)), clampf(rect.end.y + below + (row % 3) * 36.0, 8.0, maxf(8.0, vp.y - label.size.y - 8.0)))
+	label.position = Vector2(clampf(rect.get_center().x - label.size.x * .5, 8.0, maxf(8.0, vp.x - label.size.x - 8.0)), clampf(delta_y, 8.0, maxf(8.0, vp.y - label.size.y - 8.0)))
 	_floating_numbers.append(label)
 	var tween := label.create_tween()
 	tween.set_meta("device_power_delta", true)
@@ -678,7 +770,7 @@ func set_chain(plays: Array, passed: Array, turn: int = -1, cancelled: Array = [
 			var chip := _chip(("× " if inactive else "") + (c.display_name if c != null else str(pl[1])), side, inactive)
 			if c != null:
 				chip.help = UiTheme.card_help(c)
-				chip.help[6] = ("Атакующий. " if side == 0 else "Защитник. ") + ("Карта отменена или подавлена в расчёте этого боя." if inactive else "Карта сыграна в этом бою.")
+				chip.help[6] = _side_name(side) + ". " + ("Карта отменена или подавлена в расчёте этого боя." if inactive else "Карта сыграна в этом бою.")
 				# Собственное раскрытие сохраняет всю область текста доступной.
 				chip.tooltip_text = ""
 				chip.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -688,7 +780,7 @@ func set_chain(plays: Array, passed: Array, turn: int = -1, cancelled: Array = [
 				var reason := str(block_reasons[side]) if side < block_reasons.size() else ""
 				var chip := _chip("АВТОПАС" if reason != "" else "ПАС", side, true)
 				chip.tooltip_text = reason
-				chip.help = ["АВТОПАС" if reason != "" else "ПАС", "Атакующий" if side == 0 else "Защитник", UiTheme.accent(), "", reason if reason != "" else "Сторона пропустила ответ. Если соперник сыграет карту, можно ответить снова.", "", ""]
+				chip.help = ["АВТОПАС" if reason != "" else "ПАС", _side_name(side), UiTheme.accent(), "", reason if reason != "" else "Сторона пропустила ответ. Если соперник сыграет карту, можно ответить снова.", "", ""]
 				chip.mouse_filter = Control.MOUSE_FILTER_STOP
 				_chain.add_child(chip)
 	_chain.visible = _open and not _resolved and _chain.get_child_count() > 0
@@ -715,13 +807,13 @@ func _set_count(side: int, used: int, passed: bool, turn: bool, block_reason: St
 		dots += "●" if i < used else "○"
 	var t := "СПОСОБНОСТИ %s %d/%d" % [dots, mini(used, cap), cap]
 	if _has_power_anchor(side):
-		t = "%s %d/%d" % [dots, mini(used, cap), cap]
+		t = "Карты %d/%d" % [mini(used, cap), cap]
 	if block_reason != "":
 		t = "ЗАКРЫТО · %d/%d" % [mini(used, cap), cap] if _has_power_anchor(side) else "%d/%d · КАРТЫ ЗАКРЫТЫ" % [mini(used, cap), cap]
 	elif passed:
 		t += "  ·  ПАС"
 	elif turn:
-		t = t + " · ХОД" if _has_power_anchor(side) else (("▶ " + t) if side == 0 else (t + " ◀"))
+		t = t + " · ОТВЕТ" if _has_power_anchor(side) else (("▶ " + t) if side == 0 else (t + " ◀"))
 	var l: Label = _counts[side]
 	l.tooltip_text = block_reason
 	l.mouse_filter = Control.MOUSE_FILTER_STOP if block_reason != "" else Control.MOUSE_FILTER_IGNORE
@@ -739,7 +831,8 @@ func _set_count(side: int, used: int, passed: bool, turn: bool, block_reason: St
 
 
 func _chip(text: String, side: int, dim: bool = false) -> PlayedCardChip:
-	var c: Color = Color(0.5, 0.75, 1.0) if side == 0 else Color(1.0, 0.55, 0.5)
+	var device := DeviceSettings.is_device()
+	var c: Color = Color(0.5, 0.75, 1.0) if _plate_slot(side) == 0 else Color(1.0, 0.55, 0.5)
 	if dim:
 		c = c.darkened(0.35)
 	var pc := PlayedCardChip.new()
@@ -748,9 +841,9 @@ func _chip(text: String, side: int, dim: bool = false) -> PlayedCardChip:
 		_keyboard_help = true
 		_clear_chain_help())
 	pc.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	pc.custom_minimum_size.y = 36.0
-	pc.add_theme_stylebox_override("panel", UiTheme.box(Color(c.r * 0.15, c.g * 0.15, c.b * 0.15, 0.9), c, 2, 6, 5))
-	var l := VisualUtil.label(text, 16)
+	pc.custom_minimum_size.y = 25.0 if device else 36.0
+	pc.add_theme_stylebox_override("panel", UiTheme.box(Color(c.r * 0.15, c.g * 0.15, c.b * 0.15, 0.94), c, 1 if device else 2, 4 if device else 6, 3 if device else 5))
+	var l := VisualUtil.label(text, 14 if device else 16)
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -764,6 +857,12 @@ func _chip(text: String, side: int, dim: bool = false) -> PlayedCardChip:
 		_track_feedback(tween)
 		tween.tween_property(pc, "modulate:a", 1.0, 0.15 if DeviceSettings.is_device() else 0.2)
 	return pc
+
+
+func _side_name(side: int) -> String:
+	if DeviceSettings.is_device() and opponent_side in [0, 1]:
+		return "Соперник" if side == opponent_side else "Вы"
+	return "Атакующий" if side == 0 else "Защитник"
 
 
 func _set_shown(v: float, side: int) -> void:
@@ -791,6 +890,7 @@ func _pulse(l: Label, c: Color) -> void:
 func resolve(winner_side: int) -> void:
 	if not _open:
 		return
+	clear_effect()
 	_cancel_entrance()
 	_stop_power_counters()
 	_stop_feedback(DeviceSettings.is_device())
@@ -832,6 +932,7 @@ func resolve(winner_side: int) -> void:
 
 
 func close() -> void:
+	clear_effect()
 	if not _open:
 		return
 	_cancel_entrance()

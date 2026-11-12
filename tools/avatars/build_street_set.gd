@@ -7,7 +7,10 @@ func run() -> void:
 	var image := Image.create(2,2,false,Image.FORMAT_RGBA8)
 	image.fill(Color.WHITE)
 	white = ImageTexture.create_from_image(image)
-	for model in 2:
+	var bomber_only := "--bomber-only" in OS.get_cmdline_user_args()
+	var models: Array[int] = [0,1]
+	if "--male-only" in OS.get_cmdline_user_args(): models.resize(1)
+	for model in models:
 		var body: ArrayMesh = load(OUTPUT+"body_%d_%d.res" % [model,2 if model == 0 else 3])
 		var skin: Skin = load(OUTPUT+"skin_%d.res" % model)
 		var actor: Node3D = load("res://assets/avatars/vrm/"+PATHS[model]+".vrm").instantiate()
@@ -16,27 +19,32 @@ func run() -> void:
 		var hip := rig.find_bone("Hips")
 		var waist := skin.get_bind_pose(hip).affine_inverse().origin
 		var size := rig.get_bone_global_rest(rig.find_bone("Neck")).origin.y/1.59513
-		var bomber := make_bomber(body,waist,size,rig)
+		var target_body: ArrayMesh = load(OUTPUT+"body_%d_%d.res" % [model,1 if model == 0 else 0])
+		var bomber := make_bomber(body,waist,size,rig,target_body,model)
 		save_part(bomber,"bomber_%d" % model)
-		save_part(make_case(waist,size,hip,part_material(body,1)),"case_%d" % model)
-		save_part(make_ponytail(model,actor,rig),"ponytail_%d" % model)
+		if not bomber_only:
+			save_part(make_case(waist,size,hip,part_material(body,1)),"case_%d" % model)
+			save_part(make_ponytail(model,actor,rig),"ponytail_%d" % model)
 		actor.queue_free()
 	for frame in 3: await process_frame
-	print("Street set: six new resources prepared; previous parts untouched")
+	print("Street bombers: %d resource(s) prepared; hair/case untouched" % models.size() if bomber_only else "Street set: six new resources prepared; previous parts untouched")
 	quit()
 
 func save_part(mesh: ArrayMesh,name: String) -> void:
 	assert(ResourceSaver.save(mesh,DEST+name+".res",ResourceSaver.FLAG_COMPRESS)==OK)
 	print(name," ",mesh.get_aabb())
 
-func make_bomber(source: ArrayMesh,waist: Vector3,size: float,rig: Skeleton3D) -> ArrayMesh:
+func make_bomber(source: ArrayMesh,waist: Vector3,size: float,rig: Skeleton3D,target_body: ArrayMesh,model: int) -> ArrayMesh:
 	var neck_y := rig.get_bone_global_rest(rig.find_bone("Neck")).origin.y
 	var output := ArrayMesh.new()
-	var names: PackedStringArray = source.get_meta("surface_materials")
+	var names: PackedStringArray = source.get_meta("surface_materials").duplicate()
 	var overrides: Dictionary = source.get_meta("variant_materials").duplicate()
 	var top: Array
 	for surface in source.get_surface_count():
 		var a := source.surface_get_arrays(surface)
+		if surface == 0 and model == 0:
+			a = restore_donor_neck(a,target_body.surface_get_arrays(0),neck_y,size)
+		if surface == 0: trim_bomber_shoulders(a, neck_y, size)
 		if "Tops_" in names[surface]:
 			var shape := func(p: Vector3) -> Vector3:
 				var q := p
@@ -59,7 +67,12 @@ func make_bomber(source: ArrayMesh,waist: Vector3,size: float,rig: Skeleton3D) -
 	# Merge new pocket welts and hem into the existing trim surface.
 	var trim := SurfaceTool.new()
 	trim.begin(Mesh.PRIMITIVE_TRIANGLES)
-	trim.append_from(output,output.get_surface_count()-1,Transform3D.IDENTITY)
+	# The donor's high cylindrical collar floats inside this wider bomber neck.
+	# Keep its lower zipper, not the collar or exposed upper zipper segment.
+	var donor_trim := source.surface_get_arrays(source.get_surface_count()-1)
+	for polygon in skin_polygons(donor_trim):
+		polygon = clip_neck(polygon,neck_y-.13*size,false)
+		emit_polygon(trim,polygon,0.0,false)
 	var low := INF
 	for p in top[0]:
 		if absf(p.x) < .17*size: low = minf(low,p.y)
@@ -75,29 +88,106 @@ func make_bomber(source: ArrayMesh,waist: Vector3,size: float,rig: Skeleton3D) -
 		var a := Vector3(side*.055*size,y+.035*size,z)
 		var b := Vector3(side*.105*size,y-.020*size,z-.008*size)
 		quad(trim,a,b,b+Vector3.UP*.009*size,a+Vector3.UP*.009*size,top)
-	# The inset follows the actual skinned neck, not an approximate cylinder.
-	# Clip at two horizontal planes and interpolate skin weights at the cuts.
-	var skin_arrays := source.surface_get_arrays(0)
-	var skin_indices: PackedInt32Array = skin_arrays[Mesh.ARRAY_INDEX]
-	var stride: int = skin_arrays[Mesh.ARRAY_BONES].size()/skin_arrays[0].size()
-	for triangle in skin_indices.size()/3:
-		var polygon := []
-		for corner in 3:
-			var i := skin_indices[triangle*3+corner]
-			polygon.append({"p":skin_arrays[0][i],"n":skin_arrays[1][i],"b":skin_arrays[Mesh.ARRAY_BONES].slice(i*stride,(i+1)*stride),"w":skin_arrays[Mesh.ARRAY_WEIGHTS].slice(i*stride,(i+1)*stride)})
-		polygon = clip_neck(polygon,neck_y-.12*size,true)
-		polygon = clip_neck(polygon,neck_y+.025*size,false)
-		if polygon.size() < 3: continue
-		for i in range(1,polygon.size()-1):
-			for v in [polygon[0],polygon[i],polygon[i+1]]:
-				put(trim,v.p+v.n*.004*size,v.b,v.w)
+	# The original Face and retained body already provide textured neck skin.
+	# A duplicate skin shell in this CLOTH surface covered it with a dark jagged
+	# bib. Keep only the actual collar/zip/pocket/hem geometry in this material.
 	trim.generate_normals()
 	var merged := trim.commit()
 	output.surface_remove(output.get_surface_count()-1)
 	output.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,merged.surface_get_arrays(0))
 	for key in source.get_meta_list(): output.set_meta(key,source.get_meta(key))
+	# Female uses its own target neck lining. Male already restored the exact
+	# donor triangles in surface0, sharing the existing UV/material/skin owner.
+	if model != 0:
+		var lining := SurfaceTool.new()
+		lining.begin(Mesh.PRIMITIVE_TRIANGLES)
+		for polygon in skin_polygons(target_body.surface_get_arrays(0)):
+			# Follow the opening across the clavicles and stop before the painted chest.
+			var bottom := neck_y-.135*size
+			polygon = clip_neck(polygon,bottom,true,Vector3(-.62,1.0,0.0))
+			polygon = clip_neck(polygon,bottom,true,Vector3(.62,1.0,0.0))
+			polygon = clip_neck(polygon,neck_y-.012*size,false)
+			emit_polygon(lining,polygon,-.0008*size,true)
+		lining.generate_tangents()
+		lining.commit(output)
+		var skin_material := part_material(target_body,0)
+		names.append(skin_material.resource_name)
+		overrides[output.get_surface_count()-1] = skin_material
+	output.set_meta("surface_materials",names)
 	output.set_meta("variant_materials",overrides)
 	return output
+
+
+func trim_bomber_shoulders(arrays: Array, neck_y: float, size: float) -> void:
+	# The sleeve covers this skin in every pose. During the throw it moves past
+	# the fabric, so omit the hidden triangles and leave the cuff and neckline.
+	var points: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	var visible := PackedInt32Array()
+	var lower := neck_y - .27 * size
+	var upper := neck_y - .086 * size
+	var inner_edge := .121 * size
+	for i in range(0, indices.size(), 3):
+		var center := (points[indices[i]] + points[indices[i+1]] + points[indices[i+2]]) / 3.0
+		if center.y > lower and center.y < upper and absf(center.x) > inner_edge:
+			continue
+		visible.append_array(indices.slice(i, i+3))
+	arrays[Mesh.ARRAY_INDEX] = visible
+
+
+func restore_donor_neck(retained: Array,donor: Array,neck_y: float,size: float) -> Array:
+	# garment() only removed INDEX entries from this exact donor body. Restore
+	# missing upper-chest triangles, never a second surface or another UV chart.
+	for attribute in Mesh.ARRAY_MAX:
+		if attribute not in [Mesh.ARRAY_INDEX,Mesh.ARRAY_NORMAL,Mesh.ARRAY_TANGENT]:
+			assert(retained[attribute] == donor[attribute],"Donor skin position/UV/bone/weight attributes must match retained skin")
+	var indices: PackedInt32Array = retained[Mesh.ARRAY_INDEX].duplicate()
+	var present: Dictionary = {}
+	for triangle in indices.size()/3:
+		present[Vector3i(indices[triangle*3],indices[triangle*3+1],indices[triangle*3+2])] = true
+	var original: PackedInt32Array = donor[Mesh.ARRAY_INDEX]
+	var restored := 0
+	for triangle in original.size()/3:
+		var key := Vector3i(original[triangle*3],original[triangle*3+1],original[triangle*3+2])
+		if present.has(key): continue
+		var lowest := minf(donor[0][key.x].y,minf(donor[0][key.y].y,donor[0][key.z].y))
+		# Keep the donor skin inside the neckline, including under its lower edge.
+		var center: Vector3 = (donor[0][key.x]+donor[0][key.y]+donor[0][key.z])/3.0
+		if center.y < neck_y-.142*size + .62*absf(center.x) or lowest > neck_y+.025*size: continue
+		indices.append_array(PackedInt32Array([key.x,key.y,key.z]))
+		present[key] = true
+		restored += 1
+	retained[Mesh.ARRAY_INDEX] = indices
+	print("Restored matching donor neck triangles: ",restored)
+	return retained
+
+
+func skin_polygons(arrays: Array) -> Array:
+	var polygons: Array = []
+	var indices := PackedInt32Array()
+	if arrays[Mesh.ARRAY_INDEX] != null: indices = arrays[Mesh.ARRAY_INDEX]
+	if indices.is_empty():
+		for i in arrays[0].size(): indices.append(i)
+	var stride: int = arrays[Mesh.ARRAY_BONES].size()/arrays[0].size()
+	for triangle in indices.size()/3:
+		var polygon: Array = []
+		for corner in 3:
+			var i: int = indices[triangle*3+corner]
+			polygon.append({"p":arrays[0][i],"n":arrays[1][i],"uv":arrays[Mesh.ARRAY_TEX_UV][i],"b":arrays[Mesh.ARRAY_BONES].slice(i*stride,(i+1)*stride),"w":arrays[Mesh.ARRAY_WEIGHTS].slice(i*stride,(i+1)*stride)})
+		polygons.append(polygon)
+	return polygons
+
+
+func emit_polygon(tool: SurfaceTool,polygon: Array,offset: float,textured: bool) -> void:
+	if polygon.size() < 3: return
+	for i in range(1,polygon.size()-1):
+		for vertex in [polygon[0],polygon[i],polygon[i+1]]:
+			tool.set_bones(vertex.b)
+			tool.set_weights(vertex.w)
+			tool.set_uv(vertex.uv if textured else Vector2(.5,.5))
+			tool.set_normal(vertex.n)
+			tool.add_vertex(vertex.p+vertex.n*offset)
+
 
 func make_ponytail(model: int,actor: Node3D,rig: Skeleton3D) -> ArrayMesh:
 	var base: ArrayMesh = load(OUTPUT+"hair_%d_0.res" % model)
@@ -261,15 +351,17 @@ func part_material(part: Mesh,surface: int) -> ShaderMaterial:
 		actor.free()
 	return source_materials[source][part.get_meta("surface_materials")[surface]]
 
-func clip_neck(polygon: Array,y: float,above: bool) -> Array:
+func clip_neck(polygon: Array, level: float, above: bool, plane_normal := Vector3.UP) -> Array:
 	var result := []
 	if polygon.is_empty(): return result
 	var previous: Dictionary = polygon[-1]
-	var previous_inside: bool = previous.p.y >= y if above else previous.p.y <= y
+	var previous_height := plane_normal.dot(previous.p)
+	var previous_inside := previous_height >= level if above else previous_height <= level
 	for current: Dictionary in polygon:
-		var inside: bool = current.p.y >= y if above else current.p.y <= y
+		var height := plane_normal.dot(current.p)
+		var inside := height >= level if above else height <= level
 		if inside != previous_inside:
-			var t: float = (y-previous.p.y)/(current.p.y-previous.p.y)
+			var t := (level-previous_height)/(height-previous_height)
 			var influence := {}
 			for pair in [[previous,1.0-t],[current,t]]:
 				for k in pair[0].b.size():
@@ -285,8 +377,11 @@ func clip_neck(polygon: Array,y: float,above: bool) -> Array:
 				weights[k] = influence[order[k]]
 				total += weights[k]
 			for k in 4: weights[k] /= maxf(total,.00001)
-			result.append({"p":previous.p.lerp(current.p,t),"n":previous.n.lerp(current.n,t).normalized(),"b":bones,"w":weights})
+			var intersection := {"p":previous.p.lerp(current.p,t),"n":previous.n.lerp(current.n,t).normalized(),"b":bones,"w":weights}
+			if previous.has("uv") and current.has("uv"): intersection.uv = previous.uv.lerp(current.uv,t)
+			result.append(intersection)
 		if inside: result.append(current)
 		previous = current
+		previous_height = height
 		previous_inside = inside
 	return result

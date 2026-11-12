@@ -136,7 +136,7 @@ func _run() -> void:
 	await create_timer(.75).timeout
 	await save("creature-reveal")
 	# Остановить только очередь хода: обзор руки не запускает решение ИИ.
-	main._pending.clear()
+	main.interaction.clear_request()
 	main.events.drained.disconnect(main._pump)
 	await _settle()
 	# Такой же маленький полёт соперника: камера с противоположной стороны.

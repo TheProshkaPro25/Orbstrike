@@ -47,7 +47,7 @@ func _run() -> void:
 			check(String(chip.help[6]).contains("отменена") == (index == 0), "состояние отмены получено из расчёта")
 			var motion := InputEventMouseMotion.new()
 			motion.position = rect.get_center()
-			Input.parse_input_event(motion)
+			root.push_input(motion, true)
 			await process_frame
 			check(root.gui_get_hovered_control() == chip, "реальное наведение достигает карты любой стороны")
 			var explanation: Control = UiTheme.help_panel(chip.help)
@@ -62,7 +62,7 @@ func _run() -> void:
 		# Действительная стандартная подсказка должна появиться от движения мыши.
 		var motion := InputEventMouseMotion.new()
 		motion.position = kept.get_global_rect().get_center()
-		Input.parse_input_event(motion)
+		root.push_input(motion, true)
 		await create_timer(1.0).timeout
 		for frame in 4: await process_frame
 		RenderingServer.force_draw(false)
@@ -169,42 +169,42 @@ func _hover_chip(chip: Control, viewport_size: Vector2i, description: String) ->
 	# Завершить чтение предыдущего раскрытия: над закрытой им надписью
 	# указатель всё ещё находится на читаемой карте, а не выбирает новую.
 	var leave := InputEventMouseMotion.new()
-	leave.position = root.get_final_transform() * Vector2(8,viewport_size.y - 8)
-	Input.parse_input_event(leave)
+	leave.position = Vector2(8, viewport_size.y - 8)
+	root.push_input(leave, true)
 	await create_timer(.2).timeout
 	var start := InputEventMouseMotion.new()
-	start.position = root.get_final_transform() * rect.get_center()
-	Input.parse_input_event(start)
+	start.position = rect.get_center()
+	root.push_input(start, true)
 	await create_timer(.8).timeout
 	var popup := _tooltip(root)
 	check(popup != null,"подсказка открыта перед проходом всей надписи: " + description)
 	if popup != null:
-		check(popup.get_child(0).card_id == chip.help[7].card_id, "раскрыта именно выбранная надпись: " + description)
+		check(popup.get_child(0)._title.text == str(chip.help[0]), "раскрыта именно выбранная надпись: " + description)
 		check(not popup.get_global_rect().intersects(rect), "раскрытие не закрывает свою надпись: " + description)
 	for fy in [.12, .5, .88]:
 		for fx in [.02, .25, .5, .75, .98]:
 			var motion := InputEventMouseMotion.new()
-			# parse_input_event принимает координаты окна, включая stretch/масштаб
-			# (менеджер окон может ограничить физические 1080px свёрнутого окна).
-			motion.position = root.get_final_transform() * (rect.position + rect.size * Vector2(fx, fy))
-			Input.parse_input_event(motion)
+			# Передаём координаты viewport напрямую, даже если физическое
+			# свёрнутое окно ограничено текущим монитором.
+			motion.position = rect.position + rect.size * Vector2(fx, fy)
+			root.push_input(motion, true)
 			await process_frame
 			check(root.gui_get_hovered_control() == chip,"реальная сцена: вся плашка %s %s (%s,%s); попали в %s; rect%s mouse%s" % [description,viewport_size,fx,fy,root.gui_get_hovered_control(),rect,root.get_mouse_position()])
 			check(popup != null and _tooltip(root) == popup,"движение по надписи сохраняет ту же подсказку: " + description)
 	var title: Label = chip.get_child(0)
 	check(rect.grow(.5).encloses(title.get_global_rect()), "вся область названия внутри hover: " + description)
 	var center_motion := InputEventMouseMotion.new()
-	center_motion.position = root.get_final_transform() * rect.get_center()
-	Input.parse_input_event(center_motion)
+	center_motion.position = rect.get_center()
+	root.push_input(center_motion, true)
 	await process_frame
 	if popup != null:
 		var reading_rect: Rect2 = popup.get_global_rect()
 		var reading := InputEventMouseMotion.new()
-		reading.position = root.get_final_transform() * reading_rect.get_center()
-		Input.parse_input_event(reading)
+		reading.position = reading_rect.get_center()
+		root.push_input(reading, true)
 		await create_timer(.4).timeout
 		check(is_instance_valid(popup) and _tooltip(root) == popup, "мышь на раскрытой карте сохраняет чтение: %s; target%s mouse%s hovered%s active%s" % [description,reading_rect,root.get_mouse_position(),root.gui_get_hovered_control(),_tooltip(root)])
-		Input.parse_input_event(center_motion)
+		root.push_input(center_motion, true)
 		await process_frame
 
 func _animated_titles(cards: Array) -> void:

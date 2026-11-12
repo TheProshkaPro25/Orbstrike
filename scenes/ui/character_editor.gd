@@ -6,6 +6,8 @@ var draft: Dictionary
 var saved: Dictionary
 var name_field: LineEdit
 var selectors: Dictionary = {}
+var outfit_color: ColorPickerButton
+var _outfit_color_before_popup := ""
 var save_button: Button
 var status: Label
 var confirm: ConfirmationDialog
@@ -130,12 +132,13 @@ func _refresh_galleries() -> void:
 		gallery_labels[key].text = "Выбрано: " + selectors[key].get_item_text(draft[key])
 		for index in gallery_buttons[key].size():
 			var button: Button = gallery_buttons[key][index]
+			button.visible = key != "vrm_clothes" or WardrobeCatalog.has_outfit(draft.vrm_model, index)
+			if not button.visible: continue
 			var atlas := AtlasTexture.new()
 			atlas.atlas = CATALOGS[draft.vrm_model]
 			var tile: int = index + (VrmParts.HAIR_STYLE_COUNT if key == "vrm_clothes" else 0)
 			atlas.region = Rect2((tile % 5) * 160, (tile / 5) * 192, 160, 192)
 			button.icon = atlas
-			button.visible = key != "vrm_clothes" or index < VrmParts.BODY[draft.vrm_model].size()
 			button.button_pressed = index == draft[key]
 			button.tooltip_text = selectors[key].get_item_text(index)
 
@@ -186,9 +189,10 @@ func _build_options(options: VBoxContainer) -> void:
 	image.add_child(model_select)
 	_button(image,"Уличный образ",_street_preset)
 	_button(image,"Спортивный образ",_sport_preset)
+	_build_outfit_colors(categories.clothes)
 	for spec in [
 		["vrm_style","Причёска",["Исходная","Острые пряди","Хвосты с ушками","Боб с чёлкой","Альтернативная чёлка","Взъерошенные","Асимметричная чёлка","Короткие пряди","Каре с пробором","Высокий хвост","Боковой пробор"],"hair"],
-		["vrm_clothes","Костюм",["Комплект 1","Комплект 2","Комплект 3","Комплект 4","Комплект 5","Комплект 6","Комплект 7","Комплект 8"],"clothes"],
+		["vrm_clothes","Костюм",WardrobeCatalog.LEGACY_NAMES[1],"clothes"],
 		["vrm_denim","Джинсы",DenimWardrobe.NAMES,"clothes"],
 		["vrm_case","Футляр для сфер",["Без футляра","Три сферы · для бомбера"],"details"],
 		["vrm_eye_shape","Форма глаз",["Обычная","Строже","Мягче"],"face"],
@@ -197,19 +201,20 @@ func _build_options(options: VBoxContainer) -> void:
 		["vrm_hair","Цвет волос",["Исходный","Каштановый","Чёрный","Золотистый","Серебристый","Медный"],"hair"],
 		["vrm_eyes","Цвет глаз",["Исходный","Синий","Зелёный","Рубиновый","Карий","Фиолетовый"],"face"],
 		["vrm_skin","Тон кожи",["Исходный","Тёплый","Золотистый","Смуглый"],"face"],
-		["vrm_outfit","Палитра костюма",["Исходная","Бордовая","Синяя","Изумрудная","Фиолетовая"],"clothes"],
 		["vrm_height","Рост",["Ниже","Средний","Выше"],"details"]
 	]:
 		var section: VBoxContainer = categories[spec[3]]
 		_label(section,spec[1])
 		var select := OptionButton.new()
 		for text in spec[2]: select.add_item(text)
+		if spec[0] == "vrm_clothes":
+			for slot in range(select.item_count, WardrobeCatalog.SLOT_COUNT): select.add_item("—")
 		select.item_selected.connect(_select.bind(spec[0]))
 		section.add_child(select)
 		selectors[spec[0]] = select
 		if spec[0] in ["vrm_style", "vrm_clothes"]:
 			select.hide()
-			_make_gallery(section,spec[0],spec[2].size())
+			_make_gallery(section,spec[0],select.item_count)
 	var face: VBoxContainer = categories.face
 	_label(face,"Выражение для просмотра")
 	expression_select = OptionButton.new()
@@ -225,6 +230,61 @@ func _build_options(options: VBoxContainer) -> void:
 	caption.add_theme_font_size_override("font_size",16)
 	_build_motion_controls(categories.motions)
 	_show_category("image")
+
+func _build_outfit_colors(section: VBoxContainer) -> void:
+	_label(section,"Цвет костюма")
+	var row := HBoxContainer.new()
+	section.add_child(row)
+	var select := OptionButton.new()
+	select.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	for palette in ["Исходная", "Бордовая", "Синяя", "Изумрудная", "Фиолетовая"]:
+		select.add_item(palette)
+	select.item_selected.connect(_select.bind("vrm_outfit"))
+	select.tooltip_text = "Готовая палитра костюма. «Исходная» возвращает цвета модели."
+	selectors.vrm_outfit = select
+	row.add_child(select)
+	_label(row,"Свой цвет")
+	outfit_color = ColorPickerButton.new()
+	outfit_color.custom_minimum_size = Vector2(58, 38)
+	outfit_color.edit_alpha = false
+	outfit_color.edit_intensity = false
+	outfit_color.tooltip_text = "Выбрать свой цвет одежды. Отдельно выбранные джинсы сохраняют свой цвет."
+	outfit_color.picker_created.connect(_configure_outfit_picker)
+	outfit_color.color_changed.connect(_select_outfit_color)
+	outfit_color.popup_closed.connect(_close_outfit_picker)
+	row.add_child(outfit_color)
+
+func _configure_outfit_picker() -> void:
+	var picker := outfit_color.get_picker()
+	picker.sampler_visible = false
+	picker.presets_visible = false
+	picker.color_modes_visible = false
+	outfit_color.get_popup().about_to_popup.connect(func() -> void:
+		_outfit_color_before_popup = draft.vrm_outfit_color)
+
+func _close_outfit_picker() -> void:
+	if not Input.is_action_just_pressed("ui_cancel"): return
+	draft.vrm_outfit_color = _outfit_color_before_popup
+	_refresh_outfit_color()
+	avatar.set_outfit_palette(draft.vrm_outfit, draft.vrm_outfit_color)
+
+func _refresh_outfit_color() -> void:
+	var select: OptionButton = selectors.vrm_outfit
+	if draft.vrm_outfit_color.is_empty():
+		select.select(draft.vrm_outfit)
+		var start_palette: int = draft.vrm_outfit if draft.vrm_outfit != 0 else 2
+		outfit_color.color = VrmAvatar.OUTFIT_COLORS[start_palette]
+	else:
+		select.select(-1)
+		select.text = "Своя палитра"
+		outfit_color.color = Color.html(draft.vrm_outfit_color)
+
+func _select_outfit_color(color: Color) -> void:
+	draft.vrm_outfit_color = color.to_html(false)
+	var select: OptionButton = selectors.vrm_outfit
+	select.select(-1)
+	select.text = "Своя палитра"
+	avatar.set_outfit_palette(draft.vrm_outfit, draft.vrm_outfit_color)
 
 func _build_motion_controls(section: VBoxContainer) -> void:
 	_label(section,"Движение для просмотра")
@@ -284,19 +344,18 @@ func _build_extra_actions(stack: VBoxContainer) -> void:
 func select_model(index: int) -> void:
 	var expression = expression_select.get_item_metadata(expression_select.selected) if expression_select.selected >= 0 else "RESET"
 	var previous_model: int = draft.vrm_model
-	if index != previous_model and draft.vrm_clothes == VrmParts.SPORT_IDS[previous_model]:
-		draft.vrm_clothes = VrmParts.SPORT_IDS[index]
+	draft.vrm_clothes = WardrobeCatalog.outfit_for_model_switch(previous_model, draft.vrm_clothes, index)
 	draft.vrm_model = index
 	draft = PlayerProfile.normalized(draft)
 	for item in selectors.vrm_clothes.item_count:
-		selectors.vrm_clothes.set_item_disabled(item,item >= VrmParts.BODY[index].size())
+		selectors.vrm_clothes.set_item_disabled(item,not WardrobeCatalog.has_outfit(index,item))
+		selectors.vrm_clothes.set_item_text(item,WardrobeCatalog.outfit_name(index,item))
 	selectors.vrm_clothes.select(draft.vrm_clothes)
-	var outfits: Array = ["Школьный","Худи","Короткое худи","Удлинённая куртка","Контрастное худи","Бомбер","Спортивный костюм","—"] if index == 0 else ["Сценический","Платье-рубашка","Летнее платье","Короткое худи","Удлинённая куртка","Контрастное худи","Бомбер","Спортивный костюм"]
-	for item in outfits.size(): selectors.vrm_clothes.set_item_text(item,outfits[item])
 	selectors.vrm_style.set_item_text(4,"Каре с украшениями" if index == 0 else "Мягкая чёлка")
 	selectors.vrm_denim.disabled = not VrmParts.supports_denim(index,draft.vrm_clothes)
-	selectors.vrm_denim.tooltip_text = "Джинсы недоступны с этим костюмом. Для спортивного образа выбор запоминается."
+	selectors.vrm_denim.tooltip_text = "Выбранная расцветка сохраняется и применяется с совместимыми костюмами."
 	selectors.vrm_denim.select(draft.vrm_denim)
+	_refresh_outfit_color()
 	selectors.vrm_case.disabled = not VrmParts.supports_case(index,draft.vrm_clothes)
 	selectors.vrm_case.tooltip_text = "Футляр крепится к поясу бомбера. Выбор запоминается при смене одежды."
 	avatar.apply_profile(draft)
@@ -312,6 +371,11 @@ func _select(index: int,key: String) -> void:
 	draft[key] = index
 	if key == "vrm_clothes":
 		select_model(draft.vrm_model)
+		return
+	if key == "vrm_outfit":
+		draft.vrm_outfit_color = ""
+		_refresh_outfit_color()
+		avatar.set_outfit_palette(draft.vrm_outfit, draft.vrm_outfit_color)
 		return
 	selectors[key].select(index)
 	avatar.apply_profile(draft)
@@ -345,8 +409,9 @@ func _randomize() -> void:
 	var value := draft.duplicate(true)
 	for key in PlayerProfile.LIMITS:
 		if key.begins_with("vrm_") and key != "vrm_style": value[key] = randi() % PlayerProfile.LIMITS[key]
+	value.vrm_outfit_color = ""
 	value.vrm_style = RANDOM_HAIR_STYLES.pick_random()
-	value.vrm_clothes = randi()%VrmParts.BODY[value.vrm_model].size()
+	value.vrm_clothes = WardrobeCatalog.available_ids(value.vrm_model).pick_random()
 	_apply(value)
 
 func save_profile() -> void:

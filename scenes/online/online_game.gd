@@ -1,6 +1,8 @@
 extends "res://scenes/main.gd"
 ## Reuses the current arena, resident actors, hands and sequential presentation.
 ## Match decisions are exclusively commands to the dedicated server.
+const HelpPolicy := preload("res://scenes/presentation/online_help_policy.gd")
+var _help_policy: HelpPolicy
 const Client = preload("res://network/online_client.gd")
 const Codec = preload("res://network/state_codec.gd")
 const ViewAdapter = preload("res://network/online_view.gd")
@@ -44,6 +46,9 @@ func _ready() -> void:
 	ctrl = ViewAdapter.new()
 	_build_world()
 	_build_ui()
+	_help_policy = HelpPolicy.new(presentation)
+	presentation.slot_help = _help_policy.slot_tip
+	presentation.creature_help = _help_policy.creature_tip
 	client = Client.new()
 	add_child(client)
 	client.message.connect(_message)
@@ -228,6 +233,7 @@ func _apply_snapshot(data: Dictionary) -> void:
 	var epoch := _connection_epoch
 	local_side = int(data.player)
 	snapshot = data
+	_help_policy.set_view(data,local_side)
 	ctrl.state = Codec.decode_view(data.view)
 	if not _match_ready: _prepare_online_match()
 	_connection_panel.hide()
@@ -503,7 +509,7 @@ func _on_setup_skipped() -> void: _command("skip_gate")
 func _on_creature_chosen(uid: int) -> void:
 	if not _gate_pick.is_empty():
 		var pick := _gate_pick.duplicate()
-		_gate_pick.clear()
+		interaction.gate_pick.clear()
 		_command("throw_with_gate",{"card":pick.card,"slot":pick.slot,"uid":uid})
 	else: _command("select",{"uid":uid})
 func _on_ability_chosen(card_id: StringName) -> void:
@@ -534,7 +540,7 @@ func _on_setup_placed_throw(card_id: StringName, slot: int) -> void:
 		if cs.alive and cs.slot < 0 and not cs.used: entries.append({"uid":uid,"def":_creature_def(uid),"note":""})
 	hud.show_creatures(entries,"Кого бросить на новые ворота?",true)
 func _on_gate_throw_cancelled() -> void:
-	_gate_pick.clear()
+	interaction.gate_pick.clear()
 	_show_input()
 
 func _on_restart() -> void:
@@ -544,8 +550,8 @@ func _on_restart() -> void:
 func _return_to_lobby() -> void:
 	# Keep the arena resident, return only match actors before the next readiness cycle.
 	team_menu._preview.release()
-	_gate_pick.clear()
-	_pending.clear()
+	interaction.gate_pick.clear()
+	interaction.clear_request()
 	_battle_uids.clear()
 	_active_ball = null
 	_input_pending = false
@@ -614,36 +620,11 @@ func _leave() -> void:
 	get_tree().change_scene_to_file("res://scenes/menu/main_menu.tscn")
 
 
-func _slot_tip(i: int, sl: SlotState, view: MatchState) -> Array:
-	if not sl.has_card:
-		if view.phase == MatchController.Phase.SETUP and view.active_player == local_side and snapshot.get("legal",{}).get("setup_slots",[]).has(i):
-			return ["Свободное место","Выкладка ворот",UiTheme.GOLD,"Сюда можно положить карту ворот: рядом с уже лежащими картами.","Бросок на пустое место — промах.","",""]
-		return []
-	var mine := sl.card_owner == local_side
-	var occ := ""
-	if sl.occupant_uid >= 0:
-		occ = "На воротах стоит: %s (%s)."%[_cname(sl.occupant_uid),"ваше" if _owner_of(sl.occupant_uid) == local_side else "существо соперника"]
-	var definition := CardDB.card(sl.card_id)
-	if definition == null:
-		return ["Закрытые ворота соперника","Ворота · рубашкой вверх",UiTheme.GOLD_DIM,"Владелец может открыть карту во время боя. Пока ворота закрыты, их бонусы и ловушки не действуют.","Закрытая карта соперника.","",occ]
-	var lines: Array = UiTheme.card_help(definition)
-	if not sl.revealed and mine:
-		lines[1] = "%s · ваша закрытая карта"%lines[1]
-		lines[5] = "Соперник не видит эту карту до боя. "+str(lines[5])
-	if occ != "": lines[6] = (str(lines[6])+"\n"+occ).strip_edges()
-	return lines
+func _slot_tip(index: int, slot: SlotState, view: MatchState) -> Array:
+	return _help_policy.slot_tip(index,slot,view)
 
 func _creature_tip(uid: int, view: MatchState) -> Array:
-	var lines: Array = super._creature_tip(uid,view)
-	var mine := _owner_of(uid) == local_side
-	var detail := str(lines[1]).trim_suffix(" · ваше существо").trim_suffix(" · существо соперника")
-	lines[1] = "%s · %s"%[detail,"ваше существо" if mine else "существо соперника"]
-	# The base helper's final prethrow line assumes seat zero.
-	if view.creature(uid).slot < 0:
-		var text := str(lines[6])
-		text = text.replace("Выберите подсвеченные ворота для броска сферы", "Шар соперника") if not mine else text.replace("Шар соперника","Выберите подсвеченные ворота для броска сферы")
-		lines[6] = text
-	return lines
+	return _help_policy.creature_tip(uid,view)
 
 
 func _place_leave_button(in_battle: bool) -> void:

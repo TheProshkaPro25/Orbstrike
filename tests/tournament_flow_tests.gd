@@ -7,6 +7,7 @@ var campaign_flow := false
 var _checks := 0
 var _failures := 0
 var _drive := false
+var _target_actions := 0
 var _fixture: Dictionary
 var _initial_snapshot: Dictionary
 var _landed := 0
@@ -86,7 +87,7 @@ func _run_flow() -> void:
 		return
 	_fixture = main.tournament.next_match().duplicate(true)
 	main.tournament_panel.primary_button.pressed.emit()
-	await process_frame
+	if not await _wait_match_started("первый матч после интро "): return
 	if main.ctrl == null:
 		_abort("табло → первый матч")
 		return
@@ -127,7 +128,7 @@ func _run_flow() -> void:
 	_check(main.tournament.state.in_progress == _fixture.id, "незавершённая встреча помечена в сохранении")
 	_check(main.tournament_panel._notice.visible, "табло объясняет повтор незавершённой встречи")
 	main.tournament_panel.primary_button.pressed.emit()
-	await process_frame
+	if not await _wait_match_started("повтор встречи после интро "): return
 	_check(main.ctrl.match_seed == int(_initial_snapshot.seed), "повтор начинает тот же seed")
 	_check(main.ctrl.debug_snapshot().decks == _initial_snapshot.decks, "повтор начинает те же колоды")
 	_check(main.ctrl.action_trace[0] == _initial_snapshot.actions[0], "повтор сохраняет первый ход")
@@ -171,12 +172,28 @@ func _run_flow() -> void:
 	var second: Dictionary = main.tournament.next_match()
 	_check(second.id != _fixture.id, "следующий матч отличается от завершённого")
 	main.tournament_panel.primary_button.pressed.emit()
-	await process_frame
+	if not await _wait_match_started("следующая встреча после интро "): return
 	_check(main.ctrl != null and not main._game_over and main.ctrl.get_turn() == 1, "следующая встреча начинается свежим физическим матчем")
 	_check(_preparation_counts() == startup_counts and _actors_valid(), "следующая встреча повторно использует каталог и правильные uid")
 	print("Tournament flow: %d checks, %d failures; %.2fs; fixture %s human_side=%s" % [_checks, _failures, (Time.get_ticks_msec() - _started_at) / 1000.0, _fixture.id, "a" if int(_fixture.a) == 0 else "b"])
 	_write_report()
 	_finish(1 if _failures else 0)
+
+
+## Production intentionally runs the7.2s intro before controller.start.
+func _wait_match_started(label: String) -> bool:
+	pending_launches.clear()
+	main.ctrl.creature_selected.connect(func(player: int, uid: int, _recall: bool) -> void:
+		throws[player] += 1
+		pending_launches[uid] = true)
+	main.ctrl.creature_returned.connect(func(uid, reason): _ret(uid,reason))
+	main.ctrl.creature_stood.connect(func(uid, _slot): _land(uid,true))
+	main.ctrl.battle_started.connect(func(_slot, attacker, _defender): battles += 1; _land(attacker,true))
+	if not await _until(func() -> bool: return is_instance_valid(main) and main.ctrl != null and main.ctrl._started and not main._preparing,15.0):
+		_abort(label)
+		return false
+	_check(main._lifecycle.input_allowed(),"coordinator permits play only after intro")
+	return true
 
 
 func _reach_human() -> bool:
@@ -260,14 +277,18 @@ func _check(condition: bool, description: String) -> void:
 func _abort(description: String) -> void:
 	_check(false, description)
 	_drive = false
+	if is_instance_valid(main) and main.ctrl != null: main.ctrl.save_debug_trace(OUT.path_join("aborted-match.json"))
 	_write_report()
 	_finish(1)
 
 
 func _write_report() -> void:
+	var runtime: Dictionary = {}
+	if is_instance_valid(main) and main.ctrl != null:
+		runtime = {"phase":main.ctrl.get_phase(),"turn":main.ctrl.get_turn(),"ability_moment":String(main.ctrl.get_ability_moment()),"target_picker":main.ability_target_picker.visible,"pending":main._pending,"event_busy":main.events.is_busy(),"lifecycle":main._lifecycle.stage if is_instance_valid(main._lifecycle) else -1}
 	var file := FileAccess.open(OUT.path_join("report.json"), FileAccess.WRITE)
 	if file != null:
-		file.store_string(JSON.stringify({"checks": _checks, "failures": _failures, "fixture": _fixture, "preparation_counts": startup_counts, "elapsed_seconds": (Time.get_ticks_msec() - _started_at) / 1000.0}, "  "))
+		file.store_string(JSON.stringify({"checks":_checks,"failures":_failures,"fixture":_fixture,"preparation_counts":startup_counts,"elapsed_seconds":(Time.get_ticks_msec()-_started_at)/1000.0,"target_actions":_target_actions,"throws":throws,"hits":hits,"misses":misses,"runtime":runtime},"  "))
 
 
 func _process(_delta: float) -> bool:
@@ -279,6 +300,9 @@ func _process(_delta: float) -> bool:
 	if main.battle_overlay._open:
 		main.battle_overlay._close()
 	var view: MatchState = main.ctrl.get_view(0)
+	if choose_pending_target(main,bot):
+		_target_actions += 1
+		return false
 	if main.setup_panel._panel.visible:
 		var choice: Dictionary = bot.choose_setup(view, main.ctrl.legal_setup_slots(), main.ctrl.can_skip_gate())
 		main.setup_panel.hide_panel()

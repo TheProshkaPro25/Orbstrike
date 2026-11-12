@@ -9,6 +9,10 @@ const HUD_CROPS := preload("res://scenes/ui/creature_portrait_crops.gd")
 const MATTE := preload("res://scenes/ui/portrait_matte.gd")
 const INTERIOR_BACKGROUND := preload("res://scenes/ui/portrait_background_regions.gd")
 const BACKDROP := preload("res://scenes/ui/portrait_backdrop.gdshader")
+const BATTLE_ART := preload("res://scenes/ui/battle_portrait.gdshader")
+const BATTLE_BACKDROP := preload("res://scenes/ui/battle_portrait_backdrop.gdshader")
+const BATTLE_CORNER_RADIUS := 10
+const BATTLE_ART_INSET := 3.0
 const ELEMENT_BACKDROPS := [Color("c96229"), Color("39a58d"), Color("cfb05f"), Color("97816a"), Color("9560c6"), Color("3686b8")]
 const PORTRAIT_LAYER := 1 << 20
 const FRAME_INTERVAL := 1.0 / 15.0
@@ -78,10 +82,17 @@ var _elapsed := 0.0
 var _active := false
 var _reference_texture: Texture2D
 var _hud_crop_enabled := false
+var _battle_style := false
+var _battle_backdrop: ShaderMaterial
+var _battle_frame: Panel
 static var _hud_reference_textures: Dictionary = {}
 static var _presentation_textures: Dictionary = {}
+static var _battle_textures: Dictionary = {}
 static var _presentation_stats: Dictionary = {}
 static var _background_materials: Dictionary = {}
+static var _battle_art: ShaderMaterial
+static var _battle_frame_style: StyleBoxFlat
+static var _battle_mask_style: StyleBoxFlat
 
 
 ## Explicit preparation is the only path that performs segmentation.
@@ -115,18 +126,23 @@ static func _prepare_reference(definition_id: StringName) -> void:
 	if _presentation_textures.has(definition_id):
 		return
 	var begin := Time.get_ticks_usec()
-	var prepared: Dictionary = MATTE.prepare(reference_texture(definition_id), false, INTERIOR_BACKGROUND.REGIONS.get(definition_id, {}))
+	var prepared: Dictionary = MATTE.prepare(reference_texture(definition_id), false,
+		INTERIOR_BACKGROUND.REGIONS.get(definition_id, {}), INTERIOR_BACKGROUND.BATTLE_REGIONS.get(definition_id, {}))
 	if prepared.is_empty():
 		push_error("Could not prepare exact portrait: " + String(definition_id))
 		return
 	_presentation_textures[definition_id] = prepared.texture
+	if prepared.battle_texture != null:
+		_battle_textures[definition_id] = prepared.battle_texture
 	_presentation_stats[definition_id] = {"background_pixels": prepared.background_pixels, "interior_background_pixels": prepared.interior_background_pixels, "retained_closed_white_pixels": prepared.retained_closed_white_pixels, "softened_edge_pixels": prepared.softened_edge_pixels, "prepare_ms": (Time.get_ticks_usec() - begin) / 1000.0}
 	_hud_reference_textures.erase(definition_id)
 
 
 ## A missing explicit preparation honestly falls back to the source, without
 ## triggering expensive work from a UI event or touching an original bitmap.
-static func presentation_texture(definition_id: StringName) -> Texture2D:
+static func presentation_texture(definition_id: StringName, battle: bool = false) -> Texture2D:
+	if battle and _battle_textures.has(definition_id):
+		return _battle_textures[definition_id] as Texture2D
 	return _presentation_textures.get(definition_id, reference_texture(definition_id)) as Texture2D
 
 
@@ -166,6 +182,12 @@ static func hud_reference_texture(definition_id: StringName) -> Texture2D:
 func set_hud_crop_enabled(enabled: bool) -> void:
 	if _hud_crop_enabled == enabled: return
 	_hud_crop_enabled = enabled
+	_update_fallback()
+
+
+func set_battle_style(enabled: bool) -> void:
+	if _battle_style == enabled: return
+	_battle_style = enabled
 	_update_fallback()
 
 
@@ -376,8 +398,9 @@ func _texture() -> TextureRect:
 
 func _update_fallback() -> void:
 	_reference_texture = reference_texture(_definition.id) if _definition != null else null
+	var battle := _battle_style and DEVICE.is_device() and _definition != null
 	if is_instance_valid(_fallback):
-		var texture: Texture2D = presentation_texture(_definition.id) if _definition != null else null
+		var texture: Texture2D = presentation_texture(_definition.id, battle) if _definition != null else null
 		if _hud_crop_enabled and _definition != null and _reference_texture != null:
 			texture = hud_reference_texture(_definition.id)
 		if texture == null and _definition != null:
@@ -386,11 +409,55 @@ func _update_fallback() -> void:
 			texture = ELEMENT_ICON.badge(_definition.attribute)
 		_fallback.texture = texture
 		_fallback.visible = not _active and _definition != null
+		# Only full, prepared mattes use the battle filter. Atlas crops and
+		# unprepared images keep their usual sampling and bounds.
+		var filtered := battle and not _hud_crop_enabled and _presentation_textures.has(_definition.id)
+		if filtered and _battle_art == null:
+			_battle_art = ShaderMaterial.new()
+			_battle_art.shader = BATTLE_ART
+		_fallback.material = _battle_art if filtered else null
 	if is_instance_valid(_backdrop):
 		_backdrop.visible = _definition != null
-		if _definition != null:
+		if battle:
+			if _battle_backdrop == null:
+				_battle_backdrop = ShaderMaterial.new()
+				_battle_backdrop.shader = BATTLE_BACKDROP
+			_battle_backdrop.set_shader_parameter("element_color", ELEMENT_BACKDROPS[_definition.attribute])
+			_battle_backdrop.set_shader_parameter("element", _definition.attribute)
+			_backdrop.material = _battle_backdrop
+			_show_battle_frame()
+		elif _definition != null:
 			_backdrop.material = _background_material(_definition.attribute, DEVICE.is_device())
+	if is_instance_valid(_battle_frame):
+		_battle_frame.visible = battle
+	clip_children = CanvasItem.CLIP_CHILDREN_ONLY if battle else CanvasItem.CLIP_CHILDREN_DISABLED
+	var inset := BATTLE_ART_INSET if battle else 0.0
+	for art in [_fallback, _image]:
+		if not is_instance_valid(art): continue
+		art.offset_left = inset
+		art.offset_top = inset
+		art.offset_right = -inset
+		art.offset_bottom = -inset
 	queue_redraw()
+
+
+func _show_battle_frame() -> void:
+	if is_instance_valid(_battle_frame): return
+	if _battle_frame_style == null:
+		_battle_frame_style = UiTheme.box(Color.TRANSPARENT, UiTheme.DEVICE_DIM.lightened(0.08), 1, BATTLE_CORNER_RADIUS, 0)
+		_battle_frame_style.draw_center = false
+		_battle_mask_style = UiTheme.box(Color.WHITE, Color.TRANSPARENT, 0, BATTLE_CORNER_RADIUS, 0)
+	_battle_frame = Panel.new()
+	_battle_frame.name = "BattlePortraitFrame"
+	_battle_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_battle_frame.add_theme_stylebox_override("panel", _battle_frame_style)
+	add_child(_battle_frame)
+	_battle_frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+
+func _draw() -> void:
+	if clip_children == CanvasItem.CLIP_CHILDREN_ONLY and _battle_mask_style != null:
+		draw_style_box(_battle_mask_style, Rect2(Vector2.ZERO, size))
 
 
 func _exit_tree() -> void:

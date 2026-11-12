@@ -20,7 +20,10 @@ static func release(node: Node, tree: SceneTree) -> void:
 						held.append(material)
 		for child in current.get_children(): pending.append(child)
 	node.free()
+	if held.is_empty(): return
+	# A unique closure per release also works when replicas share every material.
+	var release_held := func() -> void: held.clear()
 	if DisplayServer.get_name() == "headless":
-		tree.process_frame.connect(held.clear, CONNECT_ONE_SHOT)
+		tree.process_frame.connect(release_held, CONNECT_ONE_SHOT)
 	else:
-		RenderingServer.frame_post_draw.connect(held.clear, CONNECT_ONE_SHOT)
+		RenderingServer.frame_post_draw.connect(release_held, CONNECT_ONE_SHOT)

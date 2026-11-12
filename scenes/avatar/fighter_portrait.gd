@@ -6,6 +6,9 @@ var camera: Camera3D
 var _activity: RefCounted
 var _standby_actor: Node3D
 var _standby_skeleton: Skeleton3D
+var animated_materials := false
+const Metrics := preload("res://scenes/performance_metrics.gd")
+const Palette := preload("res://scenes/avatar/vrm_palette_shaders.gd")
 
 func _init() -> void:
 	size = Vector2i(144,144)
@@ -51,12 +54,19 @@ func bind(value: VrmFighter,side: int) -> void:
 		for shape in mesh.get_blend_shape_count(): mesh.set_blend_shape_value(shape, 0.0)
 		portrait_meshes.append(mesh)
 	fighter.apply_profile_face_to(portrait_meshes)
+	animated_materials = false
+	for mesh in portrait_meshes:
+		for surface in mesh.mesh.get_surface_count():
+			animated_materials = animated_materials or material_animated(mesh.get_active_material(surface))
+		animated_materials = animated_materials or material_animated(mesh.material_overlay)
 	_update_camera()
-	if _activity != null: _activity.sync()
+	var update_mode := SubViewport.UPDATE_ALWAYS if animated_materials else SubViewport.UPDATE_ONCE
+	if _activity != null: _activity.set_update_mode(update_mode)
 	else:
 		# Isolated captures may bind without a UI consumer. Match HUD always watches one.
-		render_target_update_mode = SubViewport.UPDATE_ALWAYS
-		set_process(true)
+		render_target_update_mode = update_mode
+	Metrics.add("portrait_refreshes")
+	set_process(false)
 
 
 ## Runtime @ names change during duplication; the child hierarchy stays exact.
@@ -71,20 +81,47 @@ func replica_node(source: Node) -> Node:
 	return node
 
 func watch_consumer(consumer: CanvasItem, hud: HudUI) -> void:
-	set_process(true)
-	_activity = preload("res://scenes/ui/preview_activity.gd").new(self,consumer)
+	var update_mode := SubViewport.UPDATE_ALWAYS if animated_materials else SubViewport.UPDATE_ONCE
+	_activity = preload("res://scenes/ui/preview_activity.gd").new(self,consumer,null,update_mode)
 	_activity.resumed.connect(_update_camera)
 	hud.battle_mode_changed.connect(_activity.set_covered)
 	_activity.set_covered(hud._battle)
 	_update_camera()
+	set_process(false)
 
+## Kept as a no-op for existing instrumentation subclasses; the portrait itself
+## never schedules per-frame camera work.
 func _process(_delta: float) -> void:
-	_update_camera()
+	pass
 
 func _update_camera() -> void:
 	if not is_instance_valid(_standby_skeleton): return
+	Metrics.add("portrait_camera_updates")
 	var head := _standby_skeleton.get_bone_global_pose(_standby_skeleton.find_bone("Head")).origin
 	var height := _standby_actor.scale.y
 	var target := _standby_skeleton.to_global(head)+Vector3(0,.07*height,0)
 	camera.global_position = target+Vector3(0,.035*height,.95*height)
 	camera.look_at(target)
+
+
+## MToon's TIME only scrolls/rotates UVs when an animation speed is nonzero.
+## Unknown custom shaders/includes keep continuous rendering conservatively.
+static func material_animated(material: Material) -> bool:
+	var seen: Array[int] = []
+	while material != null and not seen.has(material.get_instance_id()):
+		seen.append(material.get_instance_id())
+		if material is ShaderMaterial and material.shader != null:
+			var uniforms: Dictionary = {}
+			for uniform in material.shader.get_shader_uniform_list(): uniforms[uniform.name] = true
+			var shader_path: String = material.shader.resource_path
+			var known_mtoon: bool = Palette.SHADERS.get(shader_path.get_file()) == material.shader
+			if known_mtoon and uniforms.has("_UvAnimScrollX") and uniforms.has("_UvAnimScrollY") and uniforms.has("_UvAnimRotation"):
+				for parameter in ["_UvAnimScrollX", "_UvAnimScrollY", "_UvAnimRotation"]:
+					var speed: Variant = material.get_shader_parameter(parameter)
+					# Unassigned known MToon UV uniforms default to zero, including
+					# new materials which have not reached the renderer yet.
+					if speed != null and (not (speed is float or speed is int) or not is_zero_approx(float(speed))): return true
+			elif "TIME" in material.shader.code or "#include" in material.shader.code:
+				return true
+		material = material.next_pass
+	return false

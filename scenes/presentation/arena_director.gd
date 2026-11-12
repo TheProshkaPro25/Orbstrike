@@ -2,9 +2,45 @@ class_name ArenaDirector
 extends Node
 ## Последовательная постановка. Решения правил остаются в MatchController.
 
-var game: Node
+const Resources := preload("res://scenes/match_resources.gd")
+const State := preload("res://scenes/presentation/match_presentation_state.gd")
+const AttackFx := preload("res://scenes/attack_fx.gd")
+const MatchEffects := preload("res://scenes/presentation/match_effects.gd")
+const CARD_SCENE: PackedScene = preload("res://scenes/arena_card_node.tscn")
+const HUMAN := 0
+const BALL_Y := 0.36
+const THROW_Z := Arena.STEP_Z * 0.5 + Arena.CARD_H * 0.5 + 0.8 * Arena.WORLD
+signal labels_requested(uids: Array)
+signal creature_opened(uid: int)
+signal battle_presented(attacker: int, defender: int, powers: Array)
+signal battle_cleared
+signal landing_ready(uid: int, slot: int)
+var resources: Resources
+var state: State
+var controller: MatchController
+var world: Node3D
+var cam: CameraRig
+var hud: HudUI
+var battle_hud: BattleHud
+var ability_panel: AbilityPanel
+var battle_overlay: BattleOverlay
+var rng: RandomNumberGenerator
+var effects: MatchEffects
+var arena: Arena:
+	get: return resources.arena if resources != null else null
+var balls: Dictionary:
+	get: return resources.active if resources != null else {}
+var fighters: Array[VrmFighter]:
+	get: return resources.fighters if resources != null else []
 var flying := false
 var fighter_shots := {0:{"throw":0,"card_throw":0,"command":0,"gate":0},1:{"throw":0,"card_throw":0,"command":0,"gate":0}}
+
+## Same synchronous reveal entry for landing, battle arrival and replacement.
+func open_creature(ball: CreatureBall, pose: bool = true) -> Signal:
+	if not ball._open and ball.def != null and ball.def.attribute == Attr.A.LIGHT and is_instance_valid(hud):
+		hud.screen_flash(Color(1.0,.96,.78,.10))
+	return ball.open_animated(pose)
+
 
 func ability_action(player: int,card_id: StringName,uid: int = -1) -> void:
 	var def: CardDef = CardDB.card(card_id)
@@ -12,64 +48,64 @@ func ability_action(player: int,card_id: StringName,uid: int = -1) -> void:
 	var element: int = int(elements[0]) if not elements.is_empty() else -1
 	if element < 0:
 		if uid < 0:
-			for candidate in game._battle_uids:
-				if game._owner_of(candidate) == player:
+			for candidate in state.battle_uids:
+				if owner_of(candidate) == player:
 					uid = candidate
 					break
-		if uid >= 0: element = game._creature_def(uid).attribute
+		if uid >= 0: element = creature_def(uid).attribute
 	await fighter_action(player,"command",def,element)
 
 func fighter_action(player: int,action: String,card: CardDef = null,element: int = -1) -> void:
-	if game.fighters.size() != 2 or player < 0 or player > 1: return
-	var fighter: VrmFighter = game.fighters[player]
+	if fighters.size() != 2 or player < 0 or player > 1: return
+	var fighter: VrmFighter = fighters[player]
 	fighter_shots[player][action] += 1
-	var battle_visible: bool = game.battle_hud.visible
-	game.battle_hud.hide()
+	var battle_visible: bool = battle_hud.visible
+	battle_hud.hide()
 	fighter.play_motion(action)
 	if card != null: fighter.prepare_ability(card,element)
-	game.cam.fighter_view(fighter,action)
+	cam.fighter_view(fighter,action)
 	if action == "command" and card != null:
 		SoundFx.i().play("card_swoosh",-7.0)
-		await game._wait(fighter.ability_ignition_time())
+		await wait(fighter.ability_ignition_time())
 		SoundFx.i().play(SoundFx.activation_sfx(card,element))
-		await game._wait(VrmFighter.DURATIONS[action]-fighter.ability_ignition_time())
+		await wait(VrmFighter.DURATIONS[action]-fighter.ability_ignition_time())
 	else:
-		await game._wait(VrmFighter.DURATIONS[action])
+		await wait(VrmFighter.DURATIONS[action])
 	fighter.ability_card.clear()
-	game.battle_hud.visible = battle_visible
+	battle_hud.visible = battle_visible
 
 func battle_started(slot: int, attacker_uid: int, defender_uid: int, powers: Array = [], momentum: Array = [0, 0]) -> void:
 	SoundFx.i().play_music(SoundFx.MUSIC_CLASH, 1.5, false)  # бой — тема схватки с начала
-	game.arena.set_highlight([slot])
-	var atk: CreatureBall = game.balls.get(attacker_uid)
-	var dfn: CreatureBall = game.balls.get(defender_uid)
-	var base: Vector3 = game.arena.slot_position(slot)
+	arena.set_highlight([slot])
+	var atk: CreatureBall = balls.get(attacker_uid)
+	var dfn: CreatureBall = balls.get(defender_uid)
+	var base: Vector3 = arena.slot_position(slot)
 	# короткий наезд после приземления атакующего, затем кат на общий план боя
-	if game.cam.mode == CameraRig.Mode.STATIC and not game.cam.is_overview():
-		await game._wait(0.4)
+	if cam.mode == CameraRig.Mode.STATIC and not cam.is_overview():
+		await wait(0.4)
 	# Новоприбывший раскрывается крупно и в бою, а не сразу исчезает в общем плане.
 	if atk != null and not atk._open:
 		var start: Vector3 = atk.global_position
 		atk.face_toward(dfn.global_position if dfn != null else base)
-		game._focus_labels([attacker_uid])
-		var reveal_time: float = game.cam.reveal_orbit(start - Vector3(0, game.BALL_Y, 0), atk.figure_height(), Vector3.FORWARD, atk.figure_size())
+		labels_requested.emit([attacker_uid])
+		var reveal_time: float = cam.reveal_orbit(start - Vector3(0, BALL_Y, 0), atk.figure_height(), Vector3.FORWARD, atk.figure_size())
 		SoundFx.i().play("capsule_open", -3.0)
-		game._cry(attacker_uid, "appear", .35)
-		atk.open_animated()
-		game._public_creature_opened(attacker_uid)
-		await game._wait(reveal_time)
+		cry(attacker_uid, "appear", .35)
+		open_creature(atk)
+		creature_opened.emit(attacker_uid)
+		await wait(reveal_time)
 	var h: float = maxf(atk.figure_height() if atk != null else 0.0, dfn.figure_height() if dfn != null else 0.0)
-	game.cam.battle_view(base, h, true, maxf(atk.figure_size() if atk != null else 0.0, dfn.figure_size() if dfn != null else 0.0))
-	game.hud.set_battle_mode(true)
-	game._battle_uids.assign([attacker_uid, defender_uid])
-	game._present_battle_opponent(attacker_uid,defender_uid,powers)
+	cam.battle_view(base, h, true, maxf(atk.figure_size() if atk != null else 0.0, dfn.figure_size() if dfn != null else 0.0))
+	hud.set_battle_mode(true)
+	state.battle_uids.assign([attacker_uid, defender_uid])
+	battle_presented.emit(attacker_uid,defender_uid,powers)
 	if powers.size() == 2:
-		game.battle_hud.open([game._cname(attacker_uid), game._cname(defender_uid)], [game._creature_def(attacker_uid).attribute, game._creature_def(defender_uid).attribute], powers, momentum)
-	game._focus_labels([attacker_uid, defender_uid])
+		battle_hud.open([creature_name(attacker_uid), creature_name(defender_uid)], [creature_def(attacker_uid).attribute, creature_def(defender_uid).attribute], powers, momentum)
+	labels_requested.emit([attacker_uid, defender_uid])
 	# Атакующий и защитник стоят на карте лицом к лицу: по трети масштаба существ (Arena.FIG_H) от центра.
 	# Камера боя смотрит с +X, поэтому +Z на экране слева: атакующий всегда слева, под плашкой «АТАКА».
 	var dz: float = Arena.FIG_H / 3.0
-	var y := Vector3(0.0, game.BALL_Y + 0.02, 0.0)
+	var y := Vector3(0.0, BALL_Y + 0.02, 0.0)
 	if atk != null:
 		atk.stage_at(base + y + Vector3(0.0, 0.0, dz), base - Vector3(0.0, 0.0, dz))
 		atk.set_label_shift(-110.0 * signf(dz))
@@ -78,135 +114,153 @@ func battle_started(slot: int, attacker_uid: int, defender_uid: int, powers: Arr
 		dfn.stage_at(base + y - Vector3(0.0, 0.0, dz), base + Vector3(0.0, 0.0, dz))
 		dfn.set_label_shift(110.0 * signf(dz))
 		dfn.open_animated(false)
-	game.hud.set_hint("Бой: %s против %s" % [game._cname(attacker_uid), game._cname(defender_uid)])
+	hud.set_hint("Бой: %s против %s" % [creature_name(attacker_uid), creature_name(defender_uid)])
 	SoundFx.i().play("battle_start")
 	# общий план лицом к лицу → кат на крупный план каждого при рёве → снова общий план
-	game._cry(attacker_uid, "attack", 0.85)
-	game._cry(defender_uid, "attack", 1.65, -4.0)
+	cry(attacker_uid, "attack", 0.85)
+	cry(defender_uid, "attack", 1.65, -4.0)
 	if atk != null:
 		atk.roar(0.85)
 	if dfn != null:
 		dfn.roar(1.65)
-	get_tree().create_timer(0.95).timeout.connect(func() -> void: game.cam.shake(0.3, 0.2))
-	get_tree().create_timer(1.75).timeout.connect(func() -> void: game.cam.shake(0.25, 0.2))
-	await game._wait(0.7)
+	get_tree().create_timer(0.95).timeout.connect(func() -> void: cam.shake(0.3, 0.2))
+	get_tree().create_timer(1.75).timeout.connect(func() -> void: cam.shake(0.25, 0.2))
+	await wait(0.7)
 	if atk != null and is_instance_valid(atk):
-		game.cam.close_up(atk.global_position - Vector3(0, CreatureBall.RADIUS, 0), -Vector3(0, 0, dz), atk.figure_height(), atk.figure_size())
-	await game._wait(0.8)
+		cam.close_up(atk.global_position - Vector3(0, CreatureBall.RADIUS, 0), -Vector3(0, 0, dz), atk.figure_height(), atk.figure_size())
+	await wait(0.8)
 	if dfn != null and is_instance_valid(dfn):
-		game.cam.close_up(dfn.global_position - Vector3(0, CreatureBall.RADIUS, 0), Vector3(0, 0, dz), dfn.figure_height(), dfn.figure_size())
-	await game._wait(0.8)
-	game.cam.battle_wide(true)
-	await game._wait(0.35)
+		cam.close_up(dfn.global_position - Vector3(0, CreatureBall.RADIUS, 0), Vector3(0, 0, dz), dfn.figure_height(), dfn.figure_size())
+	await wait(0.8)
+	cam.battle_wide(true)
+	await wait(0.35)
 
 func battle_resolved(result: BattleResult) -> void:
-	game.hud.set_phase(MatchController.Phase.RESOLVING)
-	game.arena.set_highlight([])
-	game.battle_hud.set_powers([result.powers[0], result.powers[1]])
-	game.cam.battle_wide()
-	await game._wait(0.22)
+	hud.set_phase(MatchController.Phase.RESOLVING)
+	if DeviceSettings.is_device(): hud.set_hint("")
+	arena.set_highlight([])
+	battle_hud.set_powers([result.powers[0], result.powers[1]])
+	cam.battle_wide()
+	await wait(0.22)
 	if result.winner_uid < 0:
 		await no_winner(result)
 		return
 	# удар: победитель бросается на соперника, вспышка, тряска, проигравший рассыпается
-	var wb: CreatureBall = game.balls.get(result.winner_uid)
-	var lb: CreatureBall = game.balls.get(result.loser_uid)
-	game._cry(result.winner_uid, "attack", 0.0)
+	var wb: CreatureBall = balls.get(result.winner_uid)
+	var lb: CreatureBall = balls.get(result.loser_uid)
+	cry(result.winner_uid, "attack", 0.0)
 	var wh: float = wb.figure_height() if wb != null else 10.0
 	if wb != null and lb != null:
 		# Замах виден на общем плане, наезд — только в момент контакта.
 		lb.brace()
 		await wb.lunge(lb.global_position)
 		wb.hold_impact()
-		game.cam.impact((wb.global_position + lb.global_position) * 0.5 + Vector3(0, wh * 0.45, 0))
-		lb.take_hit(VisualUtil.attr_color(game._creature_def(result.winner_uid).attribute).lightened(0.2))
-		game.AttackFx.play(game.world, game._creature_def(result.winner_uid).attribute, wb.global_position - Vector3(0, CreatureBall.RADIUS, 0),
-				lb.global_position - Vector3(0, CreatureBall.RADIUS, 0), lb.figure_height(), lb.figure_size(), wh)
-		var mid: Vector3 = (wb.global_position + lb.global_position) * 0.5 + Vector3(0, Arena.FIG_H * 0.25, 0)
-		var wc: Color = VisualUtil.attr_color(game._creature_def(result.winner_uid).attribute)
-		VisualUtil.burst(game.world, mid, wc.lightened(0.3), Arena.WORLD)
-		VisualUtil.light_pillar(lb, Vector3(0, -CreatureBall.RADIUS, 0), wc, Arena.FIG_H * 1.2, Arena.FIG_W * 0.3, 0.5)
+		cam.impact((wb.global_position + lb.global_position) * 0.5 + Vector3(0, wh * 0.45, 0))
+		lb.take_hit(VisualUtil.attr_color(wb.def.attribute).lightened(0.2))
+		_play_strike(wb, lb)
 	SoundFx.i().play("clash")
-	game.cam.shake(1.0, 0.45)
-	game.hud.screen_flash(Color(1, 1, 1, 0.55))
-	game.battle_hud.resolve(0 if result.winner_uid == result.attacker_uid else 1)
-	SoundFx.i().play_later("battle_win" if game._owner_of(result.winner_uid) == game.HUMAN else "battle_lose", 0.35, -2.0)
-	await game._wait(0.5)
+	cam.shake(1.0, 0.45)
+	hud.screen_flash(Color(1, 1, 1, 0.18))
+	battle_hud.resolve(0 if result.winner_uid == result.attacker_uid else 1)
+	SoundFx.i().play_later("battle_win" if owner_of(result.winner_uid) == HUMAN else "battle_lose", 0.35, -2.0)
+	await wait(0.5)
 	# Короткая победная пауза; полный облёт оставляем раскрытию существ.
 	if wb != null and is_instance_valid(wb):
 		var facing: Vector3 = lb.global_position - wb.global_position if lb != null else Vector3.FORWARD
-		game.cam.close_up(wb.global_position - Vector3(0, CreatureBall.RADIUS, 0), facing, wh, wb.figure_size())
-	await game._wait(0.65)
-	game.battle_hud.close()
+		cam.close_up(wb.global_position - Vector3(0, CreatureBall.RADIUS, 0), facing, wh, wb.figure_size())
+	await wait(0.65)
+	battle_hud.close()
 	SoundFx.i().play_music(SoundFx.i().turn_music())  # после боя — музыка хода с того же места
-	game.hud.set_battle_mode(false)
-	game.cam.overview()  # кат на общий план после боя
-	game._focus_labels([])
-	game._battle_uids.clear()
-	game._finish_opponent_battle()
-	await game.battle_overlay.show_result(result, game._names_for(result))
+	hud.set_battle_mode(false)
+	cam.overview()  # кат на общий план после боя
+	labels_requested.emit([])
+	state.battle_uids.clear()
+	battle_cleared.emit()
+	await battle_overlay.show_result(result, names_for(result))
 
 
 ## Бой без победителя: «Отлив» (бой прерван) или выбывают оба (удар обоих, вспышка).
 
 func no_winner(result: BattleResult) -> void:
-	var ab: CreatureBall = game.balls.get(result.attacker_uid)
-	var db: CreatureBall = game.balls.get(result.defender_uid)
+	var ab: CreatureBall = balls.get(result.attacker_uid)
+	var db: CreatureBall = balls.get(result.defender_uid)
 	if result.both_lose:
 		if ab != null and db != null:
-			game.cam.impact((ab.global_position + db.global_position) * 0.5 + Vector3(0, ab.figure_height() * 0.45, 0))
+			cam.impact((ab.global_position + db.global_position) * 0.5 + Vector3(0, ab.figure_height() * 0.45, 0))
 			var contact: Signal = ab.lunge(db.global_position, 0.46)
 			db.lunge(ab.global_position, 0.46)
 			await contact
 			ab.take_hit(Color(1.0, 0.4, 0.3))
 			db.take_hit(Color(1.0, 0.4, 0.3))
-			var floor_off := Vector3(0, CreatureBall.RADIUS, 0)
-			game.AttackFx.play(game.world, game._creature_def(result.attacker_uid).attribute, ab.global_position - floor_off,
-					db.global_position - floor_off, db.figure_height(), db.figure_size(), ab.figure_height())
-			game.AttackFx.play(game.world, game._creature_def(result.defender_uid).attribute, db.global_position - floor_off,
-					ab.global_position - floor_off, ab.figure_height(), ab.figure_size(), db.figure_height())
+			_play_strike(ab, db)
+			_play_strike(db, ab)
 		SoundFx.i().play("clash")
-		game.cam.shake(1.0, 0.5)
-		game.hud.screen_flash(Color(1.0, 0.35, 0.25, 0.5))
-		game.battle_hud.resolve(-1)
-		await game.hud.banner("ВЫБЫВАЮТ ОБА", "Ворота сгорают", Color(1.0, 0.45, 0.3), 0.8)
+		cam.shake(1.0, 0.5)
+		hud.screen_flash(Color(1.0, 0.35, 0.25, 0.2))
+		battle_hud.resolve(-1)
+		await hud.banner("ВЫБЫВАЮТ ОБА", "Ворота сгорают", Color(1.0, 0.45, 0.3), 0.8)
 	else:
 		SoundFx.i().play("miss", -2.0)
-		game.cam.shake(0.4, 0.3)
-		game.battle_hud.resolve(-1)
-		await game.hud.banner("БОЙ ПРЕРВАН", "Отлив уносит соперника на другие ворота", Color(0.45, 0.75, 1.0), 0.8)
-	game.battle_hud.close()
+		cam.shake(0.4, 0.3)
+		battle_hud.resolve(-1)
+		await hud.banner("БОЙ ПРЕРВАН", "Отлив уносит соперника на другие ворота", Color(0.45, 0.75, 1.0), 0.8)
+	battle_hud.close()
 	SoundFx.i().play_music(SoundFx.i().turn_music())  # после боя — музыка хода с того же места
-	game.hud.set_battle_mode(false)
-	game.cam.overview()
-	game._focus_labels([])
-	game._battle_uids.clear()
-	game._finish_opponent_battle()
-	await game.battle_overlay.show_result(result, game._names_for(result))
+	hud.set_battle_mode(false)
+	cam.overview()
+	labels_requested.emit([])
+	state.battle_uids.clear()
+	battle_cleared.emit()
+	await battle_overlay.show_result(result, names_for(result))
+
+
+func _play_strike(attacker: CreatureBall, target: CreatureBall) -> void:
+	var floor_off := Vector3.UP * CreatureBall.RADIUS
+	var from := attacker.global_position - floor_off
+	var to := target.global_position - floor_off
+	var direction := (to - from).slide(Vector3.UP).normalized()
+	var facing := Basis.looking_at(direction) if not direction.is_zero_approx() else Basis.IDENTITY
+	var height := target.figure_height()
+	var size := target.figure_size()
+	var contact := to + Vector3.UP * (height * 0.46) - direction * minf(size * 0.16, 2.0)
+	effects.hit(contact, facing, clampf(size * 0.11, 0.95, 2.4))
+	if attacker.def.attribute == Attr.A.FIRE:
+		var flame_center := contact - direction * clampf(height * 0.11, 0.6, 1.75)
+		effects.fire_impact(flame_center, clampf(height * 0.15, 1.1, 2.45))
+	else:
+		AttackFx.play(world, attacker.def.attribute, from, to, height, size, attacker.figure_height())
+	if attacker.def.species != &"ratnik" or attacker._anim == null or attacker._anim._support == null:
+		return
+	var skeleton: Skeleton3D = attacker._anim._support.skeleton
+	var sword := skeleton.find_bone("sword") if is_instance_valid(skeleton) else -1
+	if sword >= 0:
+		var sword_scale := clampf(attacker.figure_height() * 0.17, 1.15, 2.7)
+		var hilt := skeleton.to_global(skeleton.get_bone_global_pose(sword).origin)
+		effects.sword_slash(hilt - Vector3.UP * sword_scale, facing, sword_scale)
 
 ## Выбирается карта-цель. Начальная скорость рассчитана заранее; дальше действуют
 ## настоящие столкновения, отскоки и трение. Учитывается фактическая точка остановки.
 func launch_to(slot: int) -> void:
-	if flying or game._active_ball == null or not game._gate_slots().has(slot):
+	if flying or state.active_ball == null or not gate_slots().has(slot):
 		return
 	flying = true
-	var ball: CreatureBall = game._active_ball
+	var ball: CreatureBall = state.active_ball
 	var start: Vector3 = ball.global_position
-	var target: Vector3 = game.arena.slot_position(slot)
-	target += Vector3(game.rng.randf_range(-.20, .20) * Arena.CARD_W, 0, game.rng.randf_range(-.18, .18) * Arena.CARD_H)
-	game.arena.set_highlight([])
-	game.ability_panel.hide_panel()
-	game.hud.dismiss_coach("throw")
-	game.hud.dismiss_coach("prethrow")
-	game.hud.set_hint("Бросок на ворота %d…" % (slot + 1))
+	var target: Vector3 = arena.slot_position(slot)
+	target += Vector3(rng.randf_range(-.20, .20) * Arena.CARD_W, 0, rng.randf_range(-.18, .18) * Arena.CARD_H)
+	arena.set_highlight([])
+	ability_panel.hide_panel()
+	hud.dismiss_coach("throw")
+	hud.dismiss_coach("prethrow")
+	hud.set_hint("Бросок на ворота %d…" % (slot + 1))
 	var bounce_feedback := func(_point: Vector3, impact: float) -> void:
-		if flying and game.cam.mode == CameraRig.Mode.FOLLOW:
-			game.cam.shake(clampf(impact / 80.0, .06, .18), .11)
-	if game.fighters.size() == 2:
-		var fighter: VrmFighter = game.fighters[game._owner_of(ball.uid)]
+		if flying and cam.mode == CameraRig.Mode.FOLLOW:
+			cam.shake(clampf(impact / 80.0, .06, .18), .11)
+	if fighters.size() == 2:
+		var fighter: VrmFighter = fighters[owner_of(ball.uid)]
 		fighter.play_motion("throw")
-		fighter_shots[game._owner_of(ball.uid)]["throw"] += 1
-		game.cam.fighter_view(fighter,"throw")
+		fighter_shots[owner_of(ball.uid)]["throw"] += 1
+		cam.fighter_view(fighter,"throw")
 		# Palm-sized shell keeps the same visible scale through release.
 		var held_scale := 1.0
 		# Suspend the floor offset while holding the visible center in the palm.
@@ -228,24 +282,24 @@ func launch_to(slot: int) -> void:
 	SoundFx.i().play("ball_throw", -3.0)
 	ball.launch_towards(target)
 	# Первый реальный кадр скорости задаёт направление погони.
-	game.cam.follow(ball, Vector3.ZERO)
-	game.cam._follow_dir = Vector3(target.x - start.x, 0, target.z - start.z).normalized()
-	game.cam._smooth = 7.0
-	game.cam._update_follow(1.0 / 60.0)
-	game.cam.cut()
-	game.cam.shake(.10, .12)
+	cam.follow(ball, Vector3.ZERO)
+	cam._follow_dir = Vector3(target.x - start.x, 0, target.z - start.z).normalized()
+	cam._smooth = 7.0
+	cam._update_follow(1.0 / 60.0)
+	cam.cut()
+	cam.shake(.10, .12)
 	var landing: Array = await ball.settled
 	var actual: Vector3 = landing[1]
 	ball.surface_bounced.disconnect(bounce_feedback)
-	game._active_ball = null
-	var landed_slot: int = game.arena.slot_at(actual)
+	state.active_ball = null
+	var landed_slot: int = arena.slot_at(actual)
 	ball.hold_landing_pose()
-	if landed_slot < 0 or not game._gate_slots().has(landed_slot):
-		game.cam.zoom_slot(actual)
-		await game._wait(.12)
+	if landed_slot < 0 or not gate_slots().has(landed_slot):
+		cam.zoom_slot(actual)
+		await wait(.12)
 	# Попадание сразу передаётся раскрытию: один непрерывный облёт без серии катов.
 	flying = false
-	game._report(ball.uid, landed_slot)
+	landing_ready.emit(ball.uid, landed_slot)
 
 
 ## Маленькая карта летит до самого пола. Волна и рост начинаются только после касания.
@@ -254,26 +308,26 @@ const CARD_FLIGHT_TIME := 0.95
 const CARD_GROW_TIME := 0.68
 
 func card_placed(player: int, slot: int) -> void:
-	var node: ArenaCardNode = game.CARD_SCENE.instantiate()
-	game.world.add_child(node)
-	var pos: Vector3 = game.arena.slot_position(slot)
-	var start := Vector3(0, 5.5, game.THROW_Z if player == 0 else -game.THROW_Z)
+	var node: ArenaCardNode = CARD_SCENE.instantiate()
+	world.add_child(node)
+	var pos: Vector3 = arena.slot_position(slot)
+	var start := Vector3(0, 5.5, THROW_Z if player == 0 else -THROW_Z)
 	node.position = start
 	node.scale = Vector3.ONE * CARD_FLIGHT_SCALE
 	node.slot = slot
 	node.set_meta("placement_stage", &"flight")
 	node.set_meta("flight_scale",Vector3.ONE*CARD_FLIGHT_SCALE)
-	var cdef: CardDef = CardDB.card(game.ctrl.get_view(game.HUMAN).slots[slot].card_id)
+	var cdef: CardDef = CardDB.card(controller.get_view(HUMAN).slots[slot].card_id)
 	var flight_scale := Vector3.ONE*CARD_FLIGHT_SCALE
 	var release_basis := Basis.IDENTITY
 	node.show_facedown(player, cdef)
-	game.card_nodes[slot] = node
-	if game.fighters.size() == 2:
-		var fighter: VrmFighter = game.fighters[player]
+	state.card_nodes[slot] = node
+	if fighters.size() == 2:
+		var fighter: VrmFighter = fighters[player]
 		fighter_shots[player]["card_throw"] += 1
 		fighter.play_motion("card_throw")
-		game.cam.fighter_view(fighter,"card_throw")
-		game.hud.set_hint("Бросок карты ворот")
+		cam.fighter_view(fighter,"card_throw")
+		hud.set_hint("Бросок карты ворот")
 		node.set_meta("placement_stage",&"held")
 		while fighter.motion_time < fighter.card_release_time():
 			node.global_transform = fighter.card_hand_transform("Right").scaled_local(Vector3.ONE*CARD_FLIGHT_SCALE)
@@ -287,15 +341,15 @@ func card_placed(player: int, slot: int) -> void:
 	var forward := Vector3(pos.x-start.x,0,pos.z-start.z).normalized()
 	var curve := forward.cross(Vector3.UP)*minf(6.0,start.distance_to(pos)*.08)
 
-	var uid: int = game.ctrl.get_view(game.HUMAN).players[player].creature_uids[0]
-	var col: Color = VisualUtil.attr_color(game._creature_def(uid).attribute)
+	var uid: int = controller.get_view(HUMAN).players[player].creature_uids[0]
+	var col: Color = VisualUtil.attr_color(creature_def(uid).attribute)
 	var trail := BallTrail.new()
 	trail.target = node
 	trail.width = 0.10
 	trail.color = col.lightened(0.20) * 0.75
-	game.world.add_child(trail)
+	world.add_child(trail)
 	trail.emitting = true
-	game.cam.card_flight_view(start, true, 1.0 if player == 0 else -1.0)
+	cam.card_flight_view(start, true, 1.0 if player == 0 else -1.0)
 	SoundFx.i().play("gate_flight_wind", -11.0, 0.015)
 	var tw := create_tween()
 	tw.tween_method(func(t: float) -> void:
@@ -305,7 +359,7 @@ func card_placed(player: int, slot: int) -> void:
 		var bank := release_basis.get_rotation_quaternion().slerp(flat.get_rotation_quaternion(),smoothstep(0,.18,t))
 		node.basis = Basis(Quaternion(Vector3.UP,t*TAU*3.0))*Basis(bank)
 		node.scale = flight_scale
-		game.cam.card_flight_view(node.position, false, 1.0 if player == 0 else -1.0), 0.0, 1.0, CARD_FLIGHT_TIME)
+		cam.card_flight_view(node.position, false, 1.0 if player == 0 else -1.0), 0.0, 1.0, CARD_FLIGHT_TIME)
 	await tw.finished
 	SoundFx.i().stop_sfx("gate_flight_wind")
 	node.position = pos
@@ -313,16 +367,69 @@ func card_placed(player: int, slot: int) -> void:
 	node.set_meta("placement_stage", &"landed")
 	trail.emitting = false
 	get_tree().create_timer(0.45).timeout.connect(trail.queue_free)
-	game.cam.card_expansion_view(pos)
+	cam.card_expansion_view(pos)
 	SoundFx.i().play("card_place", -17.0, 0.01)
-	await game._wait(0.10)
+	await wait(0.10)
 	node.set_meta("placement_stage", &"expanding")
-	game.arena.element_wave(pos, col, 0.80)
+	arena.element_wave(pos, col, 0.80)
 	SoundFx.i().play("gate_expand_wave", -4.0, 0.0)
 	var grow := create_tween()
 	grow.tween_property(node, "scale", Vector3.ONE, CARD_GROW_TIME).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	await grow.finished
 	node.set_meta("placement_stage", &"ready")
 	node.set_field_surface(true)
-	game.cam.overview()
-	await game._wait(0.3)
+	cam.overview()
+	await wait(0.3)
+
+
+func configure(match_resources: Resources, presentation_state: State, stage_world: Node3D,
+		camera: CameraRig, match_hud: HudUI, powers_hud: BattleHud, abilities: AbilityPanel,
+		results: BattleOverlay, random: RandomNumberGenerator) -> void:
+	resources = match_resources
+	state = presentation_state
+	world = stage_world
+	cam = camera
+	hud = match_hud
+	battle_hud = powers_hud
+	ability_panel = abilities
+	battle_overlay = results
+	rng = random
+	effects = MatchEffects.new()
+	effects.name = &"MatchEffects"
+	world.add_child(effects)
+
+func bind_controller(value: MatchController) -> void:
+	controller = value
+
+func creature_def(uid: int) -> CreatureDef:
+	return state.definitions.get(uid) as CreatureDef
+
+func owner_of(uid: int) -> int:
+	return int(state.owners.get(uid,-1))
+
+func creature_name(uid: int) -> String:
+	var definition := creature_def(uid)
+	return definition.display_name if definition != null else "Существо #%d" % uid
+
+func names_for(result: BattleResult) -> Dictionary:
+	var names := {}
+	for uid in [result.attacker_uid,result.defender_uid]:
+		var definition := creature_def(uid)
+		if definition != null:
+			names[uid] = "%s (%s)" % [definition.display_name,VisualUtil.attr_name(definition.attribute)]
+	return names
+
+func gate_slots() -> Array:
+	var slots: Array = []
+	if controller == null: return slots
+	var view: MatchState = controller.get_view(HUMAN)
+	for index in view.slots.size():
+		if view.slots[index].has_card: slots.append(index)
+	return slots
+
+func wait(seconds: float) -> void:
+	await get_tree().create_timer(seconds).timeout
+
+func cry(uid: int, kind: String, delay: float = 0.0, db: float = -1.0) -> void:
+	var definition := creature_def(uid)
+	if definition != null: SoundFx.i().cry(definition.id,kind,delay,db)

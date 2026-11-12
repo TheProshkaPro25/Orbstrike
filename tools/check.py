@@ -27,6 +27,19 @@ if args.only and args.profile:
 MODELS = ['animation', 'support', 'flight', 'idle', 'stance', 'review-state', 'preparation-cache', 'preview-pool', 'memory-catalog', 'cloth-sharing', 'hd-material-retention']
 RULES = ['career', 'career-power', 'card-effect-edges', 'battle-lockout', 'ai-swap-combo', 'ai-fallen-call', 'ai-formation', 'card-price-rules', 'standoff-lottery', 'last-rush', 'ai-interruption', 'ai-material', 'ai-forecast', 'ai-gust-risk', 'ai-target-flow', 'cards033', 'campaign', 'tournament', 'rules', 'rules-edges', 'cards', 'card-balance', 'card-matches', 'card-counters', 'card-scenarios', 'card-choices', 'card-audit-positions', 'ai', 'ai-gates', 'ai-outcomes', 'ai-rescue-matches', 'shot-physics']
 SCRIPTS = {
+    'architecture-contracts': 'tools/test_architecture_contracts.gd',
+    'match-lifecycle': 'tools/test_match_lifecycle.gd',
+    'creature-preview-refresh': 'tools/test_creature_preview_refresh.gd',
+    'sport-neck': 'tools/test_sport_neck.gd',
+    'sport-style': 'tools/test_sport_style.gd',
+    'wardrobe-fit': 'tools/test_wardrobe_fit.gd',
+    'wardrobe-catalog-motion': 'tools/test_wardrobe_catalog_motion.gd',
+    'wardrobe-palette': 'tools/test_wardrobe_palette.gd',
+    'booth-outfits': 'tools/test_booth_outfits.gd',
+    'startup-failure': 'tools/test_startup_failure.gd',
+    'preview-refresh': 'tools/test_preview_refresh.gd',
+    'optimization': 'tools/test_optimization_regression.gd',
+    'location-reveal': 'tools/test_location_reveal.gd',
     'grifalon-fullset': 'tools/test_grifalon_fullset.gd',
     'kolossar-fullset': 'tools/test_kolossar_fullset.gd',
     'kolossar-runtime-pool': 'tools/perf_turn_pool.gd',
@@ -38,6 +51,8 @@ SCRIPTS = {
     'hud-gdelta': 'tools/test_hud_gdelta.gd',
     'card-hover': 'tools/test_card_hover.gd',
     'battle-ui-followup': 'tools/test_battle_ui_followup.gd',
+    'device-battle-hud': 'tools/test_device_battle_hud.gd',
+    'portrait-client-smoke': 'tools/test_portrait_client_smoke.gd',
     'portrait-background': 'tools/test_portrait_background.gd',
     'portrait-standby': 'tools/test_portrait_standby.gd',
     'a03-anatomy': 'tools/test_model_a03_anatomy.gd',
@@ -149,11 +164,17 @@ else:
 # проверке gameplay/full после каждого изменения правил.
 if args.profile in ['gameplay', 'full'] and args.checks and 'card-audit-balance' in args.checks:
     plan.append('card-audit-balance')
+if args.profile == 'gameplay' and args.checks and 'architecture-contracts' in args.checks:
+    plan.append('architecture-contracts')
+if args.profile == 'gameplay' and args.checks and 'match-lifecycle' in args.checks:
+    plan.append('match-lifecycle')
 if args.profile == 'models' and args.checks:
     for optional in ['kolossar-runtime-pool', 'kolossar-common-master', 'kolossar-fullset', 'grifalon-common-master', 'grifalon-fullset', 'grifalon-runtime-pool', 'ratnik-family', 'humanoid-motion', 'a03-anatomy', 'cloth-rim-contract', 'gpu-acceptance', 'ratnik-crown-reopen', 'model-wind-import', 'sculpt-import', 'sculpt-candidate-poses', 'a03-material-import', 'sculpt-source-poses', 'a03-candidate-poses']:
         if optional in args.checks: plan.append(optional)
 if args.profile == 'presentation' and args.checks:
-    for optional in ['hud-gdelta', 'card-hover', 'battle-ui-followup', 'portrait-background', 'portrait-standby']:
+    for optional in ['device-battle-hud', 'portrait-client-smoke', 'wardrobe-catalog-motion']:
+        if optional in args.checks: plan.append(optional)
+    for optional in ['sport-neck', 'sport-style', 'wardrobe-fit', 'wardrobe-palette', 'booth-outfits', 'startup-failure', 'creature-preview-refresh', 'preview-refresh', 'optimization', 'location-reveal', 'hud-gdelta', 'card-hover', 'battle-ui-followup', 'portrait-background', 'portrait-standby']:
         if optional in args.checks: plan.append(optional)
 if args.checks:
     unknown = set(args.checks) - set(plan)
@@ -209,7 +230,8 @@ for name in plan:
         if name == 'ratnik-crown-reopen': graphics = True
         if name == 'a03-anatomy': graphics = True
         if name == 'gpu-acceptance': graphics = True
-        if name in ['hud-gdelta', 'card-hover', 'battle-ui-followup', 'portrait-background', 'portrait-standby']: graphics = True
+        if name in ['device-battle-hud', 'portrait-client-smoke', 'wardrobe-catalog-motion']: graphics = True
+        if name in ['sport-neck', 'sport-style', 'wardrobe-fit', 'wardrobe-palette', 'booth-outfits', 'startup-failure', 'creature-preview-refresh', 'match-lifecycle', 'preview-refresh', 'optimization', 'location-reveal', 'hud-gdelta', 'card-hover', 'battle-ui-followup', 'portrait-background', 'portrait-standby']: graphics = True
         if not graphics or args.logic_only:
             command += ['--headless']
         script = SCRIPTS[name]
@@ -254,11 +276,11 @@ for name in plan:
             command += ['--', str(OUT/'startup-loading')]
         elif name == 'experience':
             command += ['--', str(OUT/'experience')]
-        elif name == 'battle-card-hover':
-            command += ['--', str(OUT/'battle-card-hover')]
+        elif name in ['battle-card-hover', 'device-battle-hud', 'portrait-client-smoke']:
+            command += ['--', str(OUT/name)]
         elif name == 'career-flow':
             command += ['--', str(OUT/name)]
-        elif name in ['career-ui', 'portrait-crop', 'portrait-background', 'card-hover']:
+        elif name in ['match-lifecycle', 'preview-refresh', 'optimization', 'career-ui', 'portrait-crop', 'portrait-background', 'card-hover']:
             command += ['--', '--out=' + str(OUT/name)]
         elif name in ['device-ui', 'device-feedback', 'opponent-panel', 'cards-ui', 'cards033-ui']:
             command += ['--', str(OUT/name)]

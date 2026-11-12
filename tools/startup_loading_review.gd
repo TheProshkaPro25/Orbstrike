@@ -10,6 +10,7 @@ var initial_counts: Array[int] = []
 var startup_seconds := 0.0
 var max_transition_ms := 0.0
 var team_to_match_ms: Array[float] = []
+var actor_checkout_ms: Array[float] = []
 var restart_ms: Array[float] = []
 var map_preview_ms: Array[float] = []
 var map_preview_cpu_ms: Array[float] = []
@@ -150,8 +151,15 @@ func run() -> void:
 		main.team_menu.pick_random_and_start()
 		# Убираем автоматические ходы, оставляя настоящий запуск и резерв шести uid.
 		if main.events.drained.is_connected(main._pump): main.events.drained.disconnect(main._pump)
-		for frame in 120:
+		var actors_ready := false
+		# The current client deliberately plays a7.2s location introduction.
+		# Record resource readiness separately from that presentation interval.
+		var start_deadline := Time.get_ticks_msec() + 15000
+		while Time.get_ticks_msec() < start_deadline:
 			await process_frame
+			if not actors_ready and main._prepared_balls.size() == 6:
+				actors_ready = true
+				actor_checkout_ms.append((Time.get_ticks_usec() - started) / 1000.0)
 			if not main._preparing: break
 		var elapsed := (Time.get_ticks_usec() - started) / 1000.0
 		max_transition_ms = maxf(max_transition_ms, elapsed)
@@ -231,7 +239,8 @@ func finish() -> void:
 	Engine.time_scale = 1.0
 	var result := {
 		"failures":failures, "checks":checks, "startup_seconds":startup_seconds,
-		"max_team_to_match_ms":max_transition_ms, "team_to_match_ms":team_to_match_ms,
+		"max_team_to_match_ms":max_transition_ms, "team_to_match_ms":team_to_match_ms, "actor_checkout_ms":actor_checkout_ms,
+		"timing_note":"team_to_match includes the designed location intro; actor_checkout measures six actors ready before it. Neither is FPS.",
 		"restart_ms":restart_ms, "map_preview_ms":map_preview_ms,
 		"max_map_preview_ms":map_preview_ms.max() if not map_preview_ms.is_empty() else 0.0,
 		"map_preview_cpu_ms":map_preview_cpu_ms,

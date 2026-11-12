@@ -19,6 +19,7 @@ var _stance_feet: Dictionary = {}
 var _grip_roll_axis := Vector3.UP
 var _hand_vertices: Array[Dictionary] = []
 var _grips: Dictionary = {}
+var _sole_offset := 0.0
 var native_motions := false
 var ability_variant := "CastDirect"
 static var _native_libraries: Array[AnimationLibrary] = []
@@ -62,6 +63,7 @@ func prepare_ability(card: CardDef, element: int) -> void:
 
 func apply_profile(profile: Dictionary) -> void:
 	super.apply_profile(profile)
+	_sole_offset = float(body_part.mesh.get_meta("sole_offset", 0.0)) * actor.scale.y
 	if ability_card == null:
 		ability_card = AbilityCardProp.new()
 		add_child(ability_card)
@@ -120,7 +122,7 @@ func reset_motion() -> void:
 	if ability_card != null: ability_card.clear()
 	if skeleton != null:
 		for bone in _bind_poses.size(): skeleton.set_bone_pose(bone,_bind_poses[bone])
-	if actor != null: actor.position = Vector3.ZERO
+	if actor != null: actor.position = Vector3.UP * _sole_offset
 	set_expression("RESET")
 	_speak(0,false)
 
@@ -144,7 +146,7 @@ func _process(delta: float) -> void:
 func sample_motion(time: float,idle_phase: float = -1.0) -> void:
 	if _clips.is_empty(): return
 	for bone in _bind_poses.size(): skeleton.set_bone_pose(bone,_bind_poses[bone])
-	actor.position = Vector3.ZERO
+	actor.position = Vector3.UP * _sole_offset
 	# Explicit samples are independent of earlier calls; live playback carries
 	# the idle phase through gestures so the return cannot jump to frame zero.
 	_sample_clip("Idle_Loop",fposmod(idle_phase if idle_phase >= 0.0 else time,2.5),1.0)

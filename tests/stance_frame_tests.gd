@@ -72,6 +72,52 @@ func sample(id: StringName, yaw: float, parent_yaw: float, stride: float = -1.0,
 	ModelTestCleanup.release(parent, self)
 	return poses
 
+func lowest_skinned_y(actor: CreatureAnim) -> float:
+	var lowest := INF
+	for mesh in actor._meshes:
+		var skeleton := mesh.get_node_or_null(mesh.skeleton) as Skeleton3D
+		var palette: Array[Transform3D] = []
+		for slot in mesh.skin.get_bind_count():
+			var bone := mesh.skin.get_bind_bone(slot)
+			if bone < 0: bone = skeleton.find_bone(mesh.skin.get_bind_name(slot))
+			palette.append(mesh.global_transform * skeleton.get_bone_global_pose(bone) * mesh.skin.get_bind_pose(slot))
+		for surface in mesh.mesh.get_surface_count():
+			var arrays := mesh.mesh.surface_get_arrays(surface)
+			var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+			var joints: PackedInt32Array = arrays[Mesh.ARRAY_BONES]
+			var weights: PackedFloat32Array = arrays[Mesh.ARRAY_WEIGHTS]
+			@warning_ignore("integer_division")
+			var stride := weights.size() / vertices.size()
+			for vertex in vertices.size():
+				var y := 0.0
+				for influence in stride:
+					var index := vertex * stride + influence
+					if weights[index] > 0:
+						y += (palette[joints[index]] * vertices[vertex]).y * weights[index]
+				lowest = minf(lowest, y)
+	return lowest
+
+func check_beetle_ground_clearance(id: StringName) -> void:
+	var definition := CardDB.creature(id)
+	var actor := CreatureAnim.new()
+	root.add_child(actor)
+	actor.set_process(false)
+	actor.set_model(CreatureModels.build(definition), definition)
+	actor._phase = 0
+	ReviewState.reset_actor(actor)
+	actor.idle_on = true
+	for frame in 45: actor._process(1.0 / 60.0)
+	var idle_floor := lowest_skinned_y(actor) / actor.get_height()
+	check(absf(idle_floor) < .015, "%s idle surface reaches the floor, normalized y=%.4f" % [id, idle_floor])
+	ReviewState.reset_actor(actor)
+	for frame in 20: actor._process(1.0 / 60.0)
+	actor.hit(Color.WHITE, actor.get_height() * .075)
+	for frame in ceili(60 * actor._duration * .46): actor._process(1.0 / 60.0)
+	var hit_floor := lowest_skinned_y(actor) / actor.get_height()
+	check(absf(hit_floor) < .02, "%s hit preserves the claw silhouette, normalized y=%.4f" % [id, hit_floor])
+	print("BEETLE FLOOR ", id, " idle=", idle_floor, " hit=", hit_floor)
+	ModelTestCleanup.release(actor, self)
+
 func run() -> void:
 	CardDB.load_all()
 	for id in [&"creature_rogozhuk_stone", &"creature_rogozhuk_fire"]:
@@ -121,6 +167,9 @@ func run() -> void:
 		else:
 			check(error <= EPSILON, "right stride override must not alter %s (%.9f)" % [name, error])
 	check(changed_right == 3, "right override changes exactly its three middle-chain bones")
+	for id in [&"creature_rogozhuk_stone", &"creature_rogozhuk_tide"]:
+		check_beetle_ground_clearance(id)
+		await process_frame
 	CreatureModels.clear()
 	print("Stance frames: checks=%d failures=%d max_pose_error=%.9f" % [checks, failures, largest_error])
 	quit(1 if failures else 0)

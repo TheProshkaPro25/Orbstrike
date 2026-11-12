@@ -5,6 +5,7 @@ var sources: Array[Dictionary] = []
 func _initialize() -> void: call_deferred("run")
 func run() -> void:
 	var hands_only := "--only-hoodie-hands" in OS.get_cmdline_user_args()
+	var vita_sharp_hair_only := "--vita-sharp-hair" in OS.get_cmdline_user_args()
 	DirAccess.make_dir_recursive_absolute("res://assets/avatars/vrm/parts")
 	for name in PATHS:
 		var packed := load("res://assets/avatars/vrm/"+name+".vrm") as PackedScene
@@ -29,23 +30,34 @@ func run() -> void:
 	for frame in 3: await process_frame
 	for target_index in 2:
 		if hands_only and target_index != 0: continue
+		if vita_sharp_hair_only and target_index != 1: continue
 		var target_skeleton: Skeleton3D = sources[target_index].skel
 		var skin := Skin.new()
 		for bone in target_skeleton.get_bone_count():
 			skin.add_bind(bone,(target_skeleton.global_transform*target_skeleton.get_bone_global_pose(bone)).affine_inverse())
-		if not hands_only: assert(ResourceSaver.save(skin,"res://assets/avatars/vrm/parts/skin_%d.res" % target_index,ResourceSaver.FLAG_COMPRESS)==OK)
+		if not hands_only and not vita_sharp_hair_only:
+			assert(ResourceSaver.save(skin,"res://assets/avatars/vrm/parts/skin_%d.res" % target_index,ResourceSaver.FLAG_COMPRESS)==OK)
 		for source_index in PATHS.size():
 			if hands_only: continue
+			if vita_sharp_hair_only and source_index != 2: continue
 			var source := sources[source_index]
 			var target := sources[target_index]
 			var fit: Vector3 = target.bounds.size/source.bounds.size
 			fit = fit.clamp(Vector3.ONE*.8,Vector3.ONE*1.25)
 			var head_inverse: Transform3D = source.head.affine_inverse()
 			var transform := Transform3D(Basis.from_scale(fit),Vector3.ZERO)*head_inverse
+			if target_index == 1 and source_index == 2:
+				# This donor has open gaps between its roots. The taller Vita
+				# scalp needs extra room at the crown and back, above the fringe.
+				var anchor := Vector3(0,.07,.055)
+				var crown_scale := Vector3(1.028,1.095,1.042)
+				var crown_fit := Transform3D(Basis.from_scale(crown_scale),anchor*(Vector3.ONE-crown_scale))
+				transform = crown_fit*transform
 			var hair := gather(source,transform,true)
 			var path := "res://assets/avatars/vrm/parts/hair_%d_%d.res" % [target_index,source_index]
 			assert(ResourceSaver.save(hair,path,ResourceSaver.FLAG_COMPRESS)==OK)
 			print("HAIR ",path," surfaces=",hair.get_surface_count()," aabb=",hair.get_aabb())
+		if vita_sharp_hair_only: continue
 		var outfits: Array = [0,2] if target_index == 0 else [1,3,4]
 		for index in outfits.size():
 			if hands_only and index != 1: continue

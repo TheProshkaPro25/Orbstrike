@@ -37,12 +37,13 @@ func sample(name: String, vp: SubViewport, counter: Node, hidden: bool) -> void:
 		draw_calls += vp.get_render_info(Viewport.RENDER_INFO_TYPE_VISIBLE, Viewport.RENDER_INFO_DRAW_CALLS_IN_FRAME)
 	var ticks: int = counter.ticks - before
 	var frozen := image == vp.get_texture().get_image().get_data()
+	var static_portrait: bool = vp is FighterPortrait and not vp.animated_materials
 	rows.append({"name":name,"mode":vp.render_target_update_mode,"ticks_12_samples":ticks,"cached_draw_calls_12_samples":draw_calls,"image_frozen":frozen})
 	print("PORTRAIT_SAMPLE ", rows.back())
 	if not baseline or not hidden:
-		check(ticks == 0 if hidden else ticks > 0, name + " processing")
-		check(vp.render_target_update_mode == SubViewport.UPDATE_DISABLED if hidden else vp.render_target_update_mode != SubViewport.UPDATE_DISABLED, name + " render update")
-		check(frozen if hidden else not frozen, name + " actual viewport pixels")
+		check(ticks == 0 if hidden or static_portrait else ticks > 0, name + " processing")
+		check(vp.render_target_update_mode == SubViewport.UPDATE_DISABLED if hidden else (vp.render_target_update_mode in [SubViewport.UPDATE_ONCE, SubViewport.UPDATE_DISABLED] if static_portrait else vp.render_target_update_mode != SubViewport.UPDATE_DISABLED), name + " render update")
+		check(frozen if hidden or static_portrait else not frozen, name + " actual viewport pixels")
 	camera.transform = transform
 	await frames(2)
 func run() -> void:

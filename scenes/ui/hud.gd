@@ -18,6 +18,11 @@ var _turn_key := ""
 var _turn_tween: Tween
 var _final_tag: Label
 var _phase_label: Label
+var _phase := -1
+var _final_round := false
+var _active_side := 0
+var _turn := 0
+var _event_showing := false
 var _plates: Array[FighterPlate] = []
 var _log_box: VBoxContainer
 var _log_lines: Array[Label] = []
@@ -96,6 +101,7 @@ func _build() -> void:
 	_phase_label = VisualUtil.label("", 14)
 	_phase_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_phase_label.add_theme_color_override("font_color", Color(0.60, 0.85, 0.95))
+	_phase_label.add_theme_constant_override("outline_size", 4)
 	VisualUtil.place(_phase_label, 0.5, 0.0, 0.0, 52.0)
 	add_child(_phase_label)
 	_final_tag = VisualUtil.label("ФИНАЛЬНЫЙ БОЙ", 13)
@@ -220,18 +226,24 @@ func _start_boot_motion(hands: Array[Control]) -> void:
 func _opponent_style_changed(_style: int) -> void:
 	_settle_turn_text()
 	if _plates.size() == 2:
-		# Это публичная сводка человека и матча, а не временная карточка существа.
 		_plates[1].visible = _teams_ready
-		VisualUtil.place(_plates[1], 1.0, 0.0, -266.0 if DeviceSettings.is_device() else -66.0, 8.0)
+		VisualUtil.place(_plates[1], 1.0, 0.0, -14.0 if DeviceSettings.is_device() else -66.0, 8.0)
 	_layout_opponent_toolbar()
 	_layout_owned_context()
+	_update_battle_regions()
+	_update_phase_text()
+	_update_turn_text()
 
 
 func _layout_owned_context() -> void:
 	_queue_hint_layout()
 	if _log_box == null: return
-	var offset := own_panel.position.x + own_panel.size.x + 14.0 if _own_context_visible() else 16.0
-	VisualUtil.place(_log_box,0.0,0.0,offset,108.0)
+	if DeviceSettings.is_device():
+		var y := own_panel.get_rect().end.y + 8.0 if _own_context_visible() else OpponentPanel.SIDE_TOP
+		VisualUtil.place(_log_box, 0.0, 0.0, 14.0, y)
+		_log_box.size.x = clampf(get_viewport_rect().size.x * 0.24, 190.0, 318.0)
+	else:
+		VisualUtil.place(_log_box, 0.0, 0.0, 16.0, 108.0)
 	_place_coach()
 
 
@@ -253,7 +265,30 @@ func _layout_opponent_toolbar() -> void:
 	_queue_hint_layout()
 	if DeviceSettings.is_device(): _settle_turn_text()
 	if _tempo == null: return
-	VisualUtil.place(_tempo,1.0,0.0,-66.0 if DeviceSettings.is_device() else -16.0,10.0 if DeviceSettings.is_device() else 114.0)
+	var device := DeviceSettings.is_device()
+	VisualUtil.place(_help_btn, 1.0, 0.0, -14.0 if device else -12.0, 97.0 if device else 10.0)
+	VisualUtil.place(_tempo, 1.0, 0.0, -66.0 if device else -16.0, 97.0 if device else 114.0)
+	_tempo.custom_minimum_size.y = 44 if device else 0
+	var turn_width := UiTheme.device_status_width(get_viewport_rect().size) if device else 280.0
+	_turn_clip.custom_minimum_size.x = turn_width
+	VisualUtil.place(_turn_clip, 0.5, 0.0, 0.0 if device else -140.0, 8.0 if device else 10.0)
+	_turn_clip.grow_horizontal = Control.GROW_DIRECTION_BOTH if device else Control.GROW_DIRECTION_END
+	_turn_clip.size = Vector2(turn_width, 40)
+	_turn_label.size = _turn_clip.size
+	var turn_bg := _turn_clip.get_child(0) as Panel
+	if device:
+		turn_bg.add_theme_stylebox_override("panel", UiTheme.box(UiTheme.DEVICE_INK, UiTheme.DEVICE_DIM, 1, 4, 0))
+	else:
+		var classic := UiTheme.box(Color(0.05, 0.05, 0.09, 0.85), UiTheme.GOLD_DIM, 0, 0, 0)
+		classic.border_width_bottom = 3
+		classic.skew = Vector2(-0.12, 0.0)
+		turn_bg.add_theme_stylebox_override("panel", classic)
+	if _flash != null: _place_flash()
+	if _creature_panel != null:
+		var bottom := -UiTheme.device_hand_card(get_viewport_rect().size).y - 76.0 if device else -92.0
+		VisualUtil.place(_creature_panel, 0.5, 1.0, 0.0, bottom)
+	VisualUtil.place(_skip_hint, 0.5, 1.0 if device else 0.56, 0.0, -15.0 if device else 0.0)
+	_layout_owned_context()
 
 
 ## Имена и цвета стихий существ бойцов: colors0/colors1 — по существу в порядке колоды; elems — их стихии (значки).
@@ -307,12 +342,15 @@ func set_momentum(player: int, v: int) -> void:
 
 func set_final_round(on: bool) -> void:
 	_build()
-	_final_tag.visible = on
+	_final_round = on
+	_update_phase_text()
 
 
 ## Плашка хода: при смене хода или игрока текст «проезжает» справа и замирает.
 func set_status(turn: int, active: int, _alive0: int, _alive1: int) -> void:
 	_build()
+	_turn = turn
+	_active_side = active
 	var key := "%d:%d" % [turn, active]
 	_plates[0].set_active(active == 0)
 	_plates[1].set_active(active == 1)
@@ -320,8 +358,7 @@ func set_status(turn: int, active: int, _alive0: int, _alive1: int) -> void:
 		return
 	_turn_key = key
 	var mine: bool = active == 0
-	_turn_label.text = "ХОД %d  ·  %s" % [turn, "ВАШ ХОД" if mine else "ХОД СОПЕРНИКА"]
-	_turn_label.add_theme_color_override("font_color", UiTheme.accent() if mine else Color(1.0, 0.6, 0.55))
+	_update_turn_text()
 	_turn_clip.visible = true
 	_settle_turn_text()
 	if DeviceSettings.is_device():
@@ -335,12 +372,25 @@ func set_status(turn: int, active: int, _alive0: int, _alive1: int) -> void:
 	_turn_tween.finished.connect(func() -> void: _turn_tween = null)
 
 
+func _update_turn_text() -> void:
+	var mine := _active_side == 0
+	var action := "ВАШ ХОД" if mine else "ХОД СОПЕРНИКА"
+	if DeviceSettings.is_device():
+		if _phase == MatchController.Phase.RESOLVING:
+			action = "БОЙ ЗАВЕРШЁН"
+		elif _battle:
+			action = "ВАШ ОТВЕТ" if mine else "ОТВЕТ СОПЕРНИКА"
+			if _phase != MatchController.Phase.ABILITY_WINDOW: action = "СХВАТКА"
+	_turn_label.text = "ХОД %d  ·  %s" % [_turn, action]
+	_turn_label.add_theme_color_override("font_color", UiTheme.accent() if mine else Color(1.0, 0.72, 0.65))
+
+
 func set_hint(text: String) -> void:
 	_build()
 	_hint.text = text
 	_queue_hint_layout()
 	_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_hint_plate.visible = text != ""
+	_hint_plate.visible = text != "" and not (DeviceSettings.is_device() and _event_showing)
 
 
 func _queue_hint_layout() -> void:
@@ -353,6 +403,15 @@ func _layout_hint() -> void:
 	_hint_layout_pending = false
 	if not is_instance_valid(_hint_plate) or not _hint_plate.visible: return
 	var viewport := get_viewport_rect().size
+	if DeviceSettings.is_device():
+		_hint_plate.add_theme_stylebox_override("panel", UiTheme.box(UiTheme.DEVICE_INK, UiTheme.DEVICE_DIM, 1, 4, 5))
+		_hint.add_theme_font_size_override("font_size", 15)
+		_hint.custom_minimum_size.x = UiTheme.device_status_width(viewport) - 10.0
+		_hint_plate.reset_size()
+		_hint_plate.position = Vector2((viewport.x - _hint_plate.size.x) * 0.5, 71.0)
+		return
+	_hint_plate.add_theme_stylebox_override("panel", UiTheme.box(Color(0.05, 0.05, 0.09, 0.78), UiTheme.GOLD, 1, 18, 8))
+	_hint.add_theme_font_size_override("font_size", 18)
 	var left := 16.0
 	var right := viewport.x - 16.0
 	var bottom := 74.0
@@ -394,6 +453,9 @@ func flash(text: String) -> void:
 	_build()
 	_flash.text = text
 	_flash.visible = true
+	if DeviceSettings.is_device():
+		_flash.scale = Vector2.ONE
+		return
 	_flash.pivot_offset = _flash.size * 0.5
 	_flash.scale = Vector2(0.7, 0.7)
 	var tw := _flash.create_tween()
@@ -462,6 +524,7 @@ func log_event(text: String, c: Color = UiTheme.TEXT) -> void:
 	var l := VisualUtil.label(text, 15)
 	l.add_theme_color_override("font_color", c)
 	l.add_theme_constant_override("outline_size", 5)
+	l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	_log_box.add_child(l)
 	_log_lines.append(l)
 	while _log_lines.size() > LOG_LINES:
@@ -570,18 +633,43 @@ func set_battle_mode(on: bool) -> void:
 		# и занимали место компактного блока ответа на невысоком экране.
 		_coach_queue.clear()
 		_close_coach()
-	var a: float = 0.0 if on else 1.0
+	if not on: _event_showing = false
+	_update_battle_regions()
+	_update_phase_text()
+	_update_turn_text()
+	_place_flash()
+	# Battle changes opacity rather than visibility; explicitly reveal the restored regions.
+	if not on and _match_intro_started and reveal_watcher != null: reveal_watcher.call("start")
+	_layout_owned_context()
+	battle_mode_changed.emit(on)
+
+
+func _update_battle_regions() -> void:
+	var a := 0.0 if _battle and not DeviceSettings.is_device() else 1.0
 	for p in _plates:
 		p.modulate.a = a
 	_turn_clip.modulate.a = a
 	_final_tag.modulate.a = a
 	_hint_plate.modulate.a = a
-	_log_box.modulate.a = a
-	# Battle changes opacity rather than visibility; explicitly reveal the restored regions.
-	if not on and _match_intro_started and reveal_watcher != null: reveal_watcher.call("start")
-	VisualUtil.place(_flash, 0.5, 0.42 if on else 0.0, 0.0, 0.0 if on else 128.0)
-	_layout_owned_context()
-	battle_mode_changed.emit(on)
+	_log_box.modulate.a = 0.0 if _battle else 1.0
+
+
+func set_battle_event_visible(on: bool) -> void:
+	_event_showing = on
+	set_hint(_hint.text)
+
+
+func _place_flash() -> void:
+	if DeviceSettings.is_device():
+		_flash.add_theme_font_size_override("font_size", 18)
+		_flash.custom_minimum_size.x = UiTheme.device_status_width(get_viewport_rect().size)
+		_flash.add_theme_color_override("font_color", UiTheme.DEVICE_ACCENT)
+		VisualUtil.place(_flash, 0.5, 0.0, 0.0, 102.0)
+	else:
+		_flash.add_theme_font_size_override("font_size", 28)
+		_flash.custom_minimum_size.x = maxf(420.0, get_viewport_rect().size.x * 0.46)
+		_flash.add_theme_color_override("font_color", UiTheme.GOLD)
+		VisualUtil.place(_flash, 0.5, 0.42 if _battle else 0.0, 0.0, 0.0 if _battle else 128.0)
 
 
 ## Короткая вспышка всего экрана (удар).
@@ -680,10 +768,31 @@ func _show_next_coach() -> void:
 
 func set_phase(phase: int) -> void:
 	_build()
+	_phase = phase
+	_update_phase_text()
+	_update_turn_text()
+
+
+func _update_phase_text() -> void:
+	if DeviceSettings.is_device():
+		var device_titles := {MatchController.Phase.SETUP: "КАРТА ВОРОТ", MatchController.Phase.AWAIT_THROW: "ВЫБОР СУЩЕСТВА",
+			MatchController.Phase.AWAIT_LANDING: "ВЫБОР ЦЕЛИ", MatchController.Phase.AFTER_LANDING: "ПРИКРЕПЛЕНИЕ",
+			MatchController.Phase.ABILITY_WINDOW: "ОБМЕН СПОСОБНОСТЯМИ", MatchController.Phase.RESOLVING: "ИТОГ БОЯ"}
+		_phase_label.text = device_titles.get(_phase, "")
+		if _battle and _phase not in [MatchController.Phase.ABILITY_WINDOW, MatchController.Phase.RESOLVING]:
+			_phase_label.text = "НАЧАЛО БОЯ"
+		if _final_round:
+			_phase_label.text = "ФИНАЛЬНЫЙ БОЙ" + (" · " + _phase_label.text if not _phase_label.text.is_empty() else "")
+		VisualUtil.place(_phase_label, 0.5, 0.0, 0.0, 49.0)
+		_final_tag.hide()
+		return
 	var titles := {MatchController.Phase.SETUP: "01 · КАРТА ВОРОТ", MatchController.Phase.AWAIT_THROW: "02 · ВЫБОР СУЩЕСТВА",
 		MatchController.Phase.AWAIT_LANDING: "03 · ВЫБОР ЦЕЛИ", MatchController.Phase.AFTER_LANDING: "04 · ПРИКРЕПЛЕНИЕ",
 		MatchController.Phase.ABILITY_WINDOW: "05 · ОБМЕН СПОСОБНОСТЯМИ", MatchController.Phase.RESOLVING: "06 · ИТОГ БОЯ"}
-	_phase_label.text = titles.get(phase, "")
+	_phase_label.text = titles.get(_phase, "")
+	_final_tag.visible = _final_round
+	VisualUtil.place(_phase_label, 0.5, 0.0, 0.0, 52.0)
+	VisualUtil.place(_final_tag, 0.5, 0.0, 0.0, 52.0)
 
 
 ## Добор отличается от усиления и отмены: небольшая плашка, без перекрытия бойцов.

@@ -45,7 +45,7 @@ func _run_flow() -> void:
 	if not await _reach_human(): return
 	_fixture = main.tournament.next_match().duplicate(true)
 	main.tournament_panel.primary_button.pressed.emit()
-	await process_frame
+	if not await _wait_match_started("матч карьеры после интро"): return
 	_check(main.ctrl != null,"стартовал матч карьеры")
 	if main.ctrl == null:
 		_abort("нет контроллера карьеры")

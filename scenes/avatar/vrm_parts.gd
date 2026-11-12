@@ -24,13 +24,18 @@ const SPORT_IDS := [6,7]
 const HAIR_STYLE_COUNT := 11
 
 static func supports_denim(model: int, outfit: int) -> bool:
-	return outfit != SPORT_IDS[model] and not (model == 1 and outfit < 3)
+	return not WardrobeCatalog.is_addition(model, outfit) and outfit != SPORT_IDS[model] and not (model == 1 and outfit < 3)
 
 static func supports_case(model: int, outfit: int) -> bool:
 	return outfit == BOMBER_IDS[model]
 
 static var materials: Dictionary = {}
 const SKINS := [preload("res://assets/avatars/vrm/parts/skin_0.res"),preload("res://assets/avatars/vrm/parts/skin_1.res")]
+
+static func outfit_mesh(model: int, id: int) -> ArrayMesh:
+	if not WardrobeCatalog.is_addition(model, id): return BODY[model][id]
+	# GameLoading holds the prepared meshes, so this uses the resource cache.
+	return load(WardrobeCatalog.asset_path(model, id)) as ArrayMesh
 
 static func material_for(part: Mesh,surface: int) -> ShaderMaterial:
 	var overrides: Dictionary = part.get_meta("variant_materials",{})

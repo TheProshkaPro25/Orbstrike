@@ -11,7 +11,7 @@
   },
   "files": {
     "body_0_0.res": "75eb3e35b767d7172f31c507f2b40c497fde93d1fc87e77aa39927ac1a752d12",
-    "body_0_1.res": "64e3c0bcb3426dac349ecc4e5f766052ab72497466b499859bcc4dd3449a32e2",
+    "body_0_1.res": "2cc96c47de459ebfd94982a55c8531961a22052dc4742d85b8f10ec7dd71ac13",
     "body_1_0.res": "51f993670230d9e6eb55c56f2d761c0d6f16021bc0761b26c6f253dca9f831cd",
     "body_1_1.res": "6dd3b1709f96e68ea5648292e3cab5247dddc964037128babc101e37196d203b",
     "body_1_2.res": "a8b5c0193427406d05f3aaaed65284ebfffc0ad68c7dc3e0a5e46401b7fecf8e",
@@ -22,7 +22,7 @@
     "hair_0_4.res": "7ca295b6ae26acc44e260db2381ed29e5fe5a0eeefd2ba67d18466e0053bee27",
     "hair_1_0.res": "5f20d708c42edff102cdc345d3883789e2268dfc9dbee8dbddfc8776eeba15b9",
     "hair_1_1.res": "25e1b3c4fd689982dec578fbbe2267df46bd2a49640ff0a2ef964d15c3be83f9",
-    "hair_1_2.res": "05cb84c1a8e38a283bbc0dc8582a831b6e20ed88ea0df91a22936434a96c6b70",
+    "hair_1_2.res": "77b41b6fe61f1d3713cfc94960bfa788ffe7213feafebed22051e62629631f92",
     "hair_1_3.res": "127012d9cacc0dbc51909f7f5cd7f135c2f9113b63e562d138fc2e7871472c21",
     "hair_1_4.res": "ca3d4fcb7801cf8fc138282ab935bc079de5f75d4d267461283c7c031607c8a9",
     "skin_0.res": "5980dfd33df03c6d8f05d68e5042863f6bac5e13574b4ca78f6ea8a69cf71a99",
@@ -35,5 +35,8 @@
     "reason": "align donor hand/thumb pivots to target bones before rebinding",
     "scope": "Left and Right Hand/Thumb/Index/Middle/Ring/Little influences only",
     "command": "godot --headless --path . -s res://tools/avatars/prepare_vrm_parts.gd -- --only-hoodie-hands"
+  },
+  "skin_mask_postprocessor": {
+    "tools/avatars/trim_covered_upper_arms.gd": "cb53334d1f4aa30efa8a350dc737bf7fac114d89c1f16ec35f234a3f4151b5fa"
   }
 }

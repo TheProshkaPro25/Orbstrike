@@ -474,3 +474,19 @@ func location_preview_view(interior: bool = false) -> void:
 	else:
 		_set_static(Vector3(82, 66, 88), Vector3(0, 6, -20), {"fov": 55.0, "smooth": 4.0, "hand": 0.08})
 	cut()
+
+
+## Explicit establishing frame: no overview drift, shake or stale follow state.
+func location_frame(at: Vector3, target: Vector3, lens: float = 52.0) -> void:
+	mode = Mode.STATIC
+	_drift = 0.0
+	_hand = 0.0
+	_roll = 0.0
+	_shake_t = 0.0
+	_goal_pos = at
+	_base = at
+	_goal_look = target
+	_look = target
+	_goal_fov = lens
+	fov = lens
+	_apply_transform()

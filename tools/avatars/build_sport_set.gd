@@ -1,6 +1,8 @@
 extends "res://tools/avatars/build_street_set.gd"
 ## Offline, additive CC0 derivatives. Does not write the accepted parts or source rigs.
 const SPORT_DEST := "res://assets/avatars/sport/"
+const SAKURADA_FABRIC := Color("526f88")
+var sport_weave: Texture2D
 
 func run() -> void:
 	DirAccess.make_dir_recursive_absolute(SPORT_DEST)
@@ -8,7 +10,11 @@ func run() -> void:
 	image.fill(Color.WHITE)
 	white = ImageTexture.create_from_image(image)
 	var hair_only := "--hair-only" in OS.get_cmdline_user_args()
-	for model in 2:
+	var sakurada_only := "--sakurada-costume" in OS.get_cmdline_user_args()
+	var vita_only := "--vita-costume" in OS.get_cmdline_user_args()
+	var costumes_only := sakurada_only or vita_only or "--costumes-only" in OS.get_cmdline_user_args()
+	var models := [0] if sakurada_only else ([1] if vita_only else [0, 1])
+	for model in models:
 		var actor: Node3D = load("res://assets/avatars/vrm/"+PATHS[model]+".vrm").instantiate()
 		actor.process_mode = Node.PROCESS_MODE_DISABLED
 		root.add_child(actor)
@@ -16,19 +22,19 @@ func run() -> void:
 		if not hair_only:
 			var body: ArrayMesh = load(OUTPUT+"body_%d_%d.res" % [model,2 if model == 0 else 3])
 			var skin: Skin = load(OUTPUT+"skin_%d.res" % model)
-			var suit := make_tracksuit(body,skin,rig,actor)
+			var suit := make_tracksuit(body,skin,rig,actor,model == 0)
 			save_sport(suit,"tracksuit_%d" % model)
-		save_sport(make_swept_hair(model,actor,rig),"swept_hair_%d" % model)
+		if not costumes_only: save_sport(make_swept_hair(model,actor,rig),"swept_hair_%d" % model)
 		actor.queue_free()
 	for frame in 3: await process_frame
-	print("Sport hair: two resources prepared; tracksuits untouched" if hair_only else "Sport set: four new resources prepared; previous parts and source rigs untouched")
+	print("Sakurada sports costume prepared" if sakurada_only else ("Sport hair prepared" if hair_only else ("Sport costumes prepared" if costumes_only else "Sport set prepared")))
 	quit()
 
 func save_sport(mesh: ArrayMesh,name: String) -> void:
 	assert(ResourceSaver.save(mesh,SPORT_DEST+name+".res",ResourceSaver.FLAG_COMPRESS)==OK)
 	print(name," ",mesh.get_aabb()," surfaces=",mesh.get_surface_count())
 
-func make_tracksuit(source: ArrayMesh,skin: Skin,rig: Skeleton3D,actor: Node3D) -> ArrayMesh:
+func make_tracksuit(source: ArrayMesh,skin: Skin,rig: Skeleton3D,actor: Node3D,sakurada: bool) -> ArrayMesh:
 	var output := ArrayMesh.new()
 	var names: PackedStringArray = source.get_meta("surface_materials").duplicate()
 	var overrides: Dictionary = source.get_meta("variant_materials").duplicate()
@@ -37,6 +43,7 @@ func make_tracksuit(source: ArrayMesh,skin: Skin,rig: Skeleton3D,actor: Node3D) 
 	var size := neck.y/1.59513
 	var top: Array
 	var pants: Array
+	var shoes: Array
 	var cloth_template := part_material(source,1)
 	# Discard the old short-hoodie collar/zip surface. Rebuild a sports collar and zip.
 	for surface in source.get_surface_count()-1:
@@ -53,9 +60,17 @@ func make_tracksuit(source: ArrayMesh,skin: Skin,rig: Skeleton3D,actor: Node3D) 
 				return q
 			deform_arrays(a,shape)
 			top = a
-			overrides[surface] = sports_material(cloth_template,Color("697f94"),"Sport_Tops_01_CLOTH")
-			overrides[surface].set_shader_parameter("_MainTex",cloth_template.get_shader_parameter("_MainTex"))
-			overrides[surface].set_shader_parameter("_ShadeTexture",cloth_template.get_shader_parameter("_ShadeTexture"))
+			# Append only to Tops; other surfaces never undergo an extra encode.
+			var base := ArrayMesh.new()
+			base.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,a)
+			var collar := make_sport_collar(a,source.surface_get_arrays(0),rig,actor,neck,size)
+			var joined := SurfaceTool.new()
+			joined.begin(Mesh.PRIMITIVE_TRIANGLES)
+			joined.append_from(base,0,Transform3D.IDENTITY)
+			joined.append_from(collar,0,Transform3D.IDENTITY)
+			a = joined.commit().surface_get_arrays(0)
+			assert(a[Mesh.ARRAY_INDEX].size() == top[Mesh.ARRAY_INDEX].size()+120,"All forty collar triangles must be indexed")
+			overrides[surface] = tracksuit_fabric(cloth_template,"Sport_Tops_01_CLOTH",sakurada)
 		if "Bottoms_" in names[surface]:
 			var shape := func(p: Vector3) -> Vector3:
 				var q := p
@@ -67,33 +82,30 @@ func make_tracksuit(source: ArrayMesh,skin: Skin,rig: Skeleton3D,actor: Node3D) 
 				return q
 			deform_arrays(a,shape)
 			pants = a
-			overrides[surface] = sports_material(part_material(source,surface),Color("495f73"),"Sport_Bottoms_01_CLOTH")
+			overrides[surface] = tracksuit_fabric(cloth_template,"Sport_Bottoms_01_CLOTH",sakurada)
+		if "Shoes_" in names[surface]:
+			shoes = a.duplicate()
+			deform_arrays(a, func(p: Vector3) -> Vector3:
+				# Pull the old heel and leather welt inside the continuous sole.
+				if p.y < .040 * size: p.y = .022 * size + .45 * p.y
+				return p)
+			names[surface] = "Sport_Shoes_Upper_CLOTH"
+			overrides[surface] = sports_material(cloth_template,Color("344552"),"Sport_Shoes_Upper_CLOTH")
 		output.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,a)
 	names.resize(output.get_surface_count())
 	overrides.erase(source.get_surface_count()-1)
+	if sakurada:
+		add_sakurada_details(output,names,overrides,cloth_template,top,pants,shoes,skin,rig,waist,neck,size)
+	else:
+		add_vita_details(output,names,overrides,cloth_template,top,pants,shoes,skin,rig,waist,neck,size)
+	for key in source.get_meta_list(): output.set_meta(key,source.get_meta(key))
+	output.set_meta("surface_materials",names)
+	output.set_meta("variant_materials",overrides)
+	return output
+
+func add_vita_details(output: ArrayMesh,names: PackedStringArray,overrides: Dictionary,cloth_template: ShaderMaterial,top: Array,pants: Array,shoes: Array,skin: Skin,rig: Skeleton3D,waist: Vector3,neck: Vector3,size: float) -> void:
 	var trim := SurfaceTool.new()
 	trim.begin(Mesh.PRIMITIVE_TRIANGLES)
-	# Follow the actual retained source skin, including its broad shoulder skirt.
-	# A high collar-only cut leaves the donor shoulder triangles exposed; this
-	# extends well inside the jacket and retains their exact interpolated weights.
-	for tri in triangle_polygons(source.surface_get_arrays(0)):
-		var polygon := clip_neck(tri,neck.y-.23*size,true)
-		polygon = clip_neck(polygon,neck.y+.015*size,false)
-		append_polygon(trim,polygon,.008*size)
-	# Face remains visible in the avatar and owns a second neck/chest skin layer.
-	# Cover this exact layer too; its outline differs from the fitted donor body.
-	for mesh: MeshInstance3D in actor.find_children("*","MeshInstance3D",true,false):
-		if not "Face" in str(mesh.name): continue
-		var baked := cpu_bake(mesh,rig,rig)
-		for surface in mesh.mesh.get_surface_count():
-			if not "_SKIN" in mesh.mesh.surface_get_material(surface).resource_name: continue
-			for tri in triangle_polygons(baked.surface_get_arrays(surface)):
-				for v in tri:
-					v.p = mesh.global_transform*v.p
-					v.n = (mesh.global_transform.basis*v.n).normalized()
-				var polygon := clip_neck(tri,neck.y-.23*size,true)
-				polygon = clip_neck(polygon,neck.y+.015*size,false)
-				append_polygon(trim,polygon,.008*size)
 	var bottom := waist.y-.016*size
 	for segment in 36:
 		var y0 := lerpf(bottom,neck.y-.033*size,segment/36.0)
@@ -110,31 +122,356 @@ func make_tracksuit(source: ArrayMesh,skin: Skin,rig: Skeleton3D,actor: Node3D) 
 	trim.commit(output)
 	names.append("Sport_Trim_CLOTH")
 	overrides[output.get_surface_count()-1] = sports_material(cloth_template,Color("4b6072"),"Sport_Trim_CLOTH")
-	# Clip real sleeve/pants triangles to narrow planes, interpolating all skin
-	# weights at every edge. Contrasting stripes retain the actual curved cloth.
-	var stripes := SurfaceTool.new()
-	stripes.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var jacket := triangle_polygons(top)
+	var trousers := triangle_polygons(pants)
+	var stripes := detail_surface()
 	for side in [-1,1]:
 		var prefix := "Left" if side == 1 else "Right"
 		var shoulder := skin.get_bind_pose(rig.find_bone(prefix+"UpperArm")).affine_inverse().origin
 		var hand := skin.get_bind_pose(rig.find_bone(prefix+"Hand")).affine_inverse().origin
-		var slope: float = (hand.x-shoulder.x)*side/(shoulder.y-hand.y)
-		for stripe in 2:
-			var offset := (stripe-.5)*.014*size
-			var value: float = shoulder.x*side+slope*shoulder.y+offset
-			var sleeve_planes := [[Vector3(side,slope,0),value-.0045*size,true],[Vector3(side,slope,0),value+.0045*size,false],[Vector3.UP,hand.y+.009*size,true],[Vector3.UP,shoulder.y+.024*size,false],[Vector3.BACK,.022*size,true]]
-			append_clipped(stripes,top,sleeve_planes,.0014*size)
-			var leg_value := (.063+(stripe-.5)*.012)*size
-			var leg_planes := [[Vector3(side,-.042,0),leg_value-.0036*size,true],[Vector3(side,-.042,0),leg_value+.0036*size,false],[Vector3.UP,.14*size,true],[Vector3.UP,waist.y-.015*size,false],[Vector3.BACK,.017*size,true]]
-			append_clipped(stripes,pants,leg_planes,.0014*size)
-	stripes.generate_normals()
-	stripes.commit(output)
-	names.append("Sport_Accent_CLOTH")
-	overrides[output.get_surface_count()-1] = sports_material(cloth_template,Color("e8d4a1"),"Sport_Accent_CLOTH")
-	for key in source.get_meta_list(): output.set_meta(key,source.get_meta(key))
-	output.set_meta("surface_materials",names)
-	output.set_meta("variant_materials",overrides)
-	return output
+		add_side_stripes(stripes, jacket, side, hand.y+.039*size, shoulder.y+.014*size, size)
+		add_side_stripes(stripes, trousers, side, .155*size, waist.y-.071*size, size)
+	save_detail(stripes,output,names,overrides,sports_material(cloth_template,Color("e8d4a1"),"Sport_Accent_CLOTH"))
+	add_sport_trainers(detail_surface(),output,names,overrides,cloth_template,shoes,skin,rig,size)
+
+func tracksuit_fabric(template: ShaderMaterial, name: String, sakurada: bool) -> ShaderMaterial:
+	if not sakurada: return sports_material(template, Color("697f94"), name)
+	if sport_weave == null:
+		# Seamless greyscale knit on the existing UVs, shared by jacket and pants.
+		var image := Image.create(256, 256, false, Image.FORMAT_RGB8)
+		for y in image.get_height():
+			for x in image.get_width():
+				var u := TAU * x / image.get_width()
+				var v := TAU * y / image.get_height()
+				var weave := .019 * sin(64.0 * u) * sin(64.0 * v)
+				var ribs := .012 * cos(43.0 * u + 37.0 * v)
+				var variation := .008 * sin(7.0 * u - 11.0 * v) * cos(9.0 * u + 5.0 * v)
+				var grey := .935 + weave + ribs + variation
+				image.set_pixel(x, y, Color(grey, grey, grey))
+		image.generate_mipmaps()
+		sport_weave = ImageTexture.create_from_image(image)
+	var material := sports_material(template, SAKURADA_FABRIC, name)
+	material.set_shader_parameter("_MainTex", sport_weave)
+	material.set_shader_parameter("_ShadeTexture", sport_weave)
+	material.set_shader_parameter("_ShadeColor", SAKURADA_FABRIC.darkened(.40))
+	material.set_shader_parameter("_ShadeToony", .32)
+	return material
+
+func detail_surface() -> SurfaceTool:
+	var tool := SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	return tool
+
+func save_detail(tool: SurfaceTool, output: ArrayMesh, names: PackedStringArray, overrides: Dictionary, material: ShaderMaterial) -> void:
+	tool.index()
+	tool.commit(output)
+	names.append(material.resource_name)
+	overrides[output.get_surface_count()-1] = material
+
+func add_sakurada_details(output: ArrayMesh, names: PackedStringArray, overrides: Dictionary, template: ShaderMaterial, top: Array, pants: Array, shoes: Array, skin: Skin, rig: Skeleton3D, waist: Vector3, neck: Vector3, size: float) -> void:
+	var jacket := triangle_polygons(top)
+	var trousers := triangle_polygons(pants)
+	var stripes := detail_surface()
+	var welts := detail_surface()
+	var hardware := detail_surface()
+	for side in [-1, 1]:
+		var prefix := "Left" if side == 1 else "Right"
+		var shoulder := skin.get_bind_pose(rig.find_bone(prefix+"UpperArm")).affine_inverse().origin
+		var hand := skin.get_bind_pose(rig.find_bone(prefix+"Hand")).affine_inverse().origin
+		add_side_stripes(stripes, jacket, side, hand.y+.039*size, shoulder.y+.014*size, size)
+		add_side_stripes(stripes, trousers, side, .155*size, waist.y-.071*size, size)
+		var pocket_start := Vector2(side*.063*size, waist.y+.143*size)
+		var pocket_end := Vector2(side*.113*size, waist.y+.079*size)
+		project_strip(welts, jacket, pocket_start, pocket_end, .012*size, .0018*size)
+		project_strip(hardware, jacket, pocket_start+Vector2.UP*.004*size, pocket_end+Vector2.UP*.004*size, .0028*size, .0025*size)
+	var zip_start := Vector2(0, waist.y+.007*size)
+	var zip_end := Vector2(0, neck.y-.054*size)
+	project_strip(welts, jacket, zip_start, zip_end, .018*size, .0017*size)
+	project_strip(hardware, jacket, zip_start, zip_end, .004*size, .0024*size)
+	project_strip(hardware, jacket, zip_end-Vector2.UP*.004*size, zip_end-Vector2.UP*.030*size, .012*size, .0037*size)
+	save_detail(welts,output,names,overrides,sports_material(template,Color("263747"),"Sport_Trim_CLOTH"))
+	save_detail(stripes,output,names,overrides,sports_material(template,Color("9bb9c8"),"Sport_Accent_CLOTH"))
+	add_sport_trainers(hardware,output,names,overrides,template,shoes,skin,rig,size)
+
+func add_sport_trainers(hardware: SurfaceTool, output: ArrayMesh, names: PackedStringArray, overrides: Dictionary, template: ShaderMaterial, shoes: Array, skin: Skin, rig: Skeleton3D, size: float) -> void:
+	var shoe_upper := triangle_polygons(shoes)
+	var midsoles := detail_surface()
+	var tread := detail_surface()
+	for side in [-1, 1]:
+		add_trainer_sole(midsoles, tread, shoes, side, size)
+		var center := skin.get_bind_pose(rig.find_bone(("Left" if side == 1 else "Right")+"Foot")).affine_inverse().origin.x
+		for lace in 4:
+			var z := (.036 + lace*.014)*size
+			project_strip(hardware, shoe_upper, Vector2(center-.020*size,z),Vector2(center+.020*size,z+.003*size),.004*size,.0022*size,true)
+	save_detail(hardware,output,names,overrides,sports_material(template,Color("b8c8cd"),"Sport_Hardware"))
+	save_detail(midsoles,output,names,overrides,sports_material(template,Color("bbc7cb"),"Sport_Trainer_Midsole"))
+	save_detail(tread,output,names,overrides,sports_material(template,Color("212a34"),"Sport_Trainer_Tread"))
+
+func add_side_stripes(tool: SurfaceTool, triangles: Array, side: int, bottom: float, top: float, size: float) -> void:
+	var steps := ceili((top-bottom)/(.010*size))
+	var seam := PackedFloat32Array()
+	for station in steps+1:
+		var y := lerpf(bottom,top,float(station)/steps)
+		seam.append(outer_section_z(triangles, side, y))
+	for offset in [-.006, .006]:
+		var previous: Array[Dictionary] = []
+		for station in steps+1:
+			var y := lerpf(bottom,top,float(station)/steps)
+			var center := (seam[maxi(0,station-1)]+2.0*seam[station]+seam[mini(station+1,steps)])*.25
+			var ribbon: Array[Dictionary] = []
+			for edge in [-.0036, .0036]:
+				var origin := Vector3(side*size, y, center+(offset+edge)*size)
+				var hit := sample_surface(triangles, origin, Vector3.LEFT*side)
+				assert(not hit.is_empty(), "Lateral seam must follow the limb continuously")
+				ribbon.append(hit)
+			if not previous.is_empty(): put_sampled_quad(tool, previous[0], previous[1], ribbon[1], ribbon[0], .0016*size)
+			previous = ribbon
+
+func outer_section_z(triangles: Array, side: int, y: float) -> float:
+	var outermost := -INF
+	var z := 0.0
+	for triangle in triangles:
+		for i in 3:
+			var a: Vector3 = triangle[i].p
+			var b: Vector3 = triangle[(i+1)%3].p
+			if (a.y < y) == (b.y < y): continue
+			var point := a.lerp(b, (y-a.y)/(b.y-a.y))
+			if side*point.x <= outermost: continue
+			outermost = side*point.x
+			z = point.z
+	assert(outermost > 0.0, "Expected an outer limb cross-section")
+	return z
+
+func project_strip(tool: SurfaceTool, triangles: Array, start: Vector2, end: Vector2, width: float, lift: float, from_above: bool = false) -> void:
+	var perpendicular := (end-start).orthogonal().normalized()*width*.5
+	var steps := maxi(1, ceili(start.distance_to(end)/.011))
+	var previous: Array[Dictionary] = []
+	for station in steps+1:
+		var center := start.lerp(end, float(station)/steps)
+		var ribbon: Array[Dictionary] = []
+		for edge in [-1, 1]:
+			var point: Vector2 = center+edge*perpendicular
+			var origin := Vector3(point.x, .35, point.y) if from_above else Vector3(point.x, point.y, .65)
+			var hit := sample_surface(triangles, origin, Vector3.DOWN if from_above else Vector3.FORWARD)
+			# A ray above the front neckline can otherwise hit the back of the collar.
+			if not from_above and not hit.is_empty() and (hit.p.z < .035 or hit.n.z <= 0.0): hit = {}
+			ribbon.append(hit)
+		if not previous.is_empty() and not previous[0].is_empty() and not previous[1].is_empty() and not ribbon[0].is_empty() and not ribbon[1].is_empty():
+			put_sampled_quad(tool,previous[0],previous[1],ribbon[1],ribbon[0],lift)
+		previous = ribbon
+
+func sample_surface(triangles: Array, origin: Vector3, direction: Vector3) -> Dictionary:
+	var closest := INF
+	var surface: Array = []
+	var hit := Vector3.ZERO
+	for triangle in triangles:
+		var point: Variant = Geometry3D.ray_intersects_triangle(origin,direction,triangle[0].p,triangle[1].p,triangle[2].p)
+		if point == null: continue
+		var distance := origin.distance_squared_to(point)
+		if distance >= closest: continue
+		closest = distance
+		surface = triangle
+		hit = point
+	if surface.is_empty(): return {}
+	var bary := Geometry3D.get_triangle_barycentric_coords(hit,surface[0].p,surface[1].p,surface[2].p)
+	var blend := surface_influences(surface, [bary.x,bary.y,bary.z])
+	blend.p = hit
+	blend.n = (surface[0].n*bary.x+surface[1].n*bary.y+surface[2].n*bary.z).normalized()
+	return blend
+
+func put_sampled_quad(tool: SurfaceTool, a: Dictionary, b: Dictionary, c: Dictionary, d: Dictionary, lift: float) -> void:
+	# Godot triangle winding is clockwise, measured against the sampled normal.
+	var vertices := [a,c,b,a,d,c] if (b.p-a.p).cross(c.p-a.p).dot(a.n) > 0 else [a,b,c,a,c,d]
+	for v in vertices:
+		tool.set_normal(v.n)
+		put(tool,v.p+v.n*lift,v.b,v.w)
+
+func add_trainer_sole(midsole: SurfaceTool, tread: SurfaceTool, source: Array, side: int, size: float) -> void:
+	var outline := PackedVector2Array()
+	for vertex: Vector3 in source[Mesh.ARRAY_VERTEX]:
+		if side*vertex.x > 0: outline.append(Vector2(vertex.x,vertex.z))
+	var hull := Geometry2D.convex_hull(outline)
+	var bounds := Rect2(hull[0],Vector2.ZERO)
+	for point in hull: bounds = bounds.expand(point)
+	var center := bounds.get_center()
+	var layers := [[.0,.93],[.008,1.055],[.015,1.065],[.028,1.065],[.035,1.015]]
+	for edge in hull.size()-1:
+		for layer in layers.size()-1:
+			var bottom: Array = layers[layer]
+			var top: Array = layers[layer+1]
+			var a := sole_point(hull[edge], center, bounds, bottom, size)
+			var b := sole_point(hull[edge+1], center, bounds, bottom, size)
+			var c := sole_point(hull[edge+1], center, bounds, top, size)
+			var d := sole_point(hull[edge], center, bounds, top, size)
+			var normal := (c-a).cross(b-a).normalized()
+			var tool := tread if layer < 2 else midsole
+			for p in [a,b,c,a,c,d]:
+				tool.set_normal(normal)
+				put_sole_vertex(tool,p,source,side,size)
+		var a := sole_point(hull[edge], center, bounds, layers[0], size)
+		var b := sole_point(hull[edge+1], center, bounds, layers[0], size)
+		for p in [Vector3(center.x,0,center.y),b,a]:
+			tread.set_normal(Vector3.DOWN)
+			put_sole_vertex(tread,p,source,side,size)
+		var upper_layer: Array = layers[-1]
+		var inner := [.035, .77]
+		a = sole_point(hull[edge], center, bounds, upper_layer, size)
+		b = sole_point(hull[edge+1], center, bounds, upper_layer, size)
+		var c := sole_point(hull[edge+1], center, bounds, inner, size)
+		var d := sole_point(hull[edge], center, bounds, inner, size)
+		for p in [a,c,b,a,d,c]:
+			midsole.set_normal(Vector3.UP)
+			put_sole_vertex(midsole,p,source,side,size)
+
+func sole_point(point: Vector2, center: Vector2, bounds: Rect2, layer: Array, size: float) -> Vector3:
+	var footprint := center+(point-center)*float(layer[1])
+	var toe_spring := smoothstep(bounds.get_center().y,bounds.end.y,footprint.y)*.010*size
+	return Vector3(footprint.x,float(layer[0])*size+toe_spring,footprint.y)
+
+func put_sole_vertex(tool: SurfaceTool, point: Vector3, source: Array, side: int, size: float) -> void:
+	var closest := 0
+	var distance := INF
+	var anchor := Vector3(point.x,.027*size,point.z)
+	for i in source[Mesh.ARRAY_VERTEX].size():
+		var vertex: Vector3 = source[Mesh.ARRAY_VERTEX][i]
+		if side * vertex.x <= 0.0: continue
+		var value := anchor.distance_squared_to(vertex)
+		if value < distance:
+			distance = value
+			closest = i
+	var stride: int = source[Mesh.ARRAY_BONES].size()/source[Mesh.ARRAY_VERTEX].size()
+	var start := closest*stride
+	put(tool,point,source[Mesh.ARRAY_BONES].slice(start,start+stride),source[Mesh.ARRAY_WEIGHTS].slice(start,start+stride))
+
+func make_sport_collar(arrays: Array,skin_arrays: Array,rig: Skeleton3D,actor: Node3D,neck: Vector3,size: float) -> ArrayMesh:
+	# Stitch garment geometry to the real opening, not a skin-shaped sheet.
+	var positions: PackedVector3Array = arrays[0]
+	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	var welded: Dictionary = {}
+	var representatives := PackedInt32Array()
+	var remap := PackedInt32Array()
+	for i in positions.size():
+		var p := positions[i]
+		var key := Vector3i(roundi(p.x*100000),roundi(p.y*100000),roundi(p.z*100000))
+		if not welded.has(key): welded[key] = representatives.size(); representatives.append(i)
+		remap.append(welded[key])
+	var edges: Dictionary = {}
+	for triangle in indices.size()/3:
+		for corner in 3:
+			var a: int = remap[indices[triangle*3+corner]]
+			var b: int = remap[indices[triangle*3+(corner+1)%3]]
+			var key := Vector2i(mini(a,b),maxi(a,b))
+			edges[key] = edges.get(key,0)+1
+	var adjacency: Dictionary = {}
+	for edge in edges:
+		if edges[edge] != 1: continue
+		if not adjacency.has(edge.x): adjacency[edge.x] = []
+		if not adjacency.has(edge.y): adjacency[edge.y] = []
+		adjacency[edge.x].append(edge.y); adjacency[edge.y].append(edge.x)
+	assert(adjacency.size() >= 12,"Jacket neckline needs a real boundary")
+	var loop := PackedInt32Array()
+	var start: int = adjacency.keys()[0]
+	var previous := -1
+	var current := start
+	while loop.is_empty() or current != start:
+		assert(adjacency[current].size() == 2,"Neckline must be a closed degree-two loop")
+		loop.append(representatives[current])
+		var next: int = adjacency[current][0] if adjacency[current][0] != previous else adjacency[current][1]
+		previous = current; current = next
+		assert(loop.size() <= adjacency.size(),"Neckline traversal must close")
+	assert(loop.size() == adjacency.size(),"Only the neckline boundary is expected")
+	var level := neck.y+.023*size
+	var cross: Array = []
+	add_skin_section(skin_arrays,level,Transform3D.IDENTITY,cross)
+	for mesh: MeshInstance3D in actor.find_children("*","MeshInstance3D",true,false):
+		if not "Face" in str(mesh.name): continue
+		var baked := cpu_bake(mesh,rig,rig)
+		for slot in mesh.mesh.get_surface_count():
+			if "_SKIN" in mesh.mesh.surface_get_material(slot).resource_name:
+				add_skin_section(baked.surface_get_arrays(slot),level,mesh.global_transform,cross)
+	var section := PackedVector2Array()
+	var lookup: Dictionary = {}
+	for v in cross:
+		var point := Vector2(v.p.x,v.p.z)
+		section.append(point); lookup[point] = v
+	var hull := Geometry2D.convex_hull(section)
+	assert(hull.size() >= 4,"Collar must enclose the actual Body and Face neck skin")
+	var center := Vector2(neck.x,neck.z)
+	var upper: Array = []
+	for index in loop:
+		var direction := (Vector2(positions[index].x,positions[index].z)-center).normalized()
+		var radius := 0.0
+		var attributes: Dictionary = {}
+		for edge in hull.size()-1:
+			var hit: Variant = Geometry2D.segment_intersects_segment(center,center+direction*.4*size,hull[edge],hull[edge+1])
+			if hit != null and center.distance_to(hit) > radius:
+				radius = center.distance_to(hit)
+				var t := hull[edge].distance_to(hit)/hull[edge].distance_to(hull[edge+1])
+				attributes = section_influences(lookup[hull[edge]],lookup[hull[edge+1]],t)
+		assert(radius > .02*size,"Neck cross-section must intersect every collar direction")
+		# Chords between section samples need clearance for the curved skin
+		# between them and its posed interpolation (measured overlap <1.3 mm).
+		var point := center+direction*(radius+.004*size)
+		attributes.p = Vector3(point.x,level,point.y)
+		upper.append(attributes)
+	var tool := SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var stride: int = arrays[Mesh.ARRAY_BONES].size()/positions.size()
+	for segment in loop.size():
+		var next := (segment+1)%loop.size()
+		for corners in [[Vector2i(segment,0),Vector2i(next,1),Vector2i(next,0)],[Vector2i(segment,0),Vector2i(segment,1),Vector2i(next,1)]]:
+			var points: Array[Vector3] = []
+			for corner in corners: points.append(positions[loop[corner.x]] if corner.y == 0 else upper[corner.x].p)
+			var normal := (points[1]-points[0]).cross(points[2]-points[0]).normalized()
+			var middle := (points[0]+points[1]+points[2])/3.0
+			var radial := Vector3(middle.x-neck.x,0,middle.z-neck.z).normalized()
+			if normal.dot(radial) < 0:
+				corners.reverse(); points.reverse(); normal = -normal
+			assert(normal.dot(radial) > 0,"Collar normals must face away from the neck")
+			for i in 3:
+				var corner: Vector2i = corners[i]
+				var index: int = loop[corner.x]
+				tool.set_normal(normal)
+				tool.set_uv(Vector2(float(corner.x)/loop.size(),corner.y))
+				if corner.y == 0:
+					tool.set_bones(arrays[Mesh.ARRAY_BONES].slice(index*stride,(index+1)*stride))
+					tool.set_weights(arrays[Mesh.ARRAY_WEIGHTS].slice(index*stride,(index+1)*stride))
+				else:
+					tool.set_bones(upper[corner.x].b)
+					tool.set_weights(upper[corner.x].w)
+				tool.add_vertex(points[i])
+	tool.generate_tangents()
+	# append_from must receive indexed geometry when the original Tops is indexed.
+	tool.index()
+	print("Sport collar: ",loop.size()," actual boundary vertices, ",cross.size()," Body/Face skin samples")
+	return tool.commit()
+
+
+func add_skin_section(arrays: Array,level: float,transform: Transform3D,result: Array) -> void:
+	for triangle in triangle_polygons(arrays):
+		for v in triangle: v.p = transform*v.p
+		for v in clip_neck(triangle,level,true):
+			if absf(v.p.y-level) < .000001: result.append(v)
+
+func section_influences(a: Dictionary,b: Dictionary,t: float) -> Dictionary:
+	return surface_influences([a,b],[1.0-t,t])
+
+func surface_influences(vertices: Array, factors: Array) -> Dictionary:
+	var influences: Dictionary = {}
+	for i in vertices.size():
+		for k in vertices[i].b.size():
+			var bone: int = vertices[i].b[k]
+			influences[bone] = influences.get(bone,0.0)+vertices[i].w[k]*maxf(0.0,factors[i])
+	var order := influences.keys()
+	order.sort_custom(func(x: int,y: int) -> bool: return influences[x] > influences[y])
+	var bones := PackedInt32Array([0,0,0,0])
+	var weights := PackedFloat32Array([0,0,0,0])
+	var total := 0.0
+	for k in mini(4,order.size()):
+		bones[k] = order[k]; weights[k] = influences[order[k]]; total += weights[k]
+	for k in 4: weights[k] /= maxf(total,.00001)
+	return {"b":bones,"w":weights}
+
 
 func sports_material(template: ShaderMaterial,color: Color,name: String) -> ShaderMaterial:
 	var material := plain_material(template,color,name)
@@ -155,38 +492,6 @@ func triangle_polygons(a: Array) -> Array:
 			polygon.append({"p":a[0][i],"n":a[1][i],"b":a[Mesh.ARRAY_BONES].slice(i*stride,(i+1)*stride),"w":a[Mesh.ARRAY_WEIGHTS].slice(i*stride,(i+1)*stride)})
 		output.append(polygon)
 	return output
-
-func append_polygon(tool: SurfaceTool,polygon: Array,offset: float) -> void:
-	if polygon.size() < 3: return
-	for i in range(1,polygon.size()-1):
-		for v in [polygon[0],polygon[i],polygon[i+1]]:
-			put(tool,v.p+v.n*offset,v.b,v.w)
-
-func append_clipped(tool: SurfaceTool,a: Array,planes: Array,offset: float) -> void:
-	for tri in triangle_polygons(a):
-		var polygon: Array = tri
-		for plane in planes:
-			polygon = clip_plane(polygon,plane[0],plane[1],plane[2])
-			if polygon.is_empty(): break
-		append_polygon(tool,polygon,offset)
-
-func clip_plane(polygon: Array,normal: Vector3,d: float,above: bool) -> Array:
-	# Reuse the exact interpolating neck clipper through an orthonormal change of
-	# coordinates. Normals/positions are transformed back before mesh emission.
-	if polygon.is_empty(): return []
-	var axis := normal.normalized()
-	var x := Vector3.RIGHT if absf(axis.dot(Vector3.RIGHT)) < .95 else Vector3.BACK
-	x = (x-axis*x.dot(axis)).normalized()
-	var basis := Basis(x,axis,x.cross(axis))
-	var inverse := basis.transposed()
-	var local := []
-	for v in polygon:
-		local.append({"p":inverse*v.p,"n":inverse*v.n,"b":v.b,"w":v.w})
-	var result := clip_neck(local,d/normal.length(),above)
-	for v in result:
-		v.p = basis*v.p
-		v.n = basis*v.n
-	return result
 
 func make_swept_hair(model: int,actor: Node3D,rig: Skeleton3D) -> ArrayMesh:
 	# The accepted HairSample_Male has coherent front/side/back layered locks.

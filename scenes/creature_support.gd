@@ -11,7 +11,10 @@ var stance_extra := 0.0
 var last_parent := Vector3.ZERO
 var travel_phase := 0.0
 var last_ground_errors: Array[float] = []
-static var _sole_code_stamp := ""
+# Keep the shipped cache identity for the original sampler. Change the stamp
+# of the affected sampler when its samples or derived anchors change.
+const STANDARD_SOLE_STAMP := "b1ca0046dfd01791aee89a8f68a7664146880aca185a9a3106db437f7944a953"
+const BEETLE_SOLE_STAMP := "stone-and-tide-beetle-soles-1"
 
 func configure(owner: Node3D, model: Node3D) -> void:
 	actor = owner
@@ -257,18 +260,24 @@ func _solve(limb: Dictionary, world_target: Vector3, world_pole: Vector3) -> voi
 
 
 func _collect_soles(model: Node) -> void:
-	# Источник включает сам PackedScene: подмена кандидата с тем же id не использует чужой кэш.
+	# Calibrated for these exact HD sculpts. A shared archetype fallback uses
+	# the standard sampler regardless of the creature definition.
 	var source: PackedScene = model.get_meta("preparation_source", null)
+	var source_path := source.resource_path if source != null else ""
+	var tide_beetle := source_path == "res://assets/creatures_hd/rogozhuk_tide.glb"
+	var extended_samples := tide_beetle or source_path == "res://assets/creatures_hd/rogozhuk_stone.glb"
+	var sample_limit := 40 if extended_samples else 12
+	var mixed_tip_bone := skeleton.find_bone("thigh.R") if tide_beetle else -1
+	# Источник включает сам PackedScene: подмена кандидата с тем же id не использует чужой кэш.
 	var cache_key: Array = ["soles", source.get_instance_id() if source != null else 0, actor.get_height()]
 	var persisted_key := ""
 	if source != null and not CreatureModels.preparation_cache.has(cache_key):
 		var fingerprint := PreparationStore.source_key(source)
 		if not fingerprint.is_empty():
-			if _sole_code_stamp.is_empty() and FileAccess.file_exists("res://scenes/creature_support.gd"):
-				_sole_code_stamp = FileAccess.get_sha256("res://scenes/creature_support.gd")
+			var stamp := BEETLE_SOLE_STAMP if extended_samples else STANDARD_SOLE_STAMP
 			var signature: Array = []
 			for limb in limbs: signature.append([limb.a,limb.b,limb.c,limb.rear])
-			persisted_key = str([1,_sole_code_stamp,fingerprint,actor.get_height(),signature]).sha256_text()
+			persisted_key = str([1,stamp,fingerprint,actor.get_height(),signature]).sha256_text()
 			var prepared: Variant = PreparationStore.read_cache("soles",persisted_key)
 			if prepared is Array and prepared.size() == limbs.size():
 				while CreatureModels.preparation_cache.size() >= CreatureModels.preparation_cache_limit():
@@ -334,7 +343,10 @@ func _collect_soles(model: Node) -> void:
 						var slot := binds[v*stride+k]
 						if slot < 0 or slot >= mapping.size(): continue
 						if membership[l][slot]: influence += weights[v*stride+k]
-					if influence < 0.65: continue
+					# The lowest Tide claw also carries pelvis weight. Include its
+					# mixed tip in the right middle leg's near-floor candidates.
+					var mixed_tip: bool = limbs[l].a == mixed_tip_bone and point.y < actor.get_height() * 0.055
+					if influence < (0.35 if mixed_tip else 0.65): continue
 					var bones: Array[int] = []
 					var poses: Array[Transform3D] = []
 					var factors: Array[float] = []
@@ -353,7 +365,7 @@ func _collect_soles(model: Node) -> void:
 			if cells.has(cell): continue
 			cells[cell] = true
 			samples.append(point)
-			if samples.size() >= 12: break
+			if samples.size() >= sample_limit: break
 		limbs[l]["sole"] = samples
 		if not samples.is_empty():
 			limbs[l]["anchor"].y -= samples[0].rest.y

@@ -1,0 +1,7 @@
+# Vefects Free EULA: local installation only.
+/local/
+
+# Imported open-license texture sources.
+!/reeboo/textures/*.png
+!/elemental_impact/textures/*.png
+!/kenney/*.png

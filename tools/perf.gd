@@ -1,9 +1,9 @@
 extends "res://tools/autoplay.gd"
 ## Замер производительности в окне (автоигра, перезапуск через «ещё раз» как у игрока):
-##   godot -s res://tools/perf.gd --resolution 1920x1080 -- h3d=1080 [ключ=значение ...]
+##   godot --windowed --position -20000,-20000 -s res://tools/perf.gd --resolution 1920x1080 -- h3d=1080 [ключ=значение ...]
 ## (полноэкранное окно KWin ограничивает частотой экрана — поэтому окно и масштаб 3D, см. h3d)
 ## Ключи:
-##   mode=fps     — vsync выключен, fps без ограничения (нагрузка GPU/CPU); mode=cpu — 60 кадров/с как на
+##   mode=fps     — legacy alias, все тесты ограничены60FPS; mode=cpu — 60 кадров/с как на
 ##                  ноутбуке с 60 Гц, считаем загрузку основного потока (% одного ядра) по /proc/self/task/<pid>/stat
 ##                  mode=bench — без автоигры: 6 раскрытых существ на воротах, три ракурса по 8 с (общий план,
 ##                  бой, крупный план) — повторяемый замер для сравнения настроек графики
@@ -41,6 +41,8 @@ var _measuring := false
 
 
 func _initialize() -> void:
+	if not has_meta("sfery_background_draw"):
+		preload("res://tools/test_window.gd").background(self)
 	for a in OS.get_cmdline_user_args():
 		var kv := a.split("=", true, 1)
 		if kv.size() == 2 and kv[0].begins_with("gs."):
@@ -50,7 +52,7 @@ func _initialize() -> void:
 			opts[kv[0]] = kv[1]
 	if opts["quality"] != "":
 		GraphicsSettings.force_level(GraphicsSettings.level_from_name(opts["quality"]))
-	GraphicsSettings.max_fps = 60 if opts["mode"] == "cpu" else 0  # без записи в settings.cfg
+	GraphicsSettings.max_fps = 60  # тестовый лимит, без записи в settings.cfg
 	super._initialize()
 	Engine.time_scale = float(opts["speed"])
 	Engine.physics_ticks_per_second = 60
@@ -59,7 +61,7 @@ func _initialize() -> void:
 		Engine.max_fps = 60
 	else:
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
-		Engine.max_fps = 0
+		Engine.max_fps = 60
 	if opts.get("h3d", "") != "":
 		# окно на весь экран KWin держит на частоте экрана (144 Гц) даже без vsync — меряем в окне
 		# (1920×1050 после рамки) и добираем высоту 3D-кадра масштабом рендера
@@ -69,6 +71,10 @@ func _initialize() -> void:
 		root.scaling_3d_scale = float(opts["scale3d"])
 	RenderingServer.viewport_set_measure_render_time(root.get_viewport_rid(), true)
 	_last_us = Time.get_ticks_usec()
+
+
+func _finalize() -> void:
+	preload("res://tools/test_window.gd").finish(self)
 
 
 var _bench_t := -1.0
@@ -333,5 +339,5 @@ func _print_timestamps() -> void:
 	for i in range(1, n):
 		var dt := (rd.get_captured_timestamp_gpu_time(i) - rd.get_captured_timestamp_gpu_time(i - 1)) / 1000.0
 		if dt > 0.05:
-			line += " %s=%.2f" % [rd.get_captured_timestamp_name(i), dt / 1000.0]
+			line += " %s=%.2f" % [rd.get_captured_timestamp_name(i), dt]
 	print(line)

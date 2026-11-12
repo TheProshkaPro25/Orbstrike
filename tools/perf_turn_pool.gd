@@ -98,7 +98,7 @@ func run() -> void:
 			check(main._prepared_balls[uid]==ball and not ball.visible and ball.process_mode==Node.PROCESS_MODE_DISABLED,"reserve has no simulation or visible model")
 		main._focus_labels([])
 		check(not original.visible,"focus does not reveal reserve")
-	main._pending.clear()
+	main.interaction.clear_request()
 	if grifalon or kolossar:
 		check((CreatureModels.KolossarMotion.load_count if kolossar else CreatureModels.GrifalonMotion.load_count) == library_loads,"no animation-library loading after menu or during matches")
 		check((CreatureModels.KolossarLightSkin.load_count if kolossar else CreatureModels.GrifalonGaleSkin.load_count) == overlay_loads and (CreatureModels.KolossarLightSkin.meshes.size() if kolossar else CreatureModels.GrifalonGaleSkin.meshes.size()) == 1,"no overlay loading or mesh rebuilding after menu")

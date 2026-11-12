@@ -10,17 +10,38 @@ assert common.count('lit *= _Color;')==1
 addition='''
 // Project palette adaptation. Source MToon is MIT; see LICENSE.
 uniform bool palette_enabled = false;
+uniform bool palette_fabric_dye = false;
 uniform vec4 palette_color : source_color = vec4(1.0);
+float palette_value(vec3 color) {
+    return max(color.r,max(color.g,color.b));
+}
 vec3 apply_palette(vec3 original) {
-    float value = max(original.r,max(original.g,original.b));
-    return palette_color.rgb * value;
+    return palette_color.rgb * palette_value(original);
+}
+float dyed_fabric_tone(float value) {
+    // Lift even dark source textures while keeping their tonal detail.
+    return 0.30 + 0.70 * sqrt(min(value, 1.0));
+}
+void apply_fabric_dye(inout vec3 lit_color, inout vec3 shade_color) {
+    float lit_value = max(palette_value(lit_color), 0.0);
+    float shade_value = max(palette_value(shade_color), 0.0);
+    float shadow = clamp(sqrt((shade_value + 0.012) / (lit_value + 0.012)), 0.40, 0.80);
+    // The floor is the small diffuse reflectance of black fabric.
+    float black_lift = 0.028 * (1.0 - smoothstep(0.0, 0.055, palette_value(palette_color.rgb)));
+    vec3 dye = max(palette_color.rgb, vec3(0.003)) + vec3(black_lift);
+    lit_color = dye * dyed_fabric_tone(lit_value);
+    shade_color = dye * dyed_fabric_tone(shade_value) * shadow;
 }
 '''
 common=common.replace('uniform float _AlphaCutoutEnable',addition+'\nuniform float _AlphaCutoutEnable')
 common=common.replace('lit *= _Color;', '''lit *= _Color;
     if (palette_enabled) {
-        lit.rgb = apply_palette(lit.rgb);
-        shade.rgb = apply_palette(shade.rgb);
+        if (palette_fabric_dye) {
+            apply_fabric_dye(lit.rgb, shade.rgb);
+        } else {
+            lit.rgb = apply_palette(lit.rgb);
+            shade.rgb = apply_palette(shade.rgb);
+        }
     }''')
 # Additional temple lights need distance falloff outside the toon shadow threshold.
 # Upstream raises attenuation to .1 and applies an artistic shadow floor: distant

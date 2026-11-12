@@ -70,6 +70,8 @@ const HAIR_COLORS := [Color.WHITE,Color("4f3023"),Color("191d28"),Color("edc576"
 const EYE_COLORS := [Color.WHITE,Color("597fbf"),Color("68a079"),Color("b93e53"),Color("a67949"),Color("947db5")]
 const SKIN_TINTS := [Color.WHITE,Color("f6ddc8"),Color("d5a887"),Color("ac7d62")]
 const OUTFIT_COLORS := [Color.WHITE,Color("a83b4a"),Color("40659d"),Color("3f826f"),Color("70608e")]
+const EXTRA_DYEABLE_FABRIC := ["Kimono_Obi", "Kimono_Haneri", "Operator_Inner", "Operator_Under_Trousers"]
+const AUTHORED_UNIFORM_TRIM := "Booth_orchid_uniform_Tops_3_CLOTH"
 const HEIGHTS := [.92,1.0,1.08]
 var palette_materials: Array[Dictionary] = []
 var local_materials: Array[ShaderMaterial] = []
@@ -94,8 +96,7 @@ func apply_profile(profile: Dictionary) -> void:
 				index = p.vrm_eyes
 				color = EYE_COLORS[index]
 			"outfit":
-				index = p.vrm_outfit
-				color = OUTFIT_COLORS[index]
+				continue
 			"skin":
 				color = SKIN_TINTS[p.vrm_skin]
 		mat.set_shader_parameter("palette_enabled",index != 0)
@@ -105,17 +106,39 @@ func apply_profile(profile: Dictionary) -> void:
 			mat.set_shader_parameter("_ShadeColor",entry.shade_color * color)
 
 	_apply_denim(p.vrm_denim if VrmParts.supports_denim(selected,p.vrm_clothes) else 0)
+	set_outfit_palette(p.vrm_outfit, p.vrm_outfit_color)
 	_apply_face()
+
+## The editor can update the dye without rebuilding the fighter or resetting its pose.
+func set_outfit_palette(index: int, custom_color: String) -> void:
+	appearance_profile.vrm_outfit = index
+	appearance_profile.vrm_outfit_color = custom_color
+	var custom := not custom_color.is_empty()
+	var color: Color = Color.html(custom_color) if custom else OUTFIT_COLORS[index]
+	var active := index != 0 or custom
+	var explicit_denim: bool = appearance_profile.vrm_denim != 0 and VrmParts.supports_denim(selected, appearance_profile.vrm_clothes)
+	for entry in palette_materials:
+		if entry.role != "outfit": continue
+		var material: ShaderMaterial = entry.material
+		var accepts_color: bool = not entry.get("preset_only", false) if custom else not entry.get("custom_only", false)
+		var enabled: bool = active and accepts_color and not (explicit_denim and entry.get("denim", false))
+		material.set_shader_parameter("palette_enabled", enabled)
+		material.set_shader_parameter("palette_fabric_dye", enabled and custom)
+		material.set_shader_parameter("palette_color", color)
 
 func _apply_denim(index: int) -> void:
 	for surface in body_part.mesh.get_surface_count():
 		var original := VrmParts.material_for(body_part.mesh,surface)
 		if original == null or not "Bottoms_" in original.resource_name: continue
-		var mat := body_part.get_surface_override_material(surface) as ShaderMaterial
-		mat.set_shader_parameter("_MainTex",DenimWardrobe.TEXTURES[index-1] if index > 0 else original.get_shader_parameter("_MainTex"))
-		mat.set_shader_parameter("_ShadeTexture",DenimWardrobe.TEXTURES[index-1] if index > 0 else original.get_shader_parameter("_ShadeTexture"))
-		mat.set_shader_parameter("_Color",Color.WHITE if index > 0 else original.get_shader_parameter("_Color"))
-		mat.set_shader_parameter("_ShadeColor",Color("b4b4b4") if index > 0 else original.get_shader_parameter("_ShadeColor"))
+		var material := body_part.get_surface_override_material(surface) as ShaderMaterial
+		# Denim has its own color selector. Replace its texture on every pass.
+		while material != null and original != null:
+			material.set_shader_parameter("_MainTex",DenimWardrobe.TEXTURES[index-1] if index > 0 else original.get_shader_parameter("_MainTex"))
+			material.set_shader_parameter("_ShadeTexture",DenimWardrobe.TEXTURES[index-1] if index > 0 else original.get_shader_parameter("_ShadeTexture"))
+			material.set_shader_parameter("_Color",Color.WHITE if index > 0 else original.get_shader_parameter("_Color"))
+			material.set_shader_parameter("_ShadeColor",Color("b4b4b4") if index > 0 else original.get_shader_parameter("_ShadeColor"))
+			material = material.next_pass as ShaderMaterial
+			original = original.next_pass as ShaderMaterial
 
 func _localize_materials() -> void:
 	palette_materials.clear()
@@ -126,16 +149,26 @@ func _localize_materials() -> void:
 			var original := mesh.mesh.surface_get_material(surface) as ShaderMaterial
 			if mesh.mesh.has_meta("part_source"): original = VrmParts.material_for(mesh.mesh,surface)
 			if original == null: continue
-			var id := original.get_instance_id()
-			if not copies.has(id): copies[id] = _copy_material(original)
-			mesh.set_surface_override_material(surface,copies[id])
+			var slot := _costume_color_role(original.resource_name) if mesh == body_part else ""
+			var key := "%d:%s" % [original.get_instance_id(), slot]
+			if not copies.has(key): copies[key] = _copy_material(original,slot)
+			mesh.set_surface_override_material(surface,copies[key])
 
-func _copy_material(original: ShaderMaterial) -> ShaderMaterial:
+func _costume_color_role(name: String) -> String:
+	if name == AUTHORED_UNIFORM_TRIM: return "preset_fabric"
+	if "_CLOTH" in name: return "denim" if "Bottoms_" in name else "outfit"
+	if name in EXTRA_DYEABLE_FABRIC or name.begins_with("Booth_oc_uniform_NeckAccessory_") or name.begins_with("Booth_orchid_uniform_NeckAccessory_"):
+		return "custom_fabric"
+	return ""
+
+func _copy_material(original: ShaderMaterial, assigned_role: String = "") -> ShaderMaterial:
 	var copy := original.duplicate(false) as ShaderMaterial
 	local_materials.append(copy)
 	var name := original.resource_name
-	var role := ""
-	if "_HAIR" in name or "FaceBrow" in name: role = "hair"
+	var role := assigned_role
+	if role in ["denim", "custom_fabric", "preset_fabric"]: role = "outfit"
+	elif role == "outfit": pass
+	elif "_HAIR" in name or "FaceBrow" in name: role = "hair"
 	elif "EyeIris" in name: role = "eyes"
 	elif "_SKIN" in name: role = "skin"
 	elif "Tops_" in name or "AccessoryNeck_" in name: role = "outfit"
@@ -143,8 +176,14 @@ func _copy_material(original: ShaderMaterial) -> ShaderMaterial:
 	if VrmPaletteShaders.SHADERS.has(key):
 		copy.shader = VrmPaletteShaders.SHADERS[key]
 		if not role.is_empty():
-			palette_materials.append({"material":copy,"role":role,"base_color":original.get_shader_parameter("_Color"),"shade_color":original.get_shader_parameter("_ShadeColor")})
-	if original.next_pass is ShaderMaterial: copy.next_pass = _copy_material(original.next_pass)
+			palette_materials.append({
+				"material":copy, "role":role, "denim":assigned_role == "denim",
+				"custom_only":assigned_role == "custom_fabric", "preset_only":assigned_role == "preset_fabric",
+				"base_color":original.get_shader_parameter("_Color"), "shade_color":original.get_shader_parameter("_ShadeColor"),
+			})
+	if original.next_pass is ShaderMaterial:
+		var next_role := "outfit" if assigned_role.is_empty() and role == "outfit" else assigned_role
+		copy.next_pass = _copy_material(original.next_pass, next_role)
 	return copy
 
 func _hold_materials_until_draw() -> void:
@@ -207,7 +246,8 @@ func _sync_parts(p: Dictionary) -> void:
 	if _hair_source == source and _outfit == p.vrm_clothes: return
 	_hold_materials_until_draw()
 	hair_part.mesh = VrmParts.HAIR[selected][source]
-	body_part.mesh = VrmParts.BODY[selected][p.vrm_clothes]
+	body_part.mesh = VrmParts.outfit_mesh(selected, p.vrm_clothes)
+	hair_part.visible = not body_part.mesh.get_meta("covers_hair", false)
 	_hair_source = source
 	_outfit = p.vrm_clothes
 	_localize_materials()
