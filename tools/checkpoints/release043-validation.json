@@ -1,0 +1,164 @@
+{
+  "release": "Orbstrike 0.4.3",
+  "scope": "Windows x64 client",
+  "version": "0.4.3",
+  "source_commit": "5011010ecc4669b877a8df65ef3301057703e57b",
+  "source_tag": "v0.4.3",
+  "build_inputs": "tools/checkpoints/release043-inputs.json",
+  "preparation": {
+    "fresh_import_exit_code": 0,
+    "fresh_import_errors": 0,
+    "fresh_import_warnings": 0,
+    "derived_glb_textures_byte_equal": 156,
+    "export_exit_code": 0,
+    "export_errors": 0
+  },
+  "package": {
+    "files": 18,
+    "pck_entries": 1668,
+    "pck_entries_md5_pass": 1668,
+    "pe_architecture": "AMD64 PE32+ GUI",
+    "pe_version": "0.4.3",
+    "pck_sha256": "74662a47b994083e253304db7ee5c846cbc6211b1b4a19eb24e2750fa135459c",
+    "zip_sha256": "4b48b30ddc252df70e1ce29d12620f92e41adf1e12a47804bf52ec49511621a5",
+    "zip_bytes": 1132411136,
+    "independent_static": "PASS"
+  },
+  "source_checks": {
+    "match_lifecycle": {
+      "checks": 109,
+      "failures": 0
+    },
+    "startup_failure_headless": {
+      "checks": 66,
+      "failures": 0
+    },
+    "ai_target_flow": {
+      "checks": 220,
+      "failures": 0
+    },
+    "architecture_contracts": {
+      "checks": 19,
+      "failures": 0
+    },
+    "stance": {
+      "checks": 240,
+      "failures": 0
+    },
+    "preparation_cache": {
+      "checks": 1338,
+      "failures": 0
+    },
+    "autoplay": {
+      "matches_finished": 2,
+      "turns": [
+        12,
+        14
+      ],
+      "battles": 10,
+      "physical_landings": 20,
+      "misses": 0,
+      "game_assertion_failures": 0,
+      "fixture_png_write_errors": 11,
+      "wrapper_pass": false,
+      "capture_directory_created_and_write_probe_passed": true
+    }
+  },
+  "independent_exact_runtime": {
+    "scope": "Boot to main menu, 98 creatures, three arenas, four resident fighters, both packaged authored motion libraries and actual throw samples",
+    "checks": 21,
+    "failures": 0,
+    "exit_code": 0,
+    "warnings": [
+      "[GPUCloth] 1 non-manifold edges (3+ faces) skipped for bending.",
+      "[GPUCloth] 1 non-manifold edges (3+ faces) skipped for bending."
+    ],
+    "errors": [],
+    "renderer": "Linux Vulkan 1.4.351 Forward+ NVIDIA RTX 4070 Laptop",
+    "window": "project wrapper minimized, unfocusable, offscreen, 60 FPS"
+  },
+  "independent_runtime_before_motion_overlay": {
+    "scope": "Boot, 24 outfits and shaders, physical Fire throw and pool return, menu return",
+    "checks": 55,
+    "failures": 0,
+    "only_pck_delta_to_final": [
+      "assets/avatars/motions/kevin_local/fighter_0.res",
+      "assets/avatars/motions/kevin_local/fighter_1.res"
+    ],
+    "unchanged_pck_entries": 1666
+  },
+  "limitations": {
+    "native_windows_executed": false,
+    "audio_listened": false,
+    "server_executed": false,
+    "network_match_executed": false
+  },
+  "online": {
+    "client_rules": "online-rules-11",
+    "public_server_version": "0.4.0",
+    "public_server_rules": "online-rules-10",
+    "compatible": false
+  },
+  "publication": {
+    "ok": true,
+    "release_id": 443453062,
+    "tag_name": "v0.4.3",
+    "tag_commit": "5011010ecc4669b877a8df65ef3301057703e57b",
+    "published_at": "2026-11-12T20:16:32Z",
+    "html_url": "https://github.com/TheProshkaPro25/Orbstrike/releases/tag/v0.4.3",
+    "latest": true,
+    "expected_assets": {
+      "Orbstrike_v0.4.3_win64.zip": {
+        "bytes": 1132411136,
+        "sha256": "4b48b30ddc252df70e1ce29d12620f92e41adf1e12a47804bf52ec49511621a5"
+      },
+      "Orbstrike_v0.4.3_win64.zip.sha256": {
+        "bytes": 93,
+        "sha256": "a17ddf62a81f6720386c16f8aedaa8ad8987b141fceae25cd64f47f7ee8f7991"
+      },
+      "SHA256SUMS": {
+        "bytes": 93,
+        "sha256": "a17ddf62a81f6720386c16f8aedaa8ad8987b141fceae25cd64f47f7ee8f7991"
+      }
+    },
+    "old_draft_preserved": true,
+    "old_tag_preserved": true,
+    "previous_0_4_0_release_asset_metadata_unchanged": true,
+    "public_download": {
+      "ok": true,
+      "release_page": {
+        "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/tag/v0.4.3",
+        "status": 200
+      },
+      "assets": [
+        {
+          "name": "Orbstrike_v0.4.3_win64.zip",
+          "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.3/Orbstrike_v0.4.3_win64.zip",
+          "head_status": 200,
+          "get_status": 206,
+          "bytes": 1132411136,
+          "sha256_github_asset_digest": "4b48b30ddc252df70e1ce29d12620f92e41adf1e12a47804bf52ec49511621a5"
+        },
+        {
+          "name": "Orbstrike_v0.4.3_win64.zip.sha256",
+          "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.3/Orbstrike_v0.4.3_win64.zip.sha256",
+          "head_status": 200,
+          "get_status": 200,
+          "bytes": 93,
+          "sha256_full_public_download": "a17ddf62a81f6720386c16f8aedaa8ad8987b141fceae25cd64f47f7ee8f7991"
+        },
+        {
+          "name": "SHA256SUMS",
+          "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.3/SHA256SUMS",
+          "head_status": 200,
+          "get_status": 200,
+          "bytes": 93,
+          "sha256_full_public_download": "a17ddf62a81f6720386c16f8aedaa8ad8987b141fceae25cd64f47f7ee8f7991"
+        }
+      ],
+      "authorization_used": false,
+      "seconds": 7.77,
+      "verified_at": "2026-11-12T20:16:43.898045+00:00"
+    }
+  }
+}
