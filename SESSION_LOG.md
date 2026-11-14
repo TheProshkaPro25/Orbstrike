@@ -1,5 +1,12 @@
 # 14 ноября 2026 — Orbstrike 0.4.5, клиент
 
+[Orbstrike 0.4.5](https://github.com/TheProshkaPro25/Orbstrike/releases/tag/v0.4.5) опубликован на GitHub как Latest.
+[ZIP для Windows x64](https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.5/Orbstrike_v0.4.5_win64.zip) и оба файла контрольных сумм сверены по SHA-256.
+Проверки исходников: 1 153/0 для правил, ИИ и карьеры, 132/0 для боевого HUD.
+Независимый стенд точного PCK на Linux/Vulkan: 190/0.
+Нативный запуск Windows и прослушивание остаются в очереди.
+[Контрольная запись выпуска](tools/checkpoints/release045-validation.json).
+
 Пакет Windows x64 собран из отдельной копии на базе публичного 0.4.3.
 Выпуск включает Флориса, Окто, 16 локальных карт, стихийные попадания,
 обновлённый свет двух арен и «Наручный прибор» с боевым сигналом.
