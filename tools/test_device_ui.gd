@@ -52,11 +52,13 @@ func _run() -> void:
 	AudioSettings.settings_path = _fixture
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(_fixture))
 	DeviceSettings.reload_settings()
-	check(DeviceSettings.current() == DeviceSettings.CLASSIC, "missing preference defaults to classic")
+	check(not DeviceSettings.reduce_motion(), "missing motion preference allows animations")
 	var fixture := ConfigFile.new()
+	fixture.set_value("interface", "style", 0)
 	fixture.set_value("graphics", "sentinel", 17)
 	fixture.set_value("audio", "music", 0.6)
 	fixture.save(_fixture)
+	DeviceSettings.reload_settings()
 	AudioSettings.load_and_apply()
 	GraphicsSettings.force_level(GraphicsSettings.Level.LOW)
 	GraphicsSettings.max_fps = 60
@@ -66,35 +68,19 @@ func _run() -> void:
 	menu.city.paused = true
 	await frames(140)
 	var shared_theme := UiTheme.get_theme()
-	var classic_button: StyleBoxFlat = shared_theme.get_stylebox("normal", "Button")
-	check(classic_button.border_color.is_equal_approx(UiTheme.GOLD_DIM), "classic button palette preserved")
+	var device_button: StyleBoxFlat = shared_theme.get_stylebox("normal", "Button")
+	check(device_button.border_color.is_equal_approx(UiTheme.DEVICE_DIM), "Wrist Device palette with an old style preference")
 	check(menu._buttons[0].text == "Играть", "main menu groups game modes under Play")
-	for viewport in [Vector2i(1280,720), Vector2i(960,540)]:
-		root.size = viewport
-		await frames(6)
-		for button in menu._visible_buttons():
-			check(root.get_visible_rect().encloses(button.get_global_rect()), "classic menu contains " + button.text + " at " + str(viewport))
-		await capture("classic-menu-%d" % viewport.x)
-		menu._settings.open()
-		await frames(16)
-		check(root.get_visible_rect().encloses(menu._settings._panel.get_global_rect()), "classic settings fit " + str(viewport))
-		await capture("classic-settings-%d" % viewport.x)
-		menu._settings.close()
 	var parked := Node.new()
 	root.add_child(parked)
 	menu.reparent(parked)
 	await frames(3)
 	menu.reparent(root)
 	await frames(3)
-	check(DeviceSettings.set_style(DeviceSettings.DEVICE) == OK, "device preference saved")
-	DeviceSettings.reload_settings()
-	check(DeviceSettings.is_device(), "device preference survives reload")
-	fixture.load(_fixture)
-	check(int(fixture.get_value("graphics", "sentinel", 0)) == 17, "style write preserves other settings")
-	check(UiTheme.get_theme() == shared_theme, "resident UI keeps same shared Theme identity")
-	check(shared_theme.get_stylebox("normal", "Button").border_color.is_equal_approx(UiTheme.DEVICE_DIM), "resident button palette changes live")
-	check(menu.ui.get_node("DeviceFrame").visible, "reparented resident menu receives device frame")
-	check(DeviceSettings.events().changed.is_connected(menu.ui.get_node("DeviceFrame")._changed), "resident frame reconnects after reparent")
+	var frame: UiTheme.DeviceFrame = menu.ui.get_node("DeviceFrame")
+	check(UiTheme.get_theme() == shared_theme, "resident UI keeps its shared theme")
+	check(frame.visible, "resident menu retains Wrist Device frame after reparenting")
+	check(DeviceSettings.events().motion_changed.is_connected(frame._motion_changed), "resident frame reconnects motion preference after reparenting")
 	parked.queue_free()
 	for viewport in [Vector2i(1280,720), Vector2i(960,540)]:
 		root.size = viewport
@@ -105,32 +91,39 @@ func _run() -> void:
 		menu._settings.open()
 		await frames(16)
 		check(root.get_visible_rect().encloses(menu._settings._panel.get_global_rect()), "device settings fit " + str(viewport))
+		check(menu._settings.find_children("*", "OptionButton", true, false).size() == 2, "settings show graphics and FPS selectors")
+		var motion: CheckButton = menu._settings.find_child("ReduceInterfaceMotion", true, false)
+		check(motion != null, "settings retain the reduced motion toggle")
 		await capture("device-settings-%d" % viewport.x)
 		menu._settings.close()
+	var motion: CheckButton = menu._settings.find_child("ReduceInterfaceMotion", true, false)
+	if is_instance_valid(motion):
+		motion.button_pressed = true
+	DeviceSettings.reload_settings()
+	check(DeviceSettings.reduce_motion(), "reduced motion can be changed and reloaded on an old profile")
+	fixture.load(_fixture)
+	check(int(fixture.get_value("graphics", "sentinel", 0)) == 17, "motion update preserves graphics preferences")
+	check(is_equal_approx(float(fixture.get_value("audio", "music", 0.0)), 0.6), "motion update preserves audio preferences")
 	menu.ui.hide()
 	var team := UiOnlyTeam.new()
 	root.add_child(team)
 	team.set_process(false)
-	for style in [DeviceSettings.CLASSIC,DeviceSettings.DEVICE]:
-		DeviceSettings.set_style(style)
-		for viewport in [Vector2i(1280,720), Vector2i(960,540)]:
-			root.size = viewport
-			await frames(8)
-			check(root.get_visible_rect().encloses(team._next_btn.get_global_rect()), "team navigation fits " + str(viewport))
-			await capture(("device" if style == DeviceSettings.DEVICE else "classic")+"-team-%d" % viewport.x)
+	for viewport in [Vector2i(1280,720), Vector2i(960,540)]:
+		root.size = viewport
+		await frames(8)
+		check(root.get_visible_rect().encloses(team._next_btn.get_global_rect()), "team navigation fits " + str(viewport))
+		await capture("device-team-%d" % viewport.x)
 	team.queue_free()
 	await frames(3)
 	var career_panel: Control = load("res://scenes/ui/career_panel.gd").new()
 	var career: RefCounted = load("res://core/career.gd").create("fire",1,92026,"Проверка","" )
 	root.add_child(career_panel)
 	career_panel.display(career)
-	for style in [DeviceSettings.CLASSIC,DeviceSettings.DEVICE]:
-		DeviceSettings.set_style(style)
-		for viewport in [Vector2i(1280,720), Vector2i(960,540)]:
-			root.size = viewport
-			await frames(6)
-			check(root.get_visible_rect().encloses(career_panel._action.get_global_rect()), "career action fits " + str(viewport))
-			await capture(("device" if style == DeviceSettings.DEVICE else "classic")+"-career-%d" % viewport.x)
+	for viewport in [Vector2i(1280,720), Vector2i(960,540)]:
+		root.size = viewport
+		await frames(6)
+		check(root.get_visible_rect().encloses(career_panel._action.get_global_rect()), "career action fits " + str(viewport))
+		await capture("device-career-%d" % viewport.x)
 	career_panel.queue_free()
 	await frames(3)
 	var canvas := Control.new()
@@ -150,20 +143,18 @@ func _run() -> void:
 	fighter.set_active(true)
 	fighter.set_gates(2)
 	fighter.set_momentum(1)
-	for style in [DeviceSettings.CLASSIC, DeviceSettings.DEVICE]:
-		DeviceSettings.set_style(style)
-		await frames(4)
-		for viewport in [Vector2i(1280,720), Vector2i(960,540)]:
-			root.size = viewport
-			battle.open(["Дракон Пламени", "Страж Прилива"], [0,5], [680,720])
-			battle.set_chain([], [false,false],0,[],[1,2])
-			await frames(40)
-			for plate in battle._plates:
-				check(root.get_visible_rect().encloses(plate.get_global_rect()), "battle panel fits " + str(viewport) + " style " + str(style))
-			check(battle._powers[0].text == "680" and battle._powers[1].text == "720", "presentation preserves actual powers")
-			await capture(("device" if style == DeviceSettings.DEVICE else "classic")+"-battle-%d" % viewport.x)
-			battle.close()
-			await frames(20)
+	await frames(4)
+	for viewport in [Vector2i(1280,720), Vector2i(960,540)]:
+		root.size = viewport
+		battle.open(["Дракон Пламени", "Страж Прилива"], [0,5], [680,720])
+		battle.set_chain([], [false,false],0,[],[1,2])
+		await frames(40)
+		for plate in battle._plates:
+			check(root.get_visible_rect().encloses(plate.get_global_rect()), "battle panel fits " + str(viewport))
+		check(battle._powers[0].text == "680" and battle._powers[1].text == "720", "presentation preserves actual powers")
+		await capture("device-battle-%d" % viewport.x)
+		battle.close()
+		await frames(20)
 	var sound := SoundFx.i()
 	for cue in SoundFx.DEVICE_SFX_NAMES:
 		check(sound.has_sfx(cue), "preloaded original cue " + cue)
@@ -194,15 +185,11 @@ func _run() -> void:
 	AudioSettings.load_and_apply()
 	check(AudioSettings.interface_muted and is_equal_approx(AudioSettings.interface_volume,.35), "interface mute and gain survive reload")
 	check(sound.catalog_load_count == loads, "interface interactions perform no additional sound loads")
-	check(DeviceSettings.set_style(DeviceSettings.CLASSIC) == OK, "classic preference restored")
-	await frames(4)
-	check(not menu.ui.get_node("DeviceFrame").visible, "classic toggle hides console detailing")
-	check(shared_theme.get_stylebox("normal","Button").border_color.is_equal_approx(UiTheme.GOLD_DIM), "classic toggle restores palette")
-	var invalid := ConfigFile.new()
-	invalid.set_value("interface", "style", "invalid")
-	invalid.save(_fixture)
+	fixture.load(_fixture)
+	fixture.set_value("interface", "reduce_motion", "invalid")
+	fixture.save(_fixture)
 	DeviceSettings.reload_settings()
-	check(DeviceSettings.current() == DeviceSettings.CLASSIC, "malformed preference safely falls back to classic")
+	check(not DeviceSettings.reduce_motion(), "malformed motion preference allows animations")
 	var result := {"checks":checks,"failures":failures,"limits":["standalone source UI without Boot or match","no audio listening","not a performance measurement"]}
 	var report := FileAccess.open(output.path_join("result.json"),FileAccess.WRITE)
 	report.store_string(JSON.stringify(result,"  "))

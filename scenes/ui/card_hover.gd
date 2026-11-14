@@ -72,12 +72,12 @@ func _place() -> void:
 	var viewport := _source.get_viewport_rect().size
 	_last_viewport = viewport
 	_last_rect = _source.get_global_rect()
-	var dock_card := DeviceSettings.is_device() and _source.has_meta("device_hand_card")
+	var dock_card := _source.has_meta("device_hand_card")
 	var available := Vector2(viewport.x, maxf(170.0, _last_rect.position.y - 120.0)) if dock_card else viewport
 	if _panel.has_method("fit_viewport"): _panel.fit_viewport(available)
 	var extent := _panel.get_combined_minimum_size().max(_panel.size)
 	var factor := minf(1.0, minf((viewport.x - 24.0) / maxf(1.0, extent.x), (viewport.y - 24.0) / maxf(1.0, extent.y)))
-	if DeviceSettings.is_device() and _source.has_meta("ability_target_card"):
+	if _source.has_meta("ability_target_card"):
 		var room := maxf(_last_rect.position.x, viewport.x - _last_rect.end.x) - 28.0
 		factor = minf(factor, maxf(0.72, room / maxf(1.0, extent.x)))
 	_panel.scale = Vector2.ONE * factor

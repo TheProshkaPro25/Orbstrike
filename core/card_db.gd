@@ -11,6 +11,7 @@ static var _arena_order: Array[StringName] = []
 static var _ability_order: Array[StringName] = []
 const RARE_SHADOW_ID: StringName = &"creature_likorez_shadow"
 const RARE_ENCOUNTER_CHANCE: float = 0.10
+enum Pool { BASE, ELEMENTAL, SPECIES }
 
 
 static func load_all() -> void:
@@ -29,9 +30,11 @@ static func load_all() -> void:
 	rare.species = &"likorez"
 	rare.archetype = "sixarm"
 	_creatures[String(rare.id)] = rare
-	for row in GameData.CARDS:
+	for row in GameData.CARDS + GameData.LOCAL_SPECIES_CARDS:
 		var c: CardDef = CardDef.make(StringName(row["id"]), String(row["name"]), int(row["kind"]), StringName(row["effect"]), (row["params"] as Dictionary).duplicate(), String(row["text"]))
 		c.details = String(row.get("details", ""))
+		if GameData.LOCAL_SPECIES_CARDS.has(row):
+			c.params["local_species_set"] = true
 		if c.kind == CardDef.Kind.ARENA and not c.params.has("g"):
 			c.params["g"] = _gate_table(c)
 		_cards[String(c.id)] = c
@@ -42,11 +45,11 @@ static func load_all() -> void:
 	_loaded = true
 
 
-## Все существа: каждый вид из GameData.SPECIES в каждой из 6 стихий (порядок: вид, затем стихия).
+## Все виды каталога в порядке «вид → стихия».
 static func species_creatures() -> Array[CreatureDef]:
 	var out: Array[CreatureDef] = []
-	for i in GameData.SPECIES.size():
-		var sp: Dictionary = GameData.SPECIES[i]
+	for i in GameData.ALL_SPECIES.size():
+		var sp: Dictionary = GameData.ALL_SPECIES[i]
 		for a in GameData.ATTR_KEYS.size():
 			var id := StringName("creature_%s_%s" % [sp["id"], GameData.ATTR_KEYS[a]])
 			var power: int = int(sp["power"]) + int(GameData.ATTR_POWER_SHIFT[(a + i) % GameData.ATTR_POWER_SHIFT.size()])
@@ -89,14 +92,39 @@ static func creature_ids() -> Array[StringName]:
 	return _creature_order.duplicate()
 
 
-static func arena_ids() -> Array[StringName]:
+## Состав, который понимает действующий сетевой протокол.
+static func online_creature_available(id: StringName) -> bool:
 	load_all()
-	return _arena_order.duplicate()
+	var index := _creature_order.find(id)
+	return index >= 0 and index < GameData.SPECIES.size() * GameData.ATTR_KEYS.size()
 
 
-static func ability_ids() -> Array[StringName]:
+static func arena_ids(pool: int = Pool.SPECIES) -> Array[StringName]:
 	load_all()
-	return _ability_order.duplicate()
+	return _card_ids(_arena_order, pool)
+
+
+static func ability_ids(pool: int = Pool.SPECIES) -> Array[StringName]:
+	load_all()
+	return _card_ids(_ability_order, pool)
+
+
+static func _card_ids(order: Array[StringName], pool: int) -> Array[StringName]:
+	if pool == Pool.SPECIES:
+		return order.duplicate()
+	var out: Array[StringName] = []
+	for id in order:
+		if card_available(card(id), pool):
+			out.append(id)
+	return out
+
+
+static func card_available(c: CardDef, pool: int) -> bool:
+	if c == null:
+		return false
+	if c.params.get("local_species_set", false):
+		return pool >= Pool.SPECIES
+	return pool >= Pool.ELEMENTAL or not c.params.get("elemental_set", false)
 
 
 static func build_deck(creature_list: Array, arena_list: Array, ability_list: Array) -> DeckDef:
@@ -118,7 +146,7 @@ static func preset_deck(index: int) -> DeckDef:
 
 
 # ---------------------------------------------------------------- колода
-## Ворота: gold — ворота стихии (Поле X, Алтарь силы), silver — ворота вида (×2 БС виду), bronze — командные.
+## Ворота: gold — ворота стихии, silver — ворота вида (×2 БС виду), bronze — командные.
 ## Способности: red — стихийные, blue — усиления своей стихии (лесенка +30…+200), green — видовые.
 const GATE_CLASSES: Array[StringName] = [&"gold", &"silver", &"bronze"]
 const ABILITY_CLASSES: Array[StringName] = [&"red", &"blue", &"green"]
@@ -129,6 +157,8 @@ static func card_class(c: CardDef) -> StringName:
 	if c == null:
 		return &""
 	if c.kind == CardDef.Kind.ARENA:
+		if c.params.get("elemental_set", false):
+			return &"gold"
 		match String(c.effect_id):
 			"attr_bonus", "owner_power":
 				return &"gold"
@@ -156,11 +186,14 @@ static func card_fits(c: CardDef, element: int, species: Array = []) -> bool:
 
 
 ## Карты пула данного вида и класса, подходящие стихии element и видам species (пусто — без фильтра по виду).
-static func cards_of(kind: int, cls: StringName, element: int = -1, species: Array = []) -> Array[StringName]:
+## Стихийный набор включается явно в локальных режимах.
+static func cards_of(kind: int, cls: StringName, element: int = -1, species: Array = [], pool: int = Pool.BASE) -> Array[StringName]:
 	load_all()
 	var out: Array[StringName] = []
 	for id in (_arena_order if kind == CardDef.Kind.ARENA else _ability_order):
 		var c: CardDef = card(id)
+		if not card_available(c, pool):
+			continue
 		if card_class(c) == cls and card_fits(c, element, species):
 			out.append(id)
 	return out
@@ -177,11 +210,11 @@ static func team_species(creature_list: Array) -> Array:
 
 
 ## Существа одной стихии.
-static func creatures_of(element: int) -> Array[StringName]:
+static func creatures_of(element: int, online_roster: bool = false) -> Array[StringName]:
 	load_all()
 	var out: Array[StringName] = []
 	for id in _creature_order:
-		if creature(id).attribute == element:
+		if creature(id).attribute == element and (not online_roster or online_creature_available(id)):
 			out.append(id)
 	return out
 
@@ -189,7 +222,7 @@ static func creatures_of(element: int) -> Array[StringName]:
 ## Проверка колоды игрока. "" — колода годится, иначе текст ошибки.
 ## 3 разных существа одной стихии в лимите силы; ворота по одной золотой/серебряной/бронзовой;
 ## способности по одной красной/синей/зелёной; стихийные карты и «Поле» — своей стихии, видовые — вида из команды.
-static func deck_error(creatures: Array, arena: Array, abilities: Array) -> String:
+static func deck_error(creatures: Array, arena: Array, abilities: Array, pool: int = Pool.SPECIES) -> String:
 	load_all()
 	if creatures.size() != 3:
 		return "Нужно 3 существа"
@@ -217,6 +250,8 @@ static func deck_error(creatures: Array, arena: Array, abilities: Array) -> Stri
 			var c: CardDef = card(StringName(id))
 			if c == null:
 				return "Неизвестная карта"
+			if not card_available(c, pool):
+				return "«%s» недоступна для этого набора правил" % c.display_name
 			classes.append(card_class(c))
 			var lock: int = CardEffects.lock_attr(c)
 			if lock < 0:
@@ -236,47 +271,49 @@ static func deck_error(creatures: Array, arena: Array, abilities: Array) -> Stri
 static func species_name(sp: StringName) -> String:
 	if sp == &"likorez":
 		return "Ликорез"
-	for row in GameData.SPECIES:
+	for row in GameData.ALL_SPECIES:
 		if StringName(row["id"]) == sp:
 			return String(row["name"])
 	return String(sp)
 
 
 ## Случайная колода по тем же правилам; детерминирована по состоянию rng.
-static func random_deck(rng: RandomNumberGenerator) -> DeckDef:
+static func random_deck(rng: RandomNumberGenerator, pool: int = Pool.BASE, online_roster: bool = false) -> DeckDef:
 	load_all()
 	var team: Array[StringName] = []
 	var el: int = 0
 	for _i in range(50):
 		el = rng.randi_range(0, 5)
-		team = _pick(creatures_of(el), 3, rng)
+		team = _pick(creatures_of(el, online_roster), 3, rng)
 		if team_power(team) <= GameData.TEAM_POWER_LIMIT:
 			break
 	var species: Array = team_species(team)
 	var arena: Array[StringName] = []
 	for cls in GATE_CLASSES:
-		arena.append_array(_pick(cards_of(CardDef.Kind.ARENA, cls, el, species), 1, rng))
+		arena.append_array(_pick(cards_of(CardDef.Kind.ARENA, cls, el, species, pool), 1, rng))
 	var abil: Array[StringName] = []
 	for cls in ABILITY_CLASSES:
-		abil.append_array(_pick(cards_of(CardDef.Kind.ABILITY, cls, el, species), 1, rng))
+		abil.append_array(_pick(cards_of(CardDef.Kind.ABILITY, cls, el, species, pool), 1, rng))
 	return build_deck(team, arena, abil)
 
 
 ## Один независимый бросок на матч: 10% команд соперника содержат Ликореза.
 ## Вся команда Тени, ровно три разных существа и обычный лимит силы/карт.
-static func opponent_deck(rng: RandomNumberGenerator) -> DeckDef:
+static func opponent_deck(rng: RandomNumberGenerator, pool: int = Pool.BASE) -> DeckDef:
 	load_all()
 	if rng.randf() >= RARE_ENCOUNTER_CHANCE:
-		return random_deck(rng)
-	var pool := creatures_of(Attr.A.SHADOW)
+		return random_deck(rng, pool)
+	var creatures := creatures_of(Attr.A.SHADOW)
 	var pairs: Array = []
-	for i in range(pool.size()):
-		for j in range(i + 1, pool.size()):
-			var ids: Array[StringName] = [RARE_SHADOW_ID, pool[i], pool[j]]
-			if team_power(ids) <= GameData.TEAM_POWER_LIMIT:
+	for i in range(creatures.size()):
+		for j in range(i + 1, creatures.size()):
+			var ids: Array[StringName] = [RARE_SHADOW_ID, creatures[i], creatures[j]]
+			if team_power(ids) <= GameData.TEAM_POWER_LIMIT and not cards_of(
+				CardDef.Kind.ARENA, &"silver", Attr.A.SHADOW, team_species(ids), pool
+			).is_empty():
 				pairs.append(ids)
 	var team: Array = pairs[rng.randi_range(0, pairs.size() - 1)]
-	return deck_from_creatures(team, rng)
+	return deck_from_creatures(team, rng, pool)
 
 
 ## Все существа в стабильном порядке (для меню выбора).
@@ -303,7 +340,7 @@ static func team_power(ids: Array) -> int:
 
 ## Колода из выбранных игроком 3 существ; ворота и способности — случайные по правилам колоды.
 ## null, если выбор некорректен (не 3 разных известных существа или превышен лимит БС).
-static func deck_from_creatures(ids: Array, rng: RandomNumberGenerator) -> DeckDef:
+static func deck_from_creatures(ids: Array, rng: RandomNumberGenerator, pool: int = Pool.BASE) -> DeckDef:
 	load_all()
 	var seen: Dictionary = {}
 	for id in ids:
@@ -316,10 +353,10 @@ static func deck_from_creatures(ids: Array, rng: RandomNumberGenerator) -> DeckD
 	var species: Array = team_species(ids)
 	var arena: Array[StringName] = []
 	for cls in GATE_CLASSES:
-		arena.append_array(_pick(cards_of(CardDef.Kind.ARENA, cls, el, species), 1, rng))
+		arena.append_array(_pick(cards_of(CardDef.Kind.ARENA, cls, el, species, pool), 1, rng))
 	var abil: Array[StringName] = []
 	for cls in ABILITY_CLASSES:
-		abil.append_array(_pick(cards_of(CardDef.Kind.ABILITY, cls, el, species), 1, rng))
+		abil.append_array(_pick(cards_of(CardDef.Kind.ABILITY, cls, el, species, pool), 1, rng))
 	return build_deck(ids, arena, abil)
 
 

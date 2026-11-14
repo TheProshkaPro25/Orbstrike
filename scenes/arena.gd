@@ -47,6 +47,7 @@ var _floaters: Array = []
 var _motes: GPUParticles3D
 var _landscape_effects: Array[GPUParticles3D] = []
 var _crystal_lights: Array[OmniLight3D] = []
+var _harbor_lights: Array[SpotLight3D] = []
 var _sanctuary_lights: Array[Light3D] = []
 var _sanctuary_shafts: Array[MeshInstance3D] = []
 var _floaters_on := true
@@ -78,10 +79,15 @@ func apply_quality() -> void:
 		l.visible = bool(GraphicsSettings.param("lights"))
 	var low := GraphicsSettings.current() == GraphicsSettings.Level.LOW
 	var high := GraphicsSettings.current() == GraphicsSettings.Level.HIGH
+	var local_lights := bool(GraphicsSettings.param("lights"))
+	for lamp in _harbor_lights:
+		var min_quality := int(lamp.get_meta("min_quality"))
+		var essential := min_quality == GraphicsSettings.Level.LOW and not GraphicsSettings.overrides.has("lights")
+		lamp.visible = essential or (local_lights and GraphicsSettings.current() >= min_quality)
 	preload("res://scenes/landscape_atmosphere.gd").quality(self,low)
 	_floor_mat.set_shader_parameter("max_quality", 1.0 if high else 0.0)
 	for l in _sanctuary_lights:
-		l.visible = l is SpotLight3D or bool(GraphicsSettings.param("lights"))
+		l.visible = l is SpotLight3D or local_lights
 		if l is SpotLight3D:
 			if l.has_meta("window_projector"):
 				l.visible = not low or int(l.get_meta("window_projector")) < 2
@@ -93,7 +99,9 @@ func apply_quality() -> void:
 				l.light_size = .6 if high else 0.0
 				preload("res://scenes/sanctuary_window_light.gd").apply_quality(l, high)
 			else:
-				l.shadow_enabled = bool(l.get_meta("moon_shadow", false)) and not low
+				var oculus := bool(l.get_meta("moon_shadow", false))
+				l.visible = oculus or bool(l.get_meta("essential_fixture", false)) or local_lights
+				l.shadow_enabled = oculus and not low
 				l.light_size = 1.2 if high else 0.0
 	for shaft in _sanctuary_shafts:
 		shaft.visible = not low or int(shaft.get_meta("window_projector", 0)) < 2
@@ -414,6 +422,8 @@ void fragment() {
 	vec3 brass = trim_color.rgb;
 	float water = 0.0;
 	float ripple = 0.0;
+	float rough = mix(0.72, location_style == 0 ? 0.46 : 0.72, max_quality);
+	float specular = 0.5;
 	if (location_style == 0) {
 		float veins = pow(.5 + .5 * sin(wp.x * .19 + wp.z * .14 + sin(wp.z * .075) * 2.8), 16.0);
 		stone = mix(far_color.rgb, stone_color.rgb * (.94 + hash(tile) * .10), center * .7 + .3);
@@ -428,6 +438,12 @@ void fragment() {
 			* (0.3 + 0.7 * pow(0.5 + 0.5 * sin(p.x * 0.45 + p.y * .2), 2.0));
 		ripple *= 1.0 - smoothstep(14.0, 55.0, r);
 		stone = mix(stone, far_color.rgb + vec3(0.015, 0.035, 0.050) * ripple, water);
+		// Damp granite holds irregular reflected light between the dry joints.
+		float patches = sin(wp.x * .17 + sin(wp.z * .25)) * sin(wp.z * .12 - wp.x * .14);
+		float damp = (1.0 - seam * .75) * smoothstep(-.48,.73,patches);
+		stone *= mix(.88,1.07,damp);
+		rough = mix(.80,.71,damp);
+		specular = .18;
 	}
 	float d = length(wp.xz - wave_origin);
 	float front = exp(-pow((d - wave_radius) / 2.6, 2.0)) * wave_strength;
@@ -435,8 +451,9 @@ void fragment() {
 	ALBEDO = stone + brass * (ring * 0.22 + seal + ticks * 0.15) + wave_color.rgb * (front * 0.18 + wake);
 	EMISSION = brass * (ring * 0.25 + seal * 0.2 + ticks * 0.22 + far)
 		+ accent * arcs * (0.95 + sin(TIME * 0.45) * 0.07) + wave_color.rgb * (front * 0.85 + wake) + vec3(0.018, 0.048, 0.065) * ripple * water;
-	METALLIC = 0.25;
-	ROUGHNESS = mix(mix(0.72, location_style == 0 ? 0.46 : 0.72, max_quality), mix(0.50, 0.28, max_quality), water);
+	METALLIC = location_style == 2 ? .13 : .25;
+	SPECULAR = specular;
+	ROUGHNESS = mix(rough, mix(0.50, 0.28, max_quality), water);
 }
 """
 

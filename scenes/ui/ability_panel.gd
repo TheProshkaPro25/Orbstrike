@@ -1,10 +1,6 @@
 class_name AbilityPanel
 extends Control
-## Рука карт способностей внизу экрана, веером, как настоящие карты в руке.
-## Вне окон рука опущена (видны верхушки карт); наведение поднимает карту.
-## Три момента: «в бою» (обмен по очереди, рука поднята), «до броска» (рука приподнята, ход не ждёт),
-## «после приземления» (рука поднята, можно прикрепить карту или завершить ход).
-## Играбельные карты светятся и пульсируют, остальные гаснут; сыгранная карта вылетает к центру экрана.
+## Рука способностей и действия в окнах до броска, после приземления и в бою.
 
 signal ability_chosen(card_id: StringName)
 signal gate_open_requested
@@ -18,13 +14,9 @@ var _pager: HBoxContainer
 var _previous: Button
 var _next: Button
 var _page_label: Label
-var _layout_tweens: Dictionary = {}
 
 enum Mode { IDLE, WINDOW, PRETHROW }
 
-const PEEK := 84.0          # сколько карты видно в опущенной руке
-const PEEK_PRETHROW := 150.0
-const SPREAD_DEG := 7.0     # поворот соседних карт
 const MAX_CARDS := 3        # лимит карт на бой (MatchController.MAX_BATTLE_ABILITIES)
 
 var _card := Vector2(150, 210)
@@ -59,23 +51,12 @@ func _ready() -> void:
 ## Размер карт зависит от высоты окна: в 1080p крупнее, в 768p компактнее.
 func _calc_sizes() -> void:
 	var vp := get_viewport_rect().size
-	if DeviceSettings.is_device():
-		_card = UiTheme.device_hand_card(vp)
-		_fan_h = _card.y + 82.0
-		_step = _card.x + 8.0
-		var lane := UiTheme.device_hand_lane(vp)
-		_capacity = clampi(int((lane - 4.0) / _step), 1, 4)
-		_hand_center = vp.x - 14.0 - lane * 0.5
-		return
-	var vh: float = vp.y
-	var h: float = clampf(vh * 0.255, 190.0, 262.0)
-	_card = Vector2(roundf(h * 0.715), roundf(h))
-	_fan_h = _card.y + 110.0
-	_step = _card.x * 1.06
-	var available := maxf(250.0, vp.x * .48 - 32.0)
-	_step = _card.x * 1.04
-	_capacity = clampi(int(available / _step), 1, 4)
-	_hand_center = vp.x * .75 - 8.0
+	_card = UiTheme.device_hand_card(vp)
+	_fan_h = _card.y + 82.0
+	_step = _card.x + 8.0
+	var lane := UiTheme.device_hand_lane(vp)
+	_capacity = clampi(int((lane - 4.0) / _step), 1, 4)
+	_hand_center = vp.x - 14.0 - lane * 0.5
 
 
 func _build() -> void:
@@ -104,12 +85,11 @@ func _build() -> void:
 	_caption = VisualUtil.label("СПОСОБНОСТИ", 14)
 	_caption.add_theme_color_override("font_color", UiTheme.DEVICE_ACCENT)
 	_caption.position = Vector2(10, 3)
-	_caption.visible = false
 	_device_dock.add_child(_caption)
 	_fan.visibility_changed.connect(_place_device_dock)
 
 	_panel = PanelContainer.new()
-	VisualUtil.place(_panel, 1.0, 1.0, -16.0, -_card.y - 96.0)
+	_panel.add_theme_stylebox_override("panel", UiTheme.box(UiTheme.DEVICE_INK, UiTheme.DEVICE_DIM, 1, 5, 10))
 	add_child(_panel)
 	_panel.resized.connect(_place_device_actions)
 	var hb := VBoxContainer.new()
@@ -128,7 +108,7 @@ func _build() -> void:
 	_pips = HBoxContainer.new()
 	_pips.add_theme_constant_override("separation", 4)
 	prow.add_child(_pips)
-	_note = VisualUtil.label("", 12)
+	_note = VisualUtil.label("", 13)
 	_note.add_theme_color_override("font_color", UiTheme.TEXT_DIM)
 	_note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_note.custom_minimum_size = Vector2(232, 0)
@@ -148,7 +128,6 @@ func _build() -> void:
 	actions.add_child(_pass_btn)
 	_panel.visible = false
 	_pager = HBoxContainer.new()
-	VisualUtil.place(_pager, 1.0, 1.0, -18.0, -20.0)
 	add_child(_pager)
 	_previous = Button.new()
 	_previous.text = "‹"
@@ -168,46 +147,24 @@ func _build() -> void:
 	_pager.tooltip_text = "Страницы способностей: кнопки, ← / → при фокусе в этой руке или колёсико над картой. Tab — сменить руку. Фокус / наведение — полный текст."
 	_pager.visible = false
 	get_viewport().size_changed.connect(_on_resized)
-	DeviceSettings.events().changed.connect(func(_style: int) -> void: _on_resized())
 	_place_device_dock()
 
 
-## В бою блок лежит над опущенной рукой ворот, не закрывая бойцов и ленту карт.
-func _place_panel() -> void:
-	if DeviceSettings.is_device():
-		_panel.add_theme_stylebox_override("panel", UiTheme.box(UiTheme.DEVICE_INK, UiTheme.DEVICE_DIM, 1, 5, 10))
-		_panel.set_anchors_preset(Control.PRESET_TOP_LEFT)
-		_panel.reset_size()
-		_place_device_actions()
-	elif StringName(str(_info.get("moment", &""))) == &"battle":
-		_panel.remove_theme_stylebox_override("panel")
-		VisualUtil.place(_panel, 0.0, 1.0, 16.0, -110.0)
-	else:
-		_panel.remove_theme_stylebox_override("panel")
-		VisualUtil.place(_panel, 1.0, 1.0, -16.0, -_card.y - 96.0)
-
-
 func _place_device_actions() -> void:
-	if not DeviceSettings.is_device(): return
 	var vp := get_viewport_rect().size
 	_panel.position = Vector2((vp.x - _panel.size.x) * 0.5, vp.y - _panel.size.y - 8.0)
 
 
 func _place_device_dock() -> void:
 	if _pager == null: return
-	var device := DeviceSettings.is_device()
-	_device_dock.visible = device and _fan.visible and not _hand.is_empty()
-	_caption.visible = device
+	_device_dock.visible = _fan.visible and not _hand.is_empty()
 	_caption.text = "СПОСОБНОСТИ · %d" % _hand.size()
-	if device:
-		var vp := get_viewport_rect().size
-		var lane := UiTheme.device_hand_lane(vp)
-		_device_dock.position = Vector2(vp.x - lane - 14.0, vp.y - _card.y - 76.0)
-		_device_dock.size = Vector2(lane, _card.y + 68.0)
-		VisualUtil.place(_pager, 1.0, 1.0, -24.0, -8.0)
-	else:
-		VisualUtil.place(_pager, 1.0, 1.0, -18.0, -20.0)
-	_pager.visible = _fan.visible and _hand.size() > (_capacity if device else 0)
+	var vp := get_viewport_rect().size
+	var lane := UiTheme.device_hand_lane(vp)
+	_device_dock.position = Vector2(vp.x - lane - 14.0, vp.y - _card.y - 76.0)
+	_device_dock.size = Vector2(lane, _card.y + 68.0)
+	VisualUtil.place(_pager, 1.0, 1.0, -24.0, -8.0)
+	_pager.visible = _fan.visible and _hand.size() > _capacity
 
 
 func _on_resized() -> void:
@@ -215,8 +172,8 @@ func _on_resized() -> void:
 	var focused_id := focused.card_id if focused != null and focused.get_parent() == _fan else &""
 	_calc_sizes()
 	_fan.offset_top = -_fan_h
-	_place_panel()
-	_update_option_note()
+	_panel.reset_size()
+	_place_device_actions()
 	_rebuild(focused_id)
 
 
@@ -260,10 +217,11 @@ func show_options(entries: Array, header: String = "Окно способнос�
 	_pass_btn.tooltip_text = str(info.get("pass_tip", ""))
 	_fill_pips(int(info.get("used", 0)))
 	_panel.visible = true
-	_place_panel()
+	_panel.reset_size()
+	_place_device_actions()
 	_fan.visible = true
 	# Отмена выбора цели не тратит карту в контроллере: show_options получает
-	# её снова. Старый CardView уже анимирован/удалён, поэтому возвращаемся по ID.
+	# её снова. Старый CardView уже удалён, поэтому возвращаемся по ID.
 	var restore_id := _pending_focus_id if _legal.has(_pending_focus_id) else &""
 	if restore_id != &"" and _pending_focus_index >= 0:
 		_hand.erase(restore_id)
@@ -290,9 +248,8 @@ func _fill_pips(used: int) -> void:
 
 func _update_option_note() -> void:
 	var battle := StringName(str(_info.get("moment", &""))) == &"battle"
-	_pips.get_parent().visible = not (DeviceSettings.is_device() and battle)
-	_note.visible = not _note.text.is_empty() and (not battle or DeviceSettings.is_device())
-	_note.add_theme_font_size_override("font_size", 13 if DeviceSettings.is_device() else 12)
+	_pips.get_parent().visible = not battle
+	_note.visible = not _note.text.is_empty()
 
 
 func hide_panel() -> void:
@@ -300,7 +257,7 @@ func hide_panel() -> void:
 	_mode = Mode.IDLE
 	_legal.clear()
 	_panel.visible = false
-	_layout(true)
+	_layout()
 	for cv in _cards:
 		cv.set_meta("silent_select", true)
 		cv.set_dimmed(false)
@@ -317,44 +274,9 @@ func set_dock_visible(on: bool) -> void:
 	_place_device_dock()
 
 
-## Карта, сыгранная соперником: появляется сверху по центру и гаснет.
-func show_played(card_id: StringName, by_opponent: bool) -> void:
-	var def: CardDef = CardDB.card(card_id)
-	if def == null or not by_opponent:
-		return
-	_build()
-	var cv := CardView.new().for_card(def, _card)
-	cv.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	cv.focus_mode = Control.FOCUS_NONE
-	add_child(cv)
-	var vp := get_viewport_rect().size
-	cv.pivot_offset = _card * 0.5
-	cv.position = Vector2(vp.x * 0.5 - _card.x * 0.5, -_card.y)
-	cv.scale = Vector2(0.8, 0.8)
-	if DeviceSettings.is_device() and DeviceSettings.reduce_motion():
-		cv.position = Vector2(vp.x*.5-_card.x*.5,vp.y*.32)
-		cv.scale = Vector2.ONE
-		var hold := cv.create_tween().set_ignore_time_scale(true)
-		hold.tween_interval(.9)
-		hold.tween_callback(cv.queue_free)
-		return
-	var tw := cv.create_tween()
-	if DeviceSettings.is_device() and not DeviceSettings.reduce_motion():
-		preload("res://scenes/ui/device_motion.gd").play_on(cv,"activation",UiTheme.DEVICE_ACCENT,.12)
-	tw.tween_property(cv, "position:y", vp.y * 0.32, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tw.parallel().tween_property(cv, "scale", Vector2(1.25, 1.25), 0.35)
-	tw.tween_interval(0.9)
-	tw.tween_property(cv, "modulate:a", 0.0, 0.35)
-	tw.tween_callback(cv.queue_free)
-
-
 func _rebuild(focus_id: StringName = &"") -> void:
 	var focused := get_viewport().gui_get_focus_owner() as CardView
 	var restore_focus := focused != null and focused.get_parent() == _fan
-	for tw in _layout_tweens.values():
-		if tw.is_valid():
-			tw.kill()
-	_layout_tweens.clear()
 	for cv in _cards:
 		_fan.remove_child(cv)
 		cv.queue_free()
@@ -401,7 +323,7 @@ func _rebuild(focus_id: StringName = &"") -> void:
 		_cards.append(cv)
 		if _mode != Mode.IDLE and _legal.has(cid):
 			cv.set_playable(true)
-	_layout(false)
+	_layout()
 	if focus_id != &"":
 		for cv in _cards:
 			if cv.card_id == focus_id: VisualUtil.focus_if_present.call_deferred(cv)
@@ -409,42 +331,12 @@ func _rebuild(focus_id: StringName = &"") -> void:
 		VisualUtil.focus_if_present.call_deferred(_cards[0])
 
 
-## Раскладка веером. Опущенная рука показывает только верх карт; в окне играбельные карты приподняты выше.
-func _layout(animate: bool) -> void:
-	var n: int = _cards.size()
-	var mid: float = (n - 1) * 0.5
-	var peek: float = PEEK_PRETHROW if _mode == Mode.PRETHROW else PEEK
-	for i in range(n):
-		var cv: CardView = _cards[i]
-		var k: float = i - mid
-		var playable: bool = _mode != Mode.IDLE and _legal.has(cv.card_id)
-		var top: float = _fan_h - peek
-		if _mode == Mode.WINDOW:
-			top = _fan_h - _card.y - 62.0 + (0.0 if playable else 8.0)
-		elif cv == _hovered:
-			top = _fan_h - _card.y - 18.0
-		if cv == _hovered:
-			top -= 22.0
-		var pos := Vector2(_hand_center + k * _step - _card.x * 0.5, top + k * k * 1.4)
-		var rot: float = 0.0 if cv == _hovered else deg_to_rad(k * 1.8)
-		var sc: Vector2 = Vector2(1.12, 1.12) if cv == _hovered else Vector2.ONE
-		if DeviceSettings.is_device():
-			pos.y = _fan_h - _card.y - 50.0
-			rot = 0.0
-			sc = Vector2.ONE
+func _layout() -> void:
+	var mid := (_cards.size() - 1) * 0.5
+	for i in _cards.size():
+		var cv := _cards[i]
+		cv.position = Vector2(_hand_center + (i - mid) * _step - _card.x * 0.5, _fan_h - _card.y - 50.0)
 		cv.z_index = 50 if cv == _hovered else i
-		if _layout_tweens.has(cv) and _layout_tweens[cv].is_valid():
-			_layout_tweens[cv].kill()
-		if animate and not DeviceSettings.is_device():
-			var tw := cv.create_tween().set_parallel(true)
-			_layout_tweens[cv] = tw
-			tw.tween_property(cv, "position", pos, 0.16).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-			tw.tween_property(cv, "rotation", rot, 0.16)
-			tw.tween_property(cv, "scale", sc, 0.16)
-		else:
-			cv.position = pos
-			cv.rotation = rot
-			cv.scale = sc
 
 
 func _on_hover(cv: CardView, on: bool) -> void:
@@ -457,7 +349,7 @@ func _on_hover(cv: CardView, on: bool) -> void:
 	var warning := _warning(cv.card_id) if on and _mode != Mode.IDLE and _legal.has(cv.card_id) else ""
 	_title.text = _warning_title(cv.card_id) if warning != "" else str(_info.get("header", ""))
 	_title.tooltip_text = warning
-	_layout(true)
+	_layout()
 
 
 func _warning(id: StringName) -> String:
@@ -486,40 +378,12 @@ func _on_card_pressed(cv: CardView) -> void:
 	_pending_focus_index = _hand.find(cid) if cv.has_focus() else -1
 	_mode = Mode.IDLE
 	_panel.visible = false
-	# сыгранная карта вылетает к центру экрана и гаснет, остальные опускаются
-	if _layout_tweens.has(cv) and _layout_tweens[cv].is_valid():
-		_layout_tweens[cv].kill()
-	_layout_tweens.erase(cv)
 	_hovered = null
 	_cards.erase(cv)
 	_hand.erase(cid)
-	_place_device_dock()
-	if DeviceSettings.is_device():
-		_fan.remove_child(cv)
-		cv.queue_free()
-		_rebuild()
-		ability_chosen.emit(cid)
-		return
-	var gp := cv.global_position
 	_fan.remove_child(cv)
-	add_child(cv)
-	cv.global_position = gp
-	cv.z_index = 20
-	cv.set_playable(false)
-	cv.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	cv.focus_mode = Control.FOCUS_NONE
-	var vp := get_viewport_rect().size
-	var tw := cv.create_tween()
-	tw.tween_property(cv, "position", Vector2(vp.x * 0.5 - _card.x * 0.5, vp.y * 0.28), 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tw.parallel().tween_property(cv, "rotation", 0.0, 0.3)
-	tw.parallel().tween_property(cv, "scale", Vector2(1.5, 1.5), 0.3)
-	tw.tween_interval(0.5)
-	tw.tween_property(cv, "modulate:a", 0.0, 0.3)
-	tw.tween_callback(cv.queue_free)
-	for c in _cards:
-		c.set_dimmed(false)
-		c.set_playable(false)
-	_layout(true)
+	cv.queue_free()
+	_rebuild()
 	ability_chosen.emit(cid)
 
 

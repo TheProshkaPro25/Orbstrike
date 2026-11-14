@@ -45,24 +45,40 @@ func show_targets(card_id: StringName, targets: Array, view: MatchState) -> void
 	if not visible: _return_focus = get_viewport().gui_get_focus_owner()
 	VisualUtil.clear_children(_choices)
 	var def := CardDB.card(card_id)
-	_title.text = def.display_name + ": выберите " + ("союзника" if def.effect_id == &"gale_call" else "карту")
+	var object := "карту"
+	match def.effect_id:
+		&"gale_call": object = "союзника"
+		&"tentacle_grab": object = "ворота"
+	_title.text = def.display_name + " · выберите " + object
 	var vp := get_viewport_rect().size
 	var w := clampf((vp.x - 100.0) / maxf(1.0, targets.size()) - 16.0, 96.0, 230.0)
-	w = minf(w, maxf(96.0, (vp.y - 200.0) / 1.4))
+	w = minf(w, maxf(96.0, (vp.y - 230.0) / 1.4))
+	var focusables: Array[Control] = []
 	for target in targets:
 		var cv := CardView.new()
 		cv.set_meta("ability_target_card", true)
+		var card_size := Vector2(w, w * 1.4)
+		var parent: Control = _choices
 		if target.has("target_uid"):
 			var uid := int(target.target_uid)
-			cv.for_creature(CardDB.creature(view.creature(uid).def_id), uid, "", Vector2(w, w * 1.4))
+			cv.for_creature(CardDB.creature(view.creature(uid).def_id), uid, "", card_size)
+		elif target.has("target_slot"):
+			var slot := int(target.target_slot)
+			var gate: SlotState = view.slots[slot]
+			var column := VBoxContainer.new()
+			_choices.add_child(column)
+			parent = column
+			var caption := VisualUtil.label("Ворота %d · %s" % [slot + 1, "открыты" if gate.revealed else "закрыты"], 14)
+			caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			column.add_child(caption)
+			cv.for_card(CardDB.card(gate.card_id), card_size, true)
 		else:
-			cv.for_card(CardDB.card(StringName(target.target_card)), Vector2(w, w * 1.4), true)
+			cv.for_card(CardDB.card(StringName(target.target_card)), card_size, true)
 		cv.pressed.connect(_select.bind(target.duplicate(true)))
-		_choices.add_child(cv)
+		parent.add_child(cv)
+		focusables.append(cv)
 	show()
 	# Tab остаётся в обратимом выборе цели, не уходит в скрытую за ним руку.
-	var focusables: Array[Control] = []
-	for child in _choices.get_children(): focusables.append(child)
 	focusables.append(_cancel)
 	for i in focusables.size():
 		focusables[i].focus_next = focusables[i].get_path_to(focusables[(i + 1) % focusables.size()])
@@ -76,8 +92,9 @@ func show_targets(card_id: StringName, targets: Array, view: MatchState) -> void
 func _select(target: Dictionary) -> void:
 	hide()
 	_restore_focus()
-	var command_target := {"target_uid":int(target.target_uid)} if target.has("target_uid") else {"target_card":StringName(target.target_card)}
-	chosen.emit(command_target)
+	var choice := preload("res://scenes/interaction/ability_target.gd").new()
+	choice.assign_core(target)
+	chosen.emit(choice.to_core())
 
 func _on_cancel() -> void:
 	hide()
@@ -92,5 +109,11 @@ func _restore_focus() -> void:
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if visible and event.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
+		_on_cancel()
+
+
+func _input(event: InputEvent) -> void:
+	if visible and event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
 		get_viewport().set_input_as_handled()
 		_on_cancel()

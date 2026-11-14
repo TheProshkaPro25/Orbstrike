@@ -2,6 +2,15 @@ extends RefCounted
 ## Лунная гавань: затопленный морской город вокруг круглой портовой площади.
 ## Вся архитектура собирается один раз в статические MultiMesh; физических тел нет.
 const D := preload("res://scenes/landscape_detail.gd")
+const Locations := preload("res://data/arena_locations.gd")
+const LANTERN_LIGHT := Color(1.0, .61, .31)
+const SQUARE_LANTERN_COUNT := 14
+const SQUARE_LANTERN_RADIUS := 63.2
+const SQUARE_LANTERN_SCALE := .92
+const LANTERN_GLASS_HEIGHT := 8.6
+const QUAY_LANTERN_RADIUS := 99.9
+const QUAY_LANTERN_SCALE := .78
+const QUAY_LANTERN_FOOT := 11.48
 
 static func build(arena: Node3D) -> void:
 	var r := {
@@ -28,8 +37,8 @@ static func build(arena: Node3D) -> void:
 		"plank": D.material(Color(.34,.225,.115),.95),
 		"rope": D.material(Color(.39,.35,.24),1.0),
 		"cloth": D.material(Color(.55,.52,.39),.95),
-		"warm": arena._glow_mat(Color(.94,.52,.20),.48),
-		"blue": arena._glow_mat(Color(.23,.63,.78),.52),
+		"warm": arena._glow_mat(Color(.96,.65,.31),.84),
+		"blue": arena._glow_mat(Color(.37,.70,.80),.70),
 	}
 	# Оконный ритм боковых стен — часть материала дома, без тысяч мелких деталей.
 	for key in ["ochre","plaster","rose","city"]:
@@ -56,7 +65,7 @@ static func build(arena: Node3D) -> void:
 	moon.height = 26
 	moon.radial_segments = 40
 	moon.rings = 20
-	arena._static(moon,arena._glow_mat(Color(.61,.76,.84),.7),Vector3(-145,159,-330),Vector3.ONE,Vector3.ZERO)
+	arena._static(moon,arena._glow_mat(Color(.74,.86,.97),1.02),Locations.HARBOR_MOON,Vector3.ONE,Vector3.ZERO)
 	var chimney_tops: Array[Vector3] = [Vector3(-101.5,52.15,-145),Vector3(91.5,62.15,-145),Vector3(33.6,65.65,-174)]
 	preload("res://scenes/landscape_atmosphere.gd").smoke(arena,chimney_tops)
 	arena._decor.set_meta("detailed_location",2)
@@ -102,9 +111,17 @@ static func _square_and_piers(arena: Node3D, r: Dictionary) -> void:
 			_p(arena,r,"box","plank",c,yaw,p,Vector3(2.5,2.2,2.5))
 			for x in [-.8,.8]:
 				_p(arena,r,"box","metal",c,yaw,p+Vector3(x,0,0),Vector3(.12,2.3,2.6))
-	for i in 14:
-		var a := TAU*(i+.5)/14.0
-		_lantern(arena,r,Vector3(cos(a)*68.7,0,sin(a)*68.7),.78)
+	for i in SQUARE_LANTERN_COUNT:
+		var angle := TAU * (i + .5) / SQUARE_LANTERN_COUNT
+		var radial := Vector3(cos(angle), 0, sin(angle))
+		var point := radial * SQUARE_LANTERN_RADIUS
+		var target := radial * 47.0
+		var quality := GraphicsSettings.Level.MEDIUM
+		# The east-facing battle camera sees the shoulders lit by these foreground lamps.
+		if i in [0, 1, 12, 13]:
+			target = Vector3(14.0, 3.8, 17.0 if point.z >= 0.0 else -17.0)
+			quality = GraphicsSettings.Level.LOW
+		_lantern(arena, r, point, SQUARE_LANTERN_SCALE, target, quality)
 
 
 static func _quays(arena: Node3D, r: Dictionary) -> void:
@@ -126,7 +143,11 @@ static func _quays(arena: Node3D, r: Dictionary) -> void:
 			_p(arena,r,"box","pale",center,yaw,Vector3((j-2)*3.1,12.5,7.2),Vector3(.5,2.2,.6))
 		_p(arena,r,"box","pale",center,yaw,Vector3(0,13.6,7.2),Vector3(16.4,.4,.85))
 		if i%3 == 0:
-			_lantern(arena,r,center+Basis(Vector3.UP,yaw)*Vector3(0,11.5,4.3),.78)
+			var quality := GraphicsSettings.Level.MEDIUM if i % 6 == 0 else GraphicsSettings.Level.HIGH
+			var inward := Vector3(-sin(a), 0, cos(a))
+			var point := -inward * QUAY_LANTERN_RADIUS + Vector3.UP * QUAY_LANTERN_FOOT
+			# Aim along the arcade front and the water under it, rather than into the parapet.
+			_lantern(arena, r, point, QUAY_LANTERN_SCALE, center + inward * 14.5 + Vector3.UP * 2.5, quality)
 	# Передняя сторона остаётся низкой: волнолом/скалистый берег замыкают бухту,
 	# но не перекрывают камеру обзора и выбор локации.
 	for i in 21:
@@ -412,15 +433,35 @@ static func _lighthouse(arena: Node3D, r: Dictionary, p: Vector3, s: float) -> v
 		_window(arena,r,p,0,Vector3(0,y,5.9)*s,1.3*s,3*s)
 
 
-static func _lantern(arena: Node3D, r: Dictionary, p: Vector3, s: float) -> void:
+static func _lantern(arena: Node3D, r: Dictionary, p: Vector3, s: float, target: Vector3 = Vector3.ZERO, quality: int = -1) -> void:
 	_p(arena,r,"shaft","stone",p,0,Vector3(0,.6,0)*s,Vector3(1.2,1.2,1.2)*s)
 	_p(arena,r,"rod","metal",p,0,Vector3(0,4,0)*s,Vector3(.22,7,.22)*s)
 	_p(arena,r,"shaft","metal",p,0,Vector3(0,7.5,0)*s,Vector3(1.35,.35,1.35)*s)
-	_p(arena,r,"shaft","warm",p,0,Vector3(0,8.6,0)*s,Vector3(.77,1.85,.77)*s)
+	_p(arena,r,"shaft","warm",p,0,Vector3(0,LANTERN_GLASS_HEIGHT,0)*s,Vector3(.77,1.85,.77)*s)
 	for i in 4:
 		var a := TAU*(i+.5)/4
 		_p(arena,r,"rod","metal",p,0,Vector3(cos(a),8.6,sin(a))*s,Vector3(.09,2.2,.09)*s)
 	_p(arena,r,"roof","copper",p,0,Vector3(0,9.7,0)*s,Vector3(2.6,1.5,2.6)*s)
+	if quality >= 0:
+		var glass := p + Vector3.UP * LANTERN_GLASS_HEIGHT * s
+		var light := SpotLight3D.new()
+		light.name = "HarborLantern"
+		arena._decor.add_child(light, true)
+		light.position = glass + (target - glass).normalized() * .48 * s
+		light.look_at(target)
+		light.light_color = LANTERN_LIGHT
+		var across_square := p.y < 2.0 and target.y > 2.0
+		light.light_energy = 43.0 if across_square else (14.0 if p.y < 2.0 else 31.0)
+		light.light_specular = .23
+		light.spot_range = glass.distance_to(target) + (32.0 if across_square else 14.0)
+		light.spot_angle = 32 if across_square else 49
+		light.spot_angle_attenuation = 1.9
+		light.spot_attenuation = .93 if across_square else 1.15
+		light.light_volumetric_fog_energy = 0.0
+		light.set_meta("min_quality", quality)
+		light.set_meta("source_glass", glass)
+		light.set_meta("light_target", target)
+		arena._harbor_lights.append(light)
 
 
 static func _ship(arena: Node3D, r: Dictionary, c: Vector3, yaw: float, s: float) -> void:
@@ -566,33 +607,52 @@ static func _sea_material() -> ShaderMaterial:
 	mat.shader = Shader.new()
 	mat.shader.code = """shader_type spatial;
 render_mode cull_disabled;
+uniform vec3 moon_direction;
+uniform float square_lantern_radius = 63.2;
+uniform float square_lantern_height = 7.84;
+uniform float square_lantern_count = 14.0;
+uniform float quay_lantern_radius;
+uniform float quay_lantern_height;
 varying vec3 wp;
 void vertex() { wp=(MODEL_MATRIX*vec4(VERTEX,1.0)).xyz; }
 void fragment() {
- float t=TIME*.26;
+ float t=TIME*.39;
  float swell=sin(wp.x*.15+wp.z*.09-t);
  float ripple=sin(wp.x*.43+sin(wp.z*.17-t)*1.7+t)*sin(wp.z*.59+sin(wp.x*.21+t));
  float far=smoothstep(80.0,430.0,length(wp.xz));
- vec3 water=mix(vec3(.023,.075,.091),vec3(.012,.038,.055),far);
+ vec3 water=mix(vec3(.012,.037,.052),vec3(.009,.020,.039),far);
  float radius=length(wp.xz);
- float angle=atan(wp.x,-wp.z);
- // Редкие дорожки фонарей вдоль реальной дуги набережной, прерывистые по ряби.
- float lantern=pow(max(0.0,cos((angle+1.43)/.429*6.283185)),32.0);
- lantern*=exp(-abs(radius-91.0)*.095)*(1.0-smoothstep(1.35,1.55,abs(angle)));
- float broken=smoothstep(.05,.8,ripple)*lantern;
+ vec3 wave = normalize(vec3(ripple*.049+swell*.037,1.0,cos(wp.z*.45+t)*.053));
+ vec3 sight = normalize(CAMERA_POSITION_WORLD - wp);
+ vec3 reflected = reflect(-sight, wave);
+ // Short broken paths line up with the two rows of emissive glass even without SSR.
+ vec2 reflected_square = wp.xz + reflected.xz * (square_lantern_height / max(reflected.y, .11));
+ float square_angle=atan(reflected_square.y,reflected_square.x);
+ float square_light=pow(max(0.0,cos(square_angle*square_lantern_count-PI)),18.0)
+   * exp(-abs(length(reflected_square)-square_lantern_radius)*.16);
+ vec2 reflected_quay = wp.xz + reflected.xz * (quay_lantern_height / max(reflected.y, .11));
+ float angle=atan(reflected_quay.x,-reflected_quay.y);
+ float quay_light=pow(max(0.0,cos((angle+1.43)/.429*TAU)),25.0);
+ quay_light*=exp(-abs(length(reflected_quay)-quay_lantern_radius)*.12)*(1.0-smoothstep(1.35,1.55,abs(angle)));
+ float broken=mix(.18,1.0,smoothstep(-.02,.65,ripple))*(quay_light + square_light*.83);
  // Узкая прерывистая кромка у камня вместо белого контура всей бухты.
  float shore=exp(-abs(radius-100.2-swell*.10)*5.0);
- shore*=1.0-smoothstep(1.36,1.53,abs(angle));
+ shore*=1.0-smoothstep(1.36,1.53,abs(atan(wp.x,-wp.z)));
  float foam=shore*smoothstep(-.2,.8,ripple)*.35;
- float moon=exp(-abs(wp.x+90.0+sin(wp.z*.12)*3.0)*.045)*smoothstep(70.0,310.0,-wp.z);
- moon*=smoothstep(.4,.95,ripple)*.20;
+ float moon = pow(max(dot(reflected,moon_direction),0.0),116.0) * (.28 + .72 * smoothstep(.03,.82,ripple));
  ALBEDO=water+vec3(.003,.005,.006)*(ripple+swell*.5);
- ALBEDO+=vec3(.065,.031,.010)*broken+vec3(.06,.11,.12)*foam+vec3(.025,.045,.055)*moon;
- EMISSION=vec3(.045,.020,.005)*broken;
- NORMAL=normalize((VIEW_MATRIX*vec4(ripple*.007+swell*.004,1.0,cos(wp.z*.45+t)*.008,0.0)).xyz);
- ROUGHNESS=.66; SPECULAR=.1;
+ ALBEDO+=vec3(.045,.024,.010)*broken+vec3(.06,.11,.12)*foam;
+ EMISSION=vec3(.29,.113,.028)*broken+vec3(.058,.096,.145)*moon;
+ NORMAL=(VIEW_MATRIX*vec4(wave,0.0)).xyz;
+ ROUGHNESS=mix(.53,.70,.5+.5*ripple); SPECULAR=.23;
 }
 """
+	mat.set_shader_parameter("moon_direction", Locations.HARBOR_MOON.normalized())
+	mat.set_shader_parameter("square_lantern_count", float(SQUARE_LANTERN_COUNT))
+	mat.set_shader_parameter("square_lantern_height", LANTERN_GLASS_HEIGHT * SQUARE_LANTERN_SCALE - .075)
+	mat.set_shader_parameter("square_lantern_radius", SQUARE_LANTERN_RADIUS)
+	mat.set_shader_parameter("quay_lantern_height", QUAY_LANTERN_FOOT + LANTERN_GLASS_HEIGHT * QUAY_LANTERN_SCALE - .075)
+	mat.set_shader_parameter("quay_lantern_radius", QUAY_LANTERN_RADIUS)
 	return mat
 
 

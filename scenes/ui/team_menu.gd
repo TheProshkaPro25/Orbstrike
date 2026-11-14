@@ -37,6 +37,7 @@ const STEP_HINTS := [
 
 ## Последняя собранная колода (переживает перезагрузку сцены).
 static var last_deck: Dictionary = {}
+static var last_online_deck: Dictionary = {}
 ## Сложность ИИ (AIPlayer.Difficulty): выбирается в меню, переживает перезагрузку сцены.
 static var difficulty: int = AIPlayer.Difficulty.NORMAL
 const DIFF_TIPS := [
@@ -50,6 +51,21 @@ const LEFT_W := 262.0
 const RIGHT_W := 322.0
 const PAD := 14.0
 const GAP := 12.0
+
+## В интернет-дуэли используется каталог действующего протокола.
+var online_roster := false
+var elemental_cards := true:
+	set(enabled):
+		if elemental_cards == enabled:
+			return
+		elemental_cards = enabled
+		if _built:
+			_drop_unfit_picks()
+			_show_step(_step)
+
+func _card_pool() -> int:
+	return CardDB.Pool.SPECIES if elemental_cards else CardDB.Pool.BASE
+
 
 var _element: int = 0
 var _team: Array[StringName] = []
@@ -218,12 +234,13 @@ func _build() -> void:
 		if not visible:
 			_preview.release())
 
-	if last_deck.is_empty():
+	var saved := last_online_deck if online_roster and not last_online_deck.is_empty() else last_deck
+	if saved.is_empty() or (online_roster and not saved["creatures"].all(CardDB.online_creature_available)):
 		pick_random()
 	else:
-		_element = int(last_deck["element"])
-		_team.assign(last_deck["creatures"])
-		_pick = (last_deck["pick"] as Dictionary).duplicate()
+		_element = int(saved["element"])
+		_team.assign(saved["creatures"])
+		_pick = (saved["pick"] as Dictionary).duplicate()
 		_drop_unfit_picks()
 		_show_step(0)
 
@@ -370,9 +387,10 @@ func _build_creatures_page() -> void:
 		hb.add_child(nl)
 		_filters.add_child(b)
 	_hint.text = "Клик — взять / убрать.  Стихия влияет на карты и силу ворот."
-	# 8 видов стихии: сетка 4×2, карты по размеру свободного места
+	var creatures := CardDB.creatures_of(_element, online_roster)
+	var columns := 5 if creatures.size() > 8 else 4
 	var avail := _center_size()
-	var w: float = minf(minf((avail.x - 3 * 14.0) / 4.0, (avail.y - 14.0) / 2.0 / 1.4), 160.0)
+	var w: float = minf(minf((avail.x - (columns - 1) * 14.0) / columns, (avail.y - 14.0) / 2.0 / 1.4), 160.0)
 	var sz := Vector2(round(w), round(w * 1.4))
 	var center := CenterContainer.new()
 	center.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -380,11 +398,11 @@ func _build_creatures_page() -> void:
 	center.custom_minimum_size = Vector2(0, avail.y - 8.0)
 	_page.add_child(center)
 	var grid := GridContainer.new()
-	grid.columns = 4
+	grid.columns = columns
 	grid.add_theme_constant_override("h_separation", 14)
 	grid.add_theme_constant_override("v_separation", 14)
 	center.add_child(grid)
-	for id in CardDB.creatures_of(_element):
+	for id in creatures:
 		var cv := CardView.new().for_creature(CardDB.creature(id), -1, "", sz)
 		cv.set_meta("silent_hover", true)
 		cv.tooltip_text = ""   # подробности — в предпросмотре справа
@@ -432,7 +450,7 @@ func _build_cards_page(kind: int, classes: Array[StringName]) -> void:
 	for cls in classes:
 		if _filter != &"" and cls != _filter:
 			continue
-		sections.append([cls, CardDB.cards_of(kind, cls, _element, species)])
+		sections.append([cls, CardDB.cards_of(kind, cls, _element, species, _card_pool())])
 	var lay: Dictionary = _fit_sections(sections, _center_size())
 	var flow := HFlowContainer.new()
 	flow.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -514,7 +532,7 @@ func _default_focus() -> StringName:
 	if _step == 0:
 		if not _team.is_empty():
 			return _team[_team.size() - 1]
-		var all: Array[StringName] = CardDB.creatures_of(_element)
+		var all: Array[StringName] = CardDB.creatures_of(_element, online_roster)
 		return all[0] if not all.is_empty() else &""
 	var classes: Array[StringName] = CardDB.GATE_CLASSES if _step == 1 else CardDB.ABILITY_CLASSES
 	for cls in classes:
@@ -599,7 +617,7 @@ func _show_preview(id: StringName, pose: bool) -> void:
 
 ## Для снимков: показать существо номер i текущей стихии как при наведении (-1 — снять).
 func debug_preview(i: int) -> void:
-	var all: Array[StringName] = CardDB.creatures_of(_element)
+	var all: Array[StringName] = CardDB.creatures_of(_element, online_roster)
 	if i >= 0 and i < all.size():
 		_show_preview(all[i], true)
 	else:
@@ -615,7 +633,7 @@ func _on_element(a: int) -> void:
 	_element = a
 	_team.clear()
 	_drop_unfit_picks()
-	var all: Array[StringName] = CardDB.creatures_of(a)
+	var all: Array[StringName] = CardDB.creatures_of(a, online_roster)
 	for id in all:
 		if _team.size() < MAX_TEAM:
 			_team.append(id)
@@ -623,6 +641,8 @@ func _on_element(a: int) -> void:
 
 
 func _on_creature(id: StringName) -> void:
+	if online_roster and not CardDB.online_creature_available(id):
+		return
 	if _team.has(id):
 		_team.erase(id)
 	elif _team.size() < MAX_TEAM:
@@ -639,7 +659,9 @@ func _drop_unfit_picks() -> void:
 	var species: Array = CardDB.team_species(_team)
 	for cls in _pick.keys():
 		var c: CardDef = CardDB.card(StringName(_pick[cls]))
-		if c == null or CardDB.card_class(c) != cls or not CardDB.card_fits(c, _element, species if _team.size() == MAX_TEAM else []):
+		if not CardDB.card_available(c, _card_pool()):
+			_pick.erase(cls)
+		elif CardDB.card_class(c) != cls or not CardDB.card_fits(c, _element, species if _team.size() == MAX_TEAM else []):
 			_pick.erase(cls)
 
 
@@ -698,7 +720,7 @@ func _refresh() -> void:
 		b.add_theme_color_override("font_color", Color.WHITE if cur else c)
 	_refresh_deck()
 	var lists: Array = _deck_lists()
-	var err: String = CardDB.deck_error(lists[0], lists[1], lists[2])
+	var err: String = CardDB.deck_error(lists[0], lists[1], lists[2], _card_pool())
 	if err == "":
 		_error.text = "Колода готова!"
 		_error.add_theme_color_override("font_color", Color(0.55, 0.95, 0.6))
@@ -868,7 +890,7 @@ func _unhandled_key_input(e: InputEvent) -> void:
 ## Случайная колода по правилам (стихия, существа, ворота, способности).
 func pick_random() -> void:
 	_build()
-	var deck: DeckDef = CardDB.random_deck(_rng)
+	var deck: DeckDef = CardDB.random_deck(_rng, _card_pool(), online_roster)
 	_element = deck.creatures[0].attribute
 	_team.clear()
 	for d in deck.creatures:
@@ -887,9 +909,15 @@ func pick_random_and_start() -> void:
 
 func _on_go() -> void:
 	var lists: Array = _deck_lists()
-	if CardDB.deck_error(lists[0], lists[1], lists[2]) != "":
+	if CardDB.deck_error(lists[0], lists[1], lists[2], _card_pool()) != "":
 		return
-	last_deck = {"element": _element, "creatures": _team.duplicate(), "pick": _pick.duplicate()}
+	if online_roster and not _team.all(CardDB.online_creature_available):
+		return
+	var saved := {"element": _element, "creatures": _team.duplicate(), "pick": _pick.duplicate()}
+	if online_roster:
+		last_online_deck = saved
+	else:
+		last_deck = saved
 	visible = false
 	_preview.release()
 	var team: Array[StringName] = []

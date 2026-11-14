@@ -28,7 +28,6 @@ func _run() -> void:
 	AudioServer.set_bus_mute(0,true)
 	DeviceSettings.settings_path = "user://opponent-panel-test.cfg"
 	DeviceSettings.reload_settings()
-	DeviceSettings.set_style(DeviceSettings.DEVICE)
 	DeviceSettings.set_reduce_motion(true)
 	CardDB.load_all()
 	game = load("res://scenes/main.gd").new()
@@ -99,27 +98,14 @@ func _run() -> void:
 	panel.feedback("activation",1)
 	DeviceSettings.set_reduce_motion(true)
 	check(panel._accent_tween == null and panel.modulate.a == 1,"reduced motion cancels effects and settles")
-	DeviceSettings.set_style(DeviceSettings.CLASSIC)
-	game._opponent_style_changed(DeviceSettings.CLASSIC)
-	await frames()
-	check(not panel.visible and not own_panel.visible and battle._plates[0].visible and battle._plates[1].visible,"classic hides both context panels and restores original fight plates")
-	check(actor._label_allowed and other._label_allowed and own_actor._label_allowed,"classic restores world labels for both owners")
-	check(battle._counts[0].get_parent() == battle._plate_contents[0] and battle._counts[1].get_parent() == battle._plate_contents[1],"classic returns both ability counters to their original plates")
-	DeviceSettings.set_style(DeviceSettings.DEVICE)
-	game._opponent_style_changed(DeviceSettings.DEVICE)
-	await frames()
-	check(panel.visible and panel._uid == 4 and own_panel.visible and own_panel._uid == 0,"theme toggle restores both actual public battle creatures")
 	var parking := Control.new()
 	root.add_child(parking)
 	hud.reparent(parking)
 	hud.reparent(root)
 	await frames()
-	DeviceSettings.set_style(DeviceSettings.CLASSIC)
-	await frames()
-	check(not panel.visible and not own_panel.visible,"resident reparent retains preference lifecycle for both panels")
-	DeviceSettings.set_style(DeviceSettings.DEVICE)
-	game._opponent_style_changed(DeviceSettings.DEVICE)
-	await frames()
+	check(not panel.visible and not own_panel.visible,"resident reparent clears transient context for both panels")
+	game._present_battle_opponent(0,4,[420,510])
+	check(panel.visible and panel._uid == 4 and own_panel.visible and own_panel._uid == 0,"reparented panels accept fresh public battle context")
 	game._clear_opponent_panel()
 	game._clear_own_panel()
 	check(not panel.visible and panel._uid == -1 and panel._power.text.is_empty() and panel._portrait._actor == null,"reset/release forgets actor and private stale state")
@@ -144,7 +130,7 @@ func _run() -> void:
 	await frames(3)
 	print("OPPONENT PANEL: %d checks, %d failures"%[checks,failures])
 	var file := FileAccess.open(output.path_join("result.json"),FileAccess.WRITE)
-	file.store_string(JSON.stringify({"checks":checks,"failures":failures,"display":DisplayServer.get_name(),"GLB_loaded":false,"portrait_catalog":49,"dual_public_panels":true,"signed_power_events":true,"audio_listened":false}))
+	file.store_string(JSON.stringify({"checks":checks,"failures":failures,"display":DisplayServer.get_name(),"GLB_loaded":false,"portrait_catalog":CreatureModels.catalog_defs().size(),"dual_public_panels":true,"signed_power_events":true,"audio_listened":false}))
 	quit(1 if failures else 0)
 
 func _make_actor(uid: int) -> CreatureBall:
@@ -180,9 +166,7 @@ func _check_layout(panel: OpponentPanel) -> void:
 			check(count.get_parent() == battle and count.is_visible_in_tree(),"hidden duplicate plate does not hide ability count")
 			check(count.get_global_rect().position.y >= anchor.get_global_rect().end.y and root.get_visible_rect().encloses(count.get_global_rect()),"actual ability count stays below correct compact anchor and inside viewport")
 			check(not count.get_global_rect().intersects(anchor.get_global_rect()),"ability count cannot cover portrait or current G")
-		abilities._info = {"moment":&"after_landing"}
-		abilities._place_panel()
-		abilities._panel.show()
+		abilities.show_options([], "Прикрепление", {"moment": &"after_landing"})
 		game._opponent_panel_layout()
 		await frames()
 		print("LAYOUT compact ",dimensions," panel=",panel.get_global_rect()," actions=",abilities._panel.get_global_rect())
@@ -214,10 +198,12 @@ func _check_portrait(panel: OpponentPanel) -> void:
 	check(portrait._viewport == null and not portrait.is_processing(),"hidden portrait renders/processes nothing")
 	panel.present(CardDB.creature(CardDB.RARE_SHADOW_ID),77,370)
 	check(portrait._fallback.texture == CreaturePortrait.reference_texture(CardDB.RARE_SHADOW_ID),"rare known species uses its exact original 2D reference")
-	check(CreaturePortrait.preload_catalog() == 49 and CreatureModels.catalog_defs().size() == 49,"all49 original creature portraits are resident")
+	check(CreaturePortrait.preload_catalog() == 49
+		and CreaturePortrait.RENDERED_TEXTURES.size() == 12
+		and CreatureModels.catalog_defs().size() == 61, "all concept portraits and transparent renders are resident")
 	panel.present(CardDB.creature(CardDB.RARE_SHADOW_ID),77,370)
 	panel.show_context("reveal")
-	check(portrait._fallback.material == null and portrait._backdrop.material == CreaturePortrait._background_material(Attr.A.SHADOW, true), "battle filter stays off during ordinary reveal")
+	check(portrait._fallback.material == null and portrait._backdrop.material == CreaturePortrait._background_material(Attr.A.SHADOW), "battle filter stays off during ordinary reveal")
 	for definition: CreatureDef in CreatureModels.catalog_defs():
 		var id: StringName = definition.id
 		var texture := CreaturePortrait.reference_texture(id)
@@ -296,7 +282,6 @@ func _check_power_events(panel: OpponentPanel) -> void:
 
 
 func _check_sound_contract() -> void:
-	DeviceSettings.set_style(DeviceSettings.DEVICE)
 	var fx := SoundFx.i()
 	await frames()
 	var previous_volume := AudioSettings.interface_volume
@@ -359,10 +344,8 @@ func _check_context_and_motion(panel: OpponentPanel) -> void:
 	check(panel.visible and panel._context_mode == "reveal" and own_panel.visible and own_panel._context_mode == "reveal","actual public reveals open temporary cards for both owners")
 	await create_timer(2.4,true,false,true).timeout
 	check(not panel.visible and not own_panel.visible and panel._context_mode.is_empty() and own_panel._context_mode.is_empty() and panel._portrait._viewport == null,"both reveals expire without leaving frame or viewport")
-	DeviceSettings.set_style(DeviceSettings.CLASSIC)
-	DeviceSettings.set_style(DeviceSettings.DEVICE)
-	game._opponent_style_changed(DeviceSettings.DEVICE)
-	check(not panel.visible and not own_panel.visible,"theme change never resurrects either expired card")
+	DeviceSettings.set_reduce_motion(false)
+	check(not panel.visible and not own_panel.visible,"changing motion preference never resurrects either expired card")
 	game._public_creature_opened(4)
 	panel.set_compact(true)
 	await create_timer(2.4,true,false,true).timeout

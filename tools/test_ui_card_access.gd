@@ -70,7 +70,7 @@ func _run() -> void:
 			inside = inside and font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, fitted.font_size).x <= orb.size.x - 6.0
 		check(inside and fitted.font_size >= 13, "name fits its own 118px button: " + definition.display_name)
 		count += 1
-	check(count == 49, "all 49 creature definitions covered")
+	check(count == 61, "all 61 creature definitions covered")
 	orb.grab_focus()
 	await frames()
 	check(orb.has_focus() and is_instance_valid(orb._focus_disclosure), "orb keyboard focus opens full creature help")

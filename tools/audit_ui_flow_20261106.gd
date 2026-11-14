@@ -28,7 +28,6 @@ func _run() -> void:
 	DirAccess.make_dir_recursive_absolute(out)
 	DeviceSettings.settings_path = out.path_join("flow-settings.cfg")
 	DeviceSettings.reload_settings()
-	DeviceSettings.set_style(DeviceSettings.CLASSIC)
 	AudioServer.set_bus_mute(0,true)
 	CardDB.load_all()
 	var menu := MenuFixture.new()

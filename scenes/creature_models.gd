@@ -219,6 +219,7 @@ static func build(d: CreatureDef) -> Node3D:
 	root.set_meta("normalization_scale", k)
 	root.set_meta("normalization_floor_source", box.position.y)
 	root.set_meta("extent", maxf(box.size.x, box.size.z) * k)  # наибольший размер по полу (для камеры)
+	root.set_meta("footprint", Vector2(box.size.x, box.size.z) * k)
 	if hd:
 		# Audit the whole instance before replacing any active material.
 		_release_unused_hd_maps(model)

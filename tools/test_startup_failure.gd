@@ -101,7 +101,7 @@ func run() -> void:
 				check(not real.ready_to_play and real.preparing and real.has_prepared_catalog(),"interface warmup keeps Boot pending with resident leases"))
 		check(observed_interface,"actual interface phase observed")
 		check(real.last_error.is_empty() and real.ready_to_play and not real.preparing,"ready published only after full successful preparation")
-		check(real.actor_build_count == 98 and real.arena_build_count == 3 and real.fighter_build_count == 4,"normal Boot keeps98actors/3arenas/4fighters")
+		check(real.actor_build_count == CreatureModels.catalog_defs().size() * 2 and real.arena_build_count == 3 and real.fighter_build_count == 4,"normal Boot keeps two actors per definition, three arenas and four fighters")
 		check(real._viewport.render_target_update_mode == SubViewport.UPDATE_DISABLED,"successful viewport parked")
 		check(is_instance_valid(real._game) and is_instance_valid(real._menu),"both interfaces prepared before ready")
 		var preview: CreaturePreview = real._game.team_menu._preview

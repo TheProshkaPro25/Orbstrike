@@ -4,6 +4,8 @@ extends Node3D
 ## Отложенные действия принадлежат текущему состоянию и отменяются новым действием.
 
 signal strike_contact
+signal strike_resolved(landed: bool)
+signal strike_windup(progress: float)
 signal action_finished(action: StringName)
 
 const BodySupport := preload("res://scenes/creature_support.gd")
@@ -19,6 +21,8 @@ var _authored_grounded := false
 var _authored_hover_envelope := 0.0
 var _support
 var _cloth
+var _strike_skeleton: Skeleton3D
+var _strike_bone := -1
 ## Диагностика синхронной подготовки (мс), вне игрового интерфейса.
 var preparation_ms: Dictionary = {}
 
@@ -67,6 +71,16 @@ var _pause_left := 0.0
 
 func _ready() -> void:
 	_phase = randf() * TAU
+	visibility_changed.connect(_cancel_hidden_strike)
+
+
+func _exit_tree() -> void:
+	cancel_strike()
+
+
+func _cancel_hidden_strike() -> void:
+	if not is_visible_in_tree():
+		cancel_strike()
 
 
 func set_model(model: Node3D, d: CreatureDef) -> void:
@@ -83,7 +97,13 @@ func set_model(model: Node3D, d: CreatureDef) -> void:
 	_tempo = TEMPO[d.attribute] if d != null and d.attribute >= 0 and d.attribute < TEMPO.size() else 1.0
 	_meshes.clear()
 	_player = null
+	_strike_skeleton = null
+	_strike_bone = -1
 	_collect(model)
+	if _strike_skeleton != null:
+		for name in [&"chest", &"neck2", &"hips"]:
+			_strike_bone = _strike_skeleton.find_bone(name)
+			if _strike_bone >= 0: break
 	_authored_fullset = GrifalonMotion.install(model, _player, d) or KolossarMotion.install(model, _player, d)
 	_authored_grounded = _authored_fullset and _species == &"kolossar"
 	_authored_hover_envelope = 0.0
@@ -243,8 +263,17 @@ func _collect(n: Node) -> void:
 		_meshes.append(n)
 	elif n is AnimationPlayer and _player == null:
 		_player = n
+	elif n is Skeleton3D and _strike_skeleton == null:
+		_strike_skeleton = n
 	for child in n.get_children():
 		_collect(child)
+
+
+## The posed torso follows the animated hover/root motion, including authored flyers.
+func strike_anchor() -> Vector3:
+	if _strike_bone >= 0 and is_instance_valid(_strike_skeleton):
+		return _strike_skeleton.to_global(_strike_skeleton.get_bone_global_pose(_strike_bone).origin)
+	return to_global(Vector3.UP * _height * 0.46)
 
 
 func set_base(p: Vector3) -> void:
@@ -254,6 +283,7 @@ func set_base(p: Vector3) -> void:
 
 
 func reset() -> void:
+	cancel_strike()
 	if _support != null: _support.reset()
 	_action = &""
 	_pause_left = 0.0
@@ -314,9 +344,12 @@ func _process(delta: float) -> void:
 			_advance_clip(t)
 			# Сначала поза контакта, затем сигнал — реакция цели видит правильную позу.
 			_apply(_clock)
-			if _action == &"attack" and not _contact_sent and t >= _contact_time:
-				_contact_sent = true
-				strike_contact.emit()
+			if _action == &"attack" and not _contact_sent:
+				strike_windup.emit(minf(t / _contact_time, 1.0))
+				if t >= _contact_time:
+					_contact_sent = true
+					strike_contact.emit()
+					strike_resolved.emit(true)
 			if t >= _duration:
 				_finish_action()
 		elif _player != null:
@@ -341,6 +374,7 @@ func _apply(now: float) -> void:
 
 
 func _begin(action: StringName, duration: float, clip: StringName, delay: float = 0.0) -> void:
+	cancel_strike()
 	_start_pos = fx_pos
 	_start_angles = Vector3(fx_pitch, fx_yaw, fx_roll)
 	_action = action
@@ -354,6 +388,12 @@ func _begin(action: StringName, duration: float, clip: StringName, delay: float 
 	_pause_left = 0.0
 	if _player != null:
 		_player.clear_queue()
+
+
+func cancel_strike() -> void:
+	if _action == &"attack" and not _contact_sent:
+		_contact_sent = true
+		strike_resolved.emit(false)
 
 
 func _advance_clip(t: float) -> void:
@@ -467,6 +507,8 @@ func _sample_action(t: float) -> void:
 				roll = -0.10 * sin(p * TAU) * envelope
 	if _species == &"levian":
 		pos = Vector3.ZERO
+	if _species in [&"levian", &"floris", &"octo"]:
+		# Эти клипы сами наклоняют корпус, сохраняя опору.
 		pitch = 0.0
 		roll = 0.0
 	# При смене действия продолжаем из текущей позы, включая недовыполненную отдачу.

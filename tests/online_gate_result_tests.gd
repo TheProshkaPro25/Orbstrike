@@ -67,6 +67,7 @@ func run() -> void:
 	var snapshot := {"player":0,"view":Codec.encode_view(view),"battle_serial":1,"last_battle":Codec.preview(result),"selected_uid":-1,"busy":false,"preview":{},"winner":-2,"legal":{},"reason":""}
 	check(not view.slots[0].has_card and state.card_nodes.has(0),"final rules removed gate while prior presentation still has it")
 	await game._apply_snapshot(JSON.parse_string(JSON.stringify(snapshot)))
+	check(game._leave_button.anchor_left == 0.0 and game._leave_button.offset_top == 97.0,"room exit uses the Wrist Device toolbar during a match")
 	check(director.present_at_result,"gate exists when result animation starts")
 	check(director.present_during_result,"gate remains throughout result confirmation")
 	check(not state.card_nodes.has(0),"gate removed from scene registry after confirmation")

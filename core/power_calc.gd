@@ -152,12 +152,17 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 	# действующие карты: mains[сторона] = [{c: карта эффекта, src: id карты-источника}], слияния отдельно
 	var mains: Array = [[], []]
 	var fusions: Array = [[], []]
+	var active_counts: Array[int] = [0, 0]
+	var first_active: Array[int] = [-1, -1]
 	for k in range(n):
 		var sd: int = sides[k]
 		if cancelled[k]:
 			r.cancelled_plays.append(plays[k].duplicate(true))
 			r.add(sd, "cancelled:" + String(plays[k][1]), 0)
 			continue
+		active_counts[sd] += 1
+		if first_active[sd] < 0:
+			first_active[sd] = k
 		if CardEffects.is_fusion(cards[k]):
 			fusions[sd].append({"c": cards[k], "k": k})
 		else:
@@ -192,6 +197,7 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 	r.attr_def = attr[1]
 
 	# 3. Ворота
+	var elemental_owner := -1
 	if arena != null:
 		var kill: bool = false
 		for i in range(2):
@@ -209,6 +215,18 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 		var ad: Array[int] = [0, 0]
 		for i in range(2):
 			ad[i] = _gate_delta(state, arena, i, own_side, attr[i], base[i], defs[i].species)
+		if own_side >= 0 and bool(arena.params.get("elemental_set", false)) and attr[own_side] == CardEffects.lock_attr(arena):
+			elemental_owner = own_side
+			var extra: int = int(arena.params.get("bonus", 0))
+			match arena.effect_id:
+				&"fire_forge":
+					if active_counts[own_side] >= 2: ad[own_side] += extra
+				&"gale_pass":
+					if own_side == 0: ad[own_side] += extra
+				&"light_dome":
+					if active_counts[own_side] == 0: ad[own_side] += extra
+				&"shadow_veil":
+					if base[own_side] < base[1 - own_side]: ad[own_side] += extra
 		for i in range(2):
 			if _has(mains[i], &"aloft") and ad[1 - i] > 0:
 				r.add(1 - i, "ability:" + String(_src(mains[i], &"aloft")), 0)
@@ -264,11 +282,16 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 	var ceiling := false
 	var previous_k := -1
 	var finalized: Array[bool] = [false, false]
+	var shields: Array[int] = [0, 0]
+	var shield_sources: Array[String] = ["", ""]
+	var earlier_cards: Array[int] = [0, 0]
+	var plate_cap := int(arena.params.get("cap", 0)) if elemental_owner >= 0 and arena.effect_id == &"stone_plate" else 0
 	for entry in ordered:
 		var entry_k: int = int(entry[3])
 		# Отменённая карта тоже расходует Пошлину, поэтому обходим все позиции.
 		for tk in range(previous_k + 1, entry_k + 1):
 			_apply_tolls(r, p, tolls, sides, tk)
+		var first_entry := previous_k != entry_k
 		previous_k = entry_k
 		var i: int = int(entry[0])
 		var c: CardDef = entry[1]
@@ -277,16 +300,40 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 			"foe_beats": Attr.beats(attr[1 - i], attr[i]), "dead_own": state.dead_count(owners[i]),
 			"alive_own": state.alive_count(owners[i]), "alive_foe": state.alive_count(owners[1 - i])}
 		var v: Vector2i = Vector2i(int(c.params.get("amount", 0)), 0) if CardEffects.is_fusion(c) else CardEffects.ability_delta(c, ctx)
+		if c.params.get("local_species_set", false) and c.effect_id == &"boost" and c.id == entry[2] and CardEffects.species_lock(c) != defs[i].species:
+			v = Vector2i.ZERO
+		match c.effect_id:
+			&"fire_afterburn":
+				v.x = mini(int(c.params["cap"]), v.x + earlier_cards[i] * int(c.params["step"]))
+			&"stone_bastion":
+				if _adjacent_ally(state, slot, owners[i], uids):
+					v.x += int(c.params["bonus"])
+		if first_entry:
+			earlier_cards[i] += 1
 		if ceiling:
 			v.x = mini(v.x, 100)
 			v.y = mini(v.y, 100)
 		if v.x != 0 or v == Vector2i.ZERO:
 			r.add(i, src, v.x)
 		p[i] += v.x
+		if elemental_owner >= 0 and arena.effect_id == &"stone_plate" and i != elemental_owner and entry_k == first_active[i] and v.x > 0:
+			var allowed := mini(v.x, plate_cap)
+			plate_cap -= allowed
+			if allowed < v.x:
+				p[i] -= v.x - allowed
+				r.add(i, "arena:" + String(arena.id), allowed - v.x)
 		if v.y != 0:
 			p[1 - i] += v.y
 			r.add(1 - i, src, v.y)
+			if v.y < 0 and shields[1 - i] > 0:
+				var absorbed := mini(-v.y, shields[1 - i])
+				shields[1 - i] = 0
+				p[1 - i] += absorbed
+				r.add(1 - i, shield_sources[1 - i], absorbed)
 		match String(c.effect_id):
+			"light_refraction":
+				shields[i] = int(c.params["shield"])
+				shield_sources[i] = src
 			"stone_ceiling":
 				ceiling = true
 			"tide_wash":
@@ -406,6 +453,8 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 	r.ordinary = not r.interrupted and not r.both_lose and not r.auto_win and not r.winner_stays and gate_e != &"limit" and p[0] != p[1]
 	if r.ordinary and gate_e == &"valor" and absi(p[0] - p[1]) <= int(arena.params.get("margin", 50)):
 		r.valor_saved_uid = r.loser_uid
+	if r.ordinary and gate_e == &"tide_sluice" and win_side == elemental_owner:
+		r.sluice_slot = free_gate(state, slot, owners[win_side])
 
 	# Последствия для контроллера: метки на следующий бой, возрождение, возврат карт
 	for i in range(2):
@@ -416,6 +465,26 @@ static func compute_seq(state: MatchState, atk_uid: int, def_uid: int, slot: int
 			var c: CardDef = m["c"]
 			var amt: int = int(c.params.get("amount", 0))
 			match String(c.effect_id):
+				"gale_breakaway":
+					if r.ordinary and i == win_side:
+						r.breakaway = true
+				"shadow_tribute":
+					if r.ordinary and i == win_side:
+						for pl in plays:
+							var spent := CardDB.card(StringName(pl[1]))
+							if int(pl[0]) != i and CardDB.card_class(spent) == &"blue":
+								r.tribute_card = spent.id
+								break
+				"tide_stored_wave":
+					if r.ordinary and i == win_side and absi(p[0] - p[1]) >= int(c.params["margin"]):
+						r.marks.append([uids[i], {"src": m["src"], "delta": int(c.params["mark"])}])
+				"tentacle_grab":
+					if r.ordinary and i == win_side and r.winner_destination() < 0 and defs[i].species == CardEffects.species_lock(c):
+						var play: Array = plays[int(m["k"])]
+						var choice: Dictionary = play[2] if play.size() > 2 else {}
+						var target := int(choice.get("target_slot", -1))
+						if adjacent_free_gates(state, slot, owners[i]).has(target):
+							r.tentacle_slot = target
 				"gale_call":
 					var choice: Dictionary = plays[int(m["k"])][2] if plays[int(m["k"])].size() > 2 else {}
 					var target_uid := int(choice.get("target_uid", -1))
@@ -476,6 +545,8 @@ static func _gate_delta(state: MatchState, arena: CardDef, i: int, own_side: int
 	var g: Array = arena.params.get("g", [])
 	if attr >= 0 and attr < g.size():
 		v += int(g[attr])
+	if bool(arena.params.get("elemental_set", false)) and i == own_side and attr == CardEffects.lock_attr(arena):
+		return v + amount
 	match String(arena.effect_id):
 		"owner_power":
 			if i == own_side and i == 1:
@@ -500,7 +571,10 @@ static func gate_bonus_for(state: MatchState, uid: int, slot: int) -> int:
 		return 0
 	var d: CreatureDef = CardDB.creature(c.def_id)
 	var own_side: int = 1 if state.slots[slot].card_owner == c.owner else 0
-	return _gate_delta(state, arena, 1, own_side, d.attribute, base_power(state, uid), d.species)
+	var bonus := _gate_delta(state, arena, 1, own_side, d.attribute, base_power(state, uid), d.species)
+	if bonus > 0 and arena.effect_id == &"light_dome" and c.attached.is_empty():
+		bonus += int(arena.params["bonus"])
+	return bonus
 
 
 static func _gate_owner_side(state: MatchState, slot: int, owners: Array[int]) -> int:
@@ -540,6 +614,32 @@ static func _standing(state: MatchState, player: int, exclude: Array[int]) -> Ar
 	return out
 
 
+static func _adjacent_ally(state: MatchState, slot: int, owner: int, fighters: Array[int]) -> bool:
+	if slot < 0 or slot >= state.slots.size():
+		return false
+	for uid in support_targets(state, owner, fighters):
+		var other: int = state.creatures[uid].slot
+		if _gate_neighbors(slot, other):
+			return true
+	return false
+
+
+static func _gate_neighbors(slot: int, other: int) -> bool:
+	@warning_ignore("integer_division")
+	return absi(slot / 3 - other / 3) + absi(slot % 3 - other % 3) == 1
+
+
+static func adjacent_free_gates(state: MatchState, from: int, owner: int) -> Array[int]:
+	var out: Array[int] = []
+	if from < 0 or from >= state.slots.size():
+		return out
+	for i in range(state.slots.size()):
+		var s: SlotState = state.slots[i]
+		if s.has_card and s.card_owner == owner and s.occupant_uid < 0 and _gate_neighbors(from, i):
+			out.append(i)
+	return out
+
+
 # ---------------------------------------------------------------- помощники мгновенных карт (контроллер и ИИ)
 
 static func gates_on_field(state: MatchState) -> int:
@@ -550,11 +650,11 @@ static func gates_on_field(state: MatchState) -> int:
 	return k
 
 
-## Свободные ворота (карта есть, существа нет), кроме слота exclude: первые по номеру; -1 — нет.
-static func free_gate(state: MatchState, exclude: int) -> int:
+## Первые свободные ворота, при необходимости только указанного владельца.
+static func free_gate(state: MatchState, exclude: int, owner: int = -1) -> int:
 	for i in range(state.slots.size()):
 		var s: SlotState = state.slots[i]
-		if i != exclude and s.has_card and s.occupant_uid < 0:
+		if i != exclude and s.has_card and s.occupant_uid < 0 and (owner < 0 or s.card_owner == owner):
 			return i
 	return -1
 

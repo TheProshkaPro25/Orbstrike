@@ -31,6 +31,7 @@ const ABILITY_COST_ORDER: Array[String] = [
 	"boost", "pact", "radiance", "scorch", "purge_gate", "eclipse", "nullify_gate", "aloft", "weaken_mark",
 	"boost_fix", "fusion_boost", "drain", "tide_wash", "flame_toll", "stone_ceiling", "gale_call", "copy", "shift_gate", "silence", "negate", "cap_own_base", "strip",
 	"reset_base", "siphon", "swap_fighter", "revive", "recall", "light_reserve", "shadow_triumph", "doom", "ebb",
+	"fire_afterburn", "stone_bastion", "light_refraction", "gale_breakaway", "shadow_tribute", "tide_stored_wave",
 ]
 ## Штраф оценки броска в бой на чужие закрытые ворота за вероятность ловушки (HARD).
 const TRAP_RISK_PENALTY: float = 300.0
@@ -397,7 +398,7 @@ func _choose_postbattle(view: MatchState, preview: BattleResult, cards: Array[St
 	var owner: int = view.creatures[uid].owner
 	for id in cards:
 		var effect: StringName = CardDB.card(id).effect_id
-		if effect not in [&"gale_call", &"light_reserve", &"shadow_triumph", &"flame_toll"]:
+		if effect not in [&"gale_call", &"light_reserve", &"shadow_triumph", &"flame_toll", &"tentacle_grab"]:
 			continue
 		var after := _with_card(view, preview, id, side)
 		if _alive_after(view, after, side) < _alive_after(view, preview, side) or (_margin(preview, side) > 0.0 and _margin(after, side) <= 0.0):
@@ -408,6 +409,11 @@ func _choose_postbattle(view: MatchState, preview: BattleResult, cards: Array[St
 			return id
 		if after.ordinary and after.winner_uid == uid and after.called_uids[side] >= 0 and preview.called_uids[side] < 0:
 			return id
+		if after.tentacle_slot >= 0 and preview.winner_destination() < 0:
+			var gate := CardDB.card(view.slots[after.tentacle_slot].card_id)
+			var fighter := CardDB.creature(view.creatures[uid].def_id)
+			if _fits(gate, fighter) and (_foe_plays_left(view, preview, side, true) == 0 or _margin(after, side) >= 120.0):
+				return id
 		if after.ordinary and after.loser_uid == uid and after.valor_saved_uid != uid and after.triumph[side] and not preview.triumph[side] and not after.revive[side]:
 			return id
 		# Пошлина без стартовой силы нужна до возможных ответов, а не после их исчерпания.
@@ -470,15 +476,19 @@ func choose_attach(view: MatchState, uid: int, legal: Array, moment: StringName 
 
 ## Предпросмотр боя, если сторона side сыграет id следующей картой обмена.
 func _with_card(view: MatchState, preview: BattleResult, id: StringName, side: int) -> BattleResult:
-	var owner: int = view.creatures[preview.attacker_uid if side == 0 else preview.defender_uid].owner
-	var target := _best_ability_target(view, id, owner, _ability_targets(view, preview, id, owner))
+	var fighter := preview.attacker_uid if side == 0 else preview.defender_uid
+	var owner: int = view.creatures[fighter].owner
+	var target := _best_ability_target(view, id, owner, _ability_targets(view, preview, id, owner), fighter)
 	return PowerCalc.compute_with(view, preview.attacker_uid, preview.defender_uid, preview.slot, preview.battle_plays, side, id, [preview.ability_count(0), preview.ability_count(1)], target)
 
 
 ## Цель передаётся контроллеру явно; список контроллера имеет приоритет над локальным прогнозом.
 func choose_ability_target(view: MatchState, preview: BattleResult, id: StringName, legal_targets: Array = []) -> Dictionary:
 	var targets: Array = legal_targets if not legal_targets.is_empty() else _ability_targets(view, preview, id, player)
-	return _best_ability_target(view, id, player, targets)
+	if targets.is_empty() or preview == null:
+		return {}
+	var fighter := preview.attacker_uid if view.creatures[preview.attacker_uid].owner == player else preview.defender_uid
+	return _best_ability_target(view, id, player, targets, fighter)
 
 
 func _ability_targets(view: MatchState, preview: BattleResult, id: StringName, owner: int) -> Array:
@@ -492,10 +502,13 @@ func _ability_targets(view: MatchState, preview: BattleResult, id: StringName, o
 	elif card.effect_id == &"light_reserve":
 		for used in PowerCalc.reserve_targets(view, owner, preview.plays, 0 if view.creatures[preview.attacker_uid].owner == owner else 1):
 			out.append({"target_card": used})
+	elif card.effect_id == &"tentacle_grab":
+		for slot in PowerCalc.adjacent_free_gates(view, preview.slot, owner):
+			out.append({"target_slot": slot})
 	return out
 
 
-func _best_ability_target(view: MatchState, id: StringName, owner: int, targets: Array) -> Dictionary:
+func _best_ability_target(view: MatchState, _id: StringName, owner: int, targets: Array, fighter: int = -1) -> Dictionary:
 	if targets.is_empty():
 		return {}
 	var best: Dictionary = targets[0]
@@ -510,6 +523,10 @@ func _best_ability_target(view: MatchState, id: StringName, owner: int, targets:
 			score = float(view.players[owner].ability_cooldown.get(StringName(target.target_card), 0)) * 100.0
 			if card != null:
 				score += float(card.params.get("amount", 0))
+		elif target.has("target_slot") and fighter >= 0:
+			var gate := CardDB.card(view.slots[int(target.target_slot)].card_id)
+			var species := CardDB.creature(view.creatures[fighter].def_id)
+			score = 1.0 if _fits(gate, species) else 0.0
 		if score > best_score:
 			best_score = score
 			best = target
@@ -706,7 +723,9 @@ func _forecast_legal(view: MatchState, r: BattleResult, id: StringName, side: in
 	var attr: int = CardEffects.lock_attr(c)
 	if (species != &"" and species != d.species) or (attr >= 0 and attr != d.attribute):
 		return false
-	if c.effect_id in [&"gale_call", &"light_reserve"] and _ability_targets(view, r, id, view.creatures[fighter].owner).is_empty():
+	if c.effect_id in [&"gale_call", &"light_reserve", &"tentacle_grab"] and _ability_targets(view, r, id, view.creatures[fighter].owner).is_empty():
+		return false
+	if c.params.get("local_species_set", false) and c.effect_id == &"boost" and not CardEffects.boost_cond_ok(c, {"attack": side == 0}):
 		return false
 	if c.effect_id == &"tide_wash" and r.powers[side] >= PowerCalc.base_power(view, fighter):
 		return false
@@ -812,7 +831,7 @@ func _public_card_pool(view: MatchState, foe: int, kind: int) -> Array:
 			species.append(d.species)
 	var out: Array = []
 	for cls in (CardDB.ABILITY_CLASSES if kind == CardDef.Kind.ABILITY else CardDB.GATE_CLASSES):
-		out.append(CardDB.cards_of(kind, cls, el, species))
+		out.append(CardDB.cards_of(kind, cls, el, species, view.card_pool))
 	return out
 
 
@@ -1143,6 +1162,8 @@ func _fits(card: CardDef, d: CreatureDef) -> bool:
 		return false
 	if CardEffects.field_attr(card) == d.attribute:
 		return true
+	if bool(card.params.get("elemental_set", false)):
+		return CardEffects.lock_attr(card) == d.attribute
 	match String(card.effect_id):
 		"owner_power", "web", "funnel":
 			return true

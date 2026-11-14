@@ -1,6 +1,6 @@
-# Клиент Orbstrike 0.4.3
+# Клиент Orbstrike 0.4.5
 
-Исходники и пресет Windows Desktop используют версию 0.4.3. Состав клиента и
+Исходники и пресет Windows Desktop используют версию 0.4.5. Состав клиента и
 границы проверки — в [NEXT_SESSION.md](../NEXT_SESSION.md). Компоненты
 игры и их связи разобраны в [журнале проекта](PROJECT_JOURNAL.md).
 
@@ -24,7 +24,7 @@ godot --headless --max-fps 60 --path . --export-release "Windows Desktop" /path/
 0.4.2.6. Условия авторов и рецепты подготовки перечислены отдельно.
 [Костюмы BOOTH](../assets/avatars/booth/README.md) ·
 [Библиотеки жестов](../assets/avatars/motions/KEVIN.md) ·
-[Входы сборки 0.4.3](../tools/checkpoints/release043-inputs.json).
+[Входы сборки 0.4.5](../tools/checkpoints/release045-inputs.json).
 
 Датированные блоки ниже сохраняют техническую историю.
 

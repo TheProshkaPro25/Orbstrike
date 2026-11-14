@@ -147,7 +147,6 @@ func _run() -> void:
 	await frames()
 	# All49 real panels keep the whole prepared image, with no resource regeneration.
 	await CreaturePortrait.preload_catalog_async(self)
-	DeviceSettings.set_style(DeviceSettings.DEVICE)
 	var generations := preload("res://scenes/ui/portrait_matte.gd").generation_count
 	var ids := CreaturePortrait.REFERENCE_TEXTURES.keys()
 	var portrait_regions: Array = []

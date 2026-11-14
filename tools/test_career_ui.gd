@@ -2,7 +2,6 @@ extends SceneTree
 ## Узкий 2D-стенд: отдельная карьера без пользовательского сохранения и без GLB.
 const PANEL := preload("res://scenes/ui/career_panel.gd")
 const CAREER := preload("res://core/career.gd")
-const DEVICE := preload("res://scenes/ui/device_settings.gd")
 var _out := "res://build/checks/career-ui"
 var _panel: CareerPanel
 var _checks := 0
@@ -20,9 +19,6 @@ func _run() -> void:
 		if arg.begins_with("--out="):
 			_out = arg.trim_prefix("--out=")
 	DirAccess.make_dir_recursive_absolute(_out)
-	DEVICE.settings_path = _out.path_join("device-settings.cfg")
-	DEVICE.reload_settings()
-	DEVICE.set_style(DEVICE.CLASSIC)
 	# Mirror Boot preparation for this isolated 2D fixture; getters do no work.
 	preload("res://scenes/ui/creature_portrait.gd").preload_catalog()
 	_panel = PANEL.new()
@@ -124,7 +120,6 @@ func _run() -> void:
 	_panel._toggle_creature(_panel._team[0])
 	_check(_panel._team == locked and _panel._action.text == "Продолжить кубок", "состав закреплён и доступно продолжение")
 	_check(_panel._levels == career.state.active.levels, "видимые боевые уровни равны снимку кубка")
-	_check(DEVICE.set_style(DEVICE.DEVICE) == OK, "выбран прибор в изолированных настройках")
 	await _settle(Vector2i(960, 540))
 	_panel._switch_tab(0)
 	await process_frame

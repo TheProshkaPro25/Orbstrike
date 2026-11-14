@@ -91,10 +91,6 @@ func _run() -> void:
 	var slot: int = game.ctrl.legal_setup_slots()[0]
 	check(game.ctrl.place_arena_card(0,game.ctrl.get_view(0).players[0].arena_hand[0],slot) == OK, "real controller mutation")
 	check(game._tip_at(mouse) == game._tip_at_uncached(mouse), "rule action invalidates snapshot and text")
-	snapshots = Metrics.value("hover_snapshots")
-	DeviceSettings.set_style(DeviceSettings.CLASSIC if DeviceSettings.is_device() else DeviceSettings.DEVICE)
-	check(game._tip_at(mouse) == game._tip_at_uncached(mouse), "style invalidates text")
-	check(Metrics.value("hover_snapshots") == snapshots + 1, "style revision refreshes cached text")
 	game.hud._battle = true
 	check(game._tip_at(mouse).is_empty(), "battle guard never returns cached field tooltip")
 	game.hud._battle = false

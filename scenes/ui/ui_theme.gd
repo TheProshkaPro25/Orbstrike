@@ -1,6 +1,6 @@
 class_name UiTheme
 extends RefCounted
-## Общая тема интерфейса: тёмные полупрозрачные панели с золотой каймой, кнопки в том же стиле.
+## Общая тема наручного прибора.
 
 const ElementIcon := preload("res://scenes/element_icon.gd")
 
@@ -22,15 +22,15 @@ const DEVICE_INK := Color(0.018, 0.045, 0.065, 0.97)
 
 
 static func accent() -> Color:
-	return DEVICE_ACCENT if DeviceSettings.is_device() else GOLD
+	return DEVICE_ACCENT
 
 
 static func accent_dim() -> Color:
-	return DEVICE_DIM if DeviceSettings.is_device() else GOLD_DIM
+	return DEVICE_DIM
 
 
 static func panel_color() -> Color:
-	return DEVICE_INK if DeviceSettings.is_device() else INK
+	return DEVICE_INK
 
 
 static func device_hand_lane(viewport: Vector2) -> float:
@@ -55,16 +55,19 @@ static func device_hand_background() -> Panel:
 	return panel
 
 
-static func _refresh_theme(_style: int) -> void:
-	# Keep the shared Theme identity: Boot's resident screens already reference it.
-	_theme.clear()
-	_theme.merge_with(_make_device() if DeviceSettings.is_device() else _make())
-	_theme.default_font = body_font()
-	_theme.default_font_size = 18
-
-
 static func _make_device() -> Theme:
-	var t := _make()
+	var t := Theme.new()
+	t.default_font_size = 18
+	t.default_font = body_font()
+	t.set_font("font", "Button", heading_font())
+	t.set_color("font_color", "TooltipLabel", TEXT)
+	t.set_font_size("font_size", "TooltipLabel", 15)
+	t.set_color("font_outline_color", "Label", Color(0, 0, 0, 0.85))
+	t.set_constant("outline_size", "Label", 1)
+	t.set_color("font_hover_pressed_color", "Button", GOLD)
+	t.set_color("font_disabled_color", "Button", Color(0.5, 0.5, 0.5))
+	t.set_color("font_outline_color", "Button", Color(0, 0, 0, 0.8))
+	t.set_constant("outline_size", "Button", 0)
 	var panel := box(DEVICE_INK, DEVICE_DIM, 1, 3, 16)
 	panel.border_width_top = 3
 	panel.shadow_color = Color(0.05, 0.50, 0.56, 0.12)
@@ -130,20 +133,16 @@ class DeviceFrame extends Control:
 	func _enter_tree() -> void:
 		# Resident menus leave and re-enter the tree when GameLoading parks them.
 		# _ready runs only once, so subscriptions belong to the enter/exit pair.
-		if not DeviceSettings.events().changed.is_connected(_changed):
-			DeviceSettings.events().changed.connect(_changed)
 		if not get_tree().node_added.is_connected(_node_added):
 			get_tree().node_added.connect(_node_added)
 		if not DeviceSettings.events().motion_changed.is_connected(_motion_changed):
 			DeviceSettings.events().motion_changed.connect(_motion_changed)
-		_changed(DeviceSettings.current())
+		_refresh.call_deferred()
 
 	func _exit_tree() -> void:
 		_stop_intro()
 		if DeviceSettings.events().motion_changed.is_connected(_motion_changed):
 			DeviceSettings.events().motion_changed.disconnect(_motion_changed)
-		if DeviceSettings.events().changed.is_connected(_changed):
-			DeviceSettings.events().changed.disconnect(_changed)
 		if get_tree().node_added.is_connected(_node_added):
 			get_tree().node_added.disconnect(_node_added)
 
@@ -151,11 +150,6 @@ class DeviceFrame extends Control:
 		if get_parent().is_ancestor_of(node) and not _pending:
 			_pending = true
 			_refresh.call_deferred()
-
-	func _changed(_style: int) -> void:
-		_stop_intro()
-		visible = DeviceSettings.is_device()
-		_refresh.call_deferred()
 
 	func _refresh() -> void:
 		_pending = false
@@ -172,29 +166,23 @@ class DeviceFrame extends Control:
 				if not control.has_theme_stylebox_override(key):
 					continue
 				var current_style := control.get_theme_stylebox(key)
-				if not current_style is StyleBoxFlat:
+				if not current_style is StyleBoxFlat or current_style.has_meta("device_styled"):
 					continue
-				var original: StyleBoxFlat = current_style.get_meta("device_original", current_style)
-				if not DeviceSettings.is_device():
-					control.add_theme_stylebox_override(key, original)
-					continue
-				var style: StyleBoxFlat = original.duplicate()
-				style.set_meta("device_original", original)
+				var style: StyleBoxFlat = current_style.duplicate()
+				style.set_meta("device_styled", true)
 				style.set_corner_radius_all(3)
 				style.skew = Vector2.ZERO
-				if original.bg_color.get_luminance() < 0.10:
-					style.bg_color = Color(DEVICE_INK, original.bg_color.a)
-				if original.border_color.is_equal_approx(GOLD) or original.border_color.is_equal_approx(GOLD_DIM):
-					style.border_color = DEVICE_ACCENT if original.border_color.is_equal_approx(GOLD) else DEVICE_DIM
+				if style.bg_color.get_luminance() < 0.10:
+					style.bg_color = Color(DEVICE_INK, style.bg_color.a)
+				if style.border_color.is_equal_approx(GOLD):
+					style.border_color = DEVICE_ACCENT
+				elif style.border_color.is_equal_approx(GOLD_DIM):
+					style.border_color = DEVICE_DIM
 				control.add_theme_stylebox_override(key, style)
 			if control.has_theme_color_override("font_color"):
 				var color := control.get_theme_color("font_color")
-				if DeviceSettings.is_device():
-					if color.is_equal_approx(GOLD): control.add_theme_color_override("font_color", DEVICE_ACCENT)
-					elif color.is_equal_approx(GOLD_DIM): control.add_theme_color_override("font_color", DEVICE_DIM)
-				else:
-					if color.is_equal_approx(DEVICE_ACCENT): control.add_theme_color_override("font_color", GOLD)
-					elif color.is_equal_approx(DEVICE_DIM): control.add_theme_color_override("font_color", GOLD_DIM)
+				if color.is_equal_approx(GOLD): control.add_theme_color_override("font_color", DEVICE_ACCENT)
+				elif color.is_equal_approx(GOLD_DIM): control.add_theme_color_override("font_color", DEVICE_DIM)
 		for child in node.get_children():
 			_restyle(child)
 
@@ -208,7 +196,7 @@ class DeviceFrame extends Control:
 
 	func play_intro() -> void:
 		_stop_intro()
-		if not DeviceSettings.is_device() or DeviceSettings.reduce_motion(): return
+		if DeviceSettings.reduce_motion(): return
 		get_parent().modulate.a = 0.18
 		intro_tween = create_tween().set_parallel(true).set_ignore_time_scale(true)
 		intro_tween.tween_property(get_parent(), "modulate:a", 1.0, 0.32).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
@@ -230,8 +218,7 @@ static func heading_font() -> Font:
 
 static func get_theme() -> Theme:
 	if _theme == null:
-		_theme = _make_device() if DeviceSettings.is_device() else _make()
-		DeviceSettings.events().changed.connect(_refresh_theme)
+		_theme = _make_device()
 	return _theme
 
 
@@ -245,48 +232,6 @@ static func box(bg: Color, border: Color, bw: int = 2, radius: int = 10, pad: in
 	s.set_content_margin_all(pad)
 	s.anti_aliasing = true
 	return s
-
-
-static func _make() -> Theme:
-	var t := Theme.new()
-	t.default_font_size = 18
-	t.default_font = body_font()
-	t.set_font("font", "Button", heading_font())
-
-	var panel := box(INK, Color(0.28, 0.38, 0.49), 1, 8, 16)
-	panel.shadow_color = Color(0, 0, 0, 0.45)
-	panel.shadow_size = 8
-	t.set_stylebox("panel", "PanelContainer", panel)
-	t.set_stylebox("panel", "Panel", panel)
-
-	var tip := box(Color(0.05, 0.05, 0.08, 0.96), GOLD_DIM, 2, 8, 8)
-	t.set_stylebox("panel", "TooltipPanel", tip)
-	t.set_color("font_color", "TooltipLabel", TEXT)
-	t.set_font_size("font_size", "TooltipLabel", 15)
-	t.set_color("font_color", "Label", TEXT)
-	t.set_color("font_outline_color", "Label", Color(0, 0, 0, 0.85))
-	t.set_constant("outline_size", "Label", 1)
-
-	var bn := box(Color(0.09, 0.14, 0.21, 0.98), GOLD_DIM, 2, 8, 10)
-	var bh := box(Color(0.15, 0.24, 0.32, 1.0), GOLD, 2, 8, 10)
-	var bp := box(Color(0.36, 0.27, 0.14, 0.97), GOLD, 2, 8, 10)
-	var bd := box(Color(0.12, 0.12, 0.14, 0.75), Color(0.3, 0.3, 0.32), 2, 8, 10)
-	var bf := box(Color(0, 0, 0, 0), GOLD, 2, 8, 10)
-	bf.draw_center = false
-	t.set_stylebox("normal", "Button", bn)
-	t.set_stylebox("hover", "Button", bh)
-	t.set_stylebox("pressed", "Button", bp)
-	t.set_stylebox("hover_pressed", "Button", bp)
-	t.set_stylebox("disabled", "Button", bd)
-	t.set_stylebox("focus", "Button", bf)
-	t.set_color("font_color", "Button", TEXT)
-	t.set_color("font_hover_color", "Button", Color.WHITE)
-	t.set_color("font_pressed_color", "Button", GOLD)
-	t.set_color("font_hover_pressed_color", "Button", GOLD)
-	t.set_color("font_disabled_color", "Button", Color(0.5, 0.5, 0.5))
-	t.set_color("font_outline_color", "Button", Color(0, 0, 0, 0.8))
-	t.set_constant("outline_size", "Button", 0)
-	return t
 
 
 const FUSION_BASE := Color(0.10, 0.30, 0.34)
@@ -312,7 +257,7 @@ static func card_colors(def: CardDef) -> Array:
 				return [lc.darkened(0.6), lc.lightened(0.15)]
 			return [lc.darkened(0.45), lc.lightened(0.35)]
 		return [ABILITY_BASE, ABILITY_GLOW]
-	var a: int = int(def.params.get("attribute", def.params.get("attr", -1)))
+	var a: int = int(def.params.get("attribute", def.params.get("attr", CardEffects.lock_attr(def))))
 	if a >= 0:
 		var c: Color = VisualUtil.attr_color(a)
 		return [c.darkened(0.25), c.lightened(0.45)]
@@ -326,16 +271,16 @@ static func card_colors(def: CardDef) -> Array:
 ## Подпись типа под названием.
 static func card_kind(def: CardDef) -> String:
 	var sp: StringName = CardEffects.species_lock(def)
+	var lock: int = CardEffects.lock_attr(def)
 	if def.kind != CardDef.Kind.ABILITY:
 		match CardDB.card_class(def):
 			&"gold":
-				return "Ворота стихии"
+				return "Ворота · %s" % VisualUtil.attr_name(lock) if lock >= 0 else "Ворота стихии"
 			&"silver":
 				return "Ворота вида · %s" % CardDB.species_name(sp)
 		return "Ловушка" if CardEffects.is_gate_trap(def) else "Командные ворота"
 	if sp != &"":
 		return "%s · %s" % ["Слияние" if CardEffects.is_fusion(def) else "Вид", CardDB.species_name(sp)]
-	var lock: int = CardEffects.lock_attr(def)
 	if lock >= 0:
 		return "%s · %s" % ["Усиление" if def.effect_id == &"boost" else "Стихия", VisualUtil.attr_name(lock)]
 	return "Способность"
@@ -383,6 +328,8 @@ static func card_sigil(def: CardDef) -> int:
 	# ворота вида — знак своего вида; усиление стихии — знак стихии (ступени силы — ромбы у медальона)
 	if def.effect_id == &"species_double" and species_sigil(CardEffects.species_lock(def)) > 0:
 		return species_sigil(CardEffects.species_lock(def))
+	if def.params.get("elemental_set", false):
+		return CardEffects.lock_attr(def) + 1
 	if def.effect_id == &"boost" and CardEffects.species_lock(def) == &"" and CardEffects.lock_attr(def) >= 0:
 		return CardEffects.lock_attr(def) + 1
 	match String(def.effect_id):
@@ -398,7 +345,7 @@ static func card_sigil(def: CardDef) -> int:
 			return 12
 		"reset_base", "web":
 			return 13
-		"gust", "swap_fighter", "ebb", "aloft":
+		"gust", "swap_fighter", "ebb", "aloft", "tentacle_grab":
 			return 14
 		"doom", "clash":
 			return 15
@@ -490,6 +437,17 @@ static func card_role(def: CardDef) -> String:
 		"stone_ceiling": return "Предел прибавок"
 		"shadow_triumph": return "Перехват хода"
 		"tide_wash": return "Восстановление силы"
+		"fire_afterburn", "fire_forge": return "Сила за карты"
+		"gale_breakaway": return "Готовность к броску"
+		"light_refraction": return "Щит от штрафа"
+		"stone_bastion": return "Сила за союзника"
+		"shadow_tribute": return "Продление отдыха"
+		"tide_stored_wave": return "Метка силы"
+		"gale_pass": return "Сила в атаке"
+		"light_dome": return "Сила без карт"
+		"stone_plate": return "Предел прибавки"
+		"shadow_veil": return "Сила слабейшему"
+		"tide_sluice", "tentacle_grab": return "Переход после захвата"
 		"valor": return "Спасение слабейшего"
 		"dusk_throne": return "Победа Тени"
 	return "Эффект"
@@ -532,15 +490,15 @@ static func card_role_color(def: CardDef) -> Color:
 	match String(def.effect_id):
 		"negate", "doom", "clash", "limit": return Color(1.0, 0.46, 0.38)
 		"purge_gate", "eclipse", "nullify_gate", "aloft", "silence", "mute": return Color(0.76, 0.61, 1.0)
-		"gust", "ebb", "swap_fighter", "shift_gate", "copy": return Color(0.4, 0.83, 1.0)
-		"revive", "fallen_call", "recall": return Color(0.49, 0.95, 0.69)
+		"gust", "ebb", "swap_fighter", "shift_gate", "copy", "tide_sluice", "tentacle_grab": return Color(0.4, 0.83, 1.0)
+		"revive", "fallen_call", "recall", "gale_breakaway": return Color(0.49, 0.95, 0.69)
 	return GOLD
 
 
 # ---------------------------------------------------------------- подсказки для новичка
 
 const CLASS_HELP := {
-	&"gold": ["Ворота стихии", "Карта поля боя. Кладётся рубашкой вверх и открывается в бою. «Поле» даёт силу только существу своей стихии (у каждой стихии своё число), «Алтарь силы» — +300 защитнику-владельцу."],
+	&"gold": ["Ворота стихии", "Кладутся рубашкой вверх и открываются в бою. «Поле» даёт силу существам своей стихии, «Алтарь силы» — +300 защитнику-владельцу. Остальные усиливают бойца владельца своей стихии."],
 	&"silver": ["Ворота вида", "Существо этого вида на воротах удваивает базовую силу — у любой стороны, так что соперник тоже может ими воспользоваться."],
 	&"bronze": ["Командные ворота", "Меняют правила боя: перекачка силы, предел силы, удержание, возврат выбывших. Закрытые ворота не действуют. Ловушки включаются после открытия; бой продолжается до итога обмена."],
 	&"red": ["Стихийная способность", "Играет только существо своей стихии. У каждой стихии есть особые эффекты и ответная отмена: без прибавки силы, только против уже сыгранной карты."],

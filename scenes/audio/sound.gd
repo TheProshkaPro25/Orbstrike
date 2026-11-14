@@ -7,26 +7,30 @@ extends Node
 
 const SFX_DIR := "res://assets/audio/sfx/"
 const CREATURE_DIR := "res://assets/audio/creatures/"
-## Музыка (Suno → tools/audio/prep_music.py: петля, −23 LUFS). Ходы матча — battle.ogg, пока его нет — team.ogg.
+## Музыка подготовлена через tools/audio/prep_music.py (петля, −23 LUFS).
 const MUSIC_MENU := "res://assets/audio/music/menu.ogg"
 const MUSIC_TEAM := "res://assets/audio/music/team.ogg"
 const MUSIC_BATTLE := "res://assets/audio/music/battle.ogg"
 const MUSIC_CLASH := "res://assets/audio/music/battle_clash.ogg"
+const MUSIC_CANYON := "res://assets/audio/music/secret_sanctum.ogg"
+const MUSIC_SEMIFINAL := "res://assets/audio/music/stone_fortress.ogg"
 const MUSIC_XFADE := 2.5
 const POOL := 14
 const MUSIC_DB := -9.0
 const SFX_DB := -2.0
 ## Все короткие эффекты (имена файлов без расширения) — для прогрева кэша и стенда tools/audio/play_all.gd.
 const SFX_NAMES: Array[String] = [
-	"ui_hover", "ui_click", "ui_denied", "turn_yours", "turn_opponent", "card_swoosh", "gate_flight_wind", "gate_expand_wave", "card_select", "card_place", "card_flip", "card_capture", "turn_start",
+	"ui_hover", "ui_click", "ui_denied", "ui_battle_popup", "turn_yours", "turn_opponent", "card_swoosh", "gate_flight_wind", "gate_expand_wave", "card_select", "card_place", "card_flip", "card_capture", "turn_start",
 	"ball_throw", "ball_bounce_1", "ball_bounce_2", "ball_bounce_3", "ball_roll_loop", "ball_land", "capsule_open",
 	"battle_start", "clash", "power_up", "power_down", "miss", "eliminated", "vanish",
 	"battle_win", "battle_lose", "victory", "defeat", "gate_trap",
 	"ability_play", "ability_cancel", "ability_fusion",
 	"ability_fire", "ability_gale", "ability_light", "ability_stone", "ability_shadow", "ability_tide",
+	"impact_fire", "impact_gale", "impact_light", "impact_stone", "impact_shadow", "impact_tide",
 ]
 ## Суффиксы стихий по Attr.A (как GameData.ATTR_KEYS): имя способности и файлов криков.
 const ATTR_KEYS: Array[String] = ["fire", "gale", "light", "stone", "shadow", "tide"]
+const IMPACT_GAIN_DB := [-2.0, -3.0, -3.0, -2.0, -2.0, -2.0]
 
 const DEVICE_SFX_NAMES: Array[String] = ["device_hover", "device_click", "device_denied", "device_power", "device_power_up", "device_power_down", "device_turn"]
 
@@ -107,7 +111,7 @@ func preload_catalog() -> void:
 		var short := String(d.id).trim_prefix("creature_")
 		for kind in ["appear", "attack"]:
 			_load(CREATURE_DIR + "%s_%s" % [short, kind])
-	for path in [MUSIC_MENU, MUSIC_TEAM, MUSIC_BATTLE, MUSIC_CLASH]:
+	for path in [MUSIC_MENU, MUSIC_TEAM, MUSIC_BATTLE, MUSIC_CLASH, MUSIC_CANYON, MUSIC_SEMIFINAL]:
 		_load(path.get_basename())
 	catalog_ready = true
 
@@ -171,18 +175,16 @@ func _play_stream(s: AudioStream, db: float, pitch: float, bus_name: String = "S
 func play(sfx_name: String, db: float = 0.0, jitter: float = 0.04, pitch: float = 1.0) -> void:
 	var interface_sound := sfx_name.begins_with("ui_") or sfx_name.begins_with("device_")
 	var mapped := sfx_name
-	if DeviceSettings.is_device():
-		match sfx_name:
-			"ui_hover": mapped = "device_hover"
-			"ui_click": mapped = "device_click"
-			"ui_denied": mapped = "device_denied"
-			"turn_yours": mapped = "device_turn"
-			"turn_opponent":
-				mapped = "device_turn"
-				pitch *= 0.87
+	match sfx_name:
+		"ui_hover": mapped = "device_hover"
+		"ui_click": mapped = "device_click"
+		"ui_denied": mapped = "device_denied"
+		"turn_yours": mapped = "device_turn"
+		"turn_opponent":
+			mapped = "device_turn"
+			pitch *= 0.87
 	interface_sound = interface_sound or mapped.begins_with("device_")
-	# Digital UI cues are fixed recordings at a fixed pitch. Battle/physical
-	# variants and classic presentation keep their previous variation.
+	# The device cues use fixed recordings without random pitch variation.
 	if mapped.begins_with("device_"):
 		jitter = 0.0
 		if mapped in ["device_click", "device_hover", "device_denied"] or mapped.begins_with("device_power"): pitch = 1.0
@@ -204,10 +206,29 @@ func play(sfx_name: String, db: float = 0.0, jitter: float = 0.04, pitch: float 
 	_play_stream(_load(SFX_DIR + file_name), db, pitch * (1.0 + randf_range(-jitter, jitter)), "Interface" if interface_sound else "SFX")
 
 
+## Короткий сигнал появления боевого уведомления через шину Interface.
+func play_battle_popup() -> void:
+	play("ui_battle_popup", -2.0, 0.0)
+
+
 ## Короткий фиксированный сигнал изменения силы: кэш, шина Interface и её настройки.
 func play_device_power(delta: int) -> void:
-	if delta == 0 or not DeviceSettings.is_device(): return
+	if delta == 0: return
 	play("device_power_up" if delta > 0 else "device_power_down", -10.0, 0.0, 1.0)
+
+
+## В обоюдном ударе слышны разные стихии. Два одновременных одинаковых
+## транзиента складываются в один, чтобы избежать скачка громкости.
+func strike_impact(element: int, strength: float = 1.0) -> void:
+	if element < 0 or element >= ATTR_KEYS.size(): return
+	var strength_db := linear_to_db(clampf(strength, 0.1, 1.0))
+	var stream := _load(SFX_DIR + "impact_" + ATTR_KEYS[element])
+	var already_struck := _pool.any(func(player: AudioStreamPlayer) -> bool:
+		return player.playing and player.stream == stream and player.get_playback_position() < 0.065)
+	if not already_struck:
+		_play_stream(stream, IMPACT_GAIN_DB[element] + strength_db, 1.0)
+	if strength >= 1.0:
+		play("clash", -11.0)
 
 
 ## Остановить хвост уже загруженного эффекта, не загружая новых ресурсов.
@@ -319,6 +340,15 @@ func turn_music() -> String:
 	return MUSIC_BATTLE if ResourceLoader.exists(MUSIC_BATTLE) or FileAccess.file_exists(MUSIC_BATTLE) else MUSIC_TEAM
 
 
+## Тематическая музыка звучит весь матч. Полуфинал важнее темы арены.
+func match_theme(location_id: int, semifinal: bool) -> String:
+	if semifinal and _load(MUSIC_SEMIFINAL.get_basename()) != null:
+		return MUSIC_SEMIFINAL
+	if location_id == ArenaLocations.CANYON and _load(MUSIC_CANYON.get_basename()) != null:
+		return MUSIC_CANYON
+	return ""
+
+
 ## Плавный переход на трек: старый гаснет, новый нарастает (равная мощность), без обрыва.
 ## resume — продолжить трек с места, где он прервался (музыка хода после боя).
 func play_music(path: String, fade: float = MUSIC_XFADE, resume: bool = true) -> void:
@@ -410,9 +440,7 @@ func _on_node_added(n: Node) -> void:
 		var cv := n as CardView
 		cv.mouse_entered.connect(_ui_hover.bind(cv))
 		cv.pressed.connect(func() -> void:
-			if not cv.get_meta("silent_select", false):
-				if DeviceSettings.is_device(): _ui_click()
-				else: play("card_select", -3.0))
+			if not cv.get_meta("silent_select", false): _ui_click())
 	elif n is BaseButton:
 		var b := n as BaseButton
 		b.pressed.connect(_ui_click)

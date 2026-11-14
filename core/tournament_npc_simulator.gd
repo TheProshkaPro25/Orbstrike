@@ -10,7 +10,7 @@ static func play_ai_ability(ctrl: MatchController, bot: AIPlayer, player: int, i
 	var target := bot.choose_ability_target(ctrl.get_view(player), ctrl.get_battle_preview(), id, ctrl.legal_ability_targets(player, id))
 	return ctrl.play_ability(player, id, target)
 
-static func simulate(deck_a: DeckDef, deck_b: DeckDef, match_seed: int, first_player: int, difficulty: int, step_limit: int = STEP_LIMIT, personalities: Array = [], power_snapshots: Array = []) -> Dictionary:
+static func simulate(deck_a: DeckDef, deck_b: DeckDef, match_seed: int, first_player: int, difficulty: int, step_limit: int = STEP_LIMIT, personalities: Array = [], power_snapshots: Array = [], card_pool: int = CardDB.Pool.BASE) -> Dictionary:
 	if deck_a == null or deck_b == null or not [0, 1].has(first_player) or difficulty < 0 or difficulty > 2:
 		return {"error": "Некорректные параметры симуляции NPC"}
 	if not power_snapshots.is_empty() and power_snapshots.size() != 2:
@@ -24,10 +24,10 @@ static func simulate(deck_a: DeckDef, deck_b: DeckDef, match_seed: int, first_pl
 				if definition == null:
 					return {"error": "Некорректная колода NPC"}
 				ids[pair[1]].append(String(definition.id))
-		var valid: bool = CardDB.deck_error(ids[0], ids[1], ids[2]).is_empty() if power_snapshots.is_empty() else _snapshot_deck_valid(ids, power_snapshots[side])
+		var valid: bool = CardDB.deck_error(ids[0], ids[1], ids[2], card_pool).is_empty() if power_snapshots.is_empty() else _snapshot_deck_valid(ids, power_snapshots[side], card_pool)
 		if not valid:
 			return {"error": "Колода NPC не соответствует правилам"}
-	var ctrl := MatchController.new(deck_a, deck_b, match_seed)
+	var ctrl := MatchController.new(deck_a, deck_b, match_seed, MatchRules.Ruleset.ANIME_INSPIRED, card_pool)
 	for side in range(power_snapshots.size()):
 		PowerCalc.apply_power_snapshot(ctrl.state, side, power_snapshots[side])
 	ctrl.landing_window = true
@@ -83,7 +83,7 @@ static func simulate(deck_a: DeckDef, deck_b: DeckDef, match_seed: int, first_pl
 
 
 ## Карьерная команда сохраняет ограничения каталога, но лимит проверяется по БС снимка.
-static func _snapshot_deck_valid(ids: Array, powers: Variant) -> bool:
+static func _snapshot_deck_valid(ids: Array, powers: Variant, card_pool: int = CardDB.Pool.BASE) -> bool:
 	if not powers is Dictionary or powers.size() != 3 or ids[0].size() != 3:
 		return false
 	var seen: Dictionary = {}
@@ -108,7 +108,7 @@ static func _snapshot_deck_valid(ids: Array, powers: Variant) -> bool:
 		var classes: Array = []
 		for id in pair[0]:
 			var card := CardDB.card(StringName(id))
-			if card == null or card.kind != pair[2]:
+			if not CardDB.card_available(card, card_pool) or card.kind != pair[2]:
 				return false
 			classes.append(CardDB.card_class(card))
 			var attr := CardEffects.lock_attr(card)

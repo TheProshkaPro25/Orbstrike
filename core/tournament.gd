@@ -5,6 +5,8 @@ extends RefCounted
 const NpcSimulator = preload("res://core/tournament_npc_simulator.gd")
 const VERSION := 1
 const RULES_VERSION := 1
+const ELEMENTAL_RULES_VERSION := 2
+const SPECIES_RULES_VERSION := 3
 const SAVE_PATH := "user://tournament/active.json"
 const HISTORY_PATH := SAVE_PATH
 const MAX_SAVE_BYTES := 262144
@@ -25,20 +27,20 @@ var autosave_path: String = SAVE_PATH
 var last_error: String = ""
 static var creation_error: String = ""
 
-static func create(deck0: DeckDef, difficulty: int, rng_seed: int, player_name: String = "Игрок", path: String = SAVE_PATH) -> Tournament:
+static func create(deck0: DeckDef, difficulty: int, rng_seed: int, player_name: String = "Игрок", path: String = SAVE_PATH, card_pool: int = CardDB.Pool.BASE) -> Tournament:
 	creation_error = ""
 	if deck0 == null or difficulty < 0 or difficulty > 2 or rng_seed < 0 or rng_seed > 2147483647 or player_name.strip_edges().is_empty() or player_name.length() > 80:
 		creation_error = "Некорректные параметры нового турнира"
 		return null
 	var ids := deck_ids(deck0)
-	if not _deck_valid(ids):
+	if not _deck_valid(ids, card_pool):
 		creation_error = "Команда не соответствует правилам турнира"
 		return null
 	var cup := Tournament.new()
 	cup.autosave_path = path
-	cup._build(ids, difficulty, rng_seed, player_name.strip_edges(), "cup-%d-%d" % [rng_seed, Time.get_ticks_usec()])
+	cup._build(ids, difficulty, rng_seed, player_name.strip_edges(), "cup-%d-%d" % [rng_seed, Time.get_ticks_usec()], RULES_VERSION + card_pool)
 	for participant in cup.state.participants:
-		if not _deck_valid(participant.deck):
+		if not _deck_valid(participant.deck, card_pool):
 			creation_error = "Недопустимая колода NPC: " + String(participant.name)
 			return null
 	if not path.is_empty() and cup.save_file(path) != OK:
@@ -62,7 +64,7 @@ static func deck_ids(deck: DeckDef) -> Array:
 			out[pair[1]].append(String(definition.id))
 	return out
 
-static func _deck_valid(ids: Variant) -> bool:
+static func _deck_valid(ids: Variant, card_pool: int = CardDB.Pool.BASE) -> bool:
 	if not ids is Array or ids.size() != 3:
 		return false
 	for list in ids:
@@ -71,10 +73,16 @@ static func _deck_valid(ids: Variant) -> bool:
 		for id in list:
 			if not id is String:
 				return false
-	return CardDB.deck_error(ids[0], ids[1], ids[2]).is_empty()
+	return CardDB.deck_error(ids[0], ids[1], ids[2], card_pool).is_empty()
 
-func _build(ids: Array, difficulty: int, rng_seed: int, player_name: String, cup_id: String) -> void:
-	state = {"version": VERSION, "rules_version": RULES_VERSION, "ruleset": MatchRules.Ruleset.ANIME_INSPIRED, "id": cup_id, "seed": rng_seed, "difficulty": difficulty, "participants": [{"id": 0, "name": player_name, "style": "Моя команда", "deck": ids.duplicate(true)}], "groups": {}, "lot": [], "matches": [], "in_progress": "", "completed": false, "champion": -1}
+func uses_elemental_cards() -> bool:
+	return int(state.rules_version) >= ELEMENTAL_RULES_VERSION
+
+func card_pool() -> int:
+	return int(state.rules_version) - RULES_VERSION
+
+func _build(ids: Array, difficulty: int, rng_seed: int, player_name: String, cup_id: String, rules_version: int = RULES_VERSION) -> void:
+	state = {"version": VERSION, "rules_version": rules_version, "ruleset": MatchRules.Ruleset.ANIME_INSPIRED, "id": cup_id, "seed": rng_seed, "difficulty": difficulty, "participants": [{"id": 0, "name": player_name, "style": "Моя команда", "deck": ids.duplicate(true)}], "groups": {}, "lot": [], "matches": [], "in_progress": "", "completed": false, "champion": -1}
 	for i in range(NPCS.size()):
 		var row: Array = NPCS[i]
 		var creatures: Array = []
@@ -323,7 +331,7 @@ func simulate_next_npc() -> Dictionary:
 	var duel := next_match()
 	if duel.is_empty() or duel.a == 0 or duel.b == 0:
 		return {"error": "Этот матч должен сыграть человек"}
-	var result: Dictionary = NpcSimulator.simulate(participant_deck(int(duel.a)), participant_deck(int(duel.b)), int(duel.seed), int(duel.first_player), int(state.difficulty), NpcSimulator.STEP_LIMIT, [personality(int(duel.a)), personality(int(duel.b))])
+	var result: Dictionary = NpcSimulator.simulate(participant_deck(int(duel.a)), participant_deck(int(duel.b)), int(duel.seed), int(duel.first_player), int(state.difficulty), NpcSimulator.STEP_LIMIT, [personality(int(duel.a)), personality(int(duel.b))], [], card_pool())
 	if not String(result.error).is_empty():
 		return result
 	var global_winner: int = -1 if int(result.winner) == -1 else int(duel.a if int(result.winner) == 0 else duel.b)
@@ -359,14 +367,14 @@ static func _equivalent(expected: Variant, actual: Variant) -> bool:
 	return typeof(expected) == typeof(actual) and expected == actual
 
 static func from_dict(data: Dictionary) -> Dictionary:
-	if not _integer(data.get("version"), VERSION, VERSION):
+	if not _integer(data.get("version"), VERSION, VERSION) or not _integer(data.get("rules_version"), RULES_VERSION, SPECIES_RULES_VERSION):
 		return {"error": "Неподдерживаемая версия турнира"}
 	if not _integer(data.get("seed"), 0, 2147483647) or not _integer(data.get("difficulty"), 0, 2) or not data.get("id") is String or String(data.id).is_empty() or String(data.id).length() > 80:
 		return {"error": "Некорректные параметры турнира"}
 	if not data.get("participants") is Array or data.participants.size() != 8 or not data.participants[0] is Dictionary:
 		return {"error": "Некорректные участники турнира"}
 	var human: Dictionary = data.participants[0]
-	if not human.get("name") is String or String(human.name).strip_edges().is_empty() or String(human.name).length() > 80 or not _deck_valid(human.get("deck")):
+	if not human.get("name") is String or String(human.name).strip_edges().is_empty() or String(human.name).length() > 80 or not _deck_valid(human.get("deck"), int(data.rules_version) - RULES_VERSION):
 		return {"error": "Некорректная команда игрока"}
 	if not data.get("matches") is Array or data.matches.size() < 12 or data.matches.size() > 18 or not data.get("in_progress") is String:
 		return {"error": "Некорректная сетка турнира"}
@@ -377,7 +385,7 @@ static func from_dict(data: Dictionary) -> Dictionary:
 			data.participants[id].name = _current_npc_name(id, data.participants[id].name)
 	var cup := Tournament.new()
 	cup.autosave_path = ""
-	cup._build(human.deck, int(data.difficulty), int(data.seed), String(human.name), String(data.id))
+	cup._build(human.deck, int(data.difficulty), int(data.seed), String(human.name), String(data.id), int(data.rules_version))
 	for duel in data.matches:
 		if not duel is Dictionary:
 			return {"error": "Некорректная запись матча"}

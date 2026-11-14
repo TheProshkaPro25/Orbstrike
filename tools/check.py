@@ -25,11 +25,14 @@ if args.logic_only and not args.checks:
 if args.only and args.profile:
     parser.error('--only и --profile выбирают область разными способами; укажите один')
 MODELS = ['animation', 'support', 'flight', 'idle', 'stance', 'review-state', 'preparation-cache', 'preview-pool', 'memory-catalog', 'cloth-sharing', 'hd-material-retention']
-RULES = ['career', 'career-power', 'card-effect-edges', 'battle-lockout', 'ai-swap-combo', 'ai-fallen-call', 'ai-formation', 'card-price-rules', 'standoff-lottery', 'last-rush', 'ai-interruption', 'ai-material', 'ai-forecast', 'ai-gust-risk', 'ai-target-flow', 'cards033', 'campaign', 'tournament', 'rules', 'rules-edges', 'cards', 'card-balance', 'card-matches', 'card-counters', 'card-scenarios', 'card-choices', 'card-audit-positions', 'ai', 'ai-gates', 'ai-outcomes', 'ai-rescue-matches', 'shot-physics']
+RULES = ['career', 'career-power', 'card-effect-edges', 'elemental-cards', 'species-cards', 'battle-lockout', 'ai-swap-combo', 'ai-fallen-call', 'ai-formation', 'card-price-rules', 'standoff-lottery', 'last-rush', 'ai-interruption', 'ai-material', 'ai-forecast', 'ai-gust-risk', 'ai-target-flow', 'cards033', 'campaign', 'tournament', 'rules', 'rules-edges', 'cards', 'card-balance', 'card-matches', 'card-counters', 'card-scenarios', 'card-choices', 'card-audit-positions', 'ai', 'ai-gates', 'ai-outcomes', 'ai-rescue-matches', 'shot-physics']
 SCRIPTS = {
     'architecture-contracts': 'tools/test_architecture_contracts.gd',
     'match-lifecycle': 'tools/test_match_lifecycle.gd',
+    'local-creatures': 'tools/test_local_creatures.gd',
     'creature-preview-refresh': 'tools/test_creature_preview_refresh.gd',
+    'creature-element-fx': 'tools/test_creature_element_fx.gd',
+    'stone-tide-fx': 'tools/test_creature_element_fx.gd',
     'sport-neck': 'tools/test_sport_neck.gd',
     'sport-style': 'tools/test_sport_style.gd',
     'wardrobe-fit': 'tools/test_wardrobe_fit.gd',
@@ -79,6 +82,8 @@ SCRIPTS = {
     'device-feedback': 'tools/test_device_feedback.gd',
     'opponent-panel': 'tools/test_opponent_panel.gd',
     'card-effect-edges': 'tests/card_effect_edge_tests.gd',
+    'elemental-cards': 'tests/elemental_cards_tests.gd',
+    'species-cards': 'tests/species_cards_tests.gd',
     'battle-lockout': 'tests/battle_lockout_tests.gd',
     'battle-lockout-ui': 'tests/battle_lockout_ui_tests.gd',
     'ai-swap-combo': 'tests/ai_swap_combo_strategy_tests.gd',
@@ -166,13 +171,14 @@ if args.profile in ['gameplay', 'full'] and args.checks and 'card-audit-balance'
     plan.append('card-audit-balance')
 if args.profile == 'gameplay' and args.checks and 'architecture-contracts' in args.checks:
     plan.append('architecture-contracts')
-if args.profile == 'gameplay' and args.checks and 'match-lifecycle' in args.checks:
-    plan.append('match-lifecycle')
+if args.profile == 'gameplay' and args.checks:
+    for optional in ('match-lifecycle', 'local-creatures'):
+        if optional in args.checks: plan.append(optional)
 if args.profile == 'models' and args.checks:
     for optional in ['kolossar-runtime-pool', 'kolossar-common-master', 'kolossar-fullset', 'grifalon-common-master', 'grifalon-fullset', 'grifalon-runtime-pool', 'ratnik-family', 'humanoid-motion', 'a03-anatomy', 'cloth-rim-contract', 'gpu-acceptance', 'ratnik-crown-reopen', 'model-wind-import', 'sculpt-import', 'sculpt-candidate-poses', 'a03-material-import', 'sculpt-source-poses', 'a03-candidate-poses']:
         if optional in args.checks: plan.append(optional)
 if args.profile == 'presentation' and args.checks:
-    for optional in ['device-battle-hud', 'portrait-client-smoke', 'wardrobe-catalog-motion']:
+    for optional in ['creature-element-fx', 'stone-tide-fx', 'device-battle-hud', 'portrait-client-smoke', 'wardrobe-catalog-motion']:
         if optional in args.checks: plan.append(optional)
     for optional in ['sport-neck', 'sport-style', 'wardrobe-fit', 'wardrobe-palette', 'booth-outfits', 'startup-failure', 'creature-preview-refresh', 'preview-refresh', 'optimization', 'location-reveal', 'hud-gdelta', 'card-hover', 'battle-ui-followup', 'portrait-background', 'portrait-standby']:
         if optional in args.checks: plan.append(optional)
@@ -219,18 +225,18 @@ for name in plan:
                             reason='Локальный Kevin bank не установлен; проверяются запасные CC0-клипы в vrm-fighter'))
         print('SKIP motion-bank: локальные клипы не установлены', flush=True)
         continue
-    command = ['godot', '--path', str(ROOT), '--log-file', str(OUT/(name + '-engine.log'))]
+    command = ['godot', '--path', str(ROOT), '--max-fps', '60', '--log-file', str(OUT/(name + '-engine.log'))]
     if name == 'import':
         command += ['--headless', '--editor', '--import']
     else:
         graphics = name in ['a03-material-import', 'a03-candidate-poses', 'sculpt-import', 'sculpt-source-poses', 'sculpt-candidate-poses', 'model-wind-import', 'ui-audit-fixes', 'ui-card-access', 'menu-access', 'match-keyboard', 'match-keyboard-combo', 'portrait-crop', 'career-ui', 'career-flow', 'device-ui', 'device-feedback', 'opponent-panel', 'location-detail', 'battle-lockout-ui', 'card-pact-price-ui', 'card-leap-price-ui', 'card-sure-price-ui', 'card-price-ui', 'standoff-notice', 'last-rush-ui', 'menu-music', 'memory-catalog', 'cloth-sharing', 'portrait-visibility', 'duel-exit', 'online-ui', 'online-disconnect', 'online-gate-result', 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'battle-card-hover', 'cards-ui', 'cards-art', 'cards033-ui', 'menu-environment', 'menu-lighting', 'sanctuary-mood', 'startup-loading', 'experience', 'autoplay', 'gpu-core', 'ability-input', 'window-lighting', 'high-graphics', 'turn-pool', 'campaign-flow', 'campaign-flow', 'tournament-flow', 'tournament-ui', 'hand-placement', 'npc-appearance', 'campaign-ui'] or (name in MODELS and (args.visual or args.profile == 'full'))
-        if name in ['ratnik-family', 'humanoid-motion']: graphics = True
+        if name in ['ratnik-family', 'humanoid-motion', 'local-creatures']: graphics = True
         if name in ['grifalon-fullset', 'grifalon-runtime-pool']: graphics = True
         if name in ['kolossar-fullset', 'kolossar-runtime-pool']: graphics = True
         if name == 'ratnik-crown-reopen': graphics = True
         if name == 'a03-anatomy': graphics = True
-        if name == 'gpu-acceptance': graphics = True
-        if name in ['device-battle-hud', 'portrait-client-smoke', 'wardrobe-catalog-motion']: graphics = True
+        if name in ['gpu-acceptance']: graphics = True
+        if name in ['creature-element-fx', 'stone-tide-fx', 'device-battle-hud', 'portrait-client-smoke', 'wardrobe-catalog-motion']: graphics = True
         if name in ['sport-neck', 'sport-style', 'wardrobe-fit', 'wardrobe-palette', 'booth-outfits', 'startup-failure', 'creature-preview-refresh', 'match-lifecycle', 'preview-refresh', 'optimization', 'location-reveal', 'hud-gdelta', 'card-hover', 'battle-ui-followup', 'portrait-background', 'portrait-standby']: graphics = True
         if not graphics or args.logic_only:
             command += ['--headless']
@@ -244,6 +250,8 @@ for name in plan:
             if not args.logic_only:
                 command += ['--windowed', '--position', '-20000,-20000']
         command += ['-s', 'res://' + script]
+        if name in ['creature-element-fx', 'stone-tide-fx', 'local-creatures']:
+            command += ['--audio-driver', 'Dummy']
         if name in ['grifalon-runtime-pool', 'kolossar-runtime-pool']:
             command += ['--', str(OUT/(name + '.json')), 'kolossar' if name == 'kolossar-runtime-pool' else 'grifalon']
         elif name == 'ratnik-family':
@@ -276,7 +284,9 @@ for name in plan:
             command += ['--', str(OUT/'startup-loading')]
         elif name == 'experience':
             command += ['--', str(OUT/'experience')]
-        elif name in ['battle-card-hover', 'device-battle-hud', 'portrait-client-smoke']:
+        elif name == 'stone-tide-fx':
+            command += ['--', str(OUT/name), '--stone-tide']
+        elif name in ['battle-card-hover', 'creature-element-fx', 'device-battle-hud', 'portrait-client-smoke']:
             command += ['--', str(OUT/name)]
         elif name == 'career-flow':
             command += ['--', str(OUT/name)]
@@ -307,6 +317,8 @@ for name in plan:
             command += ['--', str(OUT/'window-lighting')]
         elif name == 'turn-pool':
             command += ['--', str(OUT/'turn-pool-timings.json')]
+        elif name == 'local-creatures':
+            command += ['--', str(OUT)]
     timeout = 60 if name == 'portrait-standby' else (1200 if name == 'card-audit-balance' else (600 if name in MODELS or name in ['autoplay', 'tournament-flow', 'online-ui'] else 360))
     run(name, command, timeout)
 

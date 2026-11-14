@@ -1,11 +1,10 @@
 class_name FighterPlate
 extends PanelContainer
 ## Плашка бойца в углу экрана: имя, шарики существ (выбитые гаснут), захваченные ворота, огоньки «Натиска».
-## side 0 — слева (вы), 1 — справа (соперник); плашка скошена наружу, активный боец подсвечен.
+## side 0 — слева (вы), 1 — справа (соперник); активный боец подсвечен.
 
 const ElementIcon := preload("res://scenes/element_icon.gd")
 
-var _side := 0
 var _name: Label
 var _gates: Label
 var _pips: _Pips
@@ -17,7 +16,6 @@ var _captured := 0
 
 
 func _init(side: int = 0, title: String = "") -> void:
-	_side = side
 	mouse_filter = Control.MOUSE_FILTER_PASS
 	tooltip_text = ("Ваша плашка. " if side == 0 else "Плашка соперника. ") + "Шарики — три существа (выбывшие перечёркнуты). Ворота — захваченные карты."
 	_accent = Color(0.5, 0.75, 1.0) if side == 0 else Color(1.0, 0.55, 0.5)
@@ -26,7 +24,7 @@ func _init(side: int = 0, title: String = "") -> void:
 	content.add_theme_constant_override("separation",8)
 	add_child(content)
 	_portrait = TextureRect.new()
-	_portrait.custom_minimum_size = Vector2(64,72)
+	_portrait.custom_minimum_size = Vector2(52, 60)
 	_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -36,8 +34,8 @@ func _init(side: int = 0, title: String = "") -> void:
 	if side == 0: content.add_child(_portrait)
 	content.add_child(vb)
 	if side == 1: content.add_child(_portrait)
-	_name = VisualUtil.label(title, 20)
-	_name.custom_minimum_size.x = 140
+	_name = VisualUtil.label(title, 18)
+	_name.custom_minimum_size.x = 157.0
 	_name.clip_text = true
 	_name.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	_name.add_theme_color_override("font_color", _accent.lightened(0.3))
@@ -52,8 +50,8 @@ func _init(side: int = 0, title: String = "") -> void:
 	row.add_theme_constant_override("separation", 10)
 	row.alignment = BoxContainer.ALIGNMENT_BEGIN if side == 0 else BoxContainer.ALIGNMENT_END
 	vb.add_child(row)
-	_gates = VisualUtil.label("Ворота: 0", 14)
-	_gates.add_theme_color_override("font_color", UiTheme.GOLD)
+	_gates = VisualUtil.label("Захвачено 0", 14)
+	_gates.add_theme_color_override("font_color", UiTheme.accent())
 	_gates.mouse_filter = Control.MOUSE_FILTER_PASS
 	_gates.tooltip_text = "Захваченные карты ворот: ворота, где сражение выиграно или карта засчитана."
 	_flames = _Flames.new()
@@ -66,45 +64,15 @@ func _init(side: int = 0, title: String = "") -> void:
 		row.add_child(_gates)
 
 
-func _ready() -> void:
-	DeviceSettings.events().changed.connect(_device_style_changed)
-	_device_style_changed(DeviceSettings.current())
-
-
-func _device_style_changed(_style: int) -> void:
-	var device := DeviceSettings.is_device()
-	_name.custom_minimum_size.x = 157.0 if device else 140.0
-	_name.add_theme_font_size_override("font_size", 18 if device else 20)
-	_portrait.custom_minimum_size = Vector2(52,60) if device else Vector2(64,72)
-	_gates.text = "%s %d" % ["Захвачено" if device else "Ворота:", _captured]
-	_apply_style(_active)
-	_gates.add_theme_color_override("font_color", UiTheme.accent())
-	_pips.queue_redraw()
-
-
 func _apply_style(active: bool) -> void:
-	var c: Color = _accent
-	if DeviceSettings.is_device():
-		var device := UiTheme.box(UiTheme.DEVICE_INK, c if active else c.darkened(0.5), 1, 4, 10)
-		device.border_width_top = 3 if active else 1
-		device.content_margin_left = 12
-		device.content_margin_right = 12
-		device.content_margin_top = 6
-		device.content_margin_bottom = 8
-		add_theme_stylebox_override("panel", device)
-		return
-	var sb := UiTheme.box(Color(0.03, 0.03, 0.06, 0.88), c if active else c.darkened(0.45), 0, 0, 10)
-	sb.border_width_left = 5 if _side == 0 else 0
-	sb.border_width_right = 5 if _side == 1 else 0
-	sb.border_width_bottom = 2
-	sb.skew = Vector2(-0.18 if _side == 0 else 0.18, 0.0)
-	sb.content_margin_left = 22
-	sb.content_margin_right = 22
-	sb.content_margin_top = 6
-	sb.content_margin_bottom = 8
-	sb.shadow_color = Color(c.r, c.g, c.b, 0.4 if active else 0.12)
-	sb.shadow_size = 10 if active else 4
-	add_theme_stylebox_override("panel", sb)
+	var c := _accent
+	var panel := UiTheme.box(UiTheme.DEVICE_INK, c if active else c.darkened(0.5), 1, 4, 10)
+	panel.border_width_top = 3 if active else 1
+	panel.content_margin_left = 12
+	panel.content_margin_right = 12
+	panel.content_margin_top = 6
+	panel.content_margin_bottom = 8
+	add_theme_stylebox_override("panel", panel)
 
 
 ## Цвета стихий существ бойца (порядок — порядок шариков); elems — стихии (значок на шарике), можно пусто.
@@ -156,7 +124,7 @@ func revive(idx: int) -> void:
 func set_gates(n: int) -> void:
 	var changed := _captured != n
 	_captured = n
-	_gates.text = "%s %d" % ["Захвачено" if DeviceSettings.is_device() else "Ворота:", n]
+	_gates.text = "Захвачено %d" % n
 	if changed and n > 0:
 		_pop(_gates)
 

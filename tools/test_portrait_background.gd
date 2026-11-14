@@ -19,9 +19,6 @@ func _run() -> void:
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--out="): _out = arg.trim_prefix("--out=")
 	DirAccess.make_dir_recursive_absolute(_out)
-	DeviceSettings.settings_path = _out.path_join("device-settings.cfg")
-	DeviceSettings.reload_settings()
-	DeviceSettings.set_style(DeviceSettings.CLASSIC)
 	CardDB.load_all()
 	for id: StringName in PORTRAIT.REFERENCE_TEXTURES:
 		var stem := String(id).trim_prefix("creature_")
@@ -39,7 +36,7 @@ func _run() -> void:
 	_check(_progress.size() == 49 and _progress[-1] == [49, 49], "loader reports each portrait and completes49of49")
 	_check(int(loading_frames[0]) >= 49, "async preparation yields to loading UI between49 bounded tasks")
 	_check(MATTE.generation_count == 49, "exactly one segmentation per source")
-	_check(PORTRAIT._hud_reference_textures.size() == 42 and PORTRAIT._background_materials.size() == 12, "reviewed42 crops and six classic/device backdrops prepared")
+	_check(PORTRAIT._hud_reference_textures.size() == 42 and PORTRAIT._background_materials.size() == 6, "reviewed42 crops and six portrait backdrops prepared")
 	_new_canvas(Vector2i(1160, 720))
 	_label("CHANGED2 · guarded negative-space fix · source / product matte / alpha / actual72px HUD", Vector2(16, 8), 18)
 	for row in SAMPLE_IDS.size():
@@ -73,7 +70,6 @@ func _run() -> void:
 			_add_portrait(id, Rect2(x + 116, y + 23, 104, 104), false)
 		await _shot("catalog49-full-%d" % [sheet + 1])
 	if not FOCUSED_REVIEW:
-		DeviceSettings.set_style(DeviceSettings.DEVICE)
 		_new_canvas(Vector2i(1060, 920))
 		_label("ALL49 · ACTUAL72px PRODUCT HUD CROPS · DEVICE · 42 reviewed crops / 7 fullbody", Vector2(12, 8), 17)
 		for cell in ids.size():
@@ -87,14 +83,13 @@ func _run() -> void:
 	var portrait := PORTRAIT.new()
 	_canvas.add_child(portrait)
 	for turn in range(4):
-		DeviceSettings.set_style(DeviceSettings.DEVICE if turn % 2 else DeviceSettings.CLASSIC)
 		for id: StringName in ids:
 			portrait.set_definition(CardDB.creature(id), turn)
 			portrait.set_hud_crop_enabled(turn % 2 == 0)
 			portrait.size = Vector2(72 + turn, 100 + turn)
 			_check(portrait._reference_texture == PORTRAIT.reference_texture(id), "original source identity unchanged on warm rebind " + String(id))
 			_check(PORTRAIT.presentation_texture(id) == PORTRAIT._presentation_textures[id], "warm getter reuses exact prepared texture " + String(id))
-	_check(MATTE.generation_count == generation_before and generation_before == 49, "present/style/resize/rebind never rerun segmentation")
+	_check(MATTE.generation_count == generation_before and generation_before == 49, "present/resize/rebind never rerun segmentation")
 	_check(PORTRAIT.preload_catalog() == 49 and MATTE.generation_count == 49, "repeat catalog preparation reuses all resources")
 	for id: StringName in ids:
 		var expected_holes := 2572 if id == &"creature_dragnar_shadow" else (920 if id == &"creature_levian_shadow" else 0)

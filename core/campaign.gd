@@ -14,7 +14,7 @@ var autosave_path: String = SAVE_PATH
 var last_error: String = ""
 static var creation_error: String = ""
 
-static func create(deck: DeckDef, difficulty: int, rng_seed: int, player_name: String = "Игрок", path: String = SAVE_PATH) -> Campaign:
+static func create(deck: DeckDef, difficulty: int, rng_seed: int, player_name: String = "Игрок", path: String = SAVE_PATH, card_pool: int = CardDB.Pool.BASE) -> Campaign:
 	creation_error = ""
 	var previous_history: Array = []
 	if not path.is_empty() and FileAccess.file_exists(path):
@@ -23,7 +23,7 @@ static func create(deck: DeckDef, difficulty: int, rng_seed: int, player_name: S
 			creation_error = String(previous.error)
 			return null
 		previous_history = previous.entries
-	var first := Cup.create(deck, difficulty, rng_seed, player_name, "")
+	var first := Cup.create(deck, difficulty, rng_seed, player_name, "", card_pool)
 	if first == null:
 		creation_error = Cup.creation_error
 		return null
@@ -78,7 +78,7 @@ func simulate_next_npc() -> Dictionary:
 	var duel := cup.next_match()
 	if duel.is_empty() or int(duel.a) == 0 or int(duel.b) == 0:
 		return {"error": "Этот матч должен сыграть человек"}
-	var result: Dictionary = Simulator.simulate(cup.participant_deck(int(duel.a)), cup.participant_deck(int(duel.b)), int(duel.seed), int(duel.first_player), int(state.difficulty), Simulator.STEP_LIMIT, [Cup.personality(int(duel.a)), Cup.personality(int(duel.b))])
+	var result: Dictionary = Simulator.simulate(cup.participant_deck(int(duel.a)), cup.participant_deck(int(duel.b)), int(duel.seed), int(duel.first_player), int(state.difficulty), Simulator.STEP_LIMIT, [Cup.personality(int(duel.a)), Cup.personality(int(duel.b))], [], cup.card_pool())
 	if not String(result.error).is_empty():
 		return result
 	var winner := -1 if int(result.winner) == -1 else int(duel.a if int(result.winner) == 0 else duel.b)
@@ -92,7 +92,7 @@ func advance_cup() -> Error:
 		return ERR_UNAVAILABLE
 	var previous := state.duplicate(true)
 	var original_cup := cup
-	var next := Cup.create(cup.participant_deck(0), int(state.difficulty), _cup_seed(int(state.seed), cup_index() + 1), cup.participant_name(0), "")
+	var next := Cup.create(cup.participant_deck(0), int(state.difficulty), _cup_seed(int(state.seed), cup_index() + 1), cup.participant_name(0), "", cup.card_pool())
 	if next == null:
 		last_error = Cup.creation_error
 		return ERR_INVALID_DATA

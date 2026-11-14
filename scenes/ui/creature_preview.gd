@@ -6,7 +6,7 @@ extends PanelContainer
 ## не создаются при наведении. Отдельные стенды без прогрева сохраняют прежний фоновой путь.
 ## Модель можно крутить мышью; в покое она медленно поворачивается сама.
 
-## Короткая характеристика вида (по GameData.SPECIES).
+## Короткая характеристика вида.
 const SPECIES_INFO := {
 	&"dragnar": "Дракон. Крылатый и мощный: высокая сила, упрямый напор.",
 	&"klykar": "Волк. Быстрый охотник: силён против тех, кто сильнее его.",
@@ -16,6 +16,8 @@ const SPECIES_INFO := {
 	&"levian": "Морской змей. Сжигает бонусы соперника, утягивает в пучину.",
 	&"ratnik": "Рыцарь. Надёжный боец, его карты нельзя отменить.",
 	&"gorgul": "Крылатый глаз. Слабейший вид, но гасит ворота боя.",
+	&"floris": "Каменный цветок на трёх опорах. В атаке раскрывает лепестки и обнажает кристалл.",
+	&"octo": "Морской боец с восемью руками. В атаке поднимает передние руки с присосками.",
 }
 const IconT := preload("res://scenes/ui/element_mark.gd")
 const TURN_SPEED := 0.35        ## рад/с, поворот в покое
@@ -37,7 +39,6 @@ var _card_box: CenterContainer
 var _full_card_scroll: ScrollContainer
 var _full_card: CardView
 var _full_card_definition: CardDef
-var _full_card_style := -1
 var _info_head: HBoxContainer
 var _loading: Label
 var _drag_hint: Label
@@ -53,7 +54,6 @@ var _status: Label
 var _shown_id: StringName = &""      ## существо, чья модель сейчас на сцене
 var _want: CreatureDef               ## существо, которое нужно показать
 var _want_pose := false
-var _creature_style := -1
 var _pending := ""                   ## путь, который грузится фоном
 var _cache: Dictionary = {}          ## путь -> PackedScene (показываемая + команда)
 var _keep: Array[StringName] = []    ## существа, чьи модели держим в памяти
@@ -220,7 +220,7 @@ func show_creature(d: CreatureDef, pose: bool = false, in_team: bool = false, no
 		return
 	# Focus, delayed hover and click can request the same definition in one frame.
 	# Status/pose remain live; the immutable description keeps its nodes and scroll.
-	if _want == d and _stage.visible and not _full_card_scroll.visible and _creature_style == DeviceSettings.current():
+	if _want == d and _stage.visible and not _full_card_scroll.visible:
 		_set_status(in_team, note)
 		_want_pose = pose
 		if _shown_id == d.id:
@@ -228,7 +228,6 @@ func show_creature(d: CreatureDef, pose: bool = false, in_team: bool = false, no
 		elif _pending.is_empty():
 			_request(d) # Retry a previously unavailable resident preview.
 		return
-	_creature_style = DeviceSettings.current()
 	_full_card_scroll.visible = false
 	_stage.visible = true
 	_info_head.visible = true
@@ -275,11 +274,10 @@ func show_card(def: CardDef, picked: bool = false, note: String = "") -> void:
 	if def == null:
 		return
 	var width := maxf(224, size.x - 40)
-	var style := DeviceSettings.current()
 	# One pointer click can request the same preview through hover, focus and
 	# selection. CardDB definitions are immutable; status does not change the face.
 	# Keep its node/material and reading position until its content/context changes.
-	if is_instance_valid(_full_card) and not _full_card.is_queued_for_deletion() and _full_card_scroll.visible and _full_card_definition == def and _full_card_style == style and is_equal_approx(_full_card._card_size.x,width):
+	if is_instance_valid(_full_card) and not _full_card.is_queued_for_deletion() and _full_card_scroll.visible and _full_card_definition == def and is_equal_approx(_full_card._card_size.x,width):
 		_set_card_status(picked,note)
 		preload("res://scenes/performance_metrics.gd").add("preview_card_reuses")
 		return
@@ -300,7 +298,6 @@ func show_card(def: CardDef, picked: bool = false, note: String = "") -> void:
 	VisualUtil.clear_children(_full_card_scroll)
 	_full_card = CardView.new().for_card(def, Vector2(width, 0), true)
 	_full_card_definition = def
-	_full_card_style = style
 	preload("res://scenes/performance_metrics.gd").add("preview_card_builds")
 	_full_card.mouse_filter = Control.MOUSE_FILTER_STOP
 	_full_card.mouse_default_cursor_shape = Control.CURSOR_HELP

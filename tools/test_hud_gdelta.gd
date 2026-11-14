@@ -54,7 +54,6 @@ func _run() -> void:
 	DirAccess.make_dir_recursive_absolute(output)
 	DeviceSettings.settings_path = output.path_join("isolated-settings.cfg")
 	DeviceSettings.reload_settings()
-	DeviceSettings.set_style(DeviceSettings.DEVICE)
 	CardDB.load_all()
 	CreaturePortrait._prepare_reference(&"creature_ratnik_light")
 	CreaturePortrait._prepare_reference(&"creature_kolossar_shadow")

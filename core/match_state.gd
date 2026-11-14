@@ -4,6 +4,10 @@ extends RefCounted
 ## Поддерживает снимки N игроков; MatchController и PowerCalc пока проводят только дуэли.
 
 var ruleset: int = MatchRules.Ruleset.ANIME_INSPIRED
+var card_pool: int = CardDB.Pool.BASE
+var elemental_cards: bool:
+	get: return card_pool >= CardDB.Pool.ELEMENTAL
+	set(enabled): card_pool = CardDB.Pool.ELEMENTAL if enabled else CardDB.Pool.BASE
 var manual_gates := false
 var battle_context: BattleContext = null
 
@@ -68,6 +72,7 @@ func duplicate_full() -> MatchState:
 func duplicate_view(for_player: int) -> MatchState:
 	var v: MatchState = MatchState.new(players.size())
 	v.ruleset = ruleset
+	v.card_pool = card_pool
 	v.manual_gates = manual_gates
 	v.battle_context = battle_context.clone() if battle_context != null else null
 	v.turn = turn

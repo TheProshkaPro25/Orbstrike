@@ -58,28 +58,26 @@ func _run() -> void:
 	game._tournament_exit = exit
 	canvas.add_child(exit)
 	hud.battle_mode_changed.connect(game._place_duel_menu)
-	for style in [DeviceSettings.CLASSIC, DeviceSettings.DEVICE]:
-		DeviceSettings.set_style(style)
-		for dimensions in [Vector2i(960, 540), Vector2i(1280, 720)]:
-			root.size = dimensions
-			root.content_scale_size = dimensions
-			for fighting in [false, true]:
-				hud.set_battle_mode(fighting)
-				if fighting: battle.open(["Атакующий", "Защитник"], [0, 1], [420, 390])
-				else: battle.close()
-				game._place_duel_menu(fighting)
-				await frames(20)
-				var rect := exit.get_global_rect()
-				check(root.get_visible_rect().encloses(rect), "tournament exit stays in viewport")
-				var obstacles: Array = [hud._help_btn, hud._tempo, hud._phase_label, hud._final_tag]
-				obstacles.append_array(battle._plates if fighting else hud._plates)
-				if not fighting: obstacles.append(hud._log_box)
-				for control: Control in obstacles:
-					if control.is_visible_in_tree():
-						check(not rect.intersects(control.get_global_rect()), "tournament exit avoids " + str(control.name) + " style=" + str(style) + " battle=" + str(fighting) + " exit=" + str(rect) + " obstacle=" + str(control.get_global_rect()))
-				if DisplayServer.get_name() != "headless":
-					await RenderingServer.frame_post_draw
-					root.get_texture().get_image().save_png(out.path_join("exit-%s-%s-%s.png" % [style, dimensions.x, fighting]))
+	for dimensions in [Vector2i(960, 540), Vector2i(1280, 720)]:
+		root.size = dimensions
+		root.content_scale_size = dimensions
+		for fighting in [false, true]:
+			hud.set_battle_mode(fighting)
+			if fighting: battle.open(["Атакующий", "Защитник"], [0, 1], [420, 390])
+			else: battle.close()
+			game._place_duel_menu(fighting)
+			await frames(20)
+			var rect := exit.get_global_rect()
+			check(root.get_visible_rect().encloses(rect), "tournament exit stays in viewport")
+			var obstacles: Array = [hud._help_btn, hud._tempo, hud._phase_label]
+			obstacles.append_array(battle._plates if fighting else hud._plates)
+			if not fighting: obstacles.append(hud._log_box)
+			for control: Control in obstacles:
+				if control.is_visible_in_tree():
+					check(not rect.intersects(control.get_global_rect()), "tournament exit avoids " + str(control.name) + " battle=" + str(fighting) + " exit=" + str(rect) + " obstacle=" + str(control.get_global_rect()))
+			if DisplayServer.get_name() != "headless":
+				await RenderingServer.frame_post_draw
+				root.get_texture().get_image().save_png(out.path_join("exit-%s-%s.png" % [dimensions.x, fighting]))
 	# Keyboard disclosure stays owned by focus only while using the keyboard.
 	var card := CardView.new().for_card(CardDB.card(&"ability_fire_drain"))
 	card.position = Vector2(400, 330)

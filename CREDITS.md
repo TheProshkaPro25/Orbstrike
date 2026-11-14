@@ -9,13 +9,29 @@
 - Vefects — Trails VFX 1.0.3, Vefects Free EULA, локальный визуальный референс в стенде. [Карточка пакета](https://store.godotengine.org/asset/vefects/trails-vfx/).
 - Kenney Vleugels — Particle Pack 1.1, CC0. [Карточка пакета](https://kenney.nl/assets/particle-pack).
 
+В стихийных атаках используются текстуры огня, дыма и искр Elemental
+Impact, разряд, блик и дым Kenney, шум и форма мерцания REEBOO и профиль
+мягкого луча и приём многослойной пены Effects Lab.
+[Шейдер](scenes/shaders/creature_element_fx.gdshader).
+
 [Версии, хэши архивов и файлы лицензий](assets/vfx_vendor/sources.json).
+
+## Музыка арен и этапов
+
+- `secret_sanctum.ogg` — Viktor Kraus, Secret Sanctum. Тема Янтарного каньона.
+- `stone_fortress.ogg` — Stone Fortress. Тема полуфинала. Автор записи не указан.
+
+Записи предоставил автор проекта. Он подтвердил открытый источник и
+возможность включения в выпуск 0.4.5. Точные условия лицензий в проекте
+не указаны. Файлы подготовлены в OGG Vorbis с плавной петлёй и
+громкостью около −23 LUFS.
 
 ## Звуковые эффекты
 
 Все звуки собраны скриптом `tools/audio/build_sfx.py` из записанных паков ниже (обработка: обрезка, сдвиг высоты,
 фильтры, реверберация, слоение, нормализация громкости, OGG Vorbis). Часть звуков содержит синтезированные слои
-(`tools/audio/gen_sfx.py`, собственная разработка проекта). Музыка — отдельно (делается автором игры).
+(`tools/audio/gen_sfx.py`, собственная разработка проекта). Звуки попадания
+`impact_*.ogg` собирает `tools/audio/build_strike_sfx.py` из исходников ниже.
 
 ### Паки-источники
 
@@ -74,6 +90,12 @@ CC0 — авторство не обязательно, указано из ув
 | assets/audio/sfx/ability_stone.ogg | 75 CC0 breaking / falling / hit sfx / bfh1_rock_breaking_02.ogg; 75 CC0 breaking / falling / hit sfx / bfh1_rock_falling_01.ogg | rubberduck | CC0 | да |
 | assets/audio/sfx/ability_shadow.ogg | RPG Sound Pack / shade12.wav; Fantasy Sound Effects Library / Spell_00.wav | artisticdude, Little Robot Sound Factory | CC0, CC-BY 3.0 | — |
 | assets/audio/sfx/ability_tide.ogg | 100 CC0 SFX / splash_01.ogg; RPG Sound Pack / bubble3.wav; Magic SFX Sample / Ice attack 2.wav | rubberduck, artisticdude, ViRiX | CC0, CC-BY 3.0 | — |
+| assets/audio/sfx/impact_fire.ogg | Magic SFX Preview Pack / Fire impact 1.wav, предоставлен автором проекта | ViRiX (David McKee) | CC-BY 3.0 | да |
+| assets/audio/sfx/impact_gale.ogg | Обрезка и обработка `ability_gale.ogg` | ViRiX, rubberduck | CC-BY 3.0, CC0 | да |
+| assets/audio/sfx/impact_light.ogg | `SFX/Misc/1/1/1.wav`, предоставлен автором проекта | Не указан | Открытый источник по подтверждению автора проекта, точные условия не указаны | да |
+| assets/audio/sfx/impact_stone.ogg | Обрезка и обработка `ability_stone.ogg`, `ball_bounce_1.ogg` и `ball_bounce_2.ogg` | rubberduck | CC0 | да |
+| assets/audio/sfx/impact_shadow.ogg | Обрезка и обработка `ability_shadow.ogg` | artisticdude, Little Robot Sound Factory | CC0, CC-BY 3.0 | да |
+| assets/audio/sfx/impact_tide.ogg | Обрезка и обработка `ability_tide.ogg` | rubberduck, artisticdude, ViRiX | CC0, CC-BY 3.0 | да |
 | assets/audio/creatures/dragnar_fire_appear.ogg | Fantasy Sound Effects Library / Dragon_Growl_00.wav; Magic SFX Sample / Fire impact 1.wav | Little Robot Sound Factory, ViRiX | CC-BY 3.0 | да |
 | assets/audio/creatures/dragnar_fire_attack.ogg | 80 CC0 creature SFX / roar_03.ogg; Magic SFX Sample / Fire impact 1.wav | rubberduck, ViRiX | CC0, CC-BY 3.0 | да |
 | assets/audio/creatures/dragnar_gale_appear.ogg | Fantasy Sound Effects Library / Dragon_Growl_01.wav; 100 CC0 SFX #2 / sfx100v2_air_01.ogg | Little Robot Sound Factory, rubberduck | CC-BY 3.0, CC0 | да |
@@ -361,6 +383,11 @@ https://creativecommons.org/publicdomain/zero/1.0/ . Авторство не о�
 Происхождение, генератор и перечень входов: `assets/avatars/sport/README.md`.
 Миниатюры — рендеры этих же игровых ресурсов, `assets/avatars/editor/`.
 
+
+### Сигнал боевых уведомлений — 14 ноября 2026
+
+`assets/audio/sfx/ui_battle_popup.ogg` — приложенный автором игры файл
+`life_pickup.flac`, перекодированный в Ogg Vorbis.
 
 ### Короткие сигналы наручного прибора — 6 ноября2026
 

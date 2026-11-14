@@ -4,7 +4,7 @@ extends RefCounted
 ## Набор карт — DESIGN.md «Карты по мотивам аниме (2026-10-28)».
 
 ## Эффекты, которые «Отпечаток в камне» не повторяет (отмена, тишина, сама копия, перемещения).
-const NO_COPY_EFFECTS: Array[String] = ["negate", "silence", "copy", "ebb", "swap_fighter", "shift_gate", "gale_call", "light_reserve"]
+const NO_COPY_EFFECTS: Array[String] = ["negate", "silence", "copy", "ebb", "swap_fighter", "shift_gate", "gale_call", "light_reserve", "tentacle_grab"]
 
 ## Срезы действуют каждый в свой момент: между ними учитываются все действующие карты по времени.
 const CEILING_EFFECTS: Array[String] = ["reset_base", "cap_own_base", "siphon", "strip"]
@@ -84,7 +84,7 @@ static func is_counter_card(card: CardDef) -> bool:
 
 ## Можно ли повторить карту «Отпечатком в камне».
 static func copyable(card: CardDef) -> bool:
-	return card != null and not is_fusion(card) and not NO_COPY_EFFECTS.has(String(card.effect_id))
+	return card != null and not is_fusion(card) and not bool(card.params.get("elemental_set", false)) and not NO_COPY_EFFECTS.has(String(card.effect_id))
 
 
 ## Условие усиления boost (params.cond): ctx — {attack:bool, own_gate:bool, my_base, foe_base, foe_beats, dead_own, alive_own,
@@ -123,7 +123,8 @@ static func ability_delta(card: CardDef, ctx: Dictionary) -> Vector2i:
 	match String(card.effect_id):
 		"boost":
 			return Vector2i(amount, 0) if boost_cond_ok(card, ctx) else Vector2i.ZERO
-		"boost_fix", "revive", "purge_gate", "silence", "aloft", "recall", "nullify_gate", "copy", "gust", "swap_fighter", "shift_gate", "gale_call":
+		"boost_fix", "revive", "purge_gate", "silence", "aloft", "recall", "nullify_gate", "copy", "gust", "swap_fighter", "shift_gate", "gale_call", \
+		"fire_afterburn", "gale_breakaway", "light_refraction", "stone_bastion", "shadow_tribute", "tide_stored_wave":
 			return Vector2i(amount, 0)
 		"drain", "radiance", "pact":
 			return Vector2i(amount, -amount)

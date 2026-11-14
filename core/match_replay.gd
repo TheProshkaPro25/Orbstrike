@@ -6,10 +6,20 @@ const ALLOWED := ["start", "place_arena_card", "skip_gate", "throw_with_gate", "
 static func restore(data: Dictionary) -> Dictionary:
 	if data.get("version", 0) != 1 or data.get("decks", []).size() != 2:
 		return {"error": "Некорректная запись матча"}
+	var elemental_cards: Variant = data.get("elemental_cards", false)
+	if not elemental_cards is bool:
+		return {"error": "Некорректный набор карт матча"}
+	var stored_pool: Variant = data.get("card_pool", int(elemental_cards))
+	if typeof(stored_pool) not in [TYPE_INT, TYPE_FLOAT] or not is_finite(float(stored_pool)) or float(stored_pool) != floorf(float(stored_pool)) or stored_pool < CardDB.Pool.BASE or stored_pool > CardDB.Pool.SPECIES:
+		return {"error": "Некорректный набор карт матча"}
 	var decks: Array[DeckDef] = []
 	for row in data.decks:
+		for id in row[1] + row[2]:
+			var card := CardDB.card(StringName(id))
+			if card == null or (card.params.get("local_species_set", false) and (int(stored_pool) != CardDB.Pool.SPECIES or int(data.ruleset) != MatchRules.Ruleset.ANIME_INSPIRED)):
+				return {"error": "Карта недоступна для набора карт матча"}
 		decks.append(CardDB.build_deck(row[0], row[1], row[2]))
-	var ctrl := MatchController.new(decks[0], decks[1], int(data.seed), int(data.ruleset))
+	var ctrl := MatchController.new(decks[0], decks[1], int(data.seed), int(data.ruleset), int(stored_pool))
 	ctrl.landing_window = bool(data.landing_window)
 	ctrl.state.manual_gates = bool(data.get("manual_gates", false))
 	var power_snapshots: Variant = data.get("power_snapshots", [])

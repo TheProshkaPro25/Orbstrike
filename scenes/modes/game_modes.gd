@@ -49,7 +49,6 @@ func configure(team: TeamMenu, hud: HudUI, interface: CanvasLayer, random: Rando
 	_team.deck_chosen.connect(submit_deck)
 	_team.location_previewed.connect(func(index: int) -> void: arena_selection_requested.emit(index,true))
 	_hud.battle_mode_changed.connect(place_exit)
-	DeviceSettings.events().changed.connect(func(_style: int) -> void: place_exit(_hud._battle))
 
 func mode_name() -> String:
 	if career != null: return "career"
@@ -120,11 +119,12 @@ func choose_decks() -> Array[DeckDef]:
 	if mine == null:
 		push_warning("Недопустимая команда, берётся пресет")
 		mine = CardDB.preset_deck(0)
-	return [mine,CardDB.opponent_deck(_rng)]
+	return [mine,CardDB.opponent_deck(_rng, CardDB.Pool.SPECIES)]
 
 func prepare_match_spec() -> MatchSpec:
 	var spec := MatchSpec.new()
 	spec.mode = mode_name()
+	spec.card_pool = CardDB.Pool.SPECIES if tournament == null else tournament.card_pool()
 	spec.decks = choose_decks()
 	spec.fixture = fixture.duplicate(true)
 	spec.seed = int(fixture.seed) if not fixture.is_empty() else int(_rng.randi())
@@ -228,10 +228,10 @@ func register_tournament(creatures: Array[StringName], gates: Array[StringName],
 		profile.load_from()
 		var seed_value := int(_rng.randi()) & 0x7fffffff
 		if campaign_registration:
-			campaign = Campaign.create(CardDB.build_deck(creatures,gates,abilities),TeamMenu.difficulty,seed_value,profile.value.name)
+			campaign = Campaign.create(CardDB.build_deck(creatures,gates,abilities),TeamMenu.difficulty,seed_value,profile.value.name,Campaign.SAVE_PATH,CardDB.Pool.SPECIES)
 			tournament = campaign.cup if campaign != null else null
 		else:
-			tournament = Tournament.create(CardDB.build_deck(creatures,gates,abilities),TeamMenu.difficulty,seed_value,profile.value.name)
+			tournament = Tournament.create(CardDB.build_deck(creatures,gates,abilities),TeamMenu.difficulty,seed_value,profile.value.name,Tournament.SAVE_PATH,CardDB.Pool.SPECIES)
 		if tournament == null: _team._error.text = "Не удалось сохранить: " + creation_error()
 		else:
 			registration = false
@@ -347,17 +347,11 @@ func make_exit_button() -> Button:
 	place_exit(_hud._battle,button)
 	return button
 
-func place_exit(battle: bool, target: Button = null) -> void:
+func place_exit(_battle: bool, target: Button = null) -> void:
 	var buttons: Array = [target] if target != null else [duel_button,exit_button]
 	for button: Button in buttons:
 		if not is_instance_valid(button): continue
-		if DeviceSettings.is_device():
-			VisualUtil.place(button, 0.0, 0.0, 14.0, 97.0)
-		elif battle:
-			# Accepted shared HUD toolbar slot, clear of the battle phase and panels.
-			VisualUtil.place(button,0.5,0.0,0.0,4.0)
-		else:
-			VisualUtil.place(button,1.0,0.0,-16.0,164.0)
+		VisualUtil.place(button, 0.0, 0.0, 14.0, 97.0)
 
 func _clear_exit() -> void:
 	if is_instance_valid(exit_button): exit_button.queue_free()
@@ -500,7 +494,7 @@ func create_career(element: int, difficulty: int) -> void:
 
 func register_career(creatures: Array[StringName], gates: Array[StringName], abilities: Array[StringName], levels: Dictionary) -> void:
 	if career == null: return
-	if career.start_cup(CardDB.build_deck(creatures,gates,abilities),levels) != OK:
+	if career.start_cup(CardDB.build_deck(creatures,gates,abilities),levels,CardDB.Pool.SPECIES) != OK:
 		career_panel.show_error(career.last_error)
 		return
 	tournament = career.cup

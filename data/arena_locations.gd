@@ -1,6 +1,9 @@
 class_name ArenaLocations
 extends RefCounted
 ## Локации меняют окружение, но не правила, размеры и позиции ворот.
+const HARBOR_MOON := Vector3(-350, 89, -114)
+const CANYON := 1
+
 const LOCATIONS := [
 	{"name": "Святилище стихий", "description": "Закрытый храмовый зал: ребристый купол, высокие витражи и шесть священных реликвий.",
 		"stone": Color(0.065, 0.09, 0.105), "far": Color(0.045, 0.065, 0.078), "trim": Color(0.40, 0.28, 0.12),

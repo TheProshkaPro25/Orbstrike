@@ -82,19 +82,6 @@ func _build() -> void:
 	fps.item_selected.connect(func(i: int) -> void: GraphicsSettings.set_fps(GraphicsSettings.FPS_OPTIONS[i]))
 	_row(grid, "Лимит кадров", fps)
 
-	var style := OptionButton.new()
-	for title in DeviceSettings.NAMES:
-		style.add_item(title)
-	style.select(DeviceSettings.current())
-	style.item_selected.connect(func(value: int) -> void:
-		var error := DeviceSettings.set_style(value)
-		if error != OK:
-			style.select(DeviceSettings.current())
-			style.tooltip_text = "Не удалось сохранить настройку: " + error_string(error)
-		else:
-			style.tooltip_text = ""
-			SoundFx.i().play("ui_click", -4.0, 0.0))
-	_row(grid, "Интерфейс", style)
 	var reduced_motion := CheckButton.new()
 	reduced_motion.text = "Уменьшить"
 	reduced_motion.name = "ReduceInterfaceMotion"
@@ -112,12 +99,6 @@ func _build() -> void:
 	muted.button_pressed = AudioSettings.interface_muted
 	muted.toggled.connect(AudioSettings.set_interface_muted)
 	_row(grid, "Тихий интерфейс", muted)
-
-	var note := VisualUtil.label("Стиль применяется сразу, включая команду и бой. Громкость интерфейса настраивается отдельно.", 14)
-	note.add_theme_color_override("font_color", UiTheme.TEXT_DIM)
-	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	note.custom_minimum_size = Vector2(500, 0)
-	vb.add_child(note)
 
 	var done := Button.new()
 	done.text = "Готово"

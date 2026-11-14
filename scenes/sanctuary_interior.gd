@@ -1,9 +1,10 @@
 extends RefCounted
 ## Закрытая ротонда: архитектура построена вокруг свободного игрового круга.
-const RADIUS := 106.0
+const Windows := preload("res://scenes/sanctuary_window_light.gd")
+const RADIUS := Windows.WALL_RADIUS
 const WALL_TOP := 65.0
 const CROWN := 108.0
-const BAYS := 24
+const BAYS := Windows.BAYS
 const Icon := preload("res://scenes/element_icon.gd")
 
 static func build(arena: Node3D) -> void:
@@ -12,7 +13,7 @@ static func build(arena: Node3D) -> void:
 	var ivory := _material(Color(.45, .47, .41), .7)
 	var bronze := _material(Color(.49, .31, .105), .38, .48)
 	var dark_gold := _material(Color(.16, .105, .05), .5, .65)
-	var light: Material = arena._glow_mat(Color(.65, .79, .9), .6)
+	var light: Material = arena._glow_mat(Color(.86, .59, .32), .65)
 	var box := BoxMesh.new()
 	var shaft := CylinderMesh.new()
 	shaft.top_radius = 1.0
@@ -24,28 +25,32 @@ static func build(arena: Node3D) -> void:
 	rod.bottom_radius = 1
 	rod.height = 1
 	rod.radial_segments = 8
-	var aperture := _arch(14, 27, 8)
+	var aperture := _arch(Windows.WINDOW_WIDTH, Windows.WINDOW_STEM, Windows.WINDOW_RISE)
 	var backing := _arch(18, 27, 10)
+	var bay_width := 2 * RADIUS * tan(PI / BAYS) + .2
+	var window_wall := _window_wall(bay_width)
 	# Сплошная оболочка стен. Все ниши и проёмы закрыты стеклом или дверью.
 	for i in BAYS:
 		var angle := TAU * i / BAYS
 		var center := Vector3(cos(angle) * RADIUS, 0, sin(angle) * RADIUS)
 		var yaw := -angle - PI * .5
-		var width := 2 * RADIUS * tan(PI / BAYS) + .2
-		_piece(arena, box, stone, center, yaw, Vector3(0, WALL_TOP * .5, -2), Vector3(width, WALL_TOP, 4))
+		if i in Windows.ACTIVE_BAYS:
+			_piece(arena, window_wall, stone, center, yaw, Vector3.ZERO, Vector3.ONE)
+		else:
+			_piece(arena, box, stone, center, yaw, Vector3(0, WALL_TOP * .5, -2), Vector3(bay_width, WALL_TOP, 4))
 		var wall := StaticBody3D.new()
 		wall.position = center
 		wall.rotation.y = yaw
 		var shape := CollisionShape3D.new()
 		var bounds := BoxShape3D.new()
-		bounds.size = Vector3(width, WALL_TOP, 4)
+		bounds.size = Vector3(bay_width, WALL_TOP, 4)
 		shape.shape = bounds
 		shape.position = Vector3(0, WALL_TOP * .5, -2)
 		wall.add_child(shape)
 		arena._decor.add_child(wall)
 		for molding in [[2.0, 3.8, 3.2], [9.0, 1.0, 1.4], [59.0, 2.0, 2.8], [63.0, 4.0, 6.0]]:
 			_piece(arena, box, ivory if molding[0] < 4 else bronze, center, yaw,
-				Vector3(0, molding[0], .4), Vector3(width + .4, molding[1], molding[2]))
+				Vector3(0, molding[0], .4), Vector3(bay_width + .4, molding[1], molding[2]))
 		# Неглубокие нижние кессоны вместо пустой стены.
 		_piece(arena, box, recess, center, yaw, Vector3(0, 9, .2), Vector3(19, 10, .6))
 		for x in [-9.7, 9.7]:
@@ -58,7 +63,8 @@ static func build(arena: Node3D) -> void:
 			_piece(arena, backing, recess, center, yaw, Vector3(0, 18, .3), Vector3.ONE)
 			var color := Color(.32, .51, .64)
 			if i % 4 == 0: color = VisualUtil.attr_color(i / 4).lerp(Color(.7, .8, .85), .25)
-			_piece(arena, aperture, _glass(color), center, yaw, Vector3(0, 19, .55), Vector3.ONE)
+			_piece(arena, aperture, _glass(color, i in Windows.ACTIVE_BAYS), center, yaw,
+					Vector3(0, Windows.WINDOW_BASE, Windows.GLASS_INSET), Vector3.ONE)
 			_arch_trim(arena, center, yaw, rod, bronze, 15, 27, 8.7, 18.5)
 			# Высокие каменные импосты, тонкие металлические переплёты.
 			for x in [-3.7, 0.0, 3.7]:
@@ -76,9 +82,14 @@ static func build(arena: Node3D) -> void:
 		# Парные светильники, встроенные в архитектуру, а не висящие таблички.
 		for x in [-10.5, 10.5]:
 			_piece(arena, box, bronze, center, yaw, Vector3(x, 16, 1.5), Vector3(1.2, 4.2, 1.3))
-			_piece(arena, box, light, center, yaw, Vector3(x, 16.4, 2.2), Vector3(.48, 2.2, .2))
+			var sconce := Vector3(x, 16.4, 2.2)
+			_piece(arena, box, light, center, yaw, sconce, Vector3(.48, 2.2, .2))
+			if i in [4, 8, 12, 16, 20] and x < 0:
+				var frame := Basis(Vector3.UP, yaw)
+				_spot(arena, "WallSconce%d" % i, center + frame * (sconce + Vector3.BACK * .26),
+						center + frame * Vector3(x - 2.1, 3.2, 7.1), Color(1.0, .67, .37), 16.0, 31.0, 45.0)
 	# Замкнутый свод, ребра и пояса: камера всегда находится под его поверхностью.
-	var vault_mat := _material(Color(.045, .08, .125), .86)
+	var vault_mat := _material(Color(.070, .088, .121), .81)
 	vault_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 	arena._mi(_vault(), vault_mat, Vector3.ZERO)
 	for i in BAYS:
@@ -114,24 +125,22 @@ static func build(arena: Node3D) -> void:
 		var angle := TAU * i / 12.0
 		var p := Vector3(cos(angle) * 15, 58, sin(angle) * 15)
 		_beam(arena, rod, bronze, p, Vector3(p.x * .45, 103, p.z * .45), .10)
-		arena._static(box, light, p - Vector3.UP * 1.0, Vector3(.4, 1.6, .4), Vector3.ZERO)
+		var candle := p - Vector3.UP
+		arena._static(box, light, candle, Vector3(.4, 1.6, .4), Vector3.ZERO)
+		# North-facing candles graze the curved ribs, two outer candles wash the walkways.
+		if i in [7, 10]:
+			var radial := Vector3(cos(angle), 0, sin(angle))
+			_spot(arena, "CrownUplight%d" % i, candle + radial * .25,
+					radial * 50 + Vector3.UP * 98, Color(1.0,.68,.41), 53.0, 80.0, 38.0)
+		if i in [0, 1, 11]:
+			var downlight := _spot(arena, "CrownDownlight%d" % i, candle - Vector3.UP * .8,
+					Vector3(p.x * .29 - 7.0, 5, p.z * 2.0), Color(1.0,.89,.76), 115.0 if i == 0 else 52.0, 103.0, 29.0)
+			downlight.set_meta("essential_fixture", i == 0)
 	# Шесть настенных святилищ: символы вписаны в камень и металлическую оправу.
 	for el in 6:
 		_shrine(arena, el, box, shaft, rod, ivory, bronze, recess)
 	for radius in [52.0, 55.0, 79.0, 96.0]:
 		_ring(arena, bronze, radius, .025, .10)
-	# Отражённый свет большого зала, без отдельных теневых карт на каждом алтаре.
-	for i in 6:
-		var angle := TAU * i / 6.0
-		var lamp := OmniLight3D.new()
-		lamp.position = Vector3(cos(angle) * 69, 30, sin(angle) * 69)
-		lamp.light_color = Color(.6, .73, .85).lerp(VisualUtil.attr_color(i), .13)
-		lamp.light_energy = .85
-		lamp.omni_range = 58
-		lamp.omni_attenuation = 1.1
-		lamp.shadow_enabled = false
-		arena._decor.add_child(lamp)
-		arena._crystal_lights.append(lamp)
 	_lighting(arena)
 	arena._decor.set_meta("closed_sanctuary", true)
 	arena._decor.set_meta("interior_radius", RADIUS)
@@ -174,6 +183,43 @@ static func _arch(width: float, stem: float, rise: float) -> ArrayMesh:
 			st.set_uv(Vector2(v.x / width + .5, v.y / (stem + rise)))
 			st.add_vertex(Vector3(v.x, v.y, 0))
 	return st.commit()
+
+static func _window_wall(width: float) -> ArrayMesh:
+	# The visible face and reveal follow the window profile. The physical bay
+	# stays a closed wall, and the glass/backing still close the view outside.
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var edge := width * .5
+	var half_glass := Windows.WINDOW_WIDTH * .5
+	var base := Windows.WINDOW_BASE
+	var spring := base + Windows.WINDOW_STEM
+	_wall_quad(st, Vector3(-edge, 0, 0), Vector3(edge, 0, 0),
+			Vector3(edge, base, 0), Vector3(-edge, base, 0), Vector3.BACK)
+	for side in [-1.0, 1.0]:
+		_wall_quad(st, Vector3(side * half_glass, base, 0), Vector3(side * edge, base, 0),
+				Vector3(side * edge, WALL_TOP, 0), Vector3(side * half_glass, WALL_TOP, 0), Vector3.BACK)
+		_wall_quad(st, Vector3(side * half_glass, base, -1), Vector3(side * half_glass, base, 0),
+				Vector3(side * half_glass, spring, 0), Vector3(side * half_glass, spring, -1), Vector3.LEFT * side)
+	_wall_quad(st, Vector3(-half_glass, base, -1), Vector3(half_glass, base, -1),
+			Vector3(half_glass, base, 0), Vector3(-half_glass, base, 0), Vector3.UP)
+	for i in 24:
+		var a := PI * i / 24.0
+		var b := PI * (i + 1) / 24.0
+		var p := Vector3(cos(a) * half_glass, spring + sin(a) * Windows.WINDOW_RISE, 0)
+		var q := Vector3(cos(b) * half_glass, spring + sin(b) * Windows.WINDOW_RISE, 0)
+		_wall_quad(st, p, q, Vector3(q.x, WALL_TOP, 0), Vector3(p.x, WALL_TOP, 0), Vector3.BACK)
+		var toward_opening := Vector3(-cos((a + b) * .5), -sin((a + b) * .5), 0)
+		_wall_quad(st, p, q, q + Vector3.FORWARD, p + Vector3.FORWARD, toward_opening)
+	return st.commit()
+
+
+static func _wall_quad(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3, normal: Vector3) -> void:
+	# SurfaceTool vertices are clockwise on Godot's front face.
+	var faces := [a, c, b, a, d, c] if (b - a).cross(c - a).dot(normal) > 0 else [a, b, c, a, c, d]
+	for point in faces:
+		st.set_normal(normal)
+		st.add_vertex(point)
+
 
 static func _arch_trim(arena: Node3D, center: Vector3, yaw: float, rod: Mesh, mat: Material, width: float, stem: float, rise: float, base: float) -> void:
 	var basis := Basis(Vector3.UP, yaw)
@@ -238,13 +284,24 @@ static func _shrine(arena: Node3D, el: int, box: Mesh, shaft: Mesh, rod: Mesh, s
 	gem.radial_segments = 6
 	gem.rings = 2
 	_piece(arena, gem, glow, center, yaw, Vector3(0, 9.7, 1), Vector3.ONE)
+	var halo := OmniLight3D.new()
+	halo.name = "RelicLight%d" % el
+	halo.position = center + Basis(Vector3.UP, yaw) * Vector3(0, 9.7, 2.05)
+	halo.light_color = color.lerp(Color(1.0,.91,.75), .30)
+	halo.light_energy = 4.8
+	halo.omni_range = 16.5
+	halo.omni_attenuation = 1.45
+	halo.light_volumetric_fog_energy = 0.0
+	arena._decor.add_child(halo)
+	arena._sanctuary_lights.append(halo)
 	for x in [-1.7, 1.7]:
 		_piece(arena, shaft, gold, center, yaw, Vector3(x, 8.6, 1), Vector3(.16, 3.6, .16))
 
-static func _glass(color: Color) -> ShaderMaterial:
+static func _glass(color: Color, direct: bool) -> ShaderMaterial:
 	var material := ShaderMaterial.new()
 	material.shader = GLASS_SHADER
 	material.set_shader_parameter("tint", color)
+	material.set_shader_parameter("transmission", .68 if direct else .22)
 	return material
 
 static var GLASS_SHADER: Shader = _glass_shader()
@@ -254,6 +311,7 @@ static func _glass_shader() -> Shader:
 shader_type spatial;
 render_mode unshaded, cull_disabled;
 uniform vec4 tint : source_color;
+uniform float transmission = .40;
 void fragment() {
 	vec2 p = UV * vec2(5.0, 11.0);
 	vec2 cell = abs(fract(vec2(p.x + p.y * .5, p.x - p.y * .5)) - .5);
@@ -265,8 +323,8 @@ void fragment() {
 	float rose_mask = 1.0 - smoothstep(.21,.23,r);
 	vec3 stained = mix(tint.rgb * .5, tint.rgb * 1.25, .5 + .5 * sin(p.y * 1.7 + p.x * 1.2));
 	stained = mix(stained, tint.rgb * 1.3 * petals, rose_mask);
-	ALBEDO = mix(vec3(.018,.027,.035), stained, lead) * .55;
-	EMISSION = stained * lead * .48;
+	ALBEDO = mix(vec3(.018,.027,.035), stained, lead) * (.26 + transmission * .58);
+	EMISSION = stained * lead * transmission;
 }
 """
 	return shader
@@ -287,37 +345,27 @@ static func _rosette() -> ArrayMesh:
 
 
 static func _lighting(arena: Node3D) -> void:
-	preload("res://scenes/sanctuary_window_light.gd").build(arena)
-	var moon := SpotLight3D.new()
-	arena._decor.add_child(moon)
-	moon.position = Vector3(0,98,0)
-	moon.look_at(Vector3.ZERO, Vector3.FORWARD)
-	moon.light_color = Color(.7,.82,1)
-	moon.light_energy = 48
-	moon.spot_angle = 31
-	moon.spot_range = 155
-	moon.spot_attenuation = 1.3
-	moon.set_meta("moon_shadow", true)
-	arena._sanctuary_lights.append(moon)
-	# Тёплые пулы на камне отделены от холодного света поля.
-	for el in 6:
-		var a := TAU * el / 6.0
-		var fire := OmniLight3D.new()
-		fire.position = Vector3(cos(a) * 86, 12, sin(a) * 86)
-		fire.light_color = Color(1.0,.58,.24)
-		fire.light_energy = 8.0
-		fire.omni_range = 24
-		fire.omni_attenuation = 1.15
-		fire.light_volumetric_fog_energy = .25
-		arena._decor.add_child(fire)
-		arena._sanctuary_lights.append(fire)
-	# Малый заполняющий свет венца не бросает тень на игровое поле.
-	var chandelier := OmniLight3D.new()
-	chandelier.position = Vector3(0,54,0)
-	chandelier.light_color = Color(1.0,.78,.48)
-	chandelier.light_energy = 1.8
-	chandelier.omni_range = 64
-	chandelier.light_volumetric_fog_energy = .15
-	arena._decor.add_child(chandelier)
-	arena._sanctuary_lights.append(chandelier)
+	Windows.build(arena)
+	var ceiling := _spot(arena, "OculusLight", Vector3(0, 103.8, 0), Vector3(9, 0, 10),
+			Color(.77,.85,1.0), 67.0, 170.0, 30.0)
+	ceiling.set_meta("moon_shadow", true)
+
+static func _spot(arena: Node3D, label: String, origin: Vector3, target: Vector3,
+		color: Color, energy: float, distance: float, spread: float) -> SpotLight3D:
+	var lamp := SpotLight3D.new()
+	lamp.name = label
+	arena._decor.add_child(lamp)
+	lamp.position = origin
+	lamp.look_at(target)
+	lamp.light_color = color
+	lamp.light_energy = energy
+	lamp.light_specular = .45
+	lamp.spot_range = distance
+	lamp.spot_angle = spread
+	lamp.spot_angle_attenuation = 1.25
+	lamp.spot_attenuation = 1.05
+	lamp.light_volumetric_fog_energy = 0.0
+	lamp.set_meta("light_target", target)
+	arena._sanctuary_lights.append(lamp)
+	return lamp
 

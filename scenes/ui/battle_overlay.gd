@@ -136,6 +136,8 @@ func show_result(r: BattleResult, names: Dictionary = {}) -> Signal:
 
 	_dim.visible = true
 	_panel.visible = true
+	if _panel.is_visible_in_tree():
+		SoundFx.i().play_battle_popup()
 	_panel.call_deferred("reset_size")
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_open = true
@@ -167,6 +169,14 @@ func _outcome_lines(r: BattleResult) -> PackedStringArray:
 		out.append("Выбывают оба бойца, ворота сгорают")
 	if r.winner_stays:
 		out.append("Удержание: победитель остаётся на воротах")
+	if r.sluice_slot >= 0:
+		out.append("Приливной шлюз переместил победителя на свободные свои ворота")
+	elif r.tentacle_slot >= 0:
+		out.append("Захват щупальцем переместил Окто на ворота %d" % (r.tentacle_slot + 1))
+	elif r.breakaway:
+		out.append("Отрыв: победитель сразу готов к броску")
+	if r.tribute_card != &"":
+		out.append("Дань сумраку: «%s» отдыхает на один бой дольше" % _card_name(r.tribute_card))
 	for side in range(2):
 		if r.revive[side]:
 			out.append("Возрождение: выбывшее существо вернётся")

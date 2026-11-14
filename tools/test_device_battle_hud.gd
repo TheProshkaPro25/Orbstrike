@@ -17,11 +17,13 @@ const FIELD := &"arena_field_fire"
 const GALE_CALL := &"ability_gale_call"
 const GALE_SWAP := &"ability_gale_swap"
 const SIZES := [Vector2i(1280, 720), Vector2i(960, 540), Vector2i(1024, 768)]
+const POPUP_PATH := SoundFx.SFX_DIR + "ui_battle_popup"
 
 var game: Node
 var out: String
 var checks := 0
 var failures := 0
+var popup: AudioStream
 
 
 func _initialize() -> void:
@@ -36,8 +38,15 @@ func _run() -> void:
 	DirAccess.make_dir_recursive_absolute(out)
 	DeviceSettings.settings_path = out.path_join("isolated-settings.cfg")
 	DeviceSettings.reload_settings()
-	DeviceSettings.set_style(DeviceSettings.DEVICE)
 	DeviceSettings.set_reduce_motion(false)
+	AudioSettings.settings_path = DeviceSettings.settings_path
+	AudioSettings.load_and_apply()
+	AudioSettings.set_interface_muted(false)
+	AudioSettings.set_volume("Interface", 0.6)
+	var sound := SoundFx.i()
+	sound.preload_catalog()
+	popup = sound._cache.get(POPUP_PATH)
+	_check(popup is AudioStreamOggVorbis and popup.get_length() > .35 and popup.get_length() < .42, "short popup recording is cached at boot")
 	CardDB.load_all()
 	preload("res://data/arena_locations.gd").choose(1 if bright else 0)
 	_size(SIZES[0])
@@ -150,11 +159,14 @@ func _run() -> void:
 	var idle_gate: CardView = setup._card_buttons.values()[0]
 	await _click(idle_gate)
 	_check(not idle_gate.button_pressed and setup._selected == &"" and idle_gate._help[6].contains("выкладки"), "gate outside setup shows the reason without selecting")
+	AudioSettings.set_interface_muted(true)
 	await _click(ability._gate_btn)
 	if not await _until(func() -> bool: return battle._effect.visible, "queued gate effect becomes visible"):
 		await _finish()
 		return
 	_check(battle._effect_title.text == "Поле Пламени" and battle._effect_target.text.ends_with(str(slot + 1)), "gate event identifies public card and slot")
+	_check(not sound._last_play.has("ui_battle_popup"), "muted Interface skips the gate popup cue")
+	AudioSettings.set_interface_muted(false)
 	await _frames(4)
 	await _save("opened-gate")
 	await _key(KEY_ENTER)
@@ -178,6 +190,7 @@ func _run() -> void:
 		await _finish()
 		return
 	_check(battle._effect_title.text == "Пожирающий жар" and battle._effect_source.text.contains("Драгнар") and battle._effect_target.text.ends_with("Оба бойца"), "ability event identifies card, source and affected fighters")
+	_check_popup_sound("ability event")
 	var shown := ctrl.get_battle_preview()
 	_check(hud.own_panel._power.text == "%d" % shown.powers[1] and hud.opponent_panel._power.text == "%d" % shown.powers[0], "applied G matches calculation in the same frame under reduced motion")
 	_check(shown.powers[1] == after_gate.powers[1] + 100 and shown.powers[0] == after_gate.powers[0] - 100, "drain changes correct sides")
@@ -193,6 +206,7 @@ func _run() -> void:
 		await _finish()
 		return
 	_check(battle._effect_target.text.contains("Пожирающий жар"), "counter identifies the cancelled card")
+	_check_popup_sound("counter event")
 	await _key(KEY_ENTER)
 	if not await _until(func() -> bool: return ability._panel.visible and not game.events.is_busy(), "player gets another response after counter"):
 		await _finish()
@@ -204,10 +218,36 @@ func _run() -> void:
 	await _save("counter")
 	await _click(ability._pass_btn)
 	if await _until(func() -> bool: return game.battle_overlay._open, "two passes show the result", 900):
+		_check_popup_sound("battle result")
 		await _save("result")
 		await _key(KEY_ENTER)
 		await _until(func() -> bool: return not game.battle_overlay._open, "Enter confirms result")
+	await _test_popup_scope(hud)
 	await _finish()
+
+
+func _test_popup_scope(hud: HudUI) -> void:
+	var sound := SoundFx.i()
+	sound._last_play.erase("ui_battle_popup")
+	hud.flash("Промах")
+	hud.clear_flash()
+	_check(not sound._last_play.has("ui_battle_popup"), "turn messages do not use the battle popup cue")
+	var before := sound._next
+	hud.banner("БОЙ ПРЕРВАН", "Отлив", Color.WHITE, 0.05, true)
+	_check(sound._next == (before + 1) % SoundFx.POOL, "special-result banner plays exactly one cue")
+	_check_popup_sound("special-result banner")
+	sound._last_play.erase("ui_battle_popup")
+	AudioSettings.set_volume("Interface", 0.0)
+	hud.banner("ВОЗВРАЩЕНИЕ", "Существо снова в игре", Color.WHITE, 0.05, true)
+	_check(not sound._last_play.has("ui_battle_popup"), "zero Interface volume skips the popup cue")
+
+
+func _check_popup_sound(label: String) -> void:
+	var sound := SoundFx.i()
+	var player := sound._pool[posmod(sound._next - 1, SoundFx.POOL)]
+	var interface_bus := AudioServer.get_bus_index("Interface")
+	_check(player.stream != null and player.stream == popup and player.bus == "Interface" and is_equal_approx(player.pitch_scale, 1.0), "%s plays the cached popup cue through Interface" % label)
+	_check(is_equal_approx(AudioServer.get_bus_volume_db(interface_bus), SoundFx.SFX_DB + linear_to_db(.6)), "%s respects Interface volume" % label)
 
 
 func _test_target_and_swap(ctrl: MatchController, hud: HudUI, ability: AbilityPanel, battle: BattleHud, defender_uid: int) -> void:

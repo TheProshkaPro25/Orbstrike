@@ -45,7 +45,7 @@ func _ready() -> void:
 	CardDB.load_all()
 	ctrl = ViewAdapter.new()
 	_build_world()
-	_build_ui()
+	_build_ui(false, true)
 	_help_policy = HelpPolicy.new(presentation)
 	presentation.slot_help = _help_policy.slot_tip
 	presentation.creature_help = _help_policy.creature_tip
@@ -137,13 +137,10 @@ func _build_connection_ui() -> void:
 	_button(_connection_box, "В главное меню", _leave)
 	_leave_button = Button.new()
 	_leave_button.text = "Покинуть комнату"
-	_leave_button.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	_leave_button.offset_left = -232
-	_leave_button.offset_right = -16
-	_leave_button.offset_top = 88
-	_leave_button.offset_bottom = 122
+	_leave_button.custom_minimum_size = Vector2(160, 38)
 	_leave_button.pressed.connect(_leave)
 	ui_layer.add_child(_leave_button)
+	_place_leave_button(false)
 	_leave_button.hide()
 	_refresh_lobby()
 
@@ -199,9 +196,13 @@ func _choose_deck() -> void:
 	_connection_panel.hide()
 	team_menu.show()
 	team_menu.refresh_settings_labels()
+	_place_leave_button(false)
 	_leave_button.show()
 
 func _on_deck_chosen(creatures: Array[StringName], gates: Array[StringName], abilities: Array[StringName]) -> void:
+	if not creatures.all(CardDB.online_creature_available):
+		_status("В интернет-дуэли доступны только существа сетевого каталога.")
+		return
 	client.send({"t":"deck", "creatures":creatures, "gates":gates, "abilities":abilities})
 	team_menu.hide()
 	team_menu._preview.release()
@@ -239,6 +240,7 @@ func _apply_snapshot(data: Dictionary) -> void:
 	_connection_panel.hide()
 	team_menu.hide()
 	hud.show()
+	_place_leave_button(true)
 	_leave_button.show()
 	_hide_input()
 	var view := ctrl.state
@@ -325,7 +327,6 @@ func _apply_snapshot(data: Dictionary) -> void:
 	setup_panel.set_hand(view.players[local_side].arena_hand)
 	ability_panel.set_hand(view.players[local_side].ability_hand)
 	var preview := Codec.decode_battle(data.get("preview", {}), view)
-	_place_leave_button(preview != null)
 	if preview != null:
 		var key := "%d:%d:%d" % [view.turn,preview.attacker_uid,preview.defender_uid]
 		if _battle_key != key:
@@ -347,6 +348,8 @@ func _apply_snapshot(data: Dictionary) -> void:
 
 func _prepare_online_match() -> void:
 	team_menu._preview.release()
+	if arena.location_id == ArenaLocations.CANYON:
+		director.play_match_music()
 	game_over_ui.set_restart_text("Реванш")
 	_match_ready = true
 	_game_over = false
@@ -549,6 +552,10 @@ func _on_restart() -> void:
 
 func _return_to_lobby() -> void:
 	# Keep the arena resident, return only match actors before the next readiness cycle.
+	if is_instance_valid(director.effects): director.effects.clear()
+	SoundFx.i().cancel_match_sfx()
+	if is_instance_valid(arena) and arena.location_id == ArenaLocations.CANYON:
+		SoundFx.i().play_music(SoundFx.MUSIC_TEAM)
 	team_menu._preview.release()
 	interaction.gate_pick.clear()
 	interaction.clear_request()
@@ -581,6 +588,7 @@ func _return_to_lobby() -> void:
 	_game_over = false
 	snapshot = {}
 	hud.hide()
+	_place_leave_button(false)
 	setup_panel.set_dock_visible(false)
 	ability_panel.set_dock_visible(false)
 	_connection_panel.show()
@@ -617,6 +625,7 @@ func _disconnected(reason: String) -> void:
 func _leave() -> void:
 	client.send({"t":"leave"})
 	client.close()
+	SoundFx.i().cancel_match_sfx()
 	get_tree().change_scene_to_file("res://scenes/menu/main_menu.tscn")
 
 
@@ -627,8 +636,8 @@ func _creature_tip(uid: int, view: MatchState) -> Array:
 	return _help_policy.creature_tip(uid,view)
 
 
-func _place_leave_button(in_battle: bool) -> void:
-	_leave_button.offset_left = -232
-	_leave_button.offset_right = -66 if in_battle else -16
-	_leave_button.offset_top = 8 if in_battle else 88
-	_leave_button.offset_bottom = 42 if in_battle else 122
+func _place_leave_button(in_match: bool) -> void:
+	if in_match:
+		VisualUtil.place(_leave_button, 0.0, 0.0, 14.0, 97.0)
+	else:
+		VisualUtil.place(_leave_button, 1.0, 0.0, -16.0, 88.0)

@@ -2,7 +2,6 @@ class_name CreaturePortrait
 extends Control
 ## Точный 2D-концепт по ID; при его отсутствии — камера раскрытой резидентной фигуры.
 ## Нет копии модели, setup или своего мира.
-const DEVICE := preload("res://scenes/ui/device_settings.gd")
 const ART := preload("res://scenes/ui/card_artwork.gd")
 const ELEMENT_ICON := preload("res://scenes/element_icon.gd")
 const HUD_CROPS := preload("res://scenes/ui/creature_portrait_crops.gd")
@@ -68,6 +67,21 @@ const REFERENCE_TEXTURES := {
 	&"creature_gorgul_tide": preload("res://assets/portraits/creatures/gorgul_tide.png"),
 	&"creature_likorez_shadow": preload("res://assets/portraits/creatures/likorez_shadow.png"),
 }
+## Рендеры новых моделей уже содержат прозрачность.
+const RENDERED_TEXTURES := {
+	&"creature_floris_fire": preload("res://assets/portraits/creatures/floris_fire.png"),
+	&"creature_floris_gale": preload("res://assets/portraits/creatures/floris_gale.png"),
+	&"creature_floris_light": preload("res://assets/portraits/creatures/floris_light.png"),
+	&"creature_floris_stone": preload("res://assets/portraits/creatures/floris_stone.png"),
+	&"creature_floris_shadow": preload("res://assets/portraits/creatures/floris_shadow.png"),
+	&"creature_floris_tide": preload("res://assets/portraits/creatures/floris_tide.png"),
+	&"creature_octo_fire": preload("res://assets/portraits/creatures/octo_fire.png"),
+	&"creature_octo_gale": preload("res://assets/portraits/creatures/octo_gale.png"),
+	&"creature_octo_light": preload("res://assets/portraits/creatures/octo_light.png"),
+	&"creature_octo_stone": preload("res://assets/portraits/creatures/octo_stone.png"),
+	&"creature_octo_shadow": preload("res://assets/portraits/creatures/octo_shadow.png"),
+	&"creature_octo_tide": preload("res://assets/portraits/creatures/octo_tide.png"),
+}
 
 var _viewport: SubViewport
 var _camera: Camera3D
@@ -96,15 +110,14 @@ static var _battle_mask_style: StyleBoxFlat
 
 
 ## Explicit preparation is the only path that performs segmentation.
-## Texture getters/present/style/resize only reuse resources, never Nodes.
+## Texture getters/present/resize only reuse resources, never Nodes.
 static func preload_catalog() -> int:
 	for definition_id: StringName in REFERENCE_TEXTURES:
 		_prepare_reference(definition_id)
 	for definition_id: StringName in HUD_CROPS.REGIONS:
 		hud_reference_texture(definition_id)
 	for element in ELEMENT_BACKDROPS.size():
-		_background_material(element, false)
-		_background_material(element, true)
+		_background_material(element)
 	return REFERENCE_TEXTURES.size()
 
 
@@ -146,19 +159,17 @@ static func presentation_texture(definition_id: StringName, battle: bool = false
 	return _presentation_textures.get(definition_id, reference_texture(definition_id)) as Texture2D
 
 
-static func _background_material(element: int, device_style: bool) -> ShaderMaterial:
-	var key := "%d/%d" % [element, int(device_style)]
-	if _background_materials.has(key):
-		return _background_materials[key] as ShaderMaterial
+static func _background_material(element: int) -> ShaderMaterial:
+	if _background_materials.has(element):
+		return _background_materials[element] as ShaderMaterial
 	var material := ShaderMaterial.new()
 	material.shader = BACKDROP
 	material.set_shader_parameter("element_color", ELEMENT_BACKDROPS[clampi(element, 0, ELEMENT_BACKDROPS.size() - 1)])
-	material.set_shader_parameter("device_style", 1.0 if device_style else 0.0)
-	_background_materials[key] = material
+	_background_materials[element] = material
 	return material
 
 static func reference_texture(definition_id: StringName) -> Texture2D:
-	return REFERENCE_TEXTURES.get(definition_id) as Texture2D
+	return REFERENCE_TEXTURES.get(definition_id, RENDERED_TEXTURES.get(definition_id)) as Texture2D
 
 
 ## Only explicitly reviewed IDs crop; every other exact source remains full-body.
@@ -192,7 +203,6 @@ func set_battle_style(enabled: bool) -> void:
 
 
 func _enter_tree() -> void:
-	if not DEVICE.events().changed.is_connected(_style_changed): DEVICE.events().changed.connect(_style_changed)
 	_resume.call_deferred()
 
 
@@ -300,13 +310,8 @@ func _actor_exiting() -> void:
 	stop()
 
 
-func _style_changed(_style: int) -> void:
-	_update_fallback()
-	_sync()
-
-
 func _can_render() -> bool:
-	return _reference_texture == null and DisplayServer.get_name() != "headless" and is_inside_tree() and is_visible_in_tree() and DEVICE.is_device() and _definition != null and is_instance_valid(_actor) and _actor.is_inside_tree() and _actor.uid == _uid and _actor.def != null and _actor.def.id == _definition.id and is_instance_valid(_actor._figure) and _actor.is_figure_shown() and _actor._figure.is_visible_in_tree()
+	return _reference_texture == null and DisplayServer.get_name() != "headless" and is_inside_tree() and is_visible_in_tree() and _definition != null and is_instance_valid(_actor) and _actor.is_inside_tree() and _actor.uid == _uid and _actor.def != null and _actor.def.id == _definition.id and is_instance_valid(_actor._figure) and _actor.is_figure_shown() and _actor._figure.is_visible_in_tree()
 
 
 func _sync() -> void:
@@ -398,7 +403,7 @@ func _texture() -> TextureRect:
 
 func _update_fallback() -> void:
 	_reference_texture = reference_texture(_definition.id) if _definition != null else null
-	var battle := _battle_style and DEVICE.is_device() and _definition != null
+	var battle := _battle_style and _definition != null
 	if is_instance_valid(_fallback):
 		var texture: Texture2D = presentation_texture(_definition.id, battle) if _definition != null else null
 		if _hud_crop_enabled and _definition != null and _reference_texture != null:
@@ -411,7 +416,7 @@ func _update_fallback() -> void:
 		_fallback.visible = not _active and _definition != null
 		# Only full, prepared mattes use the battle filter. Atlas crops and
 		# unprepared images keep their usual sampling and bounds.
-		var filtered := battle and not _hud_crop_enabled and _presentation_textures.has(_definition.id)
+		var filtered := battle and not _hud_crop_enabled and (_presentation_textures.has(_definition.id) or RENDERED_TEXTURES.has(_definition.id))
 		if filtered and _battle_art == null:
 			_battle_art = ShaderMaterial.new()
 			_battle_art.shader = BATTLE_ART
@@ -427,7 +432,7 @@ func _update_fallback() -> void:
 			_backdrop.material = _battle_backdrop
 			_show_battle_frame()
 		elif _definition != null:
-			_backdrop.material = _background_material(_definition.attribute, DEVICE.is_device())
+			_backdrop.material = _background_material(_definition.attribute)
 	if is_instance_valid(_battle_frame):
 		_battle_frame.visible = battle
 	clip_children = CanvasItem.CLIP_CHILDREN_ONLY if battle else CanvasItem.CLIP_CHILDREN_DISABLED
@@ -462,4 +467,3 @@ func _draw() -> void:
 
 func _exit_tree() -> void:
 	stop()
-	if DEVICE.events().changed.is_connected(_style_changed): DEVICE.events().changed.disconnect(_style_changed)

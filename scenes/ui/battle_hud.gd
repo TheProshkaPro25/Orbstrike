@@ -1,25 +1,19 @@
 class_name BattleHud
 extends Control
-## Подача боя как в аниме: чёрные полосы сверху и снизу, две скошенные плашки бойцов
-## (имя, стихия, сила с бегущим счётчиком) и «VS» по центру. Итог: победитель вспыхивает, проигравший гаснет.
+## Боевой интерфейс прибора: сила, цепочка карт и уведомления об эффектах.
 
-const BAR_H := 64.0
 const EFFECT_TOP := 72.0
 const DEVICE_CHAIN_TOP := 112.0
 
 signal effect_visibility_changed(on: bool)
 
-var _top: ColorRect
-var _bot: ColorRect
 var _plates: Array[PanelContainer] = []
 var _plate_contents: Array[VBoxContainer] = []
-var _plate_accents: Array[Color] = [Color(0.5,0.75,1.0),Color(1.0,0.55,0.5)]
 var _names: Array[Label] = []
 var _attrs: Array[Label] = []
 var _powers: Array[Label] = []
 var _counts: Array[Label] = []        # «СПОСОБНОСТИ ●●○ 2/3» под силой (лимит карт на бой)
 var _shown: Array[float] = [0.0, 0.0]
-var _vs: Label
 var _effect: PanelContainer
 var _effect_title: Label
 var _effect_summary: Label
@@ -158,11 +152,10 @@ func _build() -> void:
 	_built = true
 	VisualUtil.full_rect_ignore(self)
 	theme = UiTheme.get_theme()
-	_top = _bar(true)
-	_bot = _bar(false)
 	for side in range(2):
 		var p := PanelContainer.new()
 		p.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		p.add_theme_stylebox_override("panel", _plate_style())
 		var vb := VBoxContainer.new()
 		_plate_contents.append(vb)
 		vb.add_theme_constant_override("separation", -4)
@@ -170,7 +163,7 @@ func _build() -> void:
 		var n := VisualUtil.label("", 24)
 		var a := VisualUtil.label("", 14)
 		var pw := VisualUtil.label("0", 46)
-		pw.add_theme_color_override("font_color", UiTheme.GOLD)
+		pw.add_theme_color_override("font_color", UiTheme.DEVICE_ACCENT)
 		pw.add_theme_constant_override("outline_size", 10)
 		var cn := VisualUtil.label("", 15)
 		cn.add_theme_color_override("font_color", UiTheme.TEXT_DIM)
@@ -186,12 +179,6 @@ func _build() -> void:
 		_attrs.append(a)
 		_powers.append(pw)
 		p.visible = false
-	_vs = VisualUtil.label("VS", 64)
-	_vs.add_theme_color_override("font_color", Color(1.0, 0.92, 0.7))
-	_vs.add_theme_constant_override("outline_size", 14)
-	_vs.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_vs.visible = false
-	add_child(_vs)
 	_chain = HFlowContainer.new()
 	_chain.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_chain.add_theme_constant_override("h_separation", 6)
@@ -199,52 +186,13 @@ func _build() -> void:
 	_chain.alignment = FlowContainer.ALIGNMENT_CENTER
 	_chain.anchor_left = 0.0
 	_chain.anchor_right = 1.0
-	_chain.offset_top = BAR_H + 170.0
-	_chain.offset_bottom = BAR_H + 208.0
+	_chain.offset_top = DEVICE_CHAIN_TOP
+	_chain.offset_bottom = DEVICE_CHAIN_TOP
 	add_child(_chain)
 	_build_effect()
 	get_viewport().size_changed.connect(_resize_chain)
 	UiTheme.apply_device_frame(self, "БОЕВОЙ КОНТУР", false)
-	DeviceSettings.events().changed.connect(_device_style_changed)
-	DeviceSettings.events().motion_changed.connect(_motion_changed)
-
-
-func _bar(top: bool) -> ColorRect:
-	var r := ColorRect.new()
-	r.color = Color(0, 0, 0, 0.92)
-	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	r.anchor_left = 0.0
-	r.anchor_right = 1.0
-	r.anchor_top = 0.0 if top else 1.0
-	r.anchor_bottom = 0.0 if top else 1.0
-	r.offset_top = -BAR_H if top else 0.0
-	r.offset_bottom = 0.0 if top else BAR_H
-	add_child(r)
-	return r
-
-
-func _device_style_changed(_style: int) -> void:
-	_top.visible = not DeviceSettings.is_device()
-	_bot.visible = not DeviceSettings.is_device()
-	if not DeviceSettings.is_device(): clear_effect()
-	_top.color = Color(0.01, 0.045, 0.065, 0.94) if DeviceSettings.is_device() else Color(0, 0, 0, 0.92)
-	_bot.color = _top.color
-	_vs.text = "СХВАТКА" if DeviceSettings.is_device() else "VS"
-	_vs.add_theme_font_size_override("font_size", 27 if DeviceSettings.is_device() else 64)
-	for power in _powers:
-		power.add_theme_color_override("font_color", UiTheme.accent())
-	for side in range(_plates.size()):
-		_plates[side].add_theme_stylebox_override("panel", _plate_style(_plate_accents[side], side))
-		_align_plate(side)
-	_cancel_entrance()
-	_stop_power_counters()
-	_stop_feedback()
-	if _open:
-		_settle_open_layout()
-	else:
-		_hide_layout()
-	if _chain_state.size() == 4:
-		set_chain(_chain_state[0], _chain_state[1], _chain_turn, _chain_state[2], _chain_counts, _chain_blocks)
+	DeviceSettings.events().motion_changed.connect(func(_reduced: bool) -> void: _reset_layout())
 
 
 ## Call only after the external opponent panel has usable public battle data.
@@ -253,7 +201,7 @@ func set_opponent_side(side: int) -> void:
 	var next := side if side in [0,1] else -1
 	if next == opponent_side: return
 	opponent_side = next
-	if not _built or not DeviceSettings.is_device(): return
+	if not _built: return
 	_cancel_entrance()
 	_stop_power_counters()
 	_stop_feedback()
@@ -294,11 +242,11 @@ func _watch_power_anchors(connect_signals: bool) -> void:
 
 
 func _has_power_anchor(side: int) -> bool:
-	return DeviceSettings.is_device() and is_instance_valid(_power_anchors[side])
+	return is_instance_valid(_power_anchors[side])
 
 
 func _has_external_opponent(side: int) -> bool:
-	return _has_power_anchor(side) or (DeviceSettings.is_device() and opponent_side == side)
+	return _has_power_anchor(side) or opponent_side == side
 
 
 func _power_anchor_rect(side: int) -> Rect2:
@@ -307,7 +255,7 @@ func _power_anchor_rect(side: int) -> Rect2:
 	return relative * Rect2(Vector2.ZERO, anchor.size)
 
 
-## Счётчики остаются видимыми после скрытия больших плашек; classic возвращает их в VBox.
+## Счётчик следует за внешней панелью, пока она заменяет штатную плашку.
 func _sync_external_counts() -> void:
 	for side in range(_counts.size()):
 		var count := _counts[side]
@@ -335,26 +283,22 @@ func _layout_chain() -> void:
 	if _chain == null: return
 	var left := 14.0
 	var right := get_viewport_rect().size.x - 14.0
-	if DeviceSettings.is_device():
-		for side in range(2):
-			if not _has_power_anchor(side): continue
-			var rect := _power_anchor_rect(side)
-			if _power_anchors[side].has_method("get_settled_global_rect"):
-				rect = get_global_transform_with_canvas().affine_inverse() * _power_anchors[side].call("get_settled_global_rect")
-			if rect.get_center().x < get_viewport_rect().size.x * .5:
-				left = maxf(left, rect.end.x + 14.0)
-			else:
-				right = minf(right, rect.position.x - 14.0)
-		var vp_width := get_viewport_rect().size.x
-		var inset := maxf(left, vp_width - right)
-		left = inset
-		right = vp_width - inset
-		_layout_effect()
-		_chain.offset_top = _effect.get_rect().end.y + 5.0 if _effect.visible else DEVICE_CHAIN_TOP
-		_chain.offset_bottom = _chain.offset_top
-	else:
-		_chain.offset_top = BAR_H + 170.0
-	_chain.offset_bottom = _chain.offset_top + 24.0
+	for side in range(2):
+		if not _has_power_anchor(side): continue
+		var rect := _power_anchor_rect(side)
+		if _power_anchors[side].has_method("get_settled_global_rect"):
+			rect = get_global_transform_with_canvas().affine_inverse() * _power_anchors[side].call("get_settled_global_rect")
+		if rect.get_center().x < get_viewport_rect().size.x * .5:
+			left = maxf(left, rect.end.x + 14.0)
+		else:
+			right = minf(right, rect.position.x - 14.0)
+	var vp_width := get_viewport_rect().size.x
+	var inset := maxf(left, vp_width - right)
+	left = inset
+	right = vp_width - inset
+	_layout_effect()
+	_chain.offset_top = _effect.get_rect().end.y + 5.0 if _effect.visible else DEVICE_CHAIN_TOP
+	_chain.offset_bottom = _chain.offset_top
 	_chain.offset_left = left
 	_chain.offset_right = right - get_viewport_rect().size.x
 
@@ -400,7 +344,6 @@ func _effect_label(title: String, points: int) -> Label:
 
 
 func show_effect(title: String, summary: String, source: String, target: String, color: Color = UiTheme.DEVICE_ACCENT) -> void:
-	if not DeviceSettings.is_device(): return
 	_effect_title.text = title
 	_effect_title.add_theme_color_override("font_color", color)
 	_effect_summary.text = summary
@@ -412,7 +355,8 @@ func show_effect(title: String, summary: String, source: String, target: String,
 	frame.border_width_top = 2
 	_effect.add_theme_stylebox_override("panel", frame)
 	_effect.show()
-	_vs.hide()
+	if _open and _effect.is_visible_in_tree():
+		SoundFx.i().play_battle_popup()
 	_layout_chain()
 	effect_visibility_changed.emit(true)
 
@@ -434,7 +378,7 @@ func _layout_effect() -> void:
 
 func _plate_slot(side: int) -> int:
 	# Own battle data stays on the left when the external panel occupies the right.
-	if DeviceSettings.is_device() and opponent_side in [0,1]:
+	if opponent_side in [0, 1]:
 		return 1 if side == opponent_side else 0
 	return side
 
@@ -445,8 +389,7 @@ func _align_plate(side: int) -> void:
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER if label == _counts[side] and _has_power_anchor(side) else alignment
 
 
-func _motion_changed(_reduced: bool) -> void:
-	if not DeviceSettings.is_device(): return
+func _reset_layout() -> void:
 	_cancel_entrance()
 	_stop_power_counters()
 	_stop_feedback()
@@ -509,61 +452,37 @@ func _stop_feedback(keep_device_power: bool = false) -> void:
 			if chip is Control: chip.modulate = Color.WHITE
 
 
-func _set_bar_positions(opened: bool) -> void:
-	_top.offset_top = 0.0 if opened else -BAR_H
-	_top.offset_bottom = BAR_H if opened else 0.0
-	_bot.offset_top = -BAR_H if opened else 0.0
-	_bot.offset_bottom = 0.0 if opened else BAR_H
-	_top.modulate = Color.WHITE
-	_bot.modulate = Color.WHITE
-
-
 func _settle_open_layout() -> void:
-	_set_bar_positions(true)
 	_sync_external_counts()
 	var vp := get_viewport_rect().size
 	for side in range(2):
 		var plate := _plates[side]
 		plate.reset_size()
-		plate.position = Vector2(30.0 if _plate_slot(side) == 0 else vp.x-plate.size.x-30.0, OpponentPanel.SIDE_TOP if DeviceSettings.is_device() else BAR_H+18.0)
+		plate.position = Vector2(30.0 if _plate_slot(side) == 0 else vp.x-plate.size.x-30.0, OpponentPanel.SIDE_TOP)
 		plate.scale = Vector2.ONE
 		plate.visible = not _has_external_opponent(side)
 		_align_plate(side)
-		if not _resolved:
-			plate.modulate = Color.WHITE
-		elif side == _winner_side:
-			plate.modulate = Color.WHITE
-		else:
-			plate.modulate = Color(0.55,0.55,0.6,0.7) if _winner_side < 0 and not DeviceSettings.is_device() else Color(0.45,0.45,0.5,0.6)
-	_vs.size = Vector2(200,80)
-	_vs.pivot_offset = _vs.size*.5
-	_vs.position = Vector2(vp.x*.5-100.0, BAR_H+22.0)
-	_vs.scale = Vector2.ONE
-	_vs.modulate = Color.WHITE
-	_vs.visible = not _resolved and not DeviceSettings.is_device()
+		plate.modulate = Color.WHITE if not _resolved or side == _winner_side else Color(0.45,0.45,0.5,0.6)
 
 
 func _hide_layout() -> void:
-	_set_bar_positions(false)
 	_sync_external_counts()
 	for plate in _plates:
 		plate.visible = false
 		plate.modulate = Color.WHITE
 		plate.scale = Vector2.ONE
-	_vs.visible = false
-	_vs.modulate = Color.WHITE
-	_vs.scale = Vector2.ONE
 
 
-func _open_device(names: Array, attrs: Array, powers: Array, momentum: Array) -> void:
+## Открыть подачу боя. Сторона 0 — атакующий, 1 — защитник.
+func open(names: Array, attrs: Array, powers: Array, momentum: Array = [0, 0]) -> void:
+	_build()
+	_reset_layout()
 	_open = true
 	_resolved = false
 	_target = [int(powers[0]), int(powers[1])]
 	set_chain([], [false,false])
 	for side in range(2):
 		var color: Color = VisualUtil.attr_color(int(attrs[side]))
-		_plate_accents[side] = color
-		_plates[side].add_theme_stylebox_override("panel", _plate_style(color,side))
 		_names[side].text = str(names[side])
 		_attrs[side].text = ("АТАКА · " if side == 0 else "ЗАЩИТА · ") + VisualUtil.attr_name(int(attrs[side])).to_upper()
 		if momentum.size() == 2 and int(momentum[side]) > 0:
@@ -584,71 +503,12 @@ func _open_device(names: Array, attrs: Array, powers: Array, momentum: Array) ->
 		tween.tween_property(plate,"modulate:a",1.0,.28)
 
 
-func _plate_style(c: Color, side: int) -> StyleBoxFlat:
-	if DeviceSettings.is_device():
-		var device := UiTheme.box(UiTheme.DEVICE_INK, UiTheme.DEVICE_DIM, 1, 3, 14)
-		device.border_width_top = 3
-		device.content_margin_left = 26
-		device.content_margin_right = 26
-		return device
-	var sb := UiTheme.box(Color(0.03, 0.03, 0.05, 0.88), c, 0, 0, 14)
-	sb.border_width_left = 6 if side == 0 else 0
-	sb.border_width_right = 6 if side == 1 else 0
-	sb.border_width_bottom = 2
-	sb.skew = Vector2(-0.25 if side == 0 else 0.25, 0.0)
-	sb.content_margin_left = 26
-	sb.content_margin_right = 26
-	sb.shadow_color = Color(c.r, c.g, c.b, 0.35)
-	sb.shadow_size = 12
-	return sb
-
-
-## Открыть подачу боя. Сторона 0 — атакующий (слева), 1 — защитник.
-func open(names: Array, attrs: Array, powers: Array, momentum: Array = [0, 0]) -> void:
-	_build()
-	_device_style_changed(DeviceSettings.current())
-	if DeviceSettings.is_device():
-		_open_device(names,attrs,powers,momentum)
-		return
-	_open = true
-	_resolved = false
-	_target = [0, 0]
-	set_chain([], [false, false])
-	var vp := get_viewport_rect().size
-	var tw := _new_entrance_tween()
-	tw.tween_property(_top, "offset_top", 0.0, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tw.tween_property(_top, "offset_bottom", BAR_H, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tw.tween_property(_bot, "offset_top", -BAR_H, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tw.tween_property(_bot, "offset_bottom", 0.0, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	for side in range(2):
-		var c: Color = VisualUtil.attr_color(int(attrs[side]))
-		_plate_accents[side] = c
-		var p: PanelContainer = _plates[side]
-		p.add_theme_stylebox_override("panel", _plate_style(c, side))
-		p.modulate = Color.WHITE
-		_names[side].text = str(names[side])
-		_attrs[side].text = ("АТАКА · " if side == 0 else "ЗАЩИТА · ") + VisualUtil.attr_name(int(attrs[side])).to_upper()
-		if momentum.size() == 2 and int(momentum[side]) > 0:
-			_attrs[side].text += "  ·  НАТИСК +%d" % int(momentum[side])
-		_attrs[side].add_theme_color_override("font_color", c.lightened(0.35))
-		_shown[side] = 0.0
-		_powers[side].text = "0"
-		p.visible = true
-		p.reset_size()
-		var y: float = BAR_H + 18.0
-		var x_in: float = 30.0 if side == 0 else vp.x - p.size.x - 30.0
-		var x_out: float = -p.size.x - 40.0 if side == 0 else vp.x + 40.0
-		p.position = Vector2(x_out, y)
-		tw.tween_property(p, "position:x", x_in, 0.35).set_delay(0.1).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	_vs.visible = true
-	_vs.size = Vector2(200, 80)
-	_vs.pivot_offset = _vs.size * 0.5
-	_vs.position = Vector2(vp.x * 0.5 - 100.0, BAR_H + 22.0)
-	_vs.scale = Vector2(3, 3)
-	_vs.modulate.a = 0.0
-	tw.tween_property(_vs, "scale", Vector2.ONE, 0.3).set_delay(0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tw.tween_property(_vs, "modulate:a", 1.0, 0.2).set_delay(0.3)
-	set_powers(powers)
+func _plate_style() -> StyleBoxFlat:
+	var box := UiTheme.box(UiTheme.DEVICE_INK, UiTheme.DEVICE_DIM, 1, 3, 14)
+	box.border_width_top = 3
+	box.content_margin_left = 26
+	box.content_margin_right = 26
+	return box
 
 
 ## Сила бойцов: числа «бегут» к новым значениям, разница всплывает над плашкой (+120 / −80) с пружиной.
@@ -658,52 +518,26 @@ func set_powers(powers: Array) -> void:
 	for side in range(2):
 		var to: float = float(powers[side])
 		var delta: int = int(to) - _target[side]
-		if DeviceSettings.is_device() and delta == 0:
+		if delta == 0:
 			continue
 		if _power_tweens[side] != null and _power_tweens[side].is_valid():
 			_power_tweens[side].kill()
 		_power_tweens[side] = null
-		if _has_external_opponent(side) or (DeviceSettings.is_device() and DeviceSettings.reduce_motion()):
+		if _has_external_opponent(side) or DeviceSettings.reduce_motion():
 			_set_shown(to,side)
 		else:
 			var tween := create_tween()
 			_power_tweens[side] = tween
-			tween.tween_method(_set_shown.bind(side), _shown[side], to, .24 if DeviceSettings.is_device() else .5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			tween.tween_method(_set_shown.bind(side), _shown[side], to, .24).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 			tween.finished.connect(func() -> void:
 				if _power_tweens[side] == tween: _power_tweens[side] = null)
 		var feedback_visible := not _has_power_anchor(side) or _power_anchors[side].is_visible_in_tree()
-		if delta != 0 and (DeviceSettings.is_device() or _target[side] > 0) and feedback_visible:
-			if DeviceSettings.is_device(): SoundFx.i().play_device_power(delta)
+		if feedback_visible:
+			SoundFx.i().play_device_power(delta)
 			if not _has_external_opponent(side):
 				_pulse(_powers[side], Color(0.6, 1.0, 0.6) if delta > 0 else Color(1.0, 0.45, 0.4))
-			_float_number(side, delta)
+			_float_device_power(side, delta)
 		_target[side] = int(to)
-
-
-## Всплывающее число изменения силы: выскакивает с пружиной, плывёт вверх и гаснет.
-func _float_number(side: int, delta: int) -> void:
-	if DeviceSettings.is_device():
-		_float_device_power(side, delta)
-		return
-	var p: PanelContainer = _plates[side]
-	var l := VisualUtil.label(("+%d" if delta > 0 else "−%d") % absi(delta), 54)
-	l.add_theme_color_override("font_color", Color(0.55, 1.0, 0.55) if delta > 0 else Color(1.0, 0.4, 0.35))
-	l.add_theme_constant_override("outline_size", 14)
-	add_child(l)
-	_floating_numbers.append(l)
-	l.size = l.get_minimum_size()
-	l.pivot_offset = l.size * 0.5
-	var x: float = p.position.x + (p.size.x * 0.5 if side == 0 else p.size.x * 0.5) - l.size.x * 0.5
-	var y: float = p.position.y + p.size.y + 4.0
-	l.position = Vector2(x, y)
-	l.scale = Vector2(0.2, 0.2)
-	var tw := l.create_tween()
-	_track_feedback(tw)
-	tw.finished.connect(func() -> void: _floating_numbers.erase(l))
-	tw.tween_property(l, "scale", Vector2.ONE, 0.45).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
-	tw.parallel().tween_property(l, "position:y", y + 40.0, 0.9).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tw.tween_property(l, "modulate:a", 0.0, 0.35)
-	tw.tween_callback(l.queue_free)
 
 
 ## Изменение реального итогового G; начальные силы задаются в open без этого вызова.
@@ -789,12 +623,7 @@ func set_chain(plays: Array, passed: Array, turn: int = -1, cancelled: Array = [
 
 
 func _resize_chain() -> void:
-	if DeviceSettings.is_device():
-		_cancel_entrance()
-		_stop_power_counters()
-		_stop_feedback()
-		if _open: _settle_open_layout()
-		else: _hide_layout()
+	_reset_layout()
 	if _chain_state.size() == 4:
 		set_chain(_chain_state[0], _chain_state[1], _chain_turn, _chain_state[2], _chain_counts, _chain_blocks)
 
@@ -831,7 +660,6 @@ func _set_count(side: int, used: int, passed: bool, turn: bool, block_reason: St
 
 
 func _chip(text: String, side: int, dim: bool = false) -> PlayedCardChip:
-	var device := DeviceSettings.is_device()
 	var c: Color = Color(0.5, 0.75, 1.0) if _plate_slot(side) == 0 else Color(1.0, 0.55, 0.5)
 	if dim:
 		c = c.darkened(0.35)
@@ -841,9 +669,9 @@ func _chip(text: String, side: int, dim: bool = false) -> PlayedCardChip:
 		_keyboard_help = true
 		_clear_chain_help())
 	pc.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	pc.custom_minimum_size.y = 25.0 if device else 36.0
-	pc.add_theme_stylebox_override("panel", UiTheme.box(Color(c.r * 0.15, c.g * 0.15, c.b * 0.15, 0.94), c, 1 if device else 2, 4 if device else 6, 3 if device else 5))
-	var l := VisualUtil.label(text, 14 if device else 16)
+	pc.custom_minimum_size.y = 25.0
+	pc.add_theme_stylebox_override("panel", UiTheme.box(Color(c.r * 0.15, c.g * 0.15, c.b * 0.15, 0.94), c, 1, 4, 3))
+	var l := VisualUtil.label(text, 14)
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -851,16 +679,16 @@ func _chip(text: String, side: int, dim: bool = false) -> PlayedCardChip:
 	l.add_theme_color_override("font_color", c.lightened(0.4))
 	pc.add_child(l)
 	# Появление не двигает и не сжимает область наведения под курсором.
-	if not (DeviceSettings.is_device() and DeviceSettings.reduce_motion()):
+	if not DeviceSettings.reduce_motion():
 		pc.modulate.a = 0.0
 		var tween := pc.create_tween()
 		_track_feedback(tween)
-		tween.tween_property(pc, "modulate:a", 1.0, 0.15 if DeviceSettings.is_device() else 0.2)
+		tween.tween_property(pc, "modulate:a", 1.0, 0.15)
 	return pc
 
 
 func _side_name(side: int) -> String:
-	if DeviceSettings.is_device() and opponent_side in [0, 1]:
+	if opponent_side in [0, 1]:
 		return "Соперник" if side == opponent_side else "Вы"
 	return "Атакующий" if side == 0 else "Защитник"
 
@@ -871,18 +699,11 @@ func _set_shown(v: float, side: int) -> void:
 
 
 func _pulse(l: Label, c: Color) -> void:
-	if DeviceSettings.is_device() and DeviceSettings.reduce_motion(): return
-	l.pivot_offset = l.size * 0.5
-	var tw := l.create_tween()
-	_track_feedback(tw)
-	if DeviceSettings.is_device():
-		tw.tween_property(l,"modulate",c,.08)
-		tw.tween_property(l,"modulate",Color.WHITE,.14)
-		return
-	tw.tween_property(l, "modulate", c, 0.1)
-	tw.parallel().tween_property(l, "scale", Vector2(1.25, 1.25), 0.1)
-	tw.tween_property(l, "modulate", Color.WHITE, 0.35)
-	tw.parallel().tween_property(l, "scale", Vector2.ONE, 0.35)
+	if DeviceSettings.reduce_motion(): return
+	var tween := l.create_tween()
+	_track_feedback(tween)
+	tween.tween_property(l, "modulate", c, .08)
+	tween.tween_property(l, "modulate", Color.WHITE, .14)
 
 
 ## Итог: плашка победителя вспыхивает, проигравшего гаснет.
@@ -893,42 +714,20 @@ func resolve(winner_side: int) -> void:
 	clear_effect()
 	_cancel_entrance()
 	_stop_power_counters()
-	_stop_feedback(DeviceSettings.is_device())
+	_stop_feedback(true)
 	_settle_open_layout()
 	_resolved = true
 	_winner_side = winner_side
-	if DeviceSettings.is_device():
-		_vs.visible = false
-		_chain.visible = false
-		for side in range(2):
-			if _has_external_opponent(side): continue
-			var color := Color.WHITE if side == winner_side else Color(0.45,0.45,0.5,0.6)
-			if DeviceSettings.reduce_motion():
-				_plates[side].modulate = color
-			else:
-				var tween := create_tween()
-				_track_feedback(tween)
-				tween.tween_property(_plates[side],"modulate",color,.22)
-		return
-	if winner_side < 0:
-		var tw0 := create_tween().set_parallel(true)
-		_track_feedback(tw0)
-		for pl in _plates:
-			tw0.tween_property(pl, "modulate", Color(0.55, 0.55, 0.6, 0.7), 0.3)
-		_vs.visible = false
-		return
-	var w: PanelContainer = _plates[winner_side]
-	var l: PanelContainer = _plates[1 - winner_side]
-	w.pivot_offset = w.size * 0.5
-	var tw := create_tween().set_parallel(true)
-	_track_feedback(tw)
-	tw.tween_property(w, "scale", Vector2(1.12, 1.12), 0.15)
-	tw.tween_property(w, "modulate", Color(1.6, 1.5, 1.2), 0.15)
-	tw.tween_property(l, "modulate", Color(0.45, 0.45, 0.5, 0.6), 0.3)
-	tw.chain().tween_property(w, "scale", Vector2.ONE, 0.25)
-	tw.parallel().tween_property(w, "modulate", Color.WHITE, 0.25)
-	_vs.visible = false
 	_chain.visible = false
+	for side in range(2):
+		if _has_external_opponent(side): continue
+		var color := Color.WHITE if side == winner_side else Color(0.45, 0.45, 0.5, 0.6)
+		if DeviceSettings.reduce_motion():
+			_plates[side].modulate = color
+		else:
+			var tween := create_tween()
+			_track_feedback(tween)
+			tween.tween_property(_plates[side], "modulate", color, .22)
 
 
 func close() -> void:
@@ -940,17 +739,5 @@ func close() -> void:
 	_stop_feedback()
 	_clear_chain_help()
 	_open = false
-	if DeviceSettings.is_device():
-		_hide_layout()
-		_chain.visible = false
-		return
-	var vp := get_viewport_rect().size
-	var tw := _new_entrance_tween()
-	tw.tween_property(_top, "offset_top", -BAR_H, 0.25)
-	tw.tween_property(_top, "offset_bottom", 0.0, 0.25)
-	tw.tween_property(_bot, "offset_top", 0.0, 0.25)
-	tw.tween_property(_bot, "offset_bottom", BAR_H, 0.25)
-	tw.tween_property(_plates[0], "position:x", -_plates[0].size.x - 40.0, 0.25)
-	tw.tween_property(_plates[1], "position:x", vp.x + 40.0, 0.25)
-	_vs.visible = false
+	_hide_layout()
 	_chain.visible = false

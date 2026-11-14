@@ -1,7 +1,6 @@
 shader_type canvas_item;
 render_mode unshaded;
 uniform vec4 element_color : source_color = vec4(0.2, 0.5, 0.8, 1.0);
-uniform float device_style = 0.0;
 void fragment() {
 	vec2 p = UV - vec2(0.5, 0.43);
 	float halo = exp(-dot(p * vec2(1.2, 1.0), p * vec2(1.2, 1.0)) * 6.0);
@@ -12,6 +11,6 @@ void fragment() {
 	// A soft wash dissolves into the containing panel, with no square border,
 	// hard ring or grid competing with the creature silhouette.
 	vec2 edge = smoothstep(vec2(0.0), vec2(0.24), UV) * smoothstep(vec2(0.0), vec2(0.24), vec2(1.0) - UV);
-	float opacity = edge.x * edge.y * halo * (0.56 + device_style * 0.04);
+	float opacity = edge.x * edge.y * halo * 0.60;
 	COLOR = vec4(color * (0.72 + vignette * 0.28), opacity);
 }

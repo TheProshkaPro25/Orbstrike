@@ -55,6 +55,7 @@ func _build() -> void:
 	add_child(_dock)
 	_cards_box = HBoxContainer.new()
 	_cards_box.add_theme_constant_override("separation", 8)
+	_cards_box.alignment = BoxContainer.ALIGNMENT_CENTER
 	_dock.add_child(_cards_box)
 	_panel = VBoxContainer.new()
 	_panel.add_theme_constant_override("separation", 5)
@@ -62,7 +63,7 @@ func _build() -> void:
 	_panel.resized.connect(_place_device_actions)
 	_title = VisualUtil.label("ВОРОТА · выберите карту слева", 14)
 	_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_title.custom_minimum_size.x = 340
+	_title.custom_minimum_size.x = 274.0
 	_panel.add_child(_title)
 	_slot_btn = Button.new()
 	_slot_btn.text = "Место на поле…"
@@ -72,14 +73,15 @@ func _build() -> void:
 	_slot_btn.pressed.connect(func() -> void:
 		if _panel.visible and _selected != &"": slot_pick_requested.emit())
 	_panel.add_child(_slot_btn)
-	_actions = HBoxContainer.new()
-	_actions.add_theme_constant_override("separation", 6)
-	_panel.add_child(_actions)
 	_throw_btn = Button.new()
 	_throw_btn.text = "Ворота + бросок"
 	_throw_btn.toggle_mode = true
 	_throw_btn.tooltip_text = "После выбора места на поле выберите существо. Назад / Esc вернёт к карте без расхода хода."
-	_actions.add_child(_throw_btn)
+	_panel.add_child(_throw_btn)
+	_actions = HBoxContainer.new()
+	_actions.add_theme_constant_override("separation", 6)
+	_actions.alignment = BoxContainer.ALIGNMENT_CENTER
+	_panel.add_child(_actions)
 	_back_btn = Button.new()
 	_back_btn.text = "Отмена"
 	_back_btn.tooltip_text = "Снять выбор карты (Esc / правая кнопка мыши)"
@@ -106,48 +108,31 @@ func _build() -> void:
 	_pager.add_child(_next)
 	_panel.visible = false
 	get_viewport().size_changed.connect(_layout)
-	DeviceSettings.events().changed.connect(func(_style: int) -> void: _layout())
 	_layout()
 
 func _layout() -> void:
 	if not _built: return
 	var vp := get_viewport_rect().size
-	var device := DeviceSettings.is_device()
-	var w := clampf((vp.x * .46 - 40.0) / 3.0, 96.0, 142.0)
-	_size = UiTheme.device_hand_card(vp) if device else Vector2(w, roundf(w * 1.4))
-	var throw_parent: Container = _panel if device else _actions
-	if _throw_btn.get_parent() != throw_parent:
-		_throw_btn.reparent(throw_parent, false)
-		throw_parent.move_child(_throw_btn, 2 if device else 0)
-	_actions.alignment = BoxContainer.ALIGNMENT_CENTER if device else BoxContainer.ALIGNMENT_BEGIN
-	_cards_box.alignment = BoxContainer.ALIGNMENT_CENTER if device else BoxContainer.ALIGNMENT_BEGIN
-	_title.custom_minimum_size.x = 274.0 if device else vp.x * .46 - 20
+	_size = UiTheme.device_hand_card(vp)
 	_panel.reset_size()
 	for cv: CardView in _card_buttons.values():
 		cv.resize_face(_size)
 	_dock.visible = _dock_visible and not _hand.is_empty()
-	_device_dock.visible = _dock.visible and device
-	_device_actions.visible = _panel.visible and device
-	_pager.position = Vector2(16, vp.y - 44)
+	_device_dock.visible = _dock.visible
+	_device_actions.visible = _panel.visible
 	_pager.visible = _dock_visible and _hand.size() > 3
-	if device:
-		var lane := UiTheme.device_hand_lane(vp)
-		_device_dock.position = Vector2(14, vp.y - _size.y - 76.0)
-		_device_dock.size = Vector2(lane, _size.y + 68.0)
-		_dock.position = Vector2(24, vp.y - _size.y - 50.0)
-		_cards_box.size.x = lane - 20.0
-		_pager.reset_size()
-		_pager.position = Vector2(24, vp.y - 8.0 - _pager.size.y)
-		_dock_title.text = "ВОРОТА · %d" % _hand.size()
-		_place_device_actions()
-	else:
-		_cards_box.reset_size()
-		_dock.position = Vector2(16, vp.y - (_size.y + (58 if _hand.size() > 3 else 26) if _panel.visible else 72))
-		_panel.position = Vector2(16, vp.y - _size.y - (130 if _hand.size() > 3 else 98) - (_slot_btn.get_combined_minimum_size().y + 5 if _slot_btn.visible else 0.0))
+	var lane := UiTheme.device_hand_lane(vp)
+	_device_dock.position = Vector2(14, vp.y - _size.y - 76.0)
+	_device_dock.size = Vector2(lane, _size.y + 68.0)
+	_dock.position = Vector2(24, vp.y - _size.y - 50.0)
+	_cards_box.size.x = lane - 20.0
+	_pager.reset_size()
+	_pager.position = Vector2(24, vp.y - 8.0 - _pager.size.y)
+	_dock_title.text = "ВОРОТА · %d" % _hand.size()
+	_place_device_actions()
 
 
 func _place_device_actions() -> void:
-	if not DeviceSettings.is_device(): return
 	var vp := get_viewport_rect().size
 	_panel.position = Vector2((vp.x - _panel.size.x) * 0.5, vp.y - _panel.size.y - 17.0)
 	_device_actions.position = _panel.position - Vector2(8, 8)

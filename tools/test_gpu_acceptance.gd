@@ -144,7 +144,6 @@ func _run() -> void:
 	CreatureModels.resident_catalog = true
 	DeviceSettings.settings_path = output.path_join("isolated-device.cfg")
 	DeviceSettings.reload_settings()
-	DeviceSettings.set_style(DeviceSettings.DEVICE)
 	CreaturePortrait.preload_catalog()
 	viewport = SubViewport.new()
 	viewport.size = Vector2i(1280, 720)

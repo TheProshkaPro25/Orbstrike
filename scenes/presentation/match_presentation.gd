@@ -15,7 +15,6 @@ signal pre_throw_requested
 signal runtime_failed(message: String)
 signal result_ready(winner: int, reason: StringName)
 signal landing_ready(uid: int, slot: int)
-signal exit_layout_requested(battle: bool)
 
 var state := State.new()
 var resources: Resources
@@ -74,7 +73,6 @@ func configure(match_resources: Resources, stage_world: Node3D, camera: CameraRi
 	director.battle_presented.connect(present_battle_opponent)
 	director.battle_cleared.connect(finish_opponent_battle)
 	director.landing_ready.connect(func(uid: int, slot: int) -> void: landing_ready.emit(uid,slot))
-	DeviceSettings.events().changed.connect(opponent_style_changed)
 	ability_panel._panel.visibility_changed.connect(opponent_panel_layout)
 	hud.battle_mode_changed.connect(func(_on: bool) -> void: opponent_panel_layout())
 	battle_hud.effect_visibility_changed.connect(hud.set_battle_event_visible)
@@ -134,7 +132,7 @@ func clear() -> void:
 func present_match_roster() -> void:
 	bind_match_portraits()
 	hud.set_hint("Orbstrike")
-	SoundFx.i().play_music(SoundFx.i().turn_music())
+	director.play_match_music()
 	var view: MatchState = ctrl.get_view(HUMAN)
 	var cols: Array = [[], []]
 	var elems: Array = [[], []]
@@ -159,14 +157,13 @@ func bind_match_portraits() -> void:
 		portrait.watch_consumer(hud.portrait_consumer(side),hud)
 
 
-## Подписи существ: только перечисленные uid (пустой список - все).
-## В бою (два uid) остальные существа скрываются: бой изолирован, как в аниме.
+## В бою остаются видимыми только два участника.
 
 func focus_labels(uids: Array) -> void:
 	state.label_focus = uids.duplicate()
 	for u in balls.keys():
 		var b: CreatureBall = balls[u]
-		b.set_label_allowed((uids.is_empty() or (uids.has(u) and uids.size() < 2)) and not DeviceSettings.is_device())
+		b.set_label_allowed(false)
 		b.visible = uids.size() < 2 or uids.has(u)
 
 
@@ -191,10 +188,11 @@ func ability_fx(player: int, def: CardDef) -> void:
 	if eff in ["negate", "cap_own_base", "aloft"]:
 		mb.ability_pulse()
 	elif eff in ["siphon", "strip", "reset_base", "weaken_mark", "drain", "scorch", "radiance", "eclipse", "pact", "doom"]:
-		if fb != null:
-			await mb.counter_lunge(fb.global_position)
-			if not is_instance_valid(mb) or not is_instance_valid(fb):
+		if is_instance_valid(fb) and mb.is_figure_shown() and fb.is_figure_shown():
+			mb.counter_lunge(fb.global_position)
+			if not await director.wait_for_strike(mb, fb):
 				return
+			director.play_strike(mb, fb, 0.72)
 			fb.take_hit(VisualUtil.attr_color(creature_def(mine).attribute).lightened(0.2))
 		else:
 			mb.ability_pulse()
@@ -301,7 +299,7 @@ func tip_at(mp: Vector2) -> Dictionary:
 	if ctrl == null or interaction_blocked or finished or hud._battle or cam == null or not is_instance_valid(arena) or events.is_busy() or director.flying:
 		return {}
 	Metrics.add("hover_queries")
-	var state_signature: Array = [ctrl.get_instance_id(), ctrl.event_log.size(), ctrl.action_trace.size(), ctrl.get_phase(), ctrl.get_active_player(), DeviceSettings.current()]
+	var state_signature: Array = [ctrl.get_instance_id(), ctrl.event_log.size(), ctrl.action_trace.size(), ctrl.get_phase(), ctrl.get_active_player()]
 	if state_signature != _tip_state_signature:
 		_tip_state_signature = state_signature
 		_tip_view = ctrl.get_view(HUMAN)
@@ -312,7 +310,7 @@ func tip_at(mp: Vector2) -> Dictionary:
 	# so a stationary pointer still follows moving creatures and camera tweens.
 	var signature: Array = [state_signature, mp, cam.get_camera_transform(),
 		cam.get_camera_projection(), get_viewport().get_visible_rect(), arena.global_transform,
-		arena.location_id, DeviceSettings.current()]
+		arena.location_id]
 	for uid in balls:
 		var ball: CreatureBall = balls[uid]
 		if not is_instance_valid(ball):
@@ -472,6 +470,8 @@ func on_creature_selected(player: int, uid: int, recalled: bool) -> void:
 func on_creature_returned(uid: int, reason: StringName) -> void:
 	if reason == &"miss":
 		log_event("Промах: %s" % cname(uid), Color(1.0, 0.7, 0.6))
+	elif reason == &"breakaway":
+		log_event("Отрыв: %s снова готов к броску" % cname(uid), UiTheme.GOLD)
 	events.push(anim_returned.bind(uid, reason))
 
 func on_creature_stood(uid: int, slot: int) -> void:
@@ -574,7 +574,7 @@ func on_creature_revived(uid: int) -> void:
 		hud.revive_creature(p, int(state.pip_indices.get(uid, -1)))
 		SoundFx.i().play("power_up", -4.0)
 		hud.screen_flash(Color(1.0, 0.95, 0.7, 0.3))
-		await hud.banner("ВОЗВРАЩЕНИЕ", "%s снова в игре (зона использованных)" % cname(uid), Color(1.0, 0.92, 0.55), 0.8))
+		await hud.banner("ВОЗВРАЩЕНИЕ", "%s снова в игре (зона использованных)" % cname(uid), Color(1.0, 0.92, 0.55), 0.8, true))
 
 
 ## Метка на следующий бой: строка в ленте и вспышка у шара.
@@ -663,7 +663,6 @@ func anim_fighter_swapped(old_uid: int, new_uid: int, _slot: int, powers: Array 
 		if fb != null:
 			facing = fb.global_position
 		state.battle_uids[state.battle_uids.find(old_uid)] = new_uid
-	if not DeviceSettings.is_device(): hud.flash("Вихревая подмена: %s врывается в бой" % cname(new_uid))
 	if ob != null:
 		await anim_remove_ball(old_uid)
 	var nb: CreatureBall = balls.get(new_uid)
@@ -676,7 +675,7 @@ func anim_fighter_swapped(old_uid: int, new_uid: int, _slot: int, powers: Array 
 	director.open_creature(nb)  # выход со стойкой и рёвом (CreatureAnim.appear)
 	if powers.is_empty() and _queued_battle_result != null:
 		powers = _queued_battle_result.powers
-	if DeviceSettings.is_device() and powers.size() == 2:
+	if powers.size() == 2:
 		present_battle_powers(powers)
 		battle_hud.set_powers(powers)
 	else:
@@ -684,11 +683,7 @@ func anim_fighter_swapped(old_uid: int, new_uid: int, _slot: int, powers: Array 
 	cry(new_uid, "appear", 0.2)
 	VisualUtil.ring_wave(world, pos - Vector3(0, CreatureBall.RADIUS - 0.1, 0), VisualUtil.attr_color(creature_def(new_uid).attribute), Arena.FIG_W * 0.7, 0.55)
 	focus_labels(state.battle_uids)
-	if DeviceSettings.is_device():
-		await read_battle_effect("Вихревая подмена", "%s вступает в бой" % cname(new_uid), side_title(owner_of(old_uid)), cname(old_uid))
-	else:
-		await hud.wait_read(0.9)
-		hud.clear_flash()
+	await read_battle_effect("Вихревая подмена", "%s вступает в бой" % cname(new_uid), side_title(owner_of(old_uid)), cname(old_uid))
 
 
 ## «Сдвиг плит»: карты ворот меняются местами (узлы карт переезжают, существа остаются).
@@ -714,18 +709,12 @@ func anim_attached(player: int, uid: int, card_id: StringName) -> void:
 	await director.ability_action(player,card_id,uid)
 	cam.overview()
 	refresh_hand()
-	if not DeviceSettings.is_device(): ability_panel.show_played(card_id, player != HUMAN)
 	var b: CreatureBall = balls.get(uid)
 	if b != null:
 		b.ability_pulse()
 		var c: Color = VisualUtil.attr_color(creature_def(uid).attribute).lightened(0.3)
 		VisualUtil.ring_wave(world, b.global_position - Vector3(0, CreatureBall.RADIUS - 0.1, 0), c, Arena.FIG_W * 0.6, 0.6)
-	if DeviceSettings.is_device():
-		await read_battle_effect(card_name(card_id), "Прикреплена к следующему бою существа", side_title(player), cname(uid))
-	else:
-		hud.flash("%s «%s»" % [say(player, "Вы прикрепляете", "Соперник прикрепляет"), card_name(card_id)])
-		await hud.wait_read(1.0)
-		hud.clear_flash()
+	await read_battle_effect(card_name(card_id), "Прикреплена к следующему бою существа", side_title(player), cname(uid))
 	if player == HUMAN and ctrl.get_phase() == MatchController.Phase.AWAIT_LANDING and state.active_ball != null and not director.flying:
 		pre_throw_requested.emit()
 
@@ -749,10 +738,7 @@ func anim_trap(slot: int, card_id: StringName, effect: StringName) -> void:
 	cam.impact(arena.slot_position(slot) + Vector3(0, Arena.FIG_H * 0.2, 0))
 	cam.shake(0.7, 0.4)
 	hud.screen_flash(Color(1.0, 0.3, 0.2, 0.35))
-	if DeviceSettings.is_device():
-		await read_battle_effect(card_name(card_id), sub, "Ворота %d" % (slot + 1), "Бой", Color(1.0, 0.61, 0.46))
-	else:
-		await hud.banner("ЛОВУШКА!  %s" % card_name(card_id).to_upper(), sub, Color(1.0, 0.35, 0.3), 0.9)
+	await read_battle_effect(card_name(card_id), sub, "Ворота %d" % (slot + 1), "Бой", Color(1.0, 0.61, 0.46))
 	cam.battle_wide()
 
 func anim_momentum(player: int, value: int) -> void:
@@ -771,7 +757,7 @@ func anim_final_round(_player: int) -> void:
 	SoundFx.i().play("battle_start", 0.0)
 	cam.shake(0.8, 0.5)
 	hud.screen_flash(Color(1.0, 0.5, 0.3, 0.3))
-	await hud.banner("ФИНАЛЬНЫЙ БОЙ", "Остались последние существа: преимущество стихии ×2", Color(1.0, 0.5, 0.25), 1.2)
+	await hud.banner("ФИНАЛЬНЫЙ БОЙ", "Остались последние существа: преимущество стихии ×2", Color(1.0, 0.5, 0.25), 1.2, true)
 
 func anim_card_placed(player: int, slot: int) -> void:
 	await director.card_placed(player, slot)
@@ -819,6 +805,7 @@ func anim_relocated(uid: int, _from: int, to: int) -> void:
 	hud.set_hint("%s остаётся на воротах" % cname(uid) if _from == to else "%s переходит на другие ворота" % cname(uid))
 	if b == null:
 		return
+	b.slot = to
 	var target := arena.slot_position(to) + Vector3(0.0, BALL_Y + 0.02, 0.0)
 	b.freeze_at(b.global_position)
 	cam.overview()
@@ -878,7 +865,7 @@ func anim_stood(uid: int, slot: int) -> void:
 	await wait(0.3)
 
 func anim_battle_started(slot: int, attacker_uid: int, defender_uid: int, powers: Array = [], momentum: Array = [0, 0]) -> void:
-	if DeviceSettings.is_device() and powers.is_empty() and _queued_battle_result != null:
+	if powers.is_empty() and _queued_battle_result != null:
 		powers = _queued_battle_result.powers
 		momentum = _queued_battle_result.momentum
 	await director.battle_started(slot, attacker_uid, defender_uid, powers, momentum)
@@ -891,38 +878,29 @@ func anim_card_revealed(slot: int, card_id: StringName, owner: int = -1, powers:
 	if node != null:
 		node.reveal(card)
 		SoundFx.i().play("card_flip")
-	if DeviceSettings.is_device():
-		# Read the card on the settled board after the reveal animation.
-		if node != null: await wait(0.47)
-		if powers.is_empty() and _queued_battle_result != null and _queued_battle_result.slot == slot:
-			powers = _queued_battle_result.powers
-		if powers.size() == 2:
-			battle_hud.set_powers(powers)
-			present_battle_powers(powers)
-		if not CardEffects.is_gate_trap(card):
-			await read_battle_effect(card_name(card_id), card.text if card != null else "Ворота открыты", side_title(owner), "Ворота %d" % (slot + 1))
-		return
-	await wait(1.0)
-	var preview := ctrl.get_battle_preview()
-	if preview != null:
-		battle_hud.set_powers(preview.powers)
-		present_battle_powers(preview.powers)
+	# Read the card on the settled board after the reveal animation.
+	if node != null: await wait(0.47)
+	if powers.is_empty() and _queued_battle_result != null and _queued_battle_result.slot == slot:
+		powers = _queued_battle_result.powers
+	if powers.size() == 2:
+		battle_hud.set_powers(powers)
+		present_battle_powers(powers)
+	if not CardEffects.is_gate_trap(card):
+		await read_battle_effect(card_name(card_id), card.text if card != null else "Ворота открыты", side_title(owner), "Ворота %d" % (slot + 1))
 
 func anim_ability_msg(player: int, card_id: StringName, cancelled: bool, powers: Array = [], preview: BattleResult = null) -> void:
 	if player == AI_PLAYER and is_instance_valid(hud.opponent_panel): hud.opponent_panel.feedback("activation")
 	if not cancelled: await director.ability_action(player,card_id)
 	var c: CardDef = CardDB.card(card_id)
 	var title := card_name(card_id)
-	var device := DeviceSettings.is_device()
-	if device and not cancelled and preview == null and state.battle_uids.size() == 2:
+	if not cancelled and preview == null and state.battle_uids.size() == 2:
 		# The controller may resolve immediately when neither side can respond.
 		# Its result signal arrives before EventPlayer starts the presentation.
 		preview = _queued_battle_result
 		if preview != null: powers = preview.powers
 	if cancelled: SoundFx.i().ability(c,true)
 	if not cancelled:
-		if not device: ability_panel.show_played(card_id, player != HUMAN)
-		if player == HUMAN and DeviceSettings.is_device() and state.battle_uids.size() == 2:
+		if player == HUMAN and state.battle_uids.size() == 2:
 			hud.own_panel.feedback("activation")
 		if c != null and CardEffects.is_fusion(c):
 			anim_ability_cam(player)
@@ -941,35 +919,27 @@ func anim_ability_msg(player: int, card_id: StringName, cancelled: bool, powers:
 	await wait(0.22)
 	var swap := not cancelled and CardEffects.is_effect(c, &"swap_fighter")
 	var shift := not cancelled and CardEffects.is_effect(c, &"shift_gate")
-	if powers.size() == 2 and not (device and (swap or shift)):
+	if powers.size() == 2 and not (swap or shift):
 		battle_hud.set_powers(powers)
 		present_battle_powers(powers)
-	if device:
-		if not swap:
-			if preview != null:
-				battle_hud.set_chain(preview.plays, preview.passed, -1, preview.cancelled_plays, preview.ability_counts, battle_blocks(preview))
-			var summary := c.text if c != null else "Способность сыграна"
-			var inactive := cancelled
-			if not inactive and preview != null:
-				var side := 0 if owner_of(preview.attacker_uid) == player else 1
-				for play in preview.cancelled_plays:
-					if int(play[0]) == side and play[1] == card_id: inactive = true
-			if inactive: summary = "Эффект отменён или подавлен. Карта учтена в лимите."
-			var source := side_title(player)
-			for uid in state.battle_uids:
-				if owner_of(uid) == player:
-					source += " · " + cname(uid)
-					break
-			var target := effect_target(player, card_id, preview) if not inactive else ""
-			var color := Color(1.0, 0.69, 0.54) if inactive else UiTheme.DEVICE_ACCENT
-			await read_battle_effect(("× " if inactive else "") + title, summary, source, target, color)
-	else:
-		if cancelled:
-			hud.flash("%s «%s» отменена" % ["Ваша карта" if player == HUMAN else "Карта соперника", title])
-		else:
-			hud.flash(("Вы играете «%s»" if player == HUMAN else "Соперник играет «%s»") % title)
-		await hud.wait_read(0.75)
-		hud.clear_flash()
+	if not swap:
+		if preview != null:
+			battle_hud.set_chain(preview.plays, preview.passed, -1, preview.cancelled_plays, preview.ability_counts, battle_blocks(preview))
+		var summary := c.text if c != null else "Способность сыграна"
+		var inactive := cancelled
+		if not inactive and preview != null:
+			var side := 0 if owner_of(preview.attacker_uid) == player else 1
+			for play in preview.cancelled_plays:
+				if int(play[0]) == side and play[1] == card_id: inactive = true
+		if inactive: summary = "Эффект отменён или подавлен. Карта учтена в лимите."
+		var source := side_title(player)
+		for uid in state.battle_uids:
+			if owner_of(uid) == player:
+				source += " · " + cname(uid)
+				break
+		var target := effect_target(player, card_id, preview) if not inactive else ""
+		var color := Color(1.0, 0.69, 0.54) if inactive else UiTheme.DEVICE_ACCENT
+		await read_battle_effect(("× " if inactive else "") + title, summary, source, target, color)
 	if not cancelled and state.battle_uids.size() == 2:
 		cam.battle_wide()
 
@@ -1181,13 +1151,6 @@ func present_battle_powers(powers: Array) -> void:
 func opponent_panel_layout() -> void:
 	if not is_instance_valid(hud) or not is_instance_valid(hud.opponent_panel): return
 	hud.opponent_panel.set_compact(ability_panel._panel.visible and not hud._battle)
-
-func opponent_style_changed(_style: int) -> void:
-	focus_labels(state.label_focus)
-	exit_layout_requested.emit(hud._battle)
-	if state.opponent_uid >= 0: present_opponent(state.opponent_uid,state.opponent_power)
-	if state.own_uid >= 0: present_own(state.own_uid,state.own_power)
-	opponent_panel_layout()
 
 func finish_opponent_battle() -> void:
 	clear_opponent_panel()

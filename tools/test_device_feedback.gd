@@ -36,7 +36,6 @@ func _run() -> void:
 	DeviceSettings.settings_path = "user://device-feedback.cfg"
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(DeviceSettings.settings_path))
 	DeviceSettings.reload_settings()
-	DeviceSettings.set_style(DeviceSettings.DEVICE)
 	AudioSettings.interface_muted = false
 	AudioSettings.interface_volume = 1.0
 	sound = SoundFx.i()
@@ -97,11 +96,6 @@ func _test_buttons_and_deck() -> void:
 	before = sound._next
 	outside.mouse_entered.emit()
 	check(sound._next == (before+1)%SoundFx.POOL,"hover outside deck still works")
-	DeviceSettings.set_style(DeviceSettings.CLASSIC)
-	sound._last_play.clear()
-	before = sound._next
-	buttons[0].pressed.emit()
-	check(sound._pool[before].stream.resource_path.contains("ui_click"),"classic ordinary click preserved")
 	team.queue_free()
 	outside.queue_free()
 	for b in buttons: b.queue_free()
@@ -110,7 +104,6 @@ func _test_buttons_and_deck() -> void:
 
 func _test_render_reveal() -> void:
 	var motion := preload("res://scenes/ui/device_motion.gd")
-	DeviceSettings.set_style(DeviceSettings.DEVICE)
 	DeviceSettings.set_reduce_motion(false)
 	var host := Control.new()
 	host.size = Vector2(400,200)
@@ -146,14 +139,11 @@ func _test_render_reveal() -> void:
 	button.show()
 	await create_timer(.12,true,false,true).timeout
 	check(button.has_meta(motion.REGISTRY),"reparented reveal watcher reconnects")
-	DeviceSettings.set_style(DeviceSettings.CLASSIC)
-	check(not button.has_meta(motion.REGISTRY),"classic switch restores render and removes active reveal")
 	check(watcher.get("_timer") != null,"event driven watcher retains its single layout debounce timer")
 	second_host.queue_free()
 	await frames(3)
 
 func _test_match_hud() -> void:
-	DeviceSettings.set_style(DeviceSettings.DEVICE)
 	DeviceSettings.set_reduce_motion(false)
 	var hud := HudUI.new()
 	var gates := SetupPanel.new()
@@ -167,14 +157,18 @@ func _test_match_hud() -> void:
 	hud.set_names("Игрок","Соперник")
 	hud.set_status(1,0,3,3)
 	hud.set_hint("Выберите карту ворот")
-	hud.own_panel.present(CardDB.creature(&"creature_gorgul_fire"),0,200)
-	hud.own_panel.show_context("reveal")
+	hud.log_event("Существо ждёт броска")
 	hud.coach("device_context_test","Выберите карту ворот")
 	await frames()
-	check(hud._log_box.position.x >= hud.own_panel.position.x+hud.own_panel.size.x,"own public card leaves log readable alongside")
+	var log_position := hud._log_box.position
+	var coach_position := hud._coach.position
+	hud.own_panel.present(CardDB.creature(&"creature_gorgul_fire"),0,200)
+	hud.own_panel.show_context("reveal")
+	await frames()
+	check(not hud._log_box.get_global_rect().intersects(hud.own_panel.get_settled_global_rect()),"own public card leaves log unobscured")
 	check(hud._coach.position.x >= hud.own_panel.position.x+hud.own_panel.size.x,"own public card leaves coach readable alongside")
 	hud.own_panel.hide_context()
-	check(hud._log_box.position.x == 16.0 and hud._coach.position.x == 12.0,"context expiry restores log and coach positions")
+	check(hud._log_box.position.is_equal_approx(log_position) and is_equal_approx(hud._coach.position.x, coach_position.x),"context expiry restores log position and coach alignment")
 	hud.dismiss_coach("device_context_test")
 	hud.own_panel.show_context("battle")
 	hud.set_battle_mode(true)
@@ -226,17 +220,17 @@ func _test_match_hud() -> void:
 		battle.open(["Горгул","Ратник"],[0,3],[200,280])
 		await frames()
 		battle.set_chain([[0,&"ability_fire_counter"]],[false,false])
-		DeviceSettings.set_style(DeviceSettings.CLASSIC)
+		DeviceSettings.set_reduce_motion(true)
 		for chip in battle._chain.get_children(): check(chip.modulate.a == 1.0,"cancelling played-card fade restores visibility")
-		DeviceSettings.set_style(DeviceSettings.DEVICE)
+		DeviceSettings.set_reduce_motion(false)
 		root.size.x -= 40
 		await frames()
-		DeviceSettings.set_style(DeviceSettings.CLASSIC)
+		DeviceSettings.set_reduce_motion(true)
 		await frames()
-		check(hud.modulate.a == 1.0 and gates.modulate.a == 1.0 and abilities.modulate.a == 1.0,"theme switch leaves match controls visible")
-		DeviceSettings.set_style(DeviceSettings.DEVICE)
+		check(hud.modulate.a == 1.0 and gates.modulate.a == 1.0 and abilities.modulate.a == 1.0,"reduced motion leaves match controls visible")
+		DeviceSettings.set_reduce_motion(false)
 		await frames()
-		check(battle._powers[0].text != "" and battle._plates[0].modulate.a == 1.0,"combat panel remains visible after resize and theme switch")
+		check(battle._powers[0].text != "" and battle._plates[0].modulate.a == 1.0,"combat panel remains visible after resize and motion change")
 		await capture("device-battle-%d"%size.x)
 		battle.resolve(0)
 		root.size.x -= 1

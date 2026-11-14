@@ -31,7 +31,6 @@ func _run() -> void:
 	AudioServer.set_bus_mute(0, true)
 	DeviceSettings.settings_path = output.path_join("audit-device.cfg")
 	DeviceSettings.reload_settings()
-	DeviceSettings.set_style(DeviceSettings.DEVICE)
 	DeviceSettings.set_reduce_motion(true)
 	CardDB.load_all()
 	if OS.get_cmdline_user_args().has("--production-window"):

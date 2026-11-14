@@ -15,7 +15,7 @@ func _initialize() -> void:
 	call_deferred("run")
 
 func run() -> void:
-	Engine.max_fps = 120
+	Engine.max_fps = 60
 	Engine.time_scale = 4
 	Engine.physics_ticks_per_second = 240
 	var floor_body := StaticBody3D.new()

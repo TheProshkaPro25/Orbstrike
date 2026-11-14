@@ -4,11 +4,19 @@ extends Node3D
 const HIT := preload("res://assets/vfx_vendor/reeboo/effects/hit_spark.tscn")
 const SLASH := preload("res://assets/vfx_vendor/reeboo/effects/slash.tscn")
 const CAPTURE := preload("res://assets/vfx_vendor/reeboo/effects/pickup_sparkle.tscn")
-const FIRE := preload("res://assets/vfx_vendor/elemental_impact/scenes/elem_fire.tscn")
-const KENNEY_SPARK := preload("res://assets/vfx_vendor/kenney/spark_05.png")
+const ElementEffect := preload("res://scenes/presentation/creature_element_fx.gd")
 
 static var _particle_materials: Dictionary[ShaderMaterial, ShaderMaterial] = {}
-static var _fire_presets: Dictionary[int, FreeElementalFxPreset] = {}
+var _impacts: Array[ElementEffect] = []
+var _impact_slot := 0
+
+
+func _ready() -> void:
+	for slot in 2:
+		var effect := ElementEffect.new()
+		effect.prepare_impact()
+		add_child(effect, true)
+		_impacts.append(effect)
 
 
 func hit(at: Vector3, facing: Basis, size: float) -> void:
@@ -23,32 +31,16 @@ func gate_capture(at: Vector3) -> void:
 	_play_reeboo(CAPTURE, &"GateCaptureSparkle", at, Basis.IDENTITY, Arena.CARD_W * 0.17)
 
 
-func fire_impact(at: Vector3, size: float) -> void:
-	var effect := FIRE.instantiate() as FreeElementalFx
-	var quality := GraphicsSettings.current()
-	if not _fire_presets.has(quality):
-		var preset := effect.preset.duplicate() as FreeElementalFxPreset
-		preset.color_core = Color(1.28, 0.91, 0.49)
-		preset.color_main = Color(1.16, 0.37, 0.09)
-		preset.color_accent = Color(0.78, 0.17, 0.06)
-		preset.sparks_amount = roundi(24.0 * BallFx.level_k())
-		preset.spark_texture = KENNEY_SPARK
-		preset.light_energy = 2.1 if GraphicsSettings.param("lights") else 0.0
-		preset.light_range = 5.0
-		_fire_presets[quality] = preset
-	effect.name = &"FireImpact"
-	effect.preset = _fire_presets[quality]
-	effect.auto_play = false
-	effect.loop = false
-	effect.one_shot_free = true
-	add_child(effect, true)
-	effect.global_position = at
-	effect.scale = Vector3.ONE * size
-	effect.play()
+func elemental_impact(element: int, at: Vector3, direction: Vector3, size: float, strength: float, surface: ArenaCardNode = null) -> void:
+	_impacts[_impact_slot].show_impact(element, at, direction, size, strength, surface)
+	_impact_slot = (_impact_slot + 1) % _impacts.size()
 
 
 func clear() -> void:
 	for effect in get_children():
+		if effect is ElementEffect:
+			effect.reset_effect()
+			continue
 		effect.hide()
 		effect.process_mode = Node.PROCESS_MODE_DISABLED
 		effect.queue_free()

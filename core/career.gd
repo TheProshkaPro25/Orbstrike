@@ -9,7 +9,8 @@ const MAX_SAVE_BYTES := 4194304
 const MAX_EVENTS := 8192
 const MAX_CUPS := 256
 const ELEMENTS := ["fire", "gale", "light", "stone", "shadow", "tide"]
-const BASE_POWER := {"rogozhuk": 190, "gorgul": 200, "klykar": 230, "grifalon": 240, "levian": 260, "ratnik": 280, "dragnar": 300, "kolossar": 310}
+const BASE_POWER := {"rogozhuk": 190, "gorgul": 200, "klykar": 230, "grifalon": 240, "levian": 260, "ratnik": 280, "dragnar": 300, "kolossar": 310,
+	"floris": 210, "octo": 220}
 const LEAGUES := [
 	{"title": "Кубок Каньона", "max_level": 3, "max_power": 250, "max_total": 650},
 	{"title": "Кубок Гавани", "max_level": 6, "max_power": 350, "max_total": 900},
@@ -91,7 +92,7 @@ func league_rules(index: int = -1) -> Dictionary:
 	return LEAGUES[clampi(int(state.league) if index < 0 else index, 0, 2)].duplicate(true)
 
 func available_species() -> Array:
-	var result: Array = [&"rogozhuk", &"gorgul", &"klykar", &"grifalon"]
+	var result: Array = [&"rogozhuk", &"gorgul", &"klykar", &"grifalon", &"floris", &"octo"]
 	var cleared := _cleared_leagues()
 	if cleared.has(0):
 		result.append_array([&"levian", &"ratnik"])
@@ -202,7 +203,7 @@ static func _cards_error(ids: Variant) -> String:
 				return "Нужно по одной карте каждого класса"
 	return ""
 
-func start_cup(deck: DeckDef, effective_levels: Dictionary = {}) -> Error:
+func start_cup(deck: DeckDef, effective_levels: Dictionary = {}, card_pool: int = CardDB.Pool.BASE) -> Error:
 	if cup != null or not state.active.is_empty():
 		return _fail("Команда уже зарегистрирована на кубок")
 	if state.cups.size() >= MAX_CUPS:
@@ -213,6 +214,8 @@ func start_cup(deck: DeckDef, effective_levels: Dictionary = {}) -> Error:
 	var problem := deck_error(ids[0], ids[1], ids[2], effective_levels)
 	if not problem.is_empty():
 		return _fail(problem)
+	if _has_cards_outside_pool(ids, card_pool):
+		return _fail("В колоде есть карты, недоступные для этого набора правил")
 	var previous := state.duplicate(true)
 	var levels: Dictionary = {}
 	for id in ids[0]:
@@ -221,7 +224,7 @@ func start_cup(deck: DeckDef, effective_levels: Dictionary = {}) -> Error:
 	var cup_id := "%s/cup-%d" % [state.id, serial]
 	state.active = _new_entry(ids, levels, int(state.league), serial, cup_id)
 	state.ledger.append({"type": "registration", "id": cup_id + "/registration", "cup": cup_id, "credits": 0})
-	cup = _build_cup(state.active)
+	cup = _build_cup(state.active, Cup.RULES_VERSION + card_pool)
 	state.active.tournament = cup.state
 	return _commit(previous)
 
@@ -244,10 +247,10 @@ func _new_entry(ids: Array, levels: Dictionary, league_index: int, serial: int, 
 		snapshots.append(powers)
 	return {"league": league_index, "serial": serial, "id": cup_id, "deck": ids.duplicate(true), "levels": levels.duplicate(true), "earned_xp": earned_xp, "snapshots": snapshots, "tournament": {}}
 
-func _build_cup(entry: Dictionary) -> Tournament:
+func _build_cup(entry: Dictionary, rules_version: int) -> Tournament:
 	var result := Tournament.new()
 	result.autosave_path = ""
-	result._build(entry.deck, int(state.difficulty), (int(state.seed) ^ (int(entry.serial) * 0x1f123bb5)) & 0x7fffffff, String(state.name), String(entry.id))
+	result._build(entry.deck, int(state.difficulty), (int(state.seed) ^ (int(entry.serial) * 0x1f123bb5)) & 0x7fffffff, String(state.name), String(entry.id), rules_version)
 	for npc in range(1, 8):
 		var row: Array = Cup.NPCS[npc - 1]
 		var species: Array = []
@@ -255,6 +258,12 @@ func _build_cup(entry: Dictionary) -> Tournament:
 			species.append(String(CardDB.creature(StringName(id)).species))
 		result.state.participants[npc].deck = _default_deck(String(row[2]), species, [row[4], row[5], row[6], row[7]])
 	return result
+
+static func _has_cards_outside_pool(ids: Array, card_pool: int) -> bool:
+	for id in ids[1] + ids[2]:
+		if not CardDB.card_available(CardDB.card(StringName(id)), card_pool):
+			return true
+	return false
 
 func power_snapshot(participant: int) -> Dictionary:
 	if cup == null or participant < 0 or participant > 7:
@@ -350,7 +359,7 @@ func simulate_next_npc() -> Dictionary:
 	var duel := cup.next_match()
 	if duel.is_empty() or int(duel.a) == 0 or int(duel.b) == 0:
 		return {"error": "Этот матч должен сыграть человек"}
-	var result: Dictionary = Simulator.simulate(cup.participant_deck(int(duel.a)), cup.participant_deck(int(duel.b)), int(duel.seed), int(duel.first_player), int(state.difficulty), Simulator.STEP_LIMIT, [Cup.personality(int(duel.a)), Cup.personality(int(duel.b))], [power_snapshot(int(duel.a)), power_snapshot(int(duel.b))])
+	var result: Dictionary = Simulator.simulate(cup.participant_deck(int(duel.a)), cup.participant_deck(int(duel.b)), int(duel.seed), int(duel.first_player), int(state.difficulty), Simulator.STEP_LIMIT, [Cup.personality(int(duel.a)), Cup.personality(int(duel.b))], [power_snapshot(int(duel.a)), power_snapshot(int(duel.b))], cup.card_pool())
 	if not String(result.error).is_empty():
 		return result
 	var winner := -1 if int(result.winner) == -1 else int(duel.a if int(result.winner) == 0 else duel.b)
@@ -427,7 +436,7 @@ func _restore(previous: Dictionary) -> void:
 		cup = null
 	else:
 		if cup == null or String(cup.state.id) != String(state.active.id):
-			cup = _build_cup(state.active)
+			cup = _build_cup(state.active, int(state.active.tournament.rules_version))
 		cup.state = state.active.tournament
 
 static func load_file(path: String = SAVE_PATH) -> Dictionary:
@@ -505,7 +514,11 @@ static func from_dict(data: Dictionary) -> Dictionary:
 				total += int(powers[id])
 			if total > int(LEAGUES[int(entry.league)].max_total):
 				return {"error": "Команда превышает лимит лиги"}
-		var restored := run._build_cup(canonical)
+		if not Cup._integer(entry.tournament.get("rules_version"), Cup.RULES_VERSION, Cup.SPECIES_RULES_VERSION):
+			return {"error": "Неподдерживаемая версия правил кубка"}
+		if _has_cards_outside_pool(entry.deck, int(entry.tournament.rules_version) - Cup.RULES_VERSION):
+			return {"error": "В колоде есть карты, недоступные для этой версии правил кубка"}
+		var restored := run._build_cup(canonical, int(entry.tournament.rules_version))
 		if not entry.tournament.get("matches") is Array or entry.tournament.matches.size() < 12 or entry.tournament.matches.size() > 18:
 			return {"error": "Повреждена сетка кубка"}
 		for duel in entry.tournament.matches:

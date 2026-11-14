@@ -69,7 +69,7 @@ func run() -> void:
 		await finish(); return
 	loader = GameLoading.i()
 	catalog_counts = counts()
-	check(loader.ready_to_play and catalog_counts[1] == 98 and catalog_counts[2] == 3,"resident49x2/three arenas before menu")
+	check(loader.ready_to_play and catalog_counts[1] == CreatureModels.catalog_defs().size() * 2 and catalog_counts[2] == 3,"two resident actors per definition and three arenas before menu")
 	current_scene._on_play()
 	if not await until(func(): return current_scene != null and current_scene.scene_file_path == "res://scenes/main.tscn"):
 		check(false,"team scene opens"); await finish(); return

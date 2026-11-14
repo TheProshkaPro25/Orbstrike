@@ -40,33 +40,31 @@ func _run() -> void:
 	root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_EXPAND
 	var menu := MenuFixture.new()
 	root.add_child(menu)
-	for style in [DeviceSettings.CLASSIC, DeviceSettings.DEVICE]:
-		DeviceSettings.set_style(style)
-		for physical in [Vector2i(960, 540), Vector2i(1280, 720), Vector2i(1920, 1080), Vector2i(1024, 768)]:
-			root.size = physical
-			await _frames()
-			menu._show_home()
-			await _frames()
-			_check(menu._visible_buttons().size() == 5, "главный уровень содержит пять действий")
-			_check_layout(menu, physical, "home", style)
-			await _key(KEY_ENTER)
-			_check(menu._modes_open and root.gui_get_focus_owner() == menu._mode_buttons[0], "Enter открывает режимы и фокусирует карьеру")
-			for mask in range(4):
-				menu.saved_campaign = bool(mask & 1)
-				menu.saved_tournament = bool(mask & 2)
-				menu._show_modes()
-				await _frames()
-				_check(menu._campaign_continue.visible == menu.saved_campaign, "продолжение кампании контекстно")
-				_check(menu._tournament_continue.visible == menu.saved_tournament, "продолжение турнира контекстно")
-				_check(menu._visible_buttons().size() == 6 + int(menu.saved_campaign) + int(menu.saved_tournament), "нет пустых строк продолжения")
-				_check_layout(menu, physical, "modes-%d" % mask, style)
-				await _check_keyboard(menu)
-			await _key(KEY_ESCAPE)
-			_check(not menu._modes_open and root.gui_get_focus_owner() == menu._home_buttons[0], "Esc возвращает на Играть")
+	for physical in [Vector2i(960, 540), Vector2i(1280, 720), Vector2i(1920, 1080), Vector2i(1024, 768)]:
+		root.size = physical
+		await _frames()
+		menu._show_home()
+		await _frames()
+		_check(menu._visible_buttons().size() == 5, "главный уровень содержит пять действий")
+		_check_layout(menu, physical, "home")
+		await _key(KEY_ENTER)
+		_check(menu._modes_open and root.gui_get_focus_owner() == menu._mode_buttons[0], "Enter открывает режимы и фокусирует карьеру")
+		for mask in range(4):
+			menu.saved_campaign = bool(mask & 1)
+			menu.saved_tournament = bool(mask & 2)
 			menu._show_modes()
-			menu._mode_buttons[-1].grab_focus()
-			await _key(KEY_ENTER)
-			_check(not menu._modes_open and root.gui_get_focus_owner() == menu._home_buttons[0], "кнопка Назад возвращает фокус")
+			await _frames()
+			_check(menu._campaign_continue.visible == menu.saved_campaign, "продолжение кампании контекстно")
+			_check(menu._tournament_continue.visible == menu.saved_tournament, "продолжение турнира контекстно")
+			_check(menu._visible_buttons().size() == 6 + int(menu.saved_campaign) + int(menu.saved_tournament), "нет пустых строк продолжения")
+			_check_layout(menu, physical, "modes-%d" % mask)
+			await _check_keyboard(menu)
+		await _key(KEY_ESCAPE)
+		_check(not menu._modes_open and root.gui_get_focus_owner() == menu._home_buttons[0], "Esc возвращает на Играть")
+		menu._show_modes()
+		menu._mode_buttons[-1].grab_focus()
+		await _key(KEY_ENTER)
+		_check(not menu._modes_open and root.gui_get_focus_owner() == menu._home_buttons[0], "кнопка Назад возвращает фокус")
 	# Реальные production-сигналы сохраняют прежние значения намерения перехода.
 	menu.saved_campaign = true
 	menu.saved_tournament = true
@@ -97,7 +95,7 @@ func _run() -> void:
 	print("menu-access: %d checks, %d failures; headless geometry/keyboard, no visual acceptance" % [_checks, _failures])
 	quit(0 if _failures == 0 else 1)
 
-func _check_layout(menu: MainMenu, physical: Vector2i, level: String, style: int) -> void:
+func _check_layout(menu: MainMenu, physical: Vector2i, level: String) -> void:
 	var logical := root.get_visible_rect()
 	var physical_scale := physical.y / logical.size.y
 	_check(menu._column.scale.is_equal_approx(Vector2.ONE), "колонка не уменьшает текст")
@@ -113,7 +111,7 @@ func _check_layout(menu: MainMenu, physical: Vector2i, level: String, style: int
 		var text_width := button.get_theme_font("font").get_string_size(button.text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
 		_check(text_width + button.get_theme_stylebox("normal").get_minimum_size().x <= rect.size.x + 1, "подпись помещается без сжатия")
 		previous = rect
-	_rows.append({"physical": [physical.x, physical.y], "logical": [logical.size.x, logical.size.y], "level": level, "style": style, "column_scale": menu._column.scale.x, "font_physical": 24 * physical_scale, "buttons": menu._visible_buttons().size()})
+	_rows.append({"physical": [physical.x, physical.y], "logical": [logical.size.x, logical.size.y], "level": level, "column_scale": menu._column.scale.x, "font_physical": 24 * physical_scale, "buttons": menu._visible_buttons().size()})
 
 func _check_keyboard(menu: MainMenu) -> void:
 	var buttons := menu._visible_buttons()

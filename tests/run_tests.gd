@@ -286,20 +286,20 @@ func _has_event(ctrl: MatchController, prefix: String) -> bool:
 # ---------------------------------------------------------------- тесты: колода
 
 func _test_card_db() -> void:
-	_check(CardDB.creature_ids().size() == GameData.SPECIES.size() * 6, "каждый вид во всех 6 стихиях")
+	_check(CardDB.creature_ids().size() == GameData.ALL_SPECIES.size() * GameData.ATTR_KEYS.size(), "каждый вид во всех 6 стихиях")
 	var per_attr: Array[int] = [0, 0, 0, 0, 0, 0]
 	for d in CardDB.all_creatures():
 		per_attr[d.attribute] += 1
 	_check(per_attr.min() >= 3, "по 3+ существа каждой стихии: %s" % str(per_attr))
-	_check(CardDB.arena_ids().size() == 26, "26 карт ворот (7 стихии + 8 вида + 11 командных): %d" % CardDB.arena_ids().size())
-	_check(CardDB.ability_ids().size() == 60, "60 способностей (26 стихийных + 18 усилений + 16 видовых): %d" % CardDB.ability_ids().size())
+	_check(CardDB.arena_ids().size() == 32, "32 карты ворот (13 стихии + 8 вида + 11 командных): %d" % CardDB.arena_ids().size())
+	_check(CardDB.ability_ids().size() == 66, "66 способностей (32 стихийных + 18 усилений + 16 видовых): %d" % CardDB.ability_ids().size())
 	var counts: Dictionary = {}
 	for id in CardDB.arena_ids() + CardDB.ability_ids():
 		var c: CardDef = CardDB.card(id)
 		var cls: StringName = CardDB.card_class(c)
 		counts[cls] = int(counts.get(cls, 0)) + 1
 		_check(c.text != "" and c.text.length() <= 120, "текст карты %s короткий и непустой" % id)
-	_check(counts == {&"gold": 7, &"silver": 8, &"bronze": 11, &"red": 26, &"blue": 18, &"green": 16}, "классы карт: %s" % str(counts))
+	_check(counts == {&"gold": 13, &"silver": 8, &"bronze": 11, &"red": 32, &"blue": 18, &"green": 16}, "классы карт: %s" % str(counts))
 	# у каждой стихии 2–3 стихийные и 3 усиления, у каждого вида 2 видовые
 	for el in range(6):
 		_check(CardDB.cards_of(CardDef.Kind.ABILITY, &"red", el).size() >= 2, "стихийные способности стихии %d" % el)
@@ -1369,7 +1369,8 @@ func _run_match(seed_value: int, ruleset: int = MatchRules.Ruleset.ANIME_INSPIRE
 				if pick == &"":
 					err = ctrl.pass_ability(p)
 				else:
-					err = ctrl.play_ability(p, pick)
+					var target := ais[p].choose_ability_target(ctrl.get_view(p), pre, pick, ctrl.legal_ability_targets(p, pick))
+					err = ctrl.play_ability(p, pick, target)
 			_:
 				out["error"] = "неожиданная фаза %d" % ctrl.get_phase()
 				return out

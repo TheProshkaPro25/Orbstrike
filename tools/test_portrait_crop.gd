@@ -29,7 +29,6 @@ func _run() -> void:
 	DirAccess.make_dir_recursive_absolute(output)
 	DeviceSettings.settings_path = output.path_join("device-settings.cfg")
 	DeviceSettings.reload_settings()
-	DeviceSettings.set_style(DeviceSettings.DEVICE)
 	DeviceSettings.set_reduce_motion(true)
 	CardDB.load_all()
 	var manifest: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://assets/portraits/hud_crops.json"))
@@ -52,6 +51,11 @@ func _run() -> void:
 	for definition: CreatureDef in CreatureModels.catalog_defs():
 		var id := definition.id
 		var key := String(id)
+		if CreaturePortrait.RENDERED_TEXTURES.has(id):
+			var rendered := CreaturePortrait.reference_texture(id)
+			check(rendered != null and rendered.get_width() == 512
+				and CreaturePortrait.hud_reference_texture(id) == rendered, "full silhouette of pre-matted render: " + key)
+			continue
 		check(decisions.has(key), "individual decision exists: " + key)
 		if not decisions.has(key): continue
 		var decision: Dictionary = decisions[key]

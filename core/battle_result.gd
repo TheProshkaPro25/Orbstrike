@@ -51,6 +51,16 @@ var called_uids: Array[int] = [-1, -1]
 var reserve_cards: Array[StringName] = [&"", &""]
 var triumph: Array[bool] = [false, false]
 var valor_saved_uid: int = -1
+## После обычной победы: существо сразу готово к броску или занимает свободные ворота.
+var breakaway: bool = false
+var sluice_slot: int = -1
+var tentacle_slot: int = -1
+## Первая потраченная синяя карта проигравшего; контроллер проверяет, осталась ли она отдыхать.
+var tribute_card: StringName = &""
+
+
+func winner_destination() -> int:
+	return sluice_slot if sluice_slot >= 0 else tentacle_slot
 
 
 func ability_count(side: int) -> int:

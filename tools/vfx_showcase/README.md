@@ -34,7 +34,7 @@ godot --path . --windowed --position -20000,-20000 -s res://tools/vfx_showcase/c
 | --- | --- | --- |
 | Godot Effects Lab | Три луча от витражей | Лучи от витражей Святилища, два на низком качестве и четыре на среднем и высоком. `SanctuaryWindowLight` |
 | REEBOO Stylized VFX Free | `hit_spark`, `slash`, `pickup_sparkle` | Искра в момент контакта, дуга у меча Ратника и короткое мерцание там, откуда уходит захваченная карта. `ArenaDirector`, `MatchPresentation` |
-| Elemental Impact VFX Lite | Вспышка, кольцо, дым и искры | Только удар Пламени. Величина вспышки зависит от размера цели. `ArenaDirector`, `MatchEffects` |
+| Elemental Impact VFX Lite | Вспышка, кольцо, дым и искры | Текстуры огня, дыма и искр используются в замахе и попадании Пламени. `CreatureElementFx` |
 | Шлейфы Orbstrike | Десять процедурных стилей | Шесть стихий при физическом броске из обычного Boot. След очищается при качении и возвращается в пул после остановки или выхода из матча. `FlightTrails`, `CreatureBall` |
 | Vefects Trails VFX | Десять локальных образцов | Только вкладка сравнения в стенде |
 | Kenney Particle Pack | `flare_01` и `spark_05` | Искры огненного удара и качения сферы Пламени, частицы резервного шлейфа в изолированных сценах. `MatchEffects`, `BallFx` |

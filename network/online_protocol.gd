@@ -76,7 +76,7 @@ static func deck_error(packet: Dictionary) -> String:
 	if not ids(packet.get("creatures")) or not ids(packet.get("gates")) or not ids(packet.get("abilities")): return "Неверная колода"
 	# CardDB's rare encounter is an NPC special, unavailable in a player's deck.
 	for id in packet.creatures:
-		if not CardDB.creature_ids().has(StringName(id)): return "Существо недоступно игроку"
+		if not CardDB.online_creature_available(StringName(id)): return "Существо недоступно игроку"
 	for id in packet.gates:
 		var card := CardDB.card(StringName(id))
 		if card == null or card.kind != CardDef.Kind.ARENA: return "Неверный тип ворот"
@@ -103,7 +103,7 @@ static func validate_server(packet: Dictionary) -> bool:
 			for p in packet.players:
 				if not p is Dictionary or not _keys(p,["name","connected","ready","has_deck","creatures"]) or not _text(p.name,32) or not p.connected is bool or not p.ready is bool or not p.has_deck is bool or not _list(p.creatures,0,3): return false
 				for id in p.creatures:
-					if not id is String or id.length() > 80 or CardDB.creature(StringName(id)) == null: return false
+					if not id is String or id.length() > 80 or not CardDB.online_creature_available(StringName(id)): return false
 			return true
 		"state": return _server_state(packet)
 		"flight":
@@ -155,7 +155,7 @@ static func _server_state(packet: Dictionary) -> bool:
 	return true
 
 static func _known_card(value: Variant) -> bool:
-	return value is String and value.length() <= 80 and CardDB.card(StringName(value)) != null
+	return value is String and value.length() <= 80 and CardDB.card_available(CardDB.card(StringName(value)), CardDB.Pool.ELEMENTAL)
 static func _text(value: Variant, limit: int) -> bool:
 	return value is String and value.length() <= limit
 static func _list(value: Variant, low: int, high: int) -> bool:

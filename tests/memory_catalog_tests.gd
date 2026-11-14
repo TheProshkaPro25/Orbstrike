@@ -107,11 +107,12 @@ func run() -> void:
 	loader._game.team_menu._preview.release()
 	await process_frame
 	var loaded := memory()
-	check(loader.ready_to_play and loader.actor_build_count == 98 and loader.arena_build_count == 3, "full 49x2 + three arenas ready before menu")
+	var catalog := CreatureModels.catalog_defs()
+	check(loader.ready_to_play and loader.actor_build_count == catalog.size() * 2 and loader.arena_build_count == 3, "two copies of every definition and three arenas before menu")
 	for source in CreatureModels._scenes.values(): walk(source)
 	var original_counts := [loader.actor_build_count, loader.arena_build_count, loader.preparation_count]
 	var activation: Array[float] = []
-	for d in CreatureModels.catalog_defs():
+	for d in catalog:
 		var first: CreatureBall = loader._balls[d.id][0]
 		var second: CreatureBall = loader._balls[d.id][1]
 		var a := first._anim._player
@@ -170,13 +171,15 @@ func run() -> void:
 		if phase == "after": check(FileAccess.file_exists(baseline_path), "baseline exists for exact curve/pose comparison")
 		if FileAccess.file_exists(baseline_path):
 			var baseline: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(baseline_path))
-			check(baseline.animation_sha256 == fingerprints, "all 49 dense curve fingerprints exactly match baseline")
-			check(baseline.sample_poses == sample_poses, "all 49 sampled skeleton poses exactly match baseline")
-		check(library_ids.size() == 49 and animation_ids.size() == 245, "one immutable library and five animations per source")
-		check(texture_slots == {"albedo_texture":55}, "only original albedo texture slots remain in 49 HD source scenes")
+			for id in baseline.animation_sha256:
+				check(baseline.animation_sha256[id] == fingerprints.get(id), "dense curves match baseline " + id)
+			for id in baseline.sample_poses:
+				check(baseline.sample_poses[id] == sample_poses.get(id), "skeleton poses match baseline " + id)
+		check(library_ids.size() == catalog.size() and animation_ids.size() == catalog.size() * 5, "one immutable library and five animations per source")
+		check(texture_slots == {"albedo_texture":85}, "only albedo texture slots remain in all HD source scenes")
 		var model_script: GDScript = load("res://scenes/creature_models.gd")
 		var animation_cache: Dictionary = model_script.get("animation_library_cache")
-		check(animation_cache.size() == 49, "bounded catalogue animation cache has no actor entries")
+		check(animation_cache.size() == catalog.size(), "bounded catalogue animation cache has no actor entries")
 		result.checks = checks
 		result.failures = failures
 	var path := out_dir.path_join(phase + ".json")

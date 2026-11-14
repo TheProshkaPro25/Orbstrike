@@ -53,7 +53,6 @@ func _run() -> void:
 	DirAccess.make_dir_recursive_absolute(out)
 	DeviceSettings.settings_path = out.path_join("isolated-settings.cfg")
 	DeviceSettings.reload_settings()
-	DeviceSettings.set_style(DeviceSettings.CLASSIC)
 	DeviceSettings.set_reduce_motion(true)
 	CardDB.load_all()
 	Metrics.install()
@@ -127,11 +126,6 @@ func boundaries() -> void:
 	alternate.details += "\nИзменённое определение fixture"
 	preview.show_card(alternate)
 	check(preview._full_card.get_instance_id() != previous and str(preview._full_card.get_meta("face_body")).contains("Изменённое определение fixture"),"same ID with a new Resource never keeps stale face")
-	await frames()
-	previous = preview._full_card.get_instance_id()
-	DeviceSettings.set_style(DeviceSettings.CLASSIC if DeviceSettings.is_device() else DeviceSettings.DEVICE)
-	preview.show_card(alternate)
-	check(preview._full_card.get_instance_id() != previous,"theme change invalidates the preview")
 	await frames()
 	card = preview._full_card
 	preview.size.x = 480

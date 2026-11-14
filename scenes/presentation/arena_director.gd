@@ -4,7 +4,6 @@ extends Node
 
 const Resources := preload("res://scenes/match_resources.gd")
 const State := preload("res://scenes/presentation/match_presentation_state.gd")
-const AttackFx := preload("res://scenes/attack_fx.gd")
 const MatchEffects := preload("res://scenes/presentation/match_effects.gd")
 const CARD_SCENE: PackedScene = preload("res://scenes/arena_card_node.tscn")
 const HUMAN := 0
@@ -26,6 +25,7 @@ var ability_panel: AbilityPanel
 var battle_overlay: BattleOverlay
 var rng: RandomNumberGenerator
 var effects: MatchEffects
+var semifinal_music := false
 var arena: Arena:
 	get: return resources.arena if resources != null else null
 var balls: Dictionary:
@@ -74,8 +74,26 @@ func fighter_action(player: int,action: String,card: CardDef = null,element: int
 	fighter.ability_card.clear()
 	battle_hud.visible = battle_visible
 
+func _match_theme() -> String:
+	var location_id := arena.location_id if is_instance_valid(arena) else -1
+	return SoundFx.i().match_theme(location_id, semifinal_music)
+
+
+func play_match_music() -> void:
+	var sound := SoundFx.i()
+	var theme := _match_theme()
+	sound.play_music(sound.turn_music() if theme.is_empty() else theme)
+
+
+func _resume_turn_music() -> void:
+	if _match_theme().is_empty():
+		var sound := SoundFx.i()
+		sound.play_music(sound.turn_music())
+
+
 func battle_started(slot: int, attacker_uid: int, defender_uid: int, powers: Array = [], momentum: Array = [0, 0]) -> void:
-	SoundFx.i().play_music(SoundFx.MUSIC_CLASH, 1.5, false)  # бой — тема схватки с начала
+	if _match_theme().is_empty():
+		SoundFx.i().play_music(SoundFx.MUSIC_CLASH, 1.5, false)
 	arena.set_highlight([slot])
 	var atk: CreatureBall = balls.get(attacker_uid)
 	var dfn: CreatureBall = balls.get(defender_uid)
@@ -136,12 +154,14 @@ func battle_started(slot: int, attacker_uid: int, defender_uid: int, powers: Arr
 	await wait(0.35)
 
 func battle_resolved(result: BattleResult) -> void:
+	var revision := resources._revision
 	hud.set_phase(MatchController.Phase.RESOLVING)
-	if DeviceSettings.is_device(): hud.set_hint("")
+	hud.set_hint("")
 	arena.set_highlight([])
 	battle_hud.set_powers([result.powers[0], result.powers[1]])
 	cam.battle_wide()
 	await wait(0.22)
+	if revision != resources._revision: return
 	if result.winner_uid < 0:
 		await no_winner(result)
 		return
@@ -150,27 +170,33 @@ func battle_resolved(result: BattleResult) -> void:
 	var lb: CreatureBall = balls.get(result.loser_uid)
 	cry(result.winner_uid, "attack", 0.0)
 	var wh: float = wb.figure_height() if wb != null else 10.0
-	if wb != null and lb != null:
+	var impact_hold := 0.5
+	if _has_strike_pair(wb, lb):
 		# Замах виден на общем плане, наезд — только в момент контакта.
 		lb.brace()
-		await wb.lunge(lb.global_position)
-		wb.hold_impact()
-		cam.impact((wb.global_position + lb.global_position) * 0.5 + Vector3(0, wh * 0.45, 0))
-		lb.take_hit(VisualUtil.attr_color(wb.def.attribute).lightened(0.2))
-		_play_strike(wb, lb)
-	SoundFx.i().play("clash")
+		wb.lunge(lb.global_position)
+		var landed := await wait_for_strike(wb, lb)
+		if revision != resources._revision: return
+		if landed:
+			wb.hold_impact()
+			cam.impact((wb.global_position + hit_anchor(lb)) * 0.5 + Vector3.UP * wh * 0.15)
+			play_strike(wb, lb)
+			lb.take_hit(VisualUtil.attr_color(wb.def.attribute).lightened(0.2))
+			if wb.def.attribute in [Attr.A.STONE, Attr.A.TIDE]: impact_hold = 0.86
 	cam.shake(1.0, 0.45)
 	hud.screen_flash(Color(1, 1, 1, 0.18))
 	battle_hud.resolve(0 if result.winner_uid == result.attacker_uid else 1)
 	SoundFx.i().play_later("battle_win" if owner_of(result.winner_uid) == HUMAN else "battle_lose", 0.35, -2.0)
-	await wait(0.5)
+	await wait(impact_hold)
+	if revision != resources._revision: return
 	# Короткая победная пауза; полный облёт оставляем раскрытию существ.
-	if wb != null and is_instance_valid(wb):
-		var facing: Vector3 = lb.global_position - wb.global_position if lb != null else Vector3.FORWARD
+	if is_instance_valid(wb) and wb.is_figure_shown():
+		var facing: Vector3 = lb.global_position - wb.global_position if is_instance_valid(lb) else Vector3.FORWARD
 		cam.close_up(wb.global_position - Vector3(0, CreatureBall.RADIUS, 0), facing, wh, wb.figure_size())
-	await wait(0.65)
+	await wait(1.15 - impact_hold)
+	if revision != resources._revision: return
 	battle_hud.close()
-	SoundFx.i().play_music(SoundFx.i().turn_music())  # после боя — музыка хода с того же места
+	_resume_turn_music()
 	hud.set_battle_mode(false)
 	cam.overview()  # кат на общий план после боя
 	labels_requested.emit([])
@@ -182,30 +208,32 @@ func battle_resolved(result: BattleResult) -> void:
 ## Бой без победителя: «Отлив» (бой прерван) или выбывают оба (удар обоих, вспышка).
 
 func no_winner(result: BattleResult) -> void:
+	var revision := resources._revision
 	var ab: CreatureBall = balls.get(result.attacker_uid)
 	var db: CreatureBall = balls.get(result.defender_uid)
 	if result.both_lose:
-		if ab != null and db != null:
+		if _has_strike_pair(ab, db):
 			cam.impact((ab.global_position + db.global_position) * 0.5 + Vector3(0, ab.figure_height() * 0.45, 0))
-			var contact: Signal = ab.lunge(db.global_position, 0.46)
-			db.lunge(ab.global_position, 0.46)
-			await contact
-			ab.take_hit(Color(1.0, 0.4, 0.3))
-			db.take_hit(Color(1.0, 0.4, 0.3))
-			_play_strike(ab, db)
-			_play_strike(db, ab)
-		SoundFx.i().play("clash")
+			var first := _start_trade(ab, db)
+			var second := _start_trade(db, ab)
+			if not first.done: await first.finished
+			if not second.done: await second.finished
+			if revision != resources._revision: return
+			if _has_strike_pair(ab, db):
+				if second.landed: ab.take_hit(Color(1.0, 0.4, 0.3))
+				if first.landed: db.take_hit(Color(1.0, 0.4, 0.3))
 		cam.shake(1.0, 0.5)
 		hud.screen_flash(Color(1.0, 0.35, 0.25, 0.2))
 		battle_hud.resolve(-1)
-		await hud.banner("ВЫБЫВАЮТ ОБА", "Ворота сгорают", Color(1.0, 0.45, 0.3), 0.8)
+		await hud.banner("ВЫБЫВАЮТ ОБА", "Ворота сгорают", Color(1.0, 0.45, 0.3), 0.8, true)
 	else:
 		SoundFx.i().play("miss", -2.0)
 		cam.shake(0.4, 0.3)
 		battle_hud.resolve(-1)
-		await hud.banner("БОЙ ПРЕРВАН", "Отлив уносит соперника на другие ворота", Color(0.45, 0.75, 1.0), 0.8)
+		await hud.banner("БОЙ ПРЕРВАН", "Отлив уносит соперника на другие ворота", Color(0.45, 0.75, 1.0), 0.8, true)
+	if revision != resources._revision: return
 	battle_hud.close()
-	SoundFx.i().play_music(SoundFx.i().turn_music())  # после боя — музыка хода с того же места
+	_resume_turn_music()
 	hud.set_battle_mode(false)
 	cam.overview()
 	labels_requested.emit([])
@@ -214,21 +242,73 @@ func no_winner(result: BattleResult) -> void:
 	await battle_overlay.show_result(result, names_for(result))
 
 
-func _play_strike(attacker: CreatureBall, target: CreatureBall) -> void:
-	var floor_off := Vector3.UP * CreatureBall.RADIUS
-	var from := attacker.global_position - floor_off
-	var to := target.global_position - floor_off
-	var direction := (to - from).slide(Vector3.UP).normalized()
+class TradeContact extends RefCounted:
+	signal finished
+	var done := false
+	var landed := false
+
+
+func _start_trade(attacker: CreatureBall, target: CreatureBall) -> TradeContact:
+	var contact := TradeContact.new()
+	_play_trade(attacker, target, contact)
+	return contact
+
+
+func _play_trade(attacker: CreatureBall, target: CreatureBall, contact: TradeContact) -> void:
+	attacker.lunge(target.global_position, 0.46)
+	contact.landed = await wait_for_strike(attacker, target)
+	if contact.landed: play_strike(attacker, target)
+	contact.done = true
+	contact.finished.emit()
+
+
+func wait_for_strike(attacker: CreatureBall, target: CreatureBall) -> bool:
+	if not _has_strike_pair(attacker, target):
+		return false
+	var revision := resources._revision
+	var landed: bool
+	if is_instance_valid(attacker._anim):
+		landed = await attacker._anim.strike_resolved
+	else:
+		await get_tree().create_timer(0.42).timeout
+		landed = true
+	return landed and revision == resources._revision and _has_strike_pair(attacker, target)
+
+
+func _has_strike_pair(attacker: CreatureBall, target: CreatureBall) -> bool:
+	return is_instance_valid(attacker) and is_instance_valid(target) \
+		and attacker.is_figure_shown() and target.is_figure_shown() \
+		and balls.get(attacker.uid) == attacker and balls.get(target.uid) == target
+
+
+func hit_anchor(target: CreatureBall) -> Vector3:
+	return target._anim.strike_anchor() if target._anim != null else target.global_position + Vector3.UP * target.figure_height() * 0.46
+
+
+func _strike_surface(at: Vector3) -> ArenaCardNode:
+	var surface: ArenaCardNode
+	var height := 0.0
+	for candidate: ArenaCardNode in get_tree().get_nodes_in_group(&"gate_surfaces"):
+		if candidate.get_world_3d() != world.get_world_3d() or not candidate.is_visible_in_tree(): continue
+		var top := candidate.surface_height_at(at)
+		if top > height:
+			height = top
+			surface = candidate
+	return surface
+
+
+func play_strike(attacker: CreatureBall, target: CreatureBall, strength: float = 1.0) -> void:
+	var direction := (target.global_position - attacker.global_position).slide(Vector3.UP).normalized()
 	var facing := Basis.looking_at(direction) if not direction.is_zero_approx() else Basis.IDENTITY
 	var height := target.figure_height()
 	var size := target.figure_size()
-	var contact := to + Vector3.UP * (height * 0.46) - direction * minf(size * 0.16, 2.0)
-	effects.hit(contact, facing, clampf(size * 0.11, 0.95, 2.4))
-	if attacker.def.attribute == Attr.A.FIRE:
-		var flame_center := contact - direction * clampf(height * 0.11, 0.6, 1.75)
-		effects.fire_impact(flame_center, clampf(height * 0.15, 1.1, 2.45))
-	else:
-		AttackFx.play(world, attacker.def.attribute, from, to, height, size, attacker.figure_height())
+	var contact := hit_anchor(target) - direction * minf(size * 0.13, 1.7)
+	var surface := _strike_surface(contact)
+	effects.elemental_impact(attacker.def.attribute, contact, direction, clampf(height * 0.33, 2.1, 5.25), strength, surface)
+	SoundFx.i().strike_impact(attacker.def.attribute, strength)
+	# The universal contact spark must not drown out darker elements.
+	if attacker.def.attribute in [Attr.A.FIRE, Attr.A.GALE, Attr.A.LIGHT] and strength >= 1.0:
+		effects.hit(contact, facing, clampf(size * 0.044, 0.44, 0.85))
 	if attacker.def.species != &"ratnik" or attacker._anim == null or attacker._anim._support == null:
 		return
 	var skeleton: Skeleton3D = attacker._anim._support.skeleton

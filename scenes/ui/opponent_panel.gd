@@ -94,7 +94,6 @@ func _init() -> void:
 
 func _enter_tree() -> void:
 	if not get_viewport().size_changed.is_connected(_layout): get_viewport().size_changed.connect(_layout)
-	if not DEVICE.events().changed.is_connected(_style_changed): DEVICE.events().changed.connect(_style_changed)
 	if not DEVICE.events().motion_changed.is_connected(_motion_changed): DEVICE.events().motion_changed.connect(_motion_changed)
 	_resume.call_deferred()
 
@@ -258,7 +257,7 @@ func _apply_visibility(animate: bool = false) -> void:
 	if not _context_mode.is_empty() and not _context_active():
 		hide_context()
 		return
-	var should_show := _context_active() and not _compact and DEVICE.is_device() and is_inside_tree()
+	var should_show := _context_active() and not _compact and is_inside_tree()
 	var newly_shown := should_show and (not visible or _shown_uid != _uid)
 	visible = should_show
 	if should_show:
@@ -292,7 +291,7 @@ func _appear() -> void:
 
 
 func _animate() -> bool:
-	return is_inside_tree() and is_visible_in_tree() and _context_active() and DEVICE.is_device() and not DEVICE.reduce_motion()
+	return is_inside_tree() and is_visible_in_tree() and _context_active() and not DEVICE.reduce_motion()
 
 
 ## Stable occupied lane for neighbouring HUD controls, independent of entrance Tween.
@@ -353,12 +352,6 @@ func _visibility_changed() -> void:
 		_portrait._deactivate()
 
 
-func _style_changed(_style: int) -> void:
-	_settle()
-	_apply_visibility()
-	_layout.call_deferred()
-
-
 func _motion_changed(reduced: bool) -> void:
 	if reduced: _settle()
 
@@ -392,5 +385,4 @@ func _kill(tween: Tween) -> void:
 func _exit_tree() -> void:
 	hide_context()
 	if get_viewport() != null and get_viewport().size_changed.is_connected(_layout): get_viewport().size_changed.disconnect(_layout)
-	if DEVICE.events().changed.is_connected(_style_changed): DEVICE.events().changed.disconnect(_style_changed)
 	if DEVICE.events().motion_changed.is_connected(_motion_changed): DEVICE.events().motion_changed.disconnect(_motion_changed)

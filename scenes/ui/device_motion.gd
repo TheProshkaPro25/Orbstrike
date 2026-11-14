@@ -24,7 +24,7 @@ var render_alpha := 1.0
 
 static func play_on(target: Control, effect_kind: String, effect_color: Color = UiTheme.DEVICE_ACCENT, start_delay: float = 0.0) -> Control:
 	if not is_instance_valid(target) or not target.is_inside_tree() or not target.is_visible_in_tree(): return null
-	if not DeviceSettings.is_device() or DeviceSettings.reduce_motion(): return null
+	if DeviceSettings.reduce_motion(): return null
 	if not DURATIONS.has(effect_kind) or target.size.x < 2.0 or target.size.y < 2.0: return null
 	var registry: Dictionary = target.get_meta(REGISTRY, {})
 	var previous: WeakRef = registry.get(effect_kind)
@@ -90,7 +90,6 @@ class RevealWatcher extends Node:
 
 	func _enter_tree() -> void:
 		if not get_tree().node_added.is_connected(_added): get_tree().node_added.connect(_added)
-		if not DeviceSettings.events().changed.is_connected(_style): DeviceSettings.events().changed.connect(_style)
 		if not DeviceSettings.events().motion_changed.is_connected(_motion): DeviceSettings.events().motion_changed.connect(_motion)
 		_scan.call_deferred()
 		if enabled: start.call_deferred()
@@ -106,7 +105,6 @@ class RevealWatcher extends Node:
 	func _exit_tree() -> void:
 		_settle()
 		if get_tree().node_added.is_connected(_added): get_tree().node_added.disconnect(_added)
-		if DeviceSettings.events().changed.is_connected(_style): DeviceSettings.events().changed.disconnect(_style)
 		if DeviceSettings.events().motion_changed.is_connected(_motion): DeviceSettings.events().motion_changed.disconnect(_motion)
 
 	func _added(node: Node) -> void:
@@ -178,7 +176,7 @@ class RevealWatcher extends Node:
 		if not _pending.is_empty(): _timer.start()
 
 	func _flush() -> void:
-		if not enabled or not DeviceSettings.is_device() or DeviceSettings.reduce_motion():
+		if not enabled or DeviceSettings.reduce_motion():
 			_pending.clear()
 			return
 		var pending := _pending.duplicate()
@@ -200,9 +198,6 @@ class RevealWatcher extends Node:
 		for entry: Dictionary in _targets.values():
 			var target: Control = entry.ref.get_ref()
 			if is_instance_valid(target): _motion_script().call("stop_on",target)
-
-	func _style(_value: int) -> void:
-		_settle()
 
 	func _motion(_value: bool) -> void:
 		_settle()
@@ -226,7 +221,6 @@ func _ready() -> void:
 	_target.tree_exiting.connect(stop)
 	_target.resized.connect(stop)
 	visibility_changed.connect(_visibility_changed)
-	DeviceSettings.events().changed.connect(_style_changed)
 	DeviceSettings.events().motion_changed.connect(_motion_changed)
 	motion_tween = create_tween().set_ignore_time_scale(true)
 	if delay > 0.0: motion_tween.tween_interval(delay)
@@ -277,10 +271,6 @@ func _visibility_changed() -> void:
 	if not _stopped and (not is_visible_in_tree() or not _target.is_visible_in_tree()): stop()
 
 
-func _style_changed(_style: int) -> void:
-	stop()
-
-
 func _motion_changed(reduced: bool) -> void:
 	if reduced: stop()
 
@@ -311,7 +301,6 @@ func _exit_tree() -> void:
 	if motion_tween != null and motion_tween.is_valid(): motion_tween.kill()
 	motion_tween = null
 	_unregister()
-	if DeviceSettings.events().changed.is_connected(_style_changed): DeviceSettings.events().changed.disconnect(_style_changed)
 	if DeviceSettings.events().motion_changed.is_connected(_motion_changed): DeviceSettings.events().motion_changed.disconnect(_motion_changed)
 	if is_instance_valid(_target):
 		if _target.visibility_changed.is_connected(_visibility_changed): _target.visibility_changed.disconnect(_visibility_changed)

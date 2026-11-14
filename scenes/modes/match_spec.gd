@@ -11,6 +11,7 @@ var names: Array[String] = []
 var arena_id := 0
 var power_snapshots: Array[Dictionary] = [{}, {}]
 var fixture: Dictionary = {}
+var card_pool: int = CardDB.Pool.SPECIES
 
 func apply_power_snapshots(controller: MatchController) -> void:
 	for side in 2:

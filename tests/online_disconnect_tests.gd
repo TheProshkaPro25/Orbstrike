@@ -30,7 +30,7 @@ class CleanupFixture extends Online:
 		director = ArenaDirector.new()
 		director.state = presentation.state
 		add_child(director)
-		for row in [["hud",HudUI.new()],["setup_panel",SetupPanel.new()],["ability_panel",AbilityPanel.new()],["game_over_ui",GameOverUI.new()],["battle_overlay",BattleOverlay.new()],["team_menu",MinimalTeam.new()],["battle_hud",BattleHud.new()]]:
+		for row in [["hud",HudUI.new()],["setup_panel",SetupPanel.new()],["ability_panel",AbilityPanel.new()],["ability_target_picker",AbilityTargetPicker.new()],["game_over_ui",GameOverUI.new()],["battle_overlay",BattleOverlay.new()],["team_menu",MinimalTeam.new()],["battle_hud",BattleHud.new()]]:
 			set(row[0],row[1])
 			ui_layer.add_child(row[1])
 		_build_connection_ui()
@@ -68,6 +68,8 @@ func run() -> void:
 		await process_frame
 	check(action_started and game.events.is_busy(),"director action is running before disconnect")
 	check(not game.battle_overlay._open,"overlay has not opened yet")
+	var sound := SoundFx.i()
+	var sfx_epoch := sound._match_sfx_epoch
 	game._disconnected("fixture disconnect")
 	check(game._connect_button.disabled and game._cleaning_match,"reconnect disabled while action owns actors")
 	check(not game.client.verified,"old socket cannot create a room during cleanup")
@@ -78,6 +80,8 @@ func run() -> void:
 	check(action_finished and not game.events.is_busy(),"late overlay closed and action drained")
 	check(not game._cleaning_match and not game._connect_button.disabled,"reconnect enabled after cleanup")
 	check(not game._match_ready and game.snapshot.is_empty(),"old match state cleared before reconnect")
+	check(sound._match_sfx_epoch == sfx_epoch + 1 and sound._pool.all(func(player: AudioStreamPlayer) -> bool:
+		return player.stream == null and not player.playing), "match audio reset before reconnect")
 	check(game._gate_pick.is_empty(),"pending combination cleared")
 	check(not game.battle_overlay._open,"no result overlay left open")
 	check(game.game_over_ui._restart_button.text == "Реванш","rematch label restored")
@@ -85,6 +89,7 @@ func run() -> void:
 	check(game.balls.is_empty() and game.fighters.is_empty() and game.card_nodes.is_empty(),"cleanup leaves no match actor references")
 	check(Engine.max_fps == 60,"60FPS limit preserved")
 	game.queue_free()
+	sound.queue_free()
 	for frame in 4: await process_frame
 	print("ONLINE DISCONNECT: %d checks, %d failures"%[checks,failures])
 	quit(1 if failures else 0)

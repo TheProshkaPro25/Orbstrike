@@ -129,7 +129,7 @@ static func valid_view(data: Variant) -> bool:
 		if not c is Dictionary or not _fields(c,["uid","def_id","owner","alive","slot","used","recalled_from","attached","marks"]): return false
 		if not _int(c.uid,0,5) or seen.has(int(c.uid)) or not _int(c.owner,0,1) or int(c.owner) != int(c.uid)/3: return false
 		seen.append(int(c.uid))
-		if not c.def_id is String or not CardDB.creature_ids().has(StringName(c.def_id)) or not c.alive is bool or not _int(c.slot,-1,5) or not c.used is bool or not _int(c.recalled_from,-1,5): return false
+		if not c.def_id is String or not CardDB.online_creature_available(StringName(c.def_id)) or not c.alive is bool or not _int(c.slot,-1,5) or not c.used is bool or not _int(c.recalled_from,-1,5): return false
 		if species_seen[int(c.owner)].has(c.def_id): return false
 		species_seen[int(c.owner)].append(c.def_id)
 		if not _array(c.attached,0,3) or not _array(c.marks,0,64): return false
@@ -218,7 +218,7 @@ static func _int(value: Variant, low: int, high: int) -> bool:
 	return (typeof(value) == TYPE_INT or typeof(value) == TYPE_FLOAT) and is_finite(float(value)) and float(value) == floor(float(value)) and float(value) >= low and float(value) <= high
 
 static func _card_id(value: Variant, hidden: bool) -> bool:
-	return value is String and ((hidden and value.is_empty()) or (value.length() <= 80 and CardDB.card(StringName(value)) != null))
+	return value is String and ((hidden and value.is_empty()) or (value.length() <= 80 and CardDB.card_available(CardDB.card(StringName(value)), CardDB.Pool.ELEMENTAL)))
 
 static func _plain(value: Variant, depth: int) -> bool:
 	if depth > 5: return false

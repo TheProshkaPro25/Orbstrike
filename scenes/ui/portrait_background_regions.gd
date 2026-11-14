@@ -20,7 +20,7 @@ const REGIONS := {
 }
 
 ## Additional negative-space gaps reviewed in the battle HUD. Kept separate
-## from the common matte so ordinary and classic portraits retain their look.
+## from the common matte so portraits outside battle retain their look.
 const BATTLE_REGIONS := {
 	&"creature_dragnar_gale": {
 		"rgba_sha256": "0a4216c0a9789b11f5088da09bf55bbb2375a540e3d4d81c03ea67195c272355",

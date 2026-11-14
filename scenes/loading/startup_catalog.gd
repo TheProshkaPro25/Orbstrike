@@ -17,6 +17,7 @@ class LoadResult extends RefCounted:
 
 const CARD_SCENE: PackedScene = preload("res://scenes/arena_card_node.tscn")
 const MatchEffects := preload("res://scenes/presentation/match_effects.gd")
+const CreatureElementFx := preload("res://scenes/presentation/creature_element_fx.gd")
 
 
 static func resource_paths() -> Array[String]:
@@ -105,6 +106,17 @@ static func warm_effects(parent: Node3D) -> void:
 	for element in Attr.COUNT:
 		var local_center := Vector3((element % 3 - 1) * 2.0, float(element / 3) * 1.5, 0)
 		var center := temporary.to_global(local_center)
+		var creature_effect := CreatureElementFx.new()
+		creature_effect.configure(element, Vector2(0.8, 0.8), 1.2)
+		creature_effect.position = local_center
+		temporary.add_child(creature_effect)
+		creature_effect.begin_charge(Vector3.FORWARD, 1.0)
+		creature_effect.windup(0.72)
+		var impact := CreatureElementFx.new()
+		impact.prepare_impact()
+		temporary.add_child(impact)
+		impact.show_impact(element, center, Vector3.FORWARD, 0.65, 1.0, null, center.y - 0.72)
+		impact._impact_frame(0.18)
 		for role in ["trail", "roll", "open", "burst"]:
 			var effect := BallFx.particles(element, role, 1.0)
 			temporary.add_child(effect)
@@ -136,7 +148,6 @@ static func warm_effects(parent: Node3D) -> void:
 	temporary.add_child(match_effects)
 	match_effects.hit(temporary.to_global(Vector3(-2, 0.6, 1)), Basis.IDENTITY, 1.0)
 	match_effects.sword_slash(temporary.to_global(Vector3(2, 0.6, 1)), Basis.IDENTITY, 1.0)
-	match_effects.fire_impact(temporary.to_global(Vector3(-2, -0.7, 1)), 1.0)
 	match_effects.gate_capture(temporary.to_global(Vector3(2, -0.7, 1)))
 
 	var card := CARD_SCENE.instantiate() as ArenaCardNode

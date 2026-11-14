@@ -355,15 +355,12 @@ func do_ability(player: int) -> void:
 			note = "Соперник спасовал. Ваш пас завершит бой."
 		if not ctrl.state.slots[preview.slot].revealed:
 			note = ("Ворота закрыты. " if ctrl.can_reveal_gate(HUMAN) else "Закрытые ворота соперника. ") + note
-		if DeviceSettings.is_device():
-			if entries.is_empty():
-				hud.set_hint("Откройте свои ворота или пропустите ответ")
-			elif ctrl.can_reveal_gate(HUMAN):
-				hud.set_hint("Сыграйте карту, откройте ворота или спасуйте")
-			else:
-				hud.set_hint("Сыграйте слияние или спасуйте" if fusion_only else "Сыграйте способность или спасуйте")
+		if entries.is_empty():
+			hud.set_hint("Откройте свои ворота или пропустите ответ")
+		elif ctrl.can_reveal_gate(HUMAN):
+			hud.set_hint("Сыграйте карту, откройте ворота или спасуйте")
 		else:
-			hud.set_hint("Слияние?" if fusion_only else "Ваша способность?")
+			hud.set_hint("Сыграйте слияние или спасуйте" if fusion_only else "Сыграйте способность или спасуйте")
 		# Справка доступна наведением на блок ответа; отдельная большая карточка
 		# наставника закрывала ленту и управление на невысоком экране.
 		ability_panel.show_options(entries, hdr, {"moment": &"battle", "used": MatchController.MAX_BATTLE_ABILITIES - ctrl.abilities_left(HUMAN),

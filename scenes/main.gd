@@ -19,7 +19,6 @@ const ABILITY_SCENE: PackedScene = preload("res://scenes/ui/ability_panel.tscn")
 const BATTLE_SCENE: PackedScene = preload("res://scenes/ui/battle_overlay.tscn")
 const GAMEOVER_SCENE: PackedScene = preload("res://scenes/ui/game_over.tscn")
 const TEAM_MENU_SCENE: PackedScene = preload("res://scenes/ui/team_menu.tscn")
-const AttackFx := preload("res://scenes/attack_fx.gd")
 const HUMAN := 0
 const AI_PLAYER := 1
 const THROW_Z := Arena.STEP_Z * 0.5 + Arena.CARD_H * 0.5 + 0.8 * Arena.WORLD
@@ -251,6 +250,8 @@ shader_type sky;
 uniform vec4 sky_zenith : source_color = vec4(0.016, 0.033, 0.062, 1.0);
 uniform vec4 sky_horizon : source_color = vec4(0.08, 0.14, 0.19, 1.0);
 uniform vec4 sky_mist : source_color = vec4(0.11, 0.035, 0.13, 1.0);
+uniform bool harbor_sky = false;
+uniform vec3 harbor_moon_direction = vec3(-1.0, 0.0, 0.0);
 // Непрерывные волны без floor/hash: нет клеток на гранях небесного куба.
 void sky() {
 	vec3 d = normalize(EYEDIR);
@@ -261,6 +262,12 @@ void sky() {
 	vec3 zenith = sky_zenith.rgb;
 	vec3 col = zenith + sky_horizon.rgb * horizon;
 	col += mix(vec3(0.025, 0.055, 0.09), sky_mist.rgb, mist) * (0.3 + 0.7 * horizon);
+	if (harbor_sky) {
+		float halo = pow(max(dot(d, harbor_moon_direction), 0.0), 18.0);
+		float clouds = smoothstep(0.36, 0.85, mist) * (1.0 - smoothstep(0.03, 0.26, abs(d.y - 0.15)));
+		col = zenith * 0.69 + sky_horizon.rgb * horizon * 0.78 + sky_mist.rgb * clouds * 0.61;
+		col += vec3(0.048, 0.077, 0.128) * halo;
+	}
 	COLOR = col;
 }
 """
@@ -365,7 +372,7 @@ func apply_graphics() -> void:
 		arena.apply_quality()
 		_apply_arena_environment(arena.location_id)
 
-func _build_ui() -> void:
+func _build_ui(elemental_cards: bool = true, online_roster: bool = false) -> void:
 	ui_layer = CanvasLayer.new()
 	add_child(ui_layer)
 	# Тёмная виньетка по краям кадра (под интерфейсом)
@@ -401,7 +408,6 @@ func _build_ui() -> void:
 	ui_layer.add_child(_launch_target)
 	_place_launch_target()
 	get_viewport().size_changed.connect(_place_launch_target)
-	DeviceSettings.events().changed.connect(func(_style: int) -> void: _place_launch_target())
 	arena_slot_picker = ArenaSlotPicker.new()
 	ui_layer.add_child(arena_slot_picker)
 	arena_slot_picker.chosen.connect(_on_slot_picked)
@@ -412,6 +418,8 @@ func _build_ui() -> void:
 	game_over_ui = GAMEOVER_SCENE.instantiate() as GameOverUI
 	ui_layer.add_child(game_over_ui)
 	team_menu = TEAM_MENU_SCENE.instantiate() as TeamMenu
+	team_menu.elemental_cards = elemental_cards
+	team_menu.online_roster = online_roster
 	ui_layer.add_child(team_menu)
 	team_menu.location_preview_closed.connect(func() -> void: cam.snap_overview(); hud.visible = true)
 	hover_tips = HoverTips.new()
@@ -432,32 +440,41 @@ func _build_ui() -> void:
 	_configure_views()
 
 func _place_launch_target() -> void:
-	if DeviceSettings.is_device():
-		var card_height := UiTheme.device_hand_card(get_viewport().get_visible_rect().size).y
-		VisualUtil.place(_launch_target, 0.5, 1.0, 0.0, -card_height - 76.0)
-	else:
-		VisualUtil.place(_launch_target, 0.5, 0.0, 0.0, 166.0)
+	var card_height := UiTheme.device_hand_card(get_viewport().get_visible_rect().size).y
+	VisualUtil.place(_launch_target, 0.5, 1.0, 0.0, -card_height - 76.0)
 
 
 func _apply_arena_environment(index: int) -> void:
 	var data := Locations.definition(index)
-	var high := GraphicsSettings.current() == GraphicsSettings.Level.HIGH
+	var low := GraphicsSettings.current() == GraphicsSettings.Level.LOW
+	var sanctuary := index == 0
+	var harbor := index == 2
 	_arena_sky.set_shader_parameter("sky_zenith", Color(data.zenith).linear_to_srgb())
 	_arena_sky.set_shader_parameter("sky_horizon", Color(data.horizon).linear_to_srgb())
 	_arena_sky.set_shader_parameter("sky_mist", Color(data.mist).linear_to_srgb())
-	_env.fog_light_color = data.fog
-	_env.ambient_light_color = data.ambient
-	_sun.light_color = data.sun
-	_sun.light_energy = .22 if index == 0 else data.sun_energy
-	# Мягкий свет сохраняет цвет/форму фигур в тёмном зале, не заливая всю архитектуру.
-	_fill.light_cull_mask = (CreatureBall.FIGURE_LIGHT_LAYER | (1 << 18) | (1 << 19)) if index == 0 else 1
-	_fill.light_energy = (.76 if high else .68) if index == 0 else .9
-	_env.ambient_light_energy = (.22 if GraphicsSettings.current() == GraphicsSettings.Level.LOW else .15) if index == 0 else .75
-	_env.fog_density = .0009 if index == 0 else .0025
-	_env.fog_sky_affect = .8 if index == 0 else .25
+	_arena_sky.set_shader_parameter("harbor_sky", harbor)
+	if harbor: _arena_sky.set_shader_parameter("harbor_moon_direction", Locations.HARBOR_MOON.normalized())
+	_env.fog_light_color = Color(.083, .118, .173) if harbor else data.fog
+	_env.ambient_light_color = Color(.50, .57, .66) if harbor else data.ambient
+	_env.tonemap_exposure = 1.04 if harbor else LIGHT_EXPOSURE
+	_env.glow_intensity = .64 if harbor else (.69 if sanctuary else .8)
+	_env.glow_hdr_threshold = 1.28 if harbor or sanctuary else 1.1
+	# Overcast night sky and water return light into the faces turned away from the moon.
+	_env.ambient_light_energy = (.25 if low else .16) if sanctuary else ((.61 if low else .54) if harbor else .75)
+	_env.fog_density = .0013 if sanctuary else (.0024 if harbor else .0025)
+	_env.fog_sky_affect = .12 if harbor else (.8 if sanctuary else .25)
 	_env.volumetric_fog_enabled = false
+	_sun.light_color = Color(.77, .87, 1.0) if harbor else data.sun
+	_sun.light_energy = 1.65 if harbor else (0.0 if sanctuary else data.sun_energy)
+	_sun.light_specular = .15 if harbor else 1.0
+	if harbor:
+		_sun.look_at(_sun.global_position - Locations.HARBOR_MOON)
+	else:
+		_sun.rotation_degrees = Vector3(-52, -30, 0)
+	_sun.visible = not sanctuary
+	_sun.shadow_opacity = .49 if harbor else .6
+	_fill.visible = not (harbor or sanctuary)
 	_fill.light_color = Color(data.ambient).lightened(.15)
-	_sun.rotation_degrees = Vector3(-38, -105, 0) if index == 2 else Vector3(-52, -30, 0)
 
 
 func _configure_views() -> void:
@@ -484,7 +501,6 @@ func _configure_views() -> void:
 		if is_instance_valid(_lifecycle): _lifecycle.fail(message)
 		else: hud.reject_action(message))
 	presentation.result_ready.connect(_present_result)
-	presentation.exit_layout_requested.connect(modes.place_exit)
 	hover_tips.resolver = presentation.tip_at
 	team_menu.visibility_changed.connect(func() -> void: _update_interaction_visibility())
 
@@ -519,12 +535,13 @@ func _build_logic(spec: MatchSpec = null) -> void:
 	CardDB.load_all()
 	if spec == null: spec = modes.prepare_match_spec()
 	modes.current_spec = spec
-	ctrl = MatchController.new(spec.decks[0],spec.decks[1],spec.seed)
+	ctrl = MatchController.new(spec.decks[0],spec.decks[1],spec.seed,MatchRules.Ruleset.ANIME_INSPIRED,spec.card_pool)
 	spec.apply_power_snapshots(ctrl)
 	ctrl.landing_window = true
 	ai = AIPlayer.new(AI_PLAYER,spec.seed+1,-1.0,spec.difficulty)
 	if not spec.ai_preferences.is_empty(): ai.configure_personality(spec.ai_preferences)
 	presentation.bind_controller(ctrl,modes.career != null)
+	director.semifinal_music = spec.fixture.get("stage") == "semifinal"
 	presentation.set_roster_names(spec.names[0],spec.names[1])
 	presentation.set_finished(false)
 	presentation.connect_controller()
@@ -599,8 +616,7 @@ func _close_match_actions() -> void:
 func _on_match_failed(message: String) -> void:
 	events.stop()
 	_close_match_actions()
-	presentation.clear_match_portraits()
-	presentation.set_finished(true)
+	presentation.clear()
 	SoundFx.i().cancel_match_sfx()
 	SoundFx.i().stop_music(.2)
 	game_over_ui.show_failure(message+"\nНачните заново или вернитесь в меню.","Повторить встречу" if modes.tournament != null else "Начать заново")
@@ -639,6 +655,7 @@ func _on_attach_window(player: int, _uid: int, _options: Array) -> void:
 func _release_game_resources() -> void:
 	presentation.clear()
 	interaction.stop()
+	if is_instance_valid(SoundFx._inst): SoundFx._inst.cancel_match_sfx()
 	if is_instance_valid(team_menu): team_menu._preview.release()
 	if is_instance_valid(_lifecycle): _lifecycle.release()
 	elif _resources != null:
@@ -1044,10 +1061,6 @@ func _present_battle_powers(powers: Array) -> void:
 func _opponent_panel_layout() -> void:
 	_compat_presentation_ports()
 	presentation.opponent_panel_layout()
-
-func _opponent_style_changed(_style: int) -> void:
-	_compat_presentation_ports()
-	presentation.opponent_style_changed(_style)
 
 func _finish_opponent_battle() -> void:
 	_compat_presentation_ports()

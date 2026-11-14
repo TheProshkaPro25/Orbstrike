@@ -14,7 +14,9 @@ func _initialize() -> void:
 	output = OS.get_cmdline_user_args()[0]
 	DirAccess.make_dir_recursive_absolute(output)
 	DeviceSettings.settings_path = output.path_join("interface-smoke.cfg")
-	DeviceSettings.set_style(DeviceSettings.CLASSIC)
+	var old_profile := ConfigFile.new()
+	old_profile.set_value("interface", "style", 0)
+	old_profile.save(DeviceSettings.settings_path)
 	super._initialize()
 
 
@@ -26,27 +28,8 @@ func _wait_for_scene(path: String, timeout_seconds: float, previous: Node = null
 		_check(CreaturePortrait._presentation_textures.size() == expected and preparations == expected,
 			"Boot cached all 49 base portraits before main menu")
 		_check(CreaturePortrait._battle_textures.size() == 33, "Boot cached 33 corrected battle mattes")
-		_check(DeviceSettings.current() == DeviceSettings.CLASSIC, "isolated client starts in classic style")
-		current_scene._on_settings()
-		var selector := _interface_selector(current_scene._settings)
-		if selector == null:
-			_check(false, "main menu contains the interface selector")
-			return false
-		selector.select(DeviceSettings.DEVICE)
-		selector.item_selected.emit(DeviceSettings.DEVICE)
-		DeviceSettings.reload_settings()
-		_check(DeviceSettings.is_device(), "real menu selector saves Wrist Device and reloads it")
-		current_scene._settings.close()
+		_check(current_scene.ui.get_node("DeviceFrame").visible, "normal client uses Wrist Device with old profile")
 	return true
-
-
-func _interface_selector(node: Node) -> OptionButton:
-	if node is OptionButton and node.item_count == 2 and node.get_item_text(1) == DeviceSettings.NAMES[1]:
-		return node as OptionButton
-	for child in node.get_children():
-		var found := _interface_selector(child)
-		if found != null: return found
-	return null
 
 
 func _process(_delta: float) -> bool:
@@ -96,10 +79,6 @@ func _verify_battle(hud: HudUI) -> void:
 			"real battle portrait uses the prepared matte and elemental frame: " + str(definition))
 	await RenderingServer.frame_post_draw
 	_check(root.get_texture().get_image().save_png(output.path_join("portrait-client-device.png")) == OK, "save real device battle")
-	DeviceSettings.set_style(DeviceSettings.CLASSIC)
-	for panel: OpponentPanel in [hud.own_panel, hud.opponent_panel]:
-		_check(panel._portrait._fallback.material == null and not panel._portrait._battle_frame.visible,
-			"classic style detaches the battle shader and portrait frame")
 	_check(Engine.max_fps == 60, "standard wrapper holds 60 FPS")
 	print("PORTRAIT CLIENT ", checks, "/", failures, " landed=", hits[0] + hits[1], " battles=", battles)
 	_finish(1 if failures else 0)

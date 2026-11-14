@@ -127,6 +127,10 @@ func _trace(action: String, args: Array = []) -> void:
 func debug_snapshot() -> Dictionary:
 	var snapshot := {"version": 1, "seed": match_seed, "ruleset": state.ruleset, "landing_window": landing_window, "manual_gates": state.manual_gates,
 		"decks": _debug_decks, "actions": action_trace.duplicate(true), "turn": state.turn, "phase": state.phase}
+	if state.elemental_cards:
+		snapshot["elemental_cards"] = true
+	if state.card_pool > CardDB.Pool.ELEMENTAL:
+		snapshot["card_pool"] = state.card_pool
 	var power_snapshots: Array = [{}, {}]
 	for creature: CreatureState in state.creatures.values():
 		if creature.base_power_override >= 0:
@@ -148,11 +152,12 @@ func save_debug_trace(path: String = "user://replays/last_match.json") -> Error:
 	return OK
 
 
-func _init(deck0: DeckDef, deck1: DeckDef, rng_seed: int, ruleset: int = MatchRules.Ruleset.ANIME_INSPIRED) -> void:
+func _init(deck0: DeckDef, deck1: DeckDef, rng_seed: int, ruleset: int = MatchRules.Ruleset.ANIME_INSPIRED, card_pool: int = CardDB.Pool.BASE) -> void:
 	_rng.seed = rng_seed
 	_standoff_rng.seed = rng_seed ^ 0x5354414E
 	state = MatchState.new()
 	state.ruleset = ruleset
+	state.card_pool = card_pool if ruleset == MatchRules.Ruleset.ANIME_INSPIRED else CardDB.Pool.BASE
 	state.manual_gates = ruleset == MatchRules.Ruleset.ANIME_INSPIRED
 	state.phase = Phase.SETUP
 	var decks: Array[DeckDef] = [deck0, deck1]
@@ -189,7 +194,7 @@ func _init(deck0: DeckDef, deck1: DeckDef, rng_seed: int, ruleset: int = MatchRu
 		for kind in [CardDef.Kind.ARENA, CardDef.Kind.ABILITY]:
 			var classes: Array = CardDB.GATE_CLASSES if kind == CardDef.Kind.ARENA else CardDB.ABILITY_CLASSES
 			for cls in classes:
-				for id in CardDB.cards_of(kind, cls, el, species):
+				for id in CardDB.cards_of(kind, cls, el, species, state.card_pool):
 					if not state.players[p].arena_hand.has(id) and not state.players[p].ability_hand.has(id):
 						pools[kind].append(id)
 		_draw_pools.append(pools)
@@ -424,6 +429,9 @@ func _ability_requirement_reason(uid: int, id: StringName, own: Array, mom: Stri
 		"shift_gate":
 			if PowerCalc.best_gate_swap(state, _b_atk, _b_def, _b_slot, _b_plays, _b_turn) < 0:
 				return "Нет подходящих свободных ворот для обмена"
+		"tentacle_grab":
+			if PowerCalc.adjacent_free_gates(state, _b_slot, owner).is_empty():
+				return "Нужны пустые свои ворота по горизонтали или вертикали от боя"
 	return ""
 
 
@@ -441,6 +449,9 @@ func legal_ability_targets(player: int, card_id: StringName) -> Array[Dictionary
 	elif card.effect_id == &"light_reserve":
 		for id in PowerCalc.reserve_targets(state, player, PowerCalc.attached_plays(state, _b_atk, _b_def) + _b_plays, 0 if player == state.creatures[_b_atk].owner else 1):
 			out.append({"target_card": id, "label": CardDB.card(id).display_name})
+	elif card.effect_id == &"tentacle_grab" and ability_unavailable_reason(player, card_id).is_empty():
+		for slot in PowerCalc.adjacent_free_gates(state, _b_slot, player):
+			out.append({"target_slot": slot})
 	return out
 
 
@@ -745,11 +756,15 @@ func _win_gate(player: int, slot: int, uids: Array) -> void:
 
 ## Существо уходит в зону использованных (с поля или после промаха).
 func _to_used(uid: int, reason: StringName) -> void:
+	_return_creature(uid, reason, true)
+
+
+func _return_creature(uid: int, reason: StringName, used: bool) -> void:
 	var c: CreatureState = state.creatures[uid]
 	if c.slot >= 0 and state.slots[c.slot].occupant_uid == uid:
 		state.slots[c.slot].occupant_uid = -1
 	c.slot = -1
-	c.used = true
+	c.used = used
 	_ev(&"creature_returned", [uid, reason])
 
 
@@ -766,13 +781,16 @@ func play_ability(player: int, card_id: StringName, target: Dictionary = {}) -> 
 		return ERR_UNAVAILABLE
 	var card: CardDef = CardDB.card(card_id)
 	var choice: Dictionary = {}
-	if card.effect_id in [&"gale_call", &"light_reserve"]:
+	if card.effect_id in [&"gale_call", &"light_reserve", &"tentacle_grab"]:
+		var target_slot: Variant = target.get("target_slot")
 		var targets := legal_ability_targets(player, card_id)
 		for option in targets:
 			if card.effect_id == &"gale_call" and int(target.get("target_uid", -1)) == int(option.get("target_uid", -2)):
 				choice = {"target_uid": int(option.target_uid)}
 			elif card.effect_id == &"light_reserve" and StringName(target.get("target_card", "")) == StringName(option.get("target_card", "_")):
 				choice = {"target_card": StringName(option.target_card)}
+			elif card.effect_id == &"tentacle_grab" and target.size() == 1 and typeof(target_slot) in [TYPE_INT, TYPE_FLOAT] and target_slot == option.get("target_slot"):
+				choice = {"target_slot": int(option.target_slot)}
 		if choice.is_empty():
 			return ERR_INVALID_PARAMETER
 	ps.ability_hand.erase(card_id)
@@ -1128,10 +1146,17 @@ func _resolve() -> void:
 			_ev(&"creature_relocated", [wc.uid, slot, slot])
 		else:
 			var captured_id: StringName = s.card_id
-			_to_used(wc.uid, &"won")
+			var destination := r.winner_destination()
+			if destination >= 0:
+				wc.slot = destination
+				state.slots[destination].occupant_uid = wc.uid
+			else:
+				_return_creature(wc.uid, &"breakaway" if r.breakaway else &"won", not r.breakaway)
 			_clear_slot(s)
 			state.players[wc.owner].captured.append(captured_id)
 			_ev(&"card_captured", [wc.owner, slot, captured_id])
+			if destination >= 0:
+				_ev(&"creature_relocated", [wc.uid, slot, destination])
 		# «Натиск»: победитель наращивает серию, проигравший её теряет
 		var wp: PlayerState = state.players[wc.owner]
 		var lp: PlayerState = state.players[lc.owner]
@@ -1189,6 +1214,12 @@ func _resolve() -> void:
 				ps2.ability_hand.append(id)
 			_ev(&"abilities_recalled", [owners[side], back2])
 	_recharge_abilities()
+	if r.tribute_card != &"":
+		var resting: Dictionary = state.players[state.creatures[r.loser_uid].owner].ability_cooldown
+		if resting.has(r.tribute_card):
+			resting[r.tribute_card] = int(resting[r.tribute_card]) + 1
+		else:
+			r.tribute_card = &""
 	for pair in r.marks:
 		var mc: CreatureState = state.creatures.get(int(pair[0]))
 		if mc != null and mc.alive:

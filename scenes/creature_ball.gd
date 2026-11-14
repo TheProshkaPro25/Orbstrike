@@ -11,6 +11,7 @@ signal surface_bounced(world_pos: Vector3, speed: float)
 const ShotMotion := preload("res://scenes/shot_physics.gd")
 const ModelLifetime := preload("res://scenes/model_lifetime.gd")
 const ElementIcon := preload("res://scenes/element_icon.gd")
+const CreatureElementFx := preload("res://scenes/presentation/creature_element_fx.gd")
 
 const RADIUS := 0.35  # ~1/17 масштаба существ Arena.FIG_H
 const SLOW_SPEED := 0.15
@@ -70,6 +71,7 @@ var _shell: Node3D              ## оболочка (масштаб VIS_SCALE, �
 var _core: MeshInstance3D
 var _figure: Node3D
 var _anim: CreatureAnim
+var _element_fx: CreatureElementFx
 var _label: Label3D
 var _icon: Sprite3D             ## значок стихии слева от подписи (дочерний подписи: прячется вместе с ней)
 var _foot_ring: MeshInstance3D  ## кольцо владельца на полу под раскрытым существом
@@ -124,7 +126,7 @@ func _ready() -> void:
 
 ## Существо раскрыто и видно (камера облетает такие фигуры, а не проходит сквозь них).
 func is_figure_shown() -> bool:
-	return _open and visible and _figure.visible and is_inside_tree()
+	return _open and _figure.is_visible_in_tree()
 
 
 func _ensure_built() -> void:
@@ -223,6 +225,7 @@ func setup(d: CreatureDef, u: int) -> void:
 	_shell_param("owner_col", OWNER_GLOW[0] if not _home_set else _owner_color())
 	_core.set_instance_shader_parameter("col", _ecol())
 	_set_glow(0.0)
+	_element_fx = null
 	for c in _figure.get_children():
 		if c != _foot_ring:  # кольцо владельца живёт с шаром, меняется только модель
 			_figure.remove_child(c)
@@ -243,6 +246,12 @@ func setup(d: CreatureDef, u: int) -> void:
 		_figure.add_child(_anim)
 		_anim.set_base(Vector3(0, -RADIUS, 0))
 		_anim.set_model(model, d)
+		if _el >= 0 and _el < Attr.COUNT:
+			_element_fx = CreatureElementFx.new()
+			_element_fx.configure(_el, model.get_meta("footprint"), _anim.get_height())
+			_anim.add_child(_element_fx)
+			_anim.strike_windup.connect(_element_fx.windup)
+			_anim.strike_resolved.connect(_element_fx.finish_charge)
 		_label.position = Vector3(0, _anim.get_height() + _anim.get_hover_height() - RADIUS + 0.35 * Arena.WORLD, 0)
 	else:
 		_anim = null
@@ -302,6 +311,8 @@ func _apply_owner_marks() -> void:
 
 ## next_pass на материалы модели (материалы у каждого экземпляра свои — CreatureModels дублирует их).
 static func _set_rim(n: Node, rim: Material) -> void:
+	if n is CreatureElementFx:
+		return
 	if n is MeshInstance3D and (n as MeshInstance3D).mesh != null:
 		var mi := n as MeshInstance3D
 		for i in range(mi.mesh.get_surface_count()):
@@ -702,6 +713,7 @@ func _kill_open_tween() -> void:
 func reset_match_presentation() -> void:
 	_fx_epoch += 1
 	_kill_open_tween()
+	_cancel_strike_fx()
 	for tw in [_stage_tween, _throw_tween]:
 		if tw != null and tw.is_valid(): tw.kill()
 	_stage_tween = null
@@ -735,6 +747,7 @@ func _pose_halves(t: float) -> void:
 
 ## Шар снова цельный (закрытый меш вместо частей).
 func _show_closed() -> void:
+	_cancel_strike_fx()
 	for h in _halves:
 		h.visible = false
 	_ball_mesh.visible = true
@@ -838,6 +851,8 @@ func lunge(target: Vector3, contact_time: float = 0.0) -> Signal:
 	d.y = 0.0
 	if _anim != null:
 		_anim.lunge(d.length() * 0.38, contact_time)
+		if _element_fx != null:
+			_element_fx.begin_charge(_anim.to_local(target), 1.0)
 		return _anim.strike_contact
 	return get_tree().create_timer(0.42).timeout
 
@@ -847,6 +862,8 @@ func counter_lunge(target: Vector3) -> Signal:
 	d.y = 0.0
 	if _anim != null:
 		_anim.counter(d.length() * 0.38)
+		if _element_fx != null:
+			_element_fx.begin_charge(_anim.to_local(target), 0.72)
 		return _anim.strike_contact
 	return get_tree().create_timer(0.42).timeout
 
@@ -934,6 +951,7 @@ func _sync_shell_center() -> void:
 ## Уход с поля. Раскрытое существо втягивается в свет, пластины захлопываются; затем шар улетает
 ## к владельцу (knockout = false) или трескается и гаснет (knockout = true — нокаут, выбывание).
 func vanish(knockout: bool = false) -> Signal:
+	_cancel_strike_fx()
 	_landing_shell_held = false
 	_launched = false
 	_shape.disabled = true
@@ -966,6 +984,13 @@ func vanish(knockout: bool = false) -> Signal:
 	else:
 		_fly_home_steps(tw)
 	return tw.finished
+
+
+func _cancel_strike_fx() -> void:
+	if is_instance_valid(_anim):
+		_anim.cancel_strike()
+	if _element_fx != null:
+		_element_fx.reset_effect()
 
 
 ## Пластины сомкнулись: цельный шар, вспышка и кольцо.

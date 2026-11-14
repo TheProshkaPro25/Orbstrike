@@ -25,6 +25,12 @@ const SPECIES: Array = [
 	{"id": "ratnik", "name": "Ратник", "power": 350, "archetype": "knight"},
 	{"id": "gorgul", "name": "Горгул", "power": 300, "archetype": "flying_eye"},
 ]
+## Локальное расширение состава. SPECIES входит в сетевой content tag.
+const LOCAL_SPECIES: Array = [
+	{"id": "floris", "name": "Флорис", "power": 320, "archetype": "beetle"},
+	{"id": "octo", "name": "Окто", "power": 330, "archetype": "serpent"},
+]
+const ALL_SPECIES: Array = SPECIES + LOCAL_SPECIES
 const ATTR_POWER_SHIFT: Array = [30, -10, 10, -30, 20, -20]
 ## По Attr.A: суффикс id, стихия в родительном падеже (для имени), цвет существа.
 const ATTR_KEYS: Array = ["fire", "gale", "light", "stone", "shadow", "tide"]
@@ -32,7 +38,7 @@ const ATTR_GENITIVE: Array = ["Пламени", "Бури", "Света", "Ка�
 const ATTR_COLORS: Array = ["#e8551f", "#4fb89a", "#f5d76e", "#8a7f72", "#6a48a8", "#2f7fd1"]
 
 ## Набор карт «Ворота и способности 2.0» (2026-10-28, DESIGN.md «Карты по мотивам аниме»).
-## Ворота: gold — стихийные (Поле X, Алтарь силы), silver — видовые (×2 базовой силы виду), bronze — командные.
+## Ворота: gold — стихийные, silver — видовые (×2 базовой силы виду), bronze — командные.
 ## Способности: red — стихийные (params.lock), blue — усиления-лесенка своей стихии (boost, params.lock),
 ## green — видовые (params.species: играет только существо этого вида любой стихии).
 ## Прочие params: sure — карту нельзя отменить; moment — "landing" (только после приземления) / "battle" (только в бою);
@@ -131,6 +137,27 @@ const CARDS: Array = [
 	{"id": &"ability_ratnik_rearm", "name": "Второе дыхание", "kind": 1, "effect": &"recall", "params": {"species": "ratnik", "amount": 50}, "text": "+50 G. После боя верни другие свои карты этого боя, включая прикреплённые и отменённые.", "details": "+50 G. После боя возвращает другие свои способности этого боя, включая прикреплённые и отменённые. Старую перезарядку не возвращает; сама карта отдыхает обычно."},
 	{"id": &"ability_gorgul_gaze", "name": "Каменный взгляд", "kind": 1, "effect": &"nullify_gate", "params": {"species": "gorgul", "amount": 50}, "text": "+50 G. Гасит ворота боя, кроме ворот вида. Воскрешение не откатывает.", "details": "+50 G. Подавляет ворота боя, кроме ворот вида, пока действует. Не откатывает «Зов павших». «Глухие врата» гасят эту способность у соперника владельца."},
 	{"id": &"ability_gorgul_night", "name": "Крылья ночи", "kind": 1, "effect": &"scorch", "params": {"species": "gorgul", "amount": 100, "spare": -1}, "text": "−100 G сопернику. Остальные его существа на воротах получат −100 G в следующем бою."},
+	# --- Стихийный набор для локальных режимов ---
+	{"id": &"arena_fire_forge", "name": "Горнило", "kind": 0, "effect": &"fire_forge", "params": {"elemental_set": true, "lock": 0, "amount": 40, "bonus": 60}, "text": "Владельцу +40 G, с двумя действующими своими картами — +100 G.", "details": "Бойцу Пламени, если он владелец ворот, +40 G. Если у него в этом бою действуют хотя бы две способности, ещё +60 G."},
+	{"id": &"arena_gale_pass", "name": "Высокий перевал", "kind": 0, "effect": &"gale_pass", "params": {"elemental_set": true, "lock": 1, "amount": 60, "bonus": 60}, "text": "Владельцу +60 G, в атаке — +120 G.", "details": "Бойцу Бури, если он владелец ворот, +60 G. Если он начал этот бой как атакующий, ещё +60 G."},
+	{"id": &"arena_light_dome", "name": "Купол рассвета", "kind": 0, "effect": &"light_dome", "params": {"elemental_set": true, "lock": 2, "amount": 50, "bonus": 60}, "text": "Владельцу +50 G, без действующих своих карт — +110 G.", "details": "Бойцу Света, если он владелец ворот, +50 G. Если у него в этом бою нет действующих способностей, ещё +60 G."},
+	{"id": &"arena_stone_plate", "name": "Сейсмическая плита", "kind": 0, "effect": &"stone_plate", "params": {"elemental_set": true, "lock": 3, "amount": 40, "cap": 75}, "text": "Владельцу +40 G. Первая действующая карта соперника даёт ему до +75 G.", "details": "Бойцу Камня, если он владелец ворот, +40 G. Прямую положительную прибавку первой действующей способности соперника ограничивает до +75 G."},
+	{"id": &"arena_shadow_veil", "name": "Сумеречная завеса", "kind": 0, "effect": &"shadow_veil", "params": {"elemental_set": true, "lock": 4, "amount": 30, "bonus": 90}, "text": "Владельцу +30 G, с базовой силой ниже соперника — +120 G.", "details": "Бойцу Тени, если он владелец ворот, +30 G. Если его базовая сила строго ниже базовой силы соперника, ещё +90 G."},
+	{"id": &"arena_tide_sluice", "name": "Приливной шлюз", "kind": 0, "effect": &"tide_sluice", "params": {"elemental_set": true, "lock": 5, "amount": 110}, "text": "Владельцу +110 G. При захвате перейди на первые свободные свои ворота.", "details": "Бойцу Прилива, если он владелец ворот, +110 G. После обычной победы и захвата он переходит на первые по номеру свободные свои ворота. Без свободных своих ворот уходит в использованные."},
+	{"id": &"ability_fire_afterburn", "name": "Дожиг", "kind": 1, "effect": &"fire_afterburn", "params": {"elemental_set": true, "lock": 0, "moment": "battle", "amount": 30, "step": 60, "cap": 150}, "text": "+30 G и ещё +60 G за каждую раннюю действующую свою карту. Всего до +150 G.", "details": "+30 G. За каждую свою способность, сыгранную раньше «Дожига» и всё ещё действующую в этом бою, ещё +60 G. Общая прибавка до +150 G."},
+	{"id": &"ability_gale_breakaway", "name": "Отрыв", "kind": 1, "effect": &"gale_breakaway", "params": {"elemental_set": true, "lock": 1, "moment": "battle", "amount": 65}, "text": "+65 G. После обычной победы боец сразу готов к броску.", "details": "+65 G. При обычной победе боец сразу возвращается в готовые к броску."},
+	{"id": &"ability_light_refraction", "name": "Преломление", "kind": 1, "effect": &"light_refraction", "params": {"elemental_set": true, "lock": 2, "moment": "battle", "amount": 80, "shield": 80}, "text": "+80 G. Поглоти до 80 G первого прямого штрафа от более поздней чужой карты.", "details": "+80 G. Поглощает до 80 G первого прямого штрафа от действующей способности, которую соперник сыграл позже. Щит расходуется на один штраф. Пошлина, срезы и сбросы действуют в обычном порядке."},
+	{"id": &"ability_stone_bastion", "name": "Каменная застава", "kind": 1, "effect": &"stone_bastion", "params": {"elemental_set": true, "lock": 3, "moment": "battle", "amount": 45, "bonus": 80}, "text": "+45 G. С союзником на соседних воротах по стороне — +125 G.", "details": "+45 G. Если на соседних по стороне воротах стоит хотя бы один союзник, ещё +80 G. Учитываются соседи по горизонтали и вертикали."},
+	{"id": &"ability_shadow_tribute", "name": "Дань сумраку", "kind": 1, "effect": &"shadow_tribute", "params": {"elemental_set": true, "lock": 4, "moment": "battle", "amount": 120}, "text": "+120 G. Обычная победа продлевает отдых первой сыгранной чужой синей карты на бой.", "details": "+120 G. При обычной победе первая синяя способность, которую соперник сыграл в этом бою, отдыхает на один бой дольше, если она ещё на отдыхе."},
+	{"id": &"ability_tide_stored_wave", "name": "Сохранённая волна", "kind": 1, "effect": &"tide_stored_wave", "params": {"elemental_set": true, "lock": 5, "moment": "battle", "amount": 90, "margin": 80, "mark": 60}, "text": "+90 G. Обычная победа с перевесом от 80 G даёт +60 G к следующему бою.", "details": "+90 G. При обычной победе с итоговым перевесом не меньше 80 G этот боец получает метку +60 G на свой следующий бой."},
+]
+
+# Карты нового локального набора. CARDS входит в контрольную сумму сетевых правил.
+const LOCAL_SPECIES_CARDS: Array = [
+	{"id": &"arena_den_floris", "name": "Цветочный питомник", "kind": 0, "effect": &"species_double", "params": {"species": "floris"}, "text": "Флорис на этих воротах удваивает базовую силу."},
+	{"id": &"arena_den_octo", "name": "Грот восьми течений", "kind": 0, "effect": &"species_double", "params": {"species": "octo"}, "text": "Окто на этих воротах удваивает базовую силу."},
+	{"id": &"ability_floris_root_guard", "name": "Корневой заслон", "kind": 1, "effect": &"boost", "params": {"species": "floris", "moment": "battle", "cond": "defense", "amount": 90}, "text": "+90 G Флорису в защите."},
+	{"id": &"ability_octo_tentacle_grab", "name": "Захват щупальцем", "kind": 1, "effect": &"tentacle_grab", "params": {"species": "octo", "moment": "battle"}, "text": "+0 G. Выбери соседние свободные свои ворота. После обычной победы Окто займёт их.", "details": "В свой ответ выбери пустые свои ворота по горизонтали или вертикали. При обычной победе Окто берёт трофей и переходит на выбранные ворота, если они ещё свободны и принадлежат ему. Переход сохраняет состояние ворот и не начинает новый бой. Если сработал «Приливной шлюз», применяется только его переход. «Отпечаток в камне» эту карту не копирует."},
 ]
 
 const PRESET_DECKS: Array = [
