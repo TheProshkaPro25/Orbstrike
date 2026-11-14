@@ -507,7 +507,7 @@ func _sample_action(t: float) -> void:
 				roll = -0.10 * sin(p * TAU) * envelope
 	if _species == &"levian":
 		pos = Vector3.ZERO
-	if _species in [&"levian", &"floris", &"octo"]:
+	if _species in [&"levian", &"floris", &"octo", &"armat"]:
 		# Эти клипы сами наклоняют корпус, сохраняя опору.
 		pitch = 0.0
 		roll = 0.0

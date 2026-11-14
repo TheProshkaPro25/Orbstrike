@@ -4,8 +4,10 @@ extends SceneTree
 const MENU := "res://scenes/menu/main_menu.tscn"
 const MATCH := "res://scenes/main.tscn"
 const OLD_TAG := "035b7d91f93c85e4ee3e30b310f5b21f721331431b0383ffbed1eb838641bcef"
-const TEAM: Array[StringName] = [&"creature_floris_stone", &"creature_octo_stone", &"creature_klykar_stone"]
+const TEAM: Array[StringName] = [&"creature_armat_stone", &"creature_floris_stone", &"creature_klykar_stone"]
+const FAMILY_BONES := {&"armat": 21, &"floris": 15, &"octo": 42}
 const CLIPS := [&"idle", &"stance", &"attack", &"hit", &"roar"]
+const AutoPlay := preload("res://tools/autoplay.gd")
 
 var game: Node
 var loader: GameLoading
@@ -71,10 +73,11 @@ func run() -> void:
 		return
 	loader = GameLoading.i()
 	counts = catalog_counts()
-	check(loader.ready_to_play and counts[1] == 122 and counts[2] == 3, "61x2 and all three arenas before menu")
+	check(loader.ready_to_play and counts[1] == 134 and counts[2] == 3, "67x2 and all three arenas before menu")
 	check(Engine.max_fps == 60 and root.unfocusable and root.mode == Window.MODE_MINIMIZED,
 		"minimized unfocusable window at 60 FPS")
 	check_catalog()
+	check_armat_decks()
 	check_online()
 	current_scene._on_play()
 	if not await until(func() -> bool: return current_scene != null and current_scene.scene_file_path == MATCH, 15):
@@ -98,11 +101,11 @@ func run() -> void:
 	await save_frame("local-team")
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 82231
-	var deck := CardDB.deck_from_creatures(TEAM, rng, true)
+	var deck := CardDB.deck_from_creatures(TEAM, rng, CardDB.Pool.SPECIES)
 	preview.show_creature(CardDB.creature(TEAM[0]))
-	await save_frame("preview-floris")
+	await save_frame("preview-armat")
 	preview.show_creature(CardDB.creature(TEAM[1]))
-	await save_frame("preview-octo")
+	await save_frame("preview-floris")
 	game.team_menu._show_step(1)
 	for card in deck.arena:
 		if game.team_menu._pick.get(CardDB.card_class(card)) != card.id:
@@ -153,6 +156,9 @@ func run() -> void:
 		game.ctrl.save_debug_trace(result_dir.path_join("unfinished-duel.json"))
 	if game.game_over_ui._panel.visible:
 		await save_frame("local-result")
+		var replay: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("user://replays/last_match.json"))
+		check(replay.decks[0][0].has("creature_armat_stone") and MatchReplay.restore(replay).error.is_empty(),
+			"recorded duel restores with Armat")
 		var old_id := game.get_instance_id()
 		game.game_over_ui.restart_requested.emit()
 		if await until(func() -> bool: return current_scene != null and current_scene.get_instance_id() != old_id and current_scene.scene_file_path == MATCH, 15):
@@ -166,7 +172,7 @@ func run() -> void:
 
 func check_catalog() -> void:
 	for definition in CreatureModels.catalog_defs():
-		if definition.species not in [&"floris", &"octo"]:
+		if not FAMILY_BONES.has(definition.species):
 			continue
 		var id := definition.id
 		var path := CreatureModels._key_path(definition)
@@ -178,12 +184,33 @@ func check_catalog() -> void:
 			var anim := copy._anim
 			var player := anim._player
 			var skeleton := anim._strike_skeleton
-			check(skeleton != null and skeleton.get_bone_count() == (15 if definition.species == &"floris" else 42),
+			check(skeleton != null and skeleton.get_bone_count() == FAMILY_BONES[definition.species],
 				"expected skeleton " + String(id))
 			check(player != null and CLIPS.all(player.has_animation), "five authored clips " + String(id))
 			var material := anim._meshes[0].get_active_material(0) as ShaderMaterial
 			check(material != null and material.get_shader_parameter("has_texture"), "normal HD atlas " + String(id))
 			check(not copy._figure.visible and copy._shape.shape is SphereShape3D, "standard closed sphere " + String(id))
+
+
+func check_armat_decks() -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 6450
+	for element in GameData.ATTR_KEYS:
+		var ids := ["creature_armat_" + element, "creature_gorgul_" + element, "creature_klykar_" + element]
+		var deck := CardDB.deck_from_creatures(ids, rng, CardDB.Pool.SPECIES)
+		check(deck != null and Tournament._deck_valid(Tournament.deck_ids(deck), CardDB.Pool.SPECIES),
+			"Armat fits a legal local team in " + element)
+		var career := Career.create(element, 1, 82231, "Армат", "")
+		var id: String = ids[0]
+		check(career != null and career.available_species().has(&"armat") and career.price(id) == 400
+			and career.power(id, 1) == 230, "career shop offers Armat in " + element)
+	for pool in [CardDB.Pool.BASE, CardDB.Pool.SPECIES]:
+		var has_armat := false
+		for i in 100:
+			var ids := Tournament.deck_ids(CardDB.random_deck(rng, pool))
+			check(Tournament._deck_valid(ids, pool), "legal random team in pool %d" % pool)
+			has_armat = has_armat or ids[0].any(func(id: String) -> bool: return id.begins_with("creature_armat_"))
+		check(has_armat, "random local teams can include Armat in pool %d" % pool)
 
 
 func check_online() -> void:
@@ -230,6 +257,8 @@ func drive(bot: AIPlayer) -> void:
 		game.hud._skip_flag = true
 	if game.battle_overlay._open:
 		game.battle_overlay._close()
+	if AutoPlay.press_next_turn(game):
+		return
 	for uid in 2:
 		if photographed.has(uid):
 			continue

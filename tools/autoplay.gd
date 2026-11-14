@@ -29,6 +29,13 @@ var ability_sound_shots: Dictionary = {}
 var prethrow_attachment_requested := false
 var prethrow_attachment_seen := false
 
+static func press_next_turn(game: Node) -> bool:
+	var button: Button = game._next_turn
+	if not is_instance_valid(button) or not button.is_visible_in_tree() or button.disabled or game.events.is_busy():
+		return false
+	button.pressed.emit()
+	return true
+
 ## Продолжить настоящий открытый выбор цели тем же решением, что использует ИИ.
 static func choose_pending_target(game: Node, ai: AIPlayer) -> bool:
 	if game.ability_target_picker == null or not game.ability_target_picker.visible or game._ability_target_card == &"":
@@ -264,6 +271,8 @@ func _process(_d: float) -> bool:
 		main.hud._skip_flag = true  # эквивалент Enter: время чтения проверяет отдельный experience_review
 	if main.battle_overlay._open:
 		main.battle_overlay._close()
+	if press_next_turn(main):
+		return false
 	var view = main.ctrl.get_view(0)
 	if choose_pending_target(main, bot):
 		return false

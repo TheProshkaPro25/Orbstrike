@@ -81,6 +81,12 @@ const RENDERED_TEXTURES := {
 	&"creature_octo_stone": preload("res://assets/portraits/creatures/octo_stone.png"),
 	&"creature_octo_shadow": preload("res://assets/portraits/creatures/octo_shadow.png"),
 	&"creature_octo_tide": preload("res://assets/portraits/creatures/octo_tide.png"),
+	&"creature_armat_fire": preload("res://assets/portraits/creatures/armat_fire.png"),
+	&"creature_armat_gale": preload("res://assets/portraits/creatures/armat_gale.png"),
+	&"creature_armat_light": preload("res://assets/portraits/creatures/armat_light.png"),
+	&"creature_armat_stone": preload("res://assets/portraits/creatures/armat_stone.png"),
+	&"creature_armat_shadow": preload("res://assets/portraits/creatures/armat_shadow.png"),
+	&"creature_armat_tide": preload("res://assets/portraits/creatures/armat_tide.png"),
 }
 
 var _viewport: SubViewport

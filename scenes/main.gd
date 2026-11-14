@@ -6,6 +6,7 @@ const MatchLifecycleT := preload("res://scenes/match_lifecycle.gd")
 const PresentationT := preload("res://scenes/presentation/match_presentation.gd")
 const InteractionT := preload("res://scenes/interaction/interaction_controller.gd")
 const InteractionViewT := preload("res://scenes/interaction/interaction_view.gd")
+const LocalMatchController := preload("res://scenes/interaction/local_match_controller.gd")
 const Request := preload("res://scenes/interaction/interaction_request.gd")
 const ModesT := preload("res://scenes/modes/game_modes.gd")
 const MatchSpec := preload("res://scenes/modes/match_spec.gd")
@@ -43,6 +44,7 @@ var game_over_ui: GameOverUI
 var team_menu: TeamMenu
 var hover_tips: HoverTips
 var _launch_target: Button
+var _next_turn: Button
 var _duel_menu: Button
 var _env: Environment
 var _sun: DirectionalLight3D
@@ -215,6 +217,7 @@ func _ready() -> void:
 	rng.randomize()
 	_build_world()
 	_build_ui()
+	_create_next_turn_button()
 	_lifecycle = MatchLifecycleT.new()
 	add_child(_lifecycle)
 	_lifecycle.configure(_resources,cam,ui_layer)
@@ -444,6 +447,22 @@ func _place_launch_target() -> void:
 	VisualUtil.place(_launch_target, 0.5, 1.0, 0.0, -card_height - 76.0)
 
 
+func _create_next_turn_button() -> void:
+	_next_turn = Button.new()
+	_next_turn.name = "NextTurn"
+	_next_turn.text = tr("Следующий ход")
+	_next_turn.theme = UiTheme.get_theme()
+	_next_turn.custom_minimum_size = Vector2(256, 56)
+	_next_turn.add_theme_font_size_override("font_size", 22)
+	_next_turn.add_theme_color_override("font_color", UiTheme.DEVICE_ACCENT)
+	_next_turn.hide()
+	ui_layer.add_child(_next_turn)
+	ui_layer.move_child(_next_turn, _launch_target.get_index() + 1)
+	VisualUtil.place(_next_turn, 0.5, 1.0, 0.0, -58.0)
+	interaction.next_turn_button = _next_turn
+	_next_turn.pressed.connect(interaction.confirm_next_turn)
+
+
 func _apply_arena_environment(index: int) -> void:
 	var data := Locations.definition(index)
 	var low := GraphicsSettings.current() == GraphicsSettings.Level.LOW
@@ -535,7 +554,7 @@ func _build_logic(spec: MatchSpec = null) -> void:
 	CardDB.load_all()
 	if spec == null: spec = modes.prepare_match_spec()
 	modes.current_spec = spec
-	ctrl = MatchController.new(spec.decks[0],spec.decks[1],spec.seed,MatchRules.Ruleset.ANIME_INSPIRED,spec.card_pool)
+	ctrl = LocalMatchController.new(spec.decks[0],spec.decks[1],spec.seed,MatchRules.Ruleset.ANIME_INSPIRED,spec.card_pool)
 	spec.apply_power_snapshots(ctrl)
 	ctrl.landing_window = true
 	ai = AIPlayer.new(AI_PLAYER,spec.seed+1,-1.0,spec.difficulty)
@@ -690,7 +709,8 @@ func _leave_duel_to_menu() -> void:
 	modes.leave_duel()
 
 func _invalid_slot() -> void:
-	hud.reject_action("Выберите одно из подсвеченных мест на поле")
+	if interaction.human_field_input_allowed():
+		hud.reject_action("Выберите одно из подсвеченных мест на поле")
 
 func _preview_arena_location(index: int, save_choice: bool = true) -> bool:
 	if ctrl != null: return false
@@ -862,10 +882,6 @@ func _on_ability_attached(player: int, uid: int, card_id: StringName) -> void:
 	_compat_presentation_ports()
 	presentation.on_ability_attached(player,uid,card_id)
 
-func _on_gate_thrown(player: int, slot: int, uid: int) -> void:
-	_compat_presentation_ports()
-	presentation.on_gate_thrown(player,slot,uid)
-
 func _on_gate_trap(slot: int, card_id: StringName, effect: StringName) -> void:
 	_compat_presentation_ports()
 	presentation.on_gate_trap(slot,card_id,effect)
@@ -926,10 +942,6 @@ func _anim_attached(player: int, uid: int, card_id: StringName) -> void:
 	_compat_presentation_ports()
 	await presentation.anim_attached(player,uid,card_id)
 
-func _anim_gate_thrown(player: int, _slot: int, uid: int) -> void:
-	_compat_presentation_ports()
-	await presentation.anim_gate_thrown(player,_slot,uid)
-
 func _anim_trap(slot: int, card_id: StringName, effect: StringName) -> void:
 	_compat_presentation_ports()
 	await presentation.anim_trap(slot,card_id,effect)
@@ -957,10 +969,6 @@ func _anim_returned(uid: int, reason: StringName) -> void:
 func _anim_relocated(uid: int, _from: int, to: int) -> void:
 	_compat_presentation_ports()
 	await presentation.anim_relocated(uid,_from,to)
-
-func _anim_refilled(player: int) -> void:
-	_compat_presentation_ports()
-	await presentation.anim_refilled(player)
 
 func _anim_remove_ball(uid: int, eliminated: bool = false) -> void:
 	_compat_presentation_ports()

@@ -10,7 +10,7 @@ const MAX_EVENTS := 8192
 const MAX_CUPS := 256
 const ELEMENTS := ["fire", "gale", "light", "stone", "shadow", "tide"]
 const BASE_POWER := {"rogozhuk": 190, "gorgul": 200, "klykar": 230, "grifalon": 240, "levian": 260, "ratnik": 280, "dragnar": 300, "kolossar": 310,
-	"floris": 210, "octo": 220}
+	"floris": 210, "octo": 220, "armat": 230}
 const LEAGUES := [
 	{"title": "Кубок Каньона", "max_level": 3, "max_power": 250, "max_total": 650},
 	{"title": "Кубок Гавани", "max_level": 6, "max_power": 350, "max_total": 900},
@@ -92,7 +92,7 @@ func league_rules(index: int = -1) -> Dictionary:
 	return LEAGUES[clampi(int(state.league) if index < 0 else index, 0, 2)].duplicate(true)
 
 func available_species() -> Array:
-	var result: Array = [&"rogozhuk", &"gorgul", &"klykar", &"grifalon", &"floris", &"octo"]
+	var result: Array = [&"rogozhuk", &"gorgul", &"klykar", &"grifalon", &"floris", &"octo", &"armat"]
 	var cleared := _cleared_leagues()
 	if cleared.has(0):
 		result.append_array([&"levian", &"ratnik"])

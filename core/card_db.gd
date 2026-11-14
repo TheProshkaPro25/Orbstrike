@@ -281,13 +281,18 @@ static func species_name(sp: StringName) -> String:
 static func random_deck(rng: RandomNumberGenerator, pool: int = Pool.BASE, online_roster: bool = false) -> DeckDef:
 	load_all()
 	var team: Array[StringName] = []
+	var species: Array = []
 	var el: int = 0
 	for _i in range(50):
 		el = rng.randi_range(0, 5)
 		team = _pick(creatures_of(el, online_roster), 3, rng)
-		if team_power(team) <= GameData.TEAM_POWER_LIMIT:
+		species = team_species(team)
+		# Узкие пулы могут не дать видовых карт трём локальным существам.
+		if team_power(team) <= GameData.TEAM_POWER_LIMIT and not cards_of(CardDef.Kind.ARENA, &"silver", el, species, pool).is_empty():
 			break
-	var species: Array = team_species(team)
+		species.clear()
+	if species.is_empty():
+		return preset_deck(0)
 	var arena: Array[StringName] = []
 	for cls in GATE_CLASSES:
 		arena.append_array(_pick(cards_of(CardDef.Kind.ARENA, cls, el, species, pool), 1, rng))

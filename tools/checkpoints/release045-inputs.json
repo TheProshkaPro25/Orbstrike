@@ -19,7 +19,7 @@
   "withheld_from_package": [
     "assets/avatars/booth/dirndl_1.res"
   ],
-  "derived_textures": 168,
+  "derived_textures": 174,
   "godot": "4.7.2.stable.arch_linux.ed1daf0bf",
   "network_protocol": "online-rules-11",
   "public_server": {
@@ -41,5 +41,5 @@
     }
   },
   "overlay_file_count": 5,
-  "local_roster_size": 61
+  "local_roster_size": 67
 }

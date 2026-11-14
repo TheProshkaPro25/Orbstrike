@@ -47,6 +47,7 @@ func _process(_delta: float) -> bool:
 		return false
 	if hud._reading > 0: hud._skip_flag = true
 	if main.battle_overlay._open: main.battle_overlay._close()
+	if press_next_turn(main): return false
 	var view = main.ctrl.get_view(0)
 	if main.setup_panel._panel.visible:
 		var action: Dictionary = bot.choose_setup(view, main.ctrl.legal_setup_slots(), main.ctrl.can_skip_gate())

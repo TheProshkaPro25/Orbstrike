@@ -199,8 +199,8 @@ func _check_portrait(panel: OpponentPanel) -> void:
 	panel.present(CardDB.creature(CardDB.RARE_SHADOW_ID),77,370)
 	check(portrait._fallback.texture == CreaturePortrait.reference_texture(CardDB.RARE_SHADOW_ID),"rare known species uses its exact original 2D reference")
 	check(CreaturePortrait.preload_catalog() == 49
-		and CreaturePortrait.RENDERED_TEXTURES.size() == 12
-		and CreatureModels.catalog_defs().size() == 61, "all concept portraits and transparent renders are resident")
+		and CreaturePortrait.RENDERED_TEXTURES.size() == 18
+		and CreatureModels.catalog_defs().size() == 67, "all concept portraits and transparent renders are resident")
 	panel.present(CardDB.creature(CardDB.RARE_SHADOW_ID),77,370)
 	panel.show_context("reveal")
 	check(portrait._fallback.material == null and portrait._backdrop.material == CreaturePortrait._background_material(Attr.A.SHADOW), "battle filter stays off during ordinary reveal")
@@ -212,7 +212,7 @@ func _check_portrait(panel: OpponentPanel) -> void:
 		check(texture != null and texture.get_width() > 0 and texture.get_height() > 0,"portrait resource has real pixels " + String(id))
 		panel.present(definition,77,370)
 		check(portrait._fallback.texture == CreaturePortrait.presentation_texture(id) and not portrait._hud_crop_enabled and portrait._viewport == null and portrait._camera == null,"present keeps full2D silhouette without graphics setup " + String(id))
-	check(mesh.layers == original and mesh.global_transform == transform,"complete49portrait iteration preserves resident actor")
+	check(mesh.layers == original and mesh.global_transform == transform,"complete portrait iteration preserves resident actor")
 	game._present_battle_opponent(0,4,[420,510])
 
 

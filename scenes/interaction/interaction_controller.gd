@@ -7,6 +7,7 @@ const View := preload("res://scenes/interaction/interaction_view.gd")
 const Presentation := preload("res://scenes/presentation/match_presentation.gd")
 const Resources := preload("res://scenes/match_resources.gd")
 const Lifecycle := preload("res://scenes/match_lifecycle.gd")
+const LocalMatchController := preload("res://scenes/interaction/local_match_controller.gd")
 const HUMAN := 0
 const AI_PLAYER := 1
 enum State { WAITING_PRESENTATION, CHOOSING_GATE, CHOOSING_CREATURE, CHOOSING_LAUNCH, CHOOSING_ABILITY, CHOOSING_ATTACHMENT, CONFIRMING_GATE_THROW, CHOOSING_ABILITY_TARGET, IN_FLIGHT, STOPPED }
@@ -33,6 +34,7 @@ var ability_panel: AbilityPanel
 var ability_target_picker: AbilityTargetPicker
 var arena_slot_picker: ArenaSlotPicker
 var launch_target: Button
+var next_turn_button: Button
 var team_menu: TeamMenu
 var game_over_ui: GameOverUI
 var cam: CameraRig
@@ -74,6 +76,8 @@ func bind_controller(controller: MatchController, opponent: AIPlayer) -> void:
 	gate_pick.clear()
 	ability_target_card = &""
 	state = State.WAITING_PRESENTATION
+	if controller is LocalMatchController:
+		controller.turn_waiting.connect(_queue_next_turn.bind(controller.get_instance_id()))
 
 func clear_request() -> void:
 	pending = Request.make(Request.Kind.NONE,0) as Request
@@ -91,10 +95,48 @@ func stop() -> void:
 	gate_pick.clear()
 	ability_target_card = &""
 	state = State.STOPPED
+	if is_instance_valid(next_turn_button): next_turn_button.hide()
 	if view != null:
 		view.launch.hide()
 		view.arena_picker.dismiss()
 		view.ability_picker.hide()
+
+func _queue_next_turn(turn: int, controller_id: int) -> void:
+	events.push(_show_next_turn.bind(turn, controller_id))
+
+
+func _show_next_turn(turn: int, controller_id: int) -> void:
+	if not is_instance_valid(next_turn_button) or not _waiting_for_turn() or ctrl.get_instance_id() != controller_id or state == State.STOPPED:
+		return
+	state = State.WAITING_PRESENTATION
+	clear_request()
+	setup_panel.hide_panel()
+	ability_panel.hide_panel()
+	hud.hide_creatures()
+	launch_target.hide()
+	arena_slot_picker.dismiss()
+	arena.set_highlight([])
+	hud.set_hint("")
+	hud.set_phase(-1)
+	hud.set_status(turn, HUMAN, presentation.state.alive[0], presentation.state.alive[1])
+	next_turn_button.show()
+	focus_action.call_deferred(next_turn_button)
+
+
+func confirm_next_turn() -> void:
+	var controller := ctrl as LocalMatchController
+	if controller == null or not controller.is_turn_waiting() or not next_turn_button.visible or events.is_busy() or blocking_modal():
+		return
+	if state == State.STOPPED or finished or is_instance_valid(lifecycle) and not lifecycle.input_allowed():
+		return
+	next_turn_button.hide()
+	controller.confirm_turn()
+
+
+func _waiting_for_turn() -> bool:
+	var controller := ctrl as LocalMatchController
+	return controller != null and controller.is_turn_waiting()
+
 
 func invalidate(phase: int, _side: int) -> void:
 	launch_target.hide()
@@ -134,7 +176,7 @@ func report(uid: int, slot: int) -> void:
 
 
 func pump() -> void:
-	if state == State.STOPPED or finished or events.is_busy() or pending.is_empty(): return
+	if state == State.STOPPED or finished or events.is_busy() or _waiting_for_turn() or pending.is_empty(): return
 	if is_instance_valid(lifecycle) and not lifecycle.input_allowed(): return
 	var request := pending
 	clear_request()
@@ -158,10 +200,9 @@ func do_setup(player: int) -> void:
 			cards.append({"id": c.id, "name": c.display_name, "text": c.text})
 		var legal: Array[int] = ctrl.legal_setup_slots()
 		arena.set_highlight(legal, true)
-		hud.set_hint("Карта ворот на поле? Положите карту или пропустите" if ctrl.can_skip_gate() else "Положите карту ворот на поле")
+		hud.set_hint("Положите карту ворот или пропустите выкладку" if ctrl.can_skip_gate() else "Положите карту ворот на поле")
 		setup_panel.begin(cards, legal, ctrl.can_skip_gate(), not throwable_entries().is_empty())
 		focus_action.call_deferred(setup_panel._card_buttons.values()[0] if not setup_panel._card_buttons.is_empty() else setup_panel._skip_btn)
-		hud.coach("gate", "Карта ворот — поле боя: выбери карту и место (подсвечено). Соперник не видит её до боя — там могут быть ловушки. «Ворота + бросок» — положить карту и сразу бросить на неё существо.")
 	else:
 		hud.set_hint("Соперник выбирает карту ворот...")
 		var choice: Dictionary = ai.choose_setup(ctrl.get_view(AI_PLAYER), ctrl.legal_setup_slots(), ctrl.can_skip_gate())
@@ -218,8 +259,7 @@ func do_launch(player: int) -> void:
 		state = State.IN_FLIGHT
 		await director.launch_to(ctrl.get_throw_gate_slot())
 	elif player == HUMAN:
-		hud.set_hint("РАЗМЕЩЕНИЕ · выберите подсвеченные ворота для сферы")
-		hud.coach("throw", "Выбери цель броска — карту ворот на поле. Сфера отскакивает и катится; учитывается место остановки, возможен промах. Способность можно прикрепить до выбора цели.")
+		hud.set_hint("Выберите подсвеченные ворота для броска")
 		arena.set_highlight(gate_slots(), true)
 		launch_target.show()
 		focus_action.call_deferred(launch_target)
@@ -249,7 +289,7 @@ func on_slot_picked(slot: int) -> void:
 
 
 func human_field_input_allowed() -> bool:
-	return ctrl != null and (not is_instance_valid(lifecycle) or lifecycle.input_allowed()) and not preparing and not finished and state != State.STOPPED and not events.is_busy() and not director.flying and ctrl.get_active_player() == HUMAN and not blocking_modal()
+	return ctrl != null and (not is_instance_valid(lifecycle) or lifecycle.input_allowed()) and not preparing and not finished and state != State.STOPPED and not events.is_busy() and not _waiting_for_turn() and not director.flying and ctrl.get_active_player() == HUMAN and not blocking_modal()
 
 
 ## Фокус передаётся только после постановки; справка, подтверждение и цели сохраняют свой ввод.
@@ -265,6 +305,7 @@ func input(event: InputEvent) -> void:
 	var choices: Array[Control] = []
 	for region in [hud, setup_panel, ability_panel, launch_target]:
 		collect_keyboard_controls(region, choices)
+	if is_instance_valid(next_turn_button): collect_keyboard_controls(next_turn_button, choices)
 	for extra in view.extra_focus_controls(): collect_keyboard_controls(extra, choices)
 	if choices.is_empty(): return
 	var index := choices.find(get_viewport().gui_get_focus_owner())
@@ -297,6 +338,8 @@ func resume_keyboard_focus() -> void:
 		game_over_ui.focus_primary()
 	elif arena_slot_picker.visible:
 		return  # Модальная карта поля сама владеет навигацией.
+	elif is_instance_valid(next_turn_button) and next_turn_button.visible:
+		focus_action(next_turn_button)
 	elif ctrl != null and ctrl.get_active_player() == HUMAN and not events.is_busy():
 		if hud._creature_panel.visible and hud._creature_box.get_child_count() > 0:
 			focus_action(hud._creature_box.get_child(0))
@@ -393,12 +436,11 @@ func do_attach(player: int) -> void:
 		for cid in ctrl.legal_abilities(HUMAN):
 			var c: CardDef = CardDB.card(cid)
 			entries.append({"id": c.id, "name": c.display_name, "text": c.text})
-		hud.set_hint("%s на воротах: прикрепить способность?" % presentation.cname(uid))
-		hud.coach("attach", "Существо встало на пустые ворота. Можно прикрепить карту: она сработает в его следующем бою (видна сопернику). Или завершить ход без неё.")
+		hud.set_hint("")
 		ability_panel.show_options(entries, "Прикрепить способность к «%s»?" % presentation.cname(uid), {"moment": &"after_landing",
 			"used": MatchController.MAX_BATTLE_ABILITIES - ctrl.abilities_left(HUMAN), "pass_text": "Завершить ход",
 			"pass_tip": "Не прикреплять карту — ход переходит сопернику.",
-			"note": "Прикреплённая карта входит в лимит 3 карт на бой."})
+			"note": "Карта сработает в следующем бою существа и войдёт в лимит 3 карт."})
 		focus_ability_action.call_deferred()
 	else:
 		hud.set_hint("Соперник думает...")
@@ -426,9 +468,8 @@ func show_pre_throw() -> void:
 		var c: CardDef = CardDB.card(cid)
 		entries.append({"id": c.id, "name": c.display_name, "text": c.text})
 	var uid: int = ctrl.get_selected_uid()
-	hud.coach("prethrow", "Перед броском можно прикрепить способность к шару: она сработает в его бое. Это необязательно — просто выбери ворота.")
 	ability_panel.show_options(entries, "До броска: прикрепить карту к «%s» (необязательно)" % presentation.cname(uid), {"moment": &"pre_throw",
-		"used": MatchController.MAX_BATTLE_ABILITIES - ctrl.abilities_left(HUMAN), "note": ""})
+		"used": MatchController.MAX_BATTLE_ABILITIES - ctrl.abilities_left(HUMAN), "note": "Карта сработает в следующем бою существа."})
 
 
 ## Существа, которых можно бросить в фазе выкладки (в руке, не на воротах и не в зоне использованных).

@@ -13,6 +13,7 @@ class CounterAI extends AIPlayer:
 		return false
 
 const DRAIN := &"ability_fire_drain"
+const BOOST := &"ability_fire_spark"
 const FIELD := &"arena_field_fire"
 const GALE_CALL := &"ability_gale_call"
 const GALE_SWAP := &"ability_gale_swap"
@@ -69,6 +70,11 @@ func _run() -> void:
 		abilities.assign([GALE_CALL, &"ability_gale_gust", &"ability_dragnar_heart"])
 	game.team_menu.hide()
 	game._on_deck_chosen(creatures, gates, abilities)
+	if not await _until(func() -> bool: return game._next_turn.is_visible_in_tree() and not game.events.is_busy(), "first turn waits for the player"):
+		await _finish()
+		return
+	_check(game.ctrl.get_turn() == 0 and not game.setup_panel._panel.visible, "waiting does not open the gate action")
+	await _click(game._next_turn)
 	if not await _until(func() -> bool: return game.setup_panel._panel.visible and not game.events.is_busy(), "setup opens"):
 		await _finish()
 		return
@@ -110,7 +116,7 @@ func _run() -> void:
 	ctrl.state.creature(defender_uid).slot = slot
 	ctrl.state.players[0].arena_hand.assign(CardDB.arena_ids().slice(0, 12))
 	var hand: Array = CardDB.ability_ids().slice(0, 16)
-	for id in ([GALE_SWAP, GALE_CALL] if bright else [DRAIN]):
+	for id in ([GALE_SWAP, GALE_CALL] if bright else [BOOST, DRAIN]):
 		hand.erase(id)
 		hand.push_front(id)
 	ctrl.state.players[0].ability_hand.assign(hand)
@@ -216,6 +222,30 @@ func _run() -> void:
 	_check(battle._chain.get_child(0).get_child(0).text.begins_with("×"), "chain marks cancelled card")
 	_check(hud.own_panel._power.text == "%d" % after_gate.powers[1] and hud.opponent_panel._power.text == "%d" % after_gate.powers[0], "cancelled drain restores calculated powers")
 	await _save("counter")
+	var boost := _visible_card(ability, BOOST)
+	if not _check(boost != null, "ordinary G boost is available in the reply"):
+		await _finish()
+		return
+	await _click(boost)
+	var boost_banner_seen := [false]
+	if not await _until(func() -> bool:
+		boost_banner_seen[0] = boost_banner_seen[0] or battle._effect.visible
+		return battle._floating_numbers.any(func(delta: Label) -> bool: return delta.text == "+30" and delta.get_meta("battle_side", -1) == 1),
+		"ordinary boost shows +30 on the defender"):
+		await _finish()
+		return
+	var boosted := ctrl.get_battle_preview()
+	_check(boosted.powers[1] == after_gate.powers[1] + 30 and boosted.powers[0] == after_gate.powers[0],
+		"ordinary boost updates only its author's power")
+	_check(battle._chain.visible and battle._chain.get_children().any(func(chip: Control) -> bool:
+		return chip.get_child(0).text == CardDB.card(BOOST).display_name), "ordinary boost remains in the played-card row")
+	await _save("ordinary-boost")
+	if not await _until(func() -> bool:
+		boost_banner_seen[0] = boost_banner_seen[0] or battle._effect.visible
+		return ability._panel.visible and not game.events.is_busy(), "ordinary boost returns to the response without acknowledgment"):
+		await _finish()
+		return
+	_check(not boost_banner_seen[0], "ordinary boost never opens a center announcement")
 	await _click(ability._pass_btn)
 	if await _until(func() -> bool: return game.battle_overlay._open, "two passes show the result", 900):
 		_check_popup_sound("battle result")

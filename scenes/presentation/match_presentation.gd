@@ -544,10 +544,6 @@ func on_ability_attached(player: int, uid: int, card_id: StringName) -> void:
 	log_event("%s «%s» → %s" % [say(player, "Вы прикрепляете", "Соперник прикрепляет"), card_name(card_id), cname(uid)], Color(0.75, 0.6, 1.0))
 	events.push(anim_attached.bind(player, uid, card_id))
 
-func on_gate_thrown(player: int, slot: int, uid: int) -> void:
-	log_event("%s: ворота + бросок" % say(player, "Вы", "Соперник"), UiTheme.GOLD)
-	events.push(anim_gate_thrown.bind(player, slot, uid))
-
 func on_gate_trap(slot: int, card_id: StringName, effect: StringName) -> void:
 	state.stats["traps"] += 1
 	log_event("ЛОВУШКА: %s" % card_name(card_id), Color(1.0, 0.45, 0.35))
@@ -718,11 +714,6 @@ func anim_attached(player: int, uid: int, card_id: StringName) -> void:
 	if player == HUMAN and ctrl.get_phase() == MatchController.Phase.AWAIT_LANDING and state.active_ball != null and not director.flying:
 		pre_throw_requested.emit()
 
-func anim_gate_thrown(player: int, _slot: int, uid: int) -> void:
-	SoundFx.i().play("card_select")
-	hud.set_hint("Ворота + бросок: %s летит на новую карту" % cname(uid))
-	await hud.banner("ВОРОТА + БРОСОК", "%s: карта и бросок за один ход" % say(player, "Вы", "Соперник"), UiTheme.GOLD, 0.55)
-
 func anim_trap(slot: int, card_id: StringName, effect: StringName) -> void:
 	var sub: String = "Ловушка сработала"
 	match effect:
@@ -788,8 +779,6 @@ func anim_returned(uid: int, reason: StringName) -> void:
 		&"miss":
 			SoundFx.i().play("miss", -2.0)
 			hud.set_hint("Промах: %s уходит в зону использованных" % cname(uid))
-		&"gate_won":
-			hud.set_hint("Свои ворота: карта засчитана")
 		&"lost":
 			await anim_remove_ball(uid, true)
 			return
@@ -815,12 +804,6 @@ func anim_relocated(uid: int, _from: int, to: int) -> void:
 	await tw.finished
 	b.freeze_at(target)
 
-func anim_refilled(player: int) -> void:
-	hud.coach("used", "Зона использованных: существа после промаха или боя отдыхают. Когда бросать некого, они все возвращаются в руку.")
-	hud.flash("Существа вернулись из зоны использованных" if player == HUMAN else "У соперника вернулись существа")
-	await hud.wait_read(1.4)
-	hud.clear_flash()
-
 func anim_remove_ball(uid: int, eliminated: bool = false) -> void:
 	if uid == state.opponent_uid: clear_opponent_panel()
 	if uid == state.own_uid: clear_own_panel()
@@ -843,7 +826,7 @@ func anim_stood(uid: int, slot: int) -> void:
 	if b == null:
 		return
 	b.slot = slot
-	hud.set_hint("%s встаёт на карту" % cname(uid))
+	hud.set_hint("")
 	# короткий наезд на фактическую точку остановки, потом кат на облёт
 	if cam.mode == CameraRig.Mode.STATIC and not cam.is_overview():
 		await wait(0.4)
@@ -922,15 +905,16 @@ func anim_ability_msg(player: int, card_id: StringName, cancelled: bool, powers:
 	if powers.size() == 2 and not (swap or shift):
 		battle_hud.set_powers(powers)
 		present_battle_powers(powers)
-	if not swap:
-		if preview != null:
-			battle_hud.set_chain(preview.plays, preview.passed, -1, preview.cancelled_plays, preview.ability_counts, battle_blocks(preview))
+	if not swap and preview != null:
+		battle_hud.set_chain(preview.plays, preview.passed, -1, preview.cancelled_plays, preview.ability_counts, battle_blocks(preview))
+	var inactive := cancelled
+	if not inactive and preview != null:
+		var side := 0 if owner_of(preview.attacker_uid) == player else 1
+		inactive = preview.cancelled_plays.has([side, card_id])
+	# An ordinary G boost already shows its name in the chain and its delta on the fighter.
+	var ordinary_boost := preview != null and CardEffects.is_effect(c, &"boost") and not CardEffects.returns_to_hand(c)
+	if not swap and (inactive or not ordinary_boost):
 		var summary := c.text if c != null else "Способность сыграна"
-		var inactive := cancelled
-		if not inactive and preview != null:
-			var side := 0 if owner_of(preview.attacker_uid) == player else 1
-			for play in preview.cancelled_plays:
-				if int(play[0]) == side and play[1] == card_id: inactive = true
 		if inactive: summary = "Эффект отменён или подавлен. Карта учтена в лимите."
 		var source := side_title(player)
 		for uid in state.battle_uids:
@@ -1081,13 +1065,8 @@ func gate_slots() -> Array:
 	return out
 
 func on_card_drawn(player: int, card_id: StringName) -> void:
-	events.push(func() -> void:
-		refresh_hand()
-		SoundFx.i().play("card_select", -6.0)
-		hud.draw_notice(card_name(card_id) if player == HUMAN else "Соперник получает карту")
-		await wait(0.25))
 	if player == HUMAN:
-		log_event("Получена карта «%s»" % CardDB.card(card_id).display_name, UiTheme.GOLD)
+		log_event("Получена карта «%s»" % card_name(card_id), UiTheme.GOLD)
 	else:
 		log_event("Соперник получает карту", UiTheme.TEXT_DIM)
 
@@ -1179,7 +1158,6 @@ func connect_controller() -> void:
 	ctrl.card_captured.connect(on_card_captured)
 	ctrl.turn_started.connect(on_turn_started)
 	ctrl.ability_attached.connect(on_ability_attached)
-	ctrl.gate_thrown.connect(on_gate_thrown)
 	ctrl.gate_trap_triggered.connect(on_gate_trap)
 	ctrl.momentum_changed.connect(on_momentum_changed)
 	ctrl.final_round_started.connect(on_final_round)
@@ -1201,7 +1179,7 @@ func on_creature_relocated(uid: int, previous: int, target: int) -> void:
 	events.push(anim_relocated.bind(uid,previous,target))
 
 func on_creatures_refilled(player: int) -> void:
-	events.push(anim_refilled.bind(player))
+	log_event(say(player, "Существа вернулись из использованных", "Существа соперника снова готовы к броску"))
 
 func on_gates_recycled() -> void:
 	events.push(func() -> void:
@@ -1209,16 +1187,14 @@ func on_gates_recycled() -> void:
 		await hud.wait_read(HudUI.read_time(1.2,"Ворота кончились: выигранные карты вернулись в руки"))
 		hud.clear_flash())
 
-func on_standoff(attacker: int, defender: int) -> void:
+func on_standoff(attacker: int, _defender: int) -> void:
+	var message := say(owner_of(attacker),
+		tr("Тупик. По жребию на другие ворота идёт %s из вашей команды."),
+		tr("Тупик. По жребию на другие ворота идёт %s из команды соперника.")) % cname(attacker)
 	events.push(func() -> void:
-		var message := "Тупик: жребий выбрал атакующего — %s идёт на %s!" % [cname(attacker),cname(defender)]
 		hud.flash(message)
 		await hud.wait_read(HudUI.read_time(1.4,message))
 		hud.clear_flash())
 
 func on_turn_skipped(player: int) -> void:
-	events.push(func() -> void:
-		var message := "Все ваши существа на воротах — ход переходит сопернику" if player == HUMAN else "Все существа соперника на воротах — ваш ход"
-		hud.flash(message)
-		await hud.wait_read(HudUI.read_time(1.2,message))
-		hud.clear_flash())
+	log_event(say(player, "Ваш ход пропущен: все существа на воротах", "Соперник пропускает ход: все существа на воротах"))

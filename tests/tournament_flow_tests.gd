@@ -133,7 +133,7 @@ func _run_flow() -> void:
 	_check(main.ctrl.debug_snapshot().decks == _initial_snapshot.decks, "повтор начинает те же колоды")
 	_check(main.ctrl.action_trace[0] == _initial_snapshot.actions[0], "повтор сохраняет первый ход")
 	_check(main.ctrl.state.alive_count(0) == 3 and main.ctrl.state.alive_count(1) == 3, "повтор создаёт свежий матч с шестью живыми существами")
-	_check(main.ctrl.get_turn() == 1, "повтор идёт с начала, а не с места прерывания")
+	_check(main.ctrl.get_turn() == main._tournament_first_side(), "повтор идёт с начала, первый ход человека ждёт кнопки")
 	_check(_preparation_counts() == startup_counts and _actors_valid(), "повтор арендует каталог без подготовки")
 	bot = AIPlayer.new(0, 1271, -1.0, int(main.tournament.state.difficulty))
 	match_frames = 0
@@ -173,7 +173,7 @@ func _run_flow() -> void:
 	_check(second.id != _fixture.id, "следующий матч отличается от завершённого")
 	main.tournament_panel.primary_button.pressed.emit()
 	if not await _wait_match_started("следующая встреча после интро "): return
-	_check(main.ctrl != null and not main._game_over and main.ctrl.get_turn() == 1, "следующая встреча начинается свежим физическим матчем")
+	_check(main.ctrl != null and not main._game_over and main.ctrl.get_turn() == main._tournament_first_side(), "следующая встреча начинается свежим физическим матчем")
 	_check(_preparation_counts() == startup_counts and _actors_valid(), "следующая встреча повторно использует каталог и правильные uid")
 	print("Tournament flow: %d checks, %d failures; %.2fs; fixture %s human_side=%s" % [_checks, _failures, (Time.get_ticks_msec() - _started_at) / 1000.0, _fixture.id, "a" if int(_fixture.a) == 0 else "b"])
 	_write_report()
@@ -299,6 +299,8 @@ func _process(_delta: float) -> bool:
 		main.hud._skip_flag = true
 	if main.battle_overlay._open:
 		main.battle_overlay._close()
+	if press_next_turn(main):
+		return false
 	var view: MatchState = main.ctrl.get_view(0)
 	if choose_pending_target(main,bot):
 		_target_actions += 1

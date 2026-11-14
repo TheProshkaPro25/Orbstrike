@@ -4,6 +4,7 @@ var main: Node
 var out_dir := "user://experience_review"
 var failures := 0
 const Locations := preload("res://data/arena_locations.gd")
+const AutoPlay := preload("res://tools/autoplay.gd")
 
 func check(value: bool, message: String) -> void:
 	if not value:
@@ -72,6 +73,8 @@ func _run() -> void:
 		await process_frame
 		if not main._preparing: break
 	check(not main._preparing and main.ctrl._started, "подготовка команды завершилась до начала матча")
+	await _settle()
+	AutoPlay.press_next_turn(main)
 	await _settle()
 	main.hud._close_coach()
 	check(main.setup_panel._panel.visible, "старт матча запрашивает ворота")

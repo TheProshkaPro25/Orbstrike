@@ -60,7 +60,7 @@ class PresentationQueue extends EventPlayer:
 		# Keep the actual sequential EventPlayer/drained barrier. Replace only
 		# presentation entries that load/stage models, delay, or play 3D effects.
 		var method := String(animation.get_method())
-		if method in ["anim_phase", "anim_turn", "anim_set_pending", "queue_request"]:
+		if method in ["anim_phase", "anim_turn", "anim_set_pending", "queue_request", "_show_next_turn"]:
 			super.push(animation)
 		elif method == "anim_game_over":
 			super.push(game.stage_game_over.bind(animation))
@@ -98,6 +98,7 @@ class MatchFixture extends "res://scenes/main.gd":
 		var pool := GameLoading.i()
 		pool.ready_to_play = true
 		_build_ui()
+		_create_next_turn_button()
 		team_menu.hide()
 		pool.ready_to_play = false
 		_build_logic()
@@ -216,9 +217,22 @@ func stable(game: MatchFixture) -> void:
 	for _i in 90:
 		await process_frame
 		if game.battle_overlay._open or game.game_over_ui._panel.visible: return
-		if not game.events.is_busy() and not game.director.flying and game._pending.is_empty() and game.ctrl.get_active_player() == 0:
+		if not game.events.is_busy() and not game.director.flying and game._pending.is_empty() and (game._next_turn.visible or game.ctrl.get_active_player() == 0):
 			await frames(2)
 			return
+
+
+func confirm_turn_with_keyboard(game: MatchFixture) -> bool:
+	if not game._next_turn.visible:
+		check(false, "human turn exposes the Next turn button")
+		return false
+	check(await tab_to(game._next_turn), "Next turn is reachable by keyboard")
+	var previous := game.ctrl.get_turn()
+	await key(KEY_ENTER, true)
+	await stable(game)
+	var confirmed := not game._next_turn.visible and game.ctrl.get_turn() == previous + 1
+	check(confirmed, "one Enter starts one human turn")
+	return confirmed
 
 
 func select_field_slot(game: MatchFixture, slot: int) -> bool:
@@ -373,6 +387,9 @@ func run_match(first: int) -> void:
 			confirmed_results += 1
 			check(not game.battle_overlay._open and game.resolved.size() == count, "one Enter closes exactly one result without another human action")
 			await stable(game)
+			continue
+		if game._next_turn.visible:
+			if not await confirm_turn_with_keyboard(game): break
 			continue
 		if game.ctrl.get_active_player() != 0 or game.events.is_busy() or game.director.flying:
 			await stable(game)
@@ -547,6 +564,7 @@ func combo_scenario() -> Dictionary:
 	await frames()
 	game.ctrl.start(0)
 	await stable(game)
+	await confirm_turn_with_keyboard(game)
 	var original := game.ctrl.debug_snapshot()
 	var hand_size := game.ctrl.state.players[0].arena_hand.size()
 	if await open_combo_selector(game):
@@ -592,6 +610,7 @@ func prethrow_scenario() -> Dictionary:
 	await frames()
 	game.ctrl.start(0)
 	await stable(game)
+	await confirm_turn_with_keyboard(game)
 	if await setup_with_keyboard(game, false):
 		var orb := game.hud._creature_box.get_child(0) as OrbButton
 		var uid: int = orb.uid

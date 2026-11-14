@@ -659,23 +659,3 @@ func _update_phase_text() -> void:
 		_phase_label.text = "НАЧАЛО БОЯ"
 	if _final_round:
 		_phase_label.text = "ФИНАЛЬНЫЙ БОЙ" + (" · " + _phase_label.text if not _phase_label.text.is_empty() else "")
-
-
-## Добор отличается от усиления и отмены: небольшая плашка, без перекрытия бойцов.
-func draw_notice(text: String) -> void:
-	var panel := PanelContainer.new()
-	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_theme_stylebox_override("panel", UiTheme.box(Color(0.035, 0.10, 0.14, 0.94), Color(0.4, 0.85, 1.0), 1, 8, 10))
-	var label := VisualUtil.label("＋ ДОБОР · " + text, 17)
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	label.custom_minimum_size.x = 280
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	panel.add_child(label)
-	VisualUtil.place(panel, 0.5, 0.0, 0, 155)
-	add_child(panel)
-	panel.modulate.a = 0.0
-	var tw := panel.create_tween()
-	tw.tween_property(panel, "modulate:a", 1.0, 0.18)
-	tw.tween_interval(1.3)
-	tw.tween_property(panel, "modulate:a", 0.0, 0.3)
-	tw.tween_callback(panel.queue_free)

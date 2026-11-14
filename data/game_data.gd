@@ -29,6 +29,7 @@ const SPECIES: Array = [
 const LOCAL_SPECIES: Array = [
 	{"id": "floris", "name": "Флорис", "power": 320, "archetype": "beetle"},
 	{"id": "octo", "name": "Окто", "power": 330, "archetype": "serpent"},
+	{"id": "armat", "name": "Армат", "power": 340, "archetype": "beetle"},
 ]
 const ALL_SPECIES: Array = SPECIES + LOCAL_SPECIES
 const ATTR_POWER_SHIFT: Array = [30, -10, 10, -30, 20, -20]

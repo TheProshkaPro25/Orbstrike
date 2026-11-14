@@ -1,6 +1,7 @@
 extends SceneTree
 ## Реальный Boot, три обычные дуэли: выбор карты, физический полёт, ожидание результата.
 const WindowTest := preload("res://tools/test_window.gd")
+const AutoPlay := preload("res://tools/autoplay.gd")
 class ResultWaiter extends Node:
 	var game: Node
 	var finished := false
@@ -61,7 +62,9 @@ func start_duel() -> bool:
 	for d in deck.arena: gates.append(d.id)
 	for d in deck.abilities: abilities.append(d.id)
 	main._on_deck_chosen(creatures,gates,abilities)
-	if not await until(func(): return not main._preparing and main.setup_panel._panel.visible): return false
+	if not await until(func():
+		if not main._preparing: AutoPlay.press_next_turn(main)
+		return not main._preparing and main.setup_panel._panel.visible): return false
 	check(main._duel_menu.visible and not main._duel_menu.disabled,"обычная дуэль показывает активную кнопку В меню")
 	check(preparation_counts()==counts,"после Boot нет новой подготовки моделей/арен/звуков")
 	check(loader._leased.size()==6,"матч арендует ровно шесть существ")
@@ -144,6 +147,7 @@ func run() -> void:
 		await process_frame
 		if main.hud._reading>0: main.hud._skip_flag=true
 		if main.director.flying and main._active_ball!=null and not main._active_ball.freeze: break
+		if AutoPlay.press_next_turn(main): continue
 		var view: MatchState = main.ctrl.get_view(0)
 		if main.setup_panel._panel.visible:
 			var choice := bot.choose_setup(view,main.ctrl.legal_setup_slots(),main.ctrl.can_skip_gate())
