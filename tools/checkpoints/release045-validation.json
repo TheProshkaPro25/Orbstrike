@@ -160,5 +160,199 @@
       }
     },
     "verified_at": "2026-11-14T05:33:58.296870+00:00"
+  },
+  "historical_build_inputs": "https://github.com/TheProshkaPro25/Orbstrike/blob/v0.4.5/tools/checkpoints/release045-inputs.json",
+  "refresh": {
+    "source_tag": "v0.4.5-refresh",
+    "source_commit": "0e39cb2a2da16d3ffb7f2c64d3b89054ec7a428b",
+    "historical_release_tag_commit": "0486232ebea0ba82690c97e2a2a92071f72f1b7c",
+    "build_inputs": "tools/checkpoints/release045-inputs.json",
+    "scope": "Windows x64 client package in existing GitHub release v0.4.5",
+    "preparation": {
+      "derived_glb_textures_restored": 174,
+      "initial_import_exit": 0,
+      "initial_import_environment": "The sandbox blocked the Godot editor's localhost socket.",
+      "final_import_exit": 0,
+      "final_import_errors": 0,
+      "initial_export_exit": 1,
+      "initial_export_environment": "The isolated XDG data tree lacked the installed Windows export templates.",
+      "final_export_exit": 0,
+      "final_export_errors": 0
+    },
+    "source_checks": {
+      "local_turn_and_replay": {
+        "checks": 709,
+        "failures": 0
+      },
+      "standoff_lottery": {
+        "checks": 594,
+        "failures": 0,
+        "fixed_seed_attackers": [
+          7,
+          9
+        ]
+      },
+      "turn_button": {
+        "checks": 35,
+        "failures": 0,
+        "renderer": "Linux/Vulkan"
+      },
+      "standoff_notice": {
+        "checks": 48,
+        "failures": 0,
+        "renderer": "Linux/Vulkan"
+      },
+      "device_battle_hud": {
+        "checks": 141,
+        "failures": 0,
+        "renderer": "Linux/Vulkan"
+      },
+      "match_keyboard_combo": {
+        "checks": 58,
+        "failures": 0,
+        "renderer": "Linux/Vulkan"
+      }
+    },
+    "historical_rules": {
+      "report": "build/checks/gameplay/selected-career-power-rules/rules.log",
+      "checks": 1168,
+      "failures": 5,
+      "scope": "Three card inventory expectations, a defensive attachment assertion and an AI ability-selection assertion; retained without rerunning the broad suite."
+    },
+    "independent_static": {
+      "status": "PASS",
+      "zip_entries": 18,
+      "zip_sha256": "ce91a621c7638e4ba5e60f0f27583473e428594b0472b1302551b25ea5489645",
+      "pck_sha256": "99bfd6b43f44899976350a187d41a95de9886b508bd401c74ebd5058186732c8",
+      "pe": {
+        "machine": "AMD64 PE32+ GUI",
+        "settings": {
+          "FileVersion": "0.4.5",
+          "ProductVersion": "0.4.5",
+          "ProductName": "Orbstrike",
+          "FileDescription": "Orbstrike"
+        },
+        "template_text_identical": true
+      },
+      "pck_integrity": {
+        "format": 4,
+        "engine": [
+          4,
+          7,
+          2
+        ],
+        "flags": 2,
+        "entries": 1799,
+        "all_entries_md5_pass": 1799,
+        "private_signature_findings": []
+      },
+      "reports": "build/checks/release045-refresh-independent/"
+    },
+    "independent_exact_runtime": {
+      "status": "PASS",
+      "pck_sha256": "99bfd6b43f44899976350a187d41a95de9886b508bd401c74ebd5058186732c8",
+      "raw_match_checks": 110,
+      "raw_match_failures": 1,
+      "raw_match_exit": 1,
+      "fixture_only_failure": "The initial assertion counted only parked actors. Boot can lease one of them to its resident team preview.",
+      "targeted_catalog_exit": 0,
+      "targeted_catalog": "67 variants, 134 unique live instances, 2 per variant including the preview lease",
+      "effective_checks": 110,
+      "runtime_confirmed_regressions": 0,
+      "battles": 3,
+      "catalog_counts": [
+        1,
+        134,
+        3,
+        4,
+        203
+      ],
+      "automatic_ai_turns_without_button": [
+        6,
+        0
+      ],
+      "turn_checks": [
+        "First turn waits for the focused button before setup and draw",
+        "Mouse click advances the first turn exactly once",
+        "AI starts through its own turn without the button",
+        "Second human turn waits without drawing or showing a toast",
+        "Enter and key repeat advance the second turn once and draw exactly one card",
+        "Draw is logged without toast or reading pause",
+        "Physical throw opens attachment panel with no separate toast or reading pause",
+        "Restart clears old turn prompt",
+        "Restarted duel independently waits before its first turn"
+      ],
+      "renderer": "Linux Vulkan 1.4.357 Forward+ NVIDIA RTX 4070 Laptop",
+      "window": "minimized, unfocusable, offscreen, 60 FPS",
+      "audio_driver": "Dummy",
+      "engine_error_count": 0,
+      "gpu_cloth_warnings_per_launch": 2
+    },
+    "publication": {
+      "ok": true,
+      "release_id": 445041420,
+      "tag_name": "v0.4.5",
+      "historical_tag_object": "e6f5fab9eab06c59bb7f9b215fa15896c2842d87",
+      "source_tag": "v0.4.5-refresh",
+      "source_commit": "0e39cb2a2da16d3ffb7f2c64d3b89054ec7a428b",
+      "page": "https://github.com/TheProshkaPro25/Orbstrike/releases/tag/v0.4.5",
+      "page_status": 200,
+      "latest": true,
+      "immutable": false,
+      "published_at": "2026-11-14T05:33:43Z",
+      "verified_at": "2026-11-14T06:29:19.159157+00:00",
+      "unauthenticated_assets": {
+        "Orbstrike_v0.4.5_win64.zip": {
+          "id": 746535623,
+          "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.5/Orbstrike_v0.4.5_win64.zip",
+          "head_status": 200,
+          "get_status": 206,
+          "bytes": 1179013825,
+          "sha256": "ce91a621c7638e4ba5e60f0f27583473e428594b0472b1302551b25ea5489645"
+        },
+        "Orbstrike_v0.4.5_win64.zip.sha256": {
+          "id": 746535636,
+          "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.5/Orbstrike_v0.4.5_win64.zip.sha256",
+          "head_status": 200,
+          "get_status": 200,
+          "bytes": 93,
+          "sha256": "877bbb91a854b1e5a0f0d8eb336230bf41b77034d6c73ba5b4376d3404586779"
+        },
+        "SHA256SUMS": {
+          "id": 746535624,
+          "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.5/SHA256SUMS",
+          "head_status": 200,
+          "get_status": 200,
+          "bytes": 93,
+          "sha256": "877bbb91a854b1e5a0f0d8eb336230bf41b77034d6c73ba5b4376d3404586779"
+        }
+      },
+      "preserved_original_assets": {
+        "Orbstrike_v0.4.5_initial_win64.zip": {
+          "id": 746428658,
+          "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.5/Orbstrike_v0.4.5_initial_win64.zip",
+          "head_status": 200,
+          "get_status": 206,
+          "bytes": 1164707718,
+          "sha256": "bd3b4bfa2b376a6ac91a225df68da7266b40dd1ca9e3cfc323bdb61c58811293"
+        },
+        "Orbstrike_v0.4.5_initial_win64.original.sha256": {
+          "id": 746428656,
+          "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.5/Orbstrike_v0.4.5_initial_win64.original.sha256",
+          "head_status": 200,
+          "get_status": 200,
+          "bytes": 93,
+          "sha256": "e788b23887ee283c8e8b1b2e8f07df23553b98fc287d962fadce6fb43a246227"
+        },
+        "SHA256SUMS-initial": {
+          "id": 746428661,
+          "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.5/SHA256SUMS-initial",
+          "head_status": 200,
+          "get_status": 200,
+          "bytes": 93,
+          "sha256": "e788b23887ee283c8e8b1b2e8f07df23553b98fc287d962fadce6fb43a246227"
+        }
+      }
+    }
   }
 }
