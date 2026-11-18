@@ -29,7 +29,8 @@ godot --headless --max-fps 60 --path . --export-release "Windows Desktop" /path/
 0.4.2.6. Условия авторов и рецепты подготовки перечислены отдельно.
 [Костюмы BOOTH](../assets/avatars/booth/README.md) ·
 [Библиотеки жестов](../assets/avatars/motions/KEVIN.md) ·
-[Входы сборки 0.4.6](../tools/checkpoints/release046-inputs.json).
+[Входы сборки 0.4.6](../tools/checkpoints/release046-inputs.json) ·
+[Проверка и публикация 0.4.6](../tools/checkpoints/release046-validation.json).
 
 Датированные блоки ниже сохраняют техническую историю.
 

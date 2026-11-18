@@ -1,0 +1,210 @@
+{
+  "release": "Orbstrike 0.4.6",
+  "version": "0.4.6",
+  "scope": "Windows x64 client",
+  "source_tag": "v0.4.6",
+  "source_commit": "b6c27f4dbe958759e58f64df42064e0e2b4a73e7",
+  "source_parent": "d9dafd5bed114ea45307e7ad19bbb71df045e5e5",
+  "source_input_manifest": "tools/checkpoints/release046-inputs.json",
+  "source_export_comparison": {
+    "git_tree": "d14bfb3fce5b6ae66b5bcf9df7221a87a4ffa143",
+    "source_manifest_sha256": "9b7965c30c170bac3a253f937ac1d9dfdd7674731a9b6e1292d8c4c6a6b14551",
+    "tracked_files": 2680,
+    "tracked_bytes": 1787837081,
+    "tracked_missing": [],
+    "tracked_mismatched": [
+      "addons/godot_gpu_cloth/shaders/compute/cloth_output_positions.glsl.import"
+    ],
+    "overlay_mismatched": [],
+    "import_serialization_difference": "An empty line added at EOF of the generated glsl.import by Godot editor import."
+  },
+  "export": {
+    "preset": "Windows Desktop",
+    "clean_import_exit_code": 0,
+    "restored_embedded_pngs": 174,
+    "exit_code": 0,
+    "errors": [],
+    "repeat_build_archive_byte_identical": true
+  },
+  "package": {
+    "archive": "Orbstrike_v0.4.6_win64.zip",
+    "bytes": 1197206962,
+    "sha256": "343b074560d9669e25f6d1016baec11e4d7c131992cbdc205ad49fbaea081cce",
+    "files": {
+      "CHANGELOG.md": {
+        "bytes": 291471,
+        "sha256": "984638795b78e1b8f2fd6c4856beb971c8b659a322f8e916b9e5187ac8e878f4"
+      },
+      "CREDITS.md": {
+        "bytes": 45592,
+        "sha256": "29c8ce5886f4968878cd3577c3f3b32fd0c4541178730cd1b4004378ece46b13"
+      },
+      "LICENSES/BOOTH.md": {
+        "bytes": 12642,
+        "sha256": "6ecdbc68ec4c094b48b1de71c5882b6fcec29b6f0dfcbd2607d98a11a3cb6379"
+      },
+      "LICENSES/EFFECTS_LAB_MIT.txt": {
+        "bytes": 1065,
+        "sha256": "a4a0b79050cd8d5a327e270f2b0a9eaa0c32ce5ff242b4e45f3e1bec58065e18"
+      },
+      "LICENSES/ELEMENTAL_IMPACT_MIT.txt": {
+        "bytes": 1070,
+        "sha256": "0d85d2e1227be9197710e2f83c1d74606dc8d71af9ff42944e8b78ffdfef4519"
+      },
+      "LICENSES/FIRA_SANS_OFL.txt": {
+        "bytes": 4421,
+        "sha256": "e1b302b6eac8d0cdbc7786f84fb4fa953d8be4db37613789c1a06adb57d33222"
+      },
+      "LICENSES/GATE_WAVE_CC0.txt": {
+        "bytes": 735,
+        "sha256": "f34c3ccfea18b90f943bac6545b876ffaf73ea0530cceff2c5c416712c92f8dc"
+      },
+      "LICENSES/GODOT_VRM.txt": {
+        "bytes": 1391,
+        "sha256": "d39666c721f8453445364e66a08d0edec6fbc5b8e30ee1d9d710e84a3094c101"
+      },
+      "LICENSES/GPU_CLOTH.txt": {
+        "bytes": 1067,
+        "sha256": "3e53bd060020c64601b050a039d42a07f969eafd1085e16b4b93e0f97f7c7689"
+      },
+      "LICENSES/KENNEY_PARTICLES_CC0.txt": {
+        "bytes": 651,
+        "sha256": "f9e70b81d8cc07c4e07c9f2eff1d94fd371a06070b18cb67c651c41158ec2975"
+      },
+      "LICENSES/KEVIN_MOTIONS.md": {
+        "bytes": 5483,
+        "sha256": "6c83fb61931a879ae8e9b3db8b2b4e38f3a500a2d73e48c1964a13c127375821"
+      },
+      "LICENSES/MTOON.txt": {
+        "bytes": 1141,
+        "sha256": "fd0a82d7d32ad7e39948363114587a3290252ee9a57da0da1582f1e9f0e602f5"
+      },
+      "LICENSES/QUATERNIUS.txt": {
+        "bytes": 332,
+        "sha256": "6d01f55c6e4c49a2c9963e147e561945ae2c83958c8ca667d90a6bffdbfac061"
+      },
+      "LICENSES/REEBOO_MIT.txt": {
+        "bytes": 1068,
+        "sha256": "1b7203896aa555a80a14264ab9a61dff5c860d9d031f179337b29465a3a2ddd8"
+      },
+      "Orbstrike.exe": {
+        "bytes": 109127680,
+        "sha256": "4e72e4d7dc6824ba33c4cd1f727eea3612663383b3baef2795e1114c07e0c29c"
+      },
+      "Orbstrike.pck": {
+        "bytes": 1322410408,
+        "sha256": "b73408f76a5c5a9370f352f21986e5416ab0c234b9ee118ec5f0de1bd03e0f7f"
+      },
+      "README.txt": {
+        "bytes": 858,
+        "sha256": "40377d9f4bb5c8db195b0a5bc248f42664cf7333dd78ef7ad66b410d618f45d9"
+      },
+      "RULES.md": {
+        "bytes": 56737,
+        "sha256": "2a69abb06d137d69b53c2ea7d50e5001728cefe103189233cc53f2930a3dde07"
+      }
+    }
+  },
+  "independent_package_check": {
+    "status": "PASS",
+    "receipt_sha256": "908adfeab1e6ee99e88114f73a37364563597b3510a949a8a7a88da291408ff7",
+    "zip_entries": 18,
+    "pck_integrity": {
+      "format": 4,
+      "engine": [
+        4,
+        7,
+        2
+      ],
+      "flags": 2,
+      "entries": 1834,
+      "all_entries_md5_pass": 1834,
+      "private_signature_findings": []
+    },
+    "pe": {
+      "machine": "AMD64 PE32+ GUI",
+      "settings": {
+        "FileVersion": "0.4.6",
+        "ProductVersion": "0.4.6",
+        "ProductName": "Orbstrike",
+        "FileDescription": "Orbstrike"
+      },
+      "template_text_identical": true
+    },
+    "project": {
+      "application/config/name": "Orbstrike",
+      "application/config/version": "0.4.6",
+      "application/run/main_scene": "res://scenes/loading/boot.tscn"
+    },
+    "catalog_portraits": 67,
+    "prepared_resources": 70,
+    "client_rules": "online-rules-11"
+  },
+  "independent_packed_runtime": {
+    "pck_sha256": "b73408f76a5c5a9370f352f21986e5416ab0c234b9ee118ec5f0de1bd03e0f7f",
+    "platform": "Linux / Vulkan",
+    "window": "minimized, non-focusable, offscreen, 60 FPS cap",
+    "log_sha256": "7ae60204b46f5ad231edc02fb1ab5f48a417ed33dcba1b83c2d34595ccfd379c",
+    "run_receipt_sha256": "6d7aae3fb167a1b6695366801b03a69bb673c90b947c061ed0396cab0c94fad2",
+    "duel_receipt_sha256": "e4ebcf7b6d127a64cf7671abc1319c17c79aa4b0cb07926b98e2167d6abb8386",
+    "exit_code": 0,
+    "errors": [],
+    "warnings": [],
+    "checks": 53,
+    "failures": 0,
+    "turns": 18,
+    "throws": {
+      "0": 5,
+      "1": 5
+    },
+    "battles": 5,
+    "conclusion": "knockout",
+    "repeat_setup": {
+      "arena": 3,
+      "scene": "res://scenes/main.tscn",
+      "team_menu": true
+    }
+  },
+  "native_windows_runtime_covered": false,
+  "subjective_audio_covered": false,
+  "publication": {
+    "repository": "TheProshkaPro25/Orbstrike",
+    "release_id": 449483304,
+    "tag_name": "v0.4.6",
+    "source_commit": "b6c27f4dbe958759e58f64df42064e0e2b4a73e7",
+    "page": "https://github.com/TheProshkaPro25/Orbstrike/releases/tag/v0.4.6",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2026-11-18T03:23:23Z",
+    "assets": {
+      "Orbstrike_v0.4.6_win64.zip": {
+        "asset_id": 761702915,
+        "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.6/Orbstrike_v0.4.6_win64.zip",
+        "bytes": 1197206962,
+        "sha256": "343b074560d9669e25f6d1016baec11e4d7c131992cbdc205ad49fbaea081cce",
+        "state": "uploaded",
+        "anonymous_head_http": 200,
+        "anonymous_get_http": 206
+      },
+      "Orbstrike_v0.4.6_win64.zip.sha256": {
+        "asset_id": 761702917,
+        "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.6/Orbstrike_v0.4.6_win64.zip.sha256",
+        "bytes": 93,
+        "sha256": "db6858bc51d3577fbca0f01ec0d65c83bc188f279bb05d183c4fd013d898186a",
+        "state": "uploaded",
+        "anonymous_http": 200
+      },
+      "SHA256SUMS": {
+        "asset_id": 761702916,
+        "url": "https://github.com/TheProshkaPro25/Orbstrike/releases/download/v0.4.6/SHA256SUMS",
+        "bytes": 93,
+        "sha256": "db6858bc51d3577fbca0f01ec0d65c83bc188f279bb05d183c4fd013d898186a",
+        "state": "uploaded",
+        "anonymous_http": 200
+      }
+    },
+    "tag_object": "414394083c4f10e04d79026162fc93858cb69594",
+    "page_anonymous_http": 200,
+    "latest": true
+  }
+}
