@@ -182,6 +182,7 @@ static func _arch(width: float, stem: float, rise: float) -> ArrayMesh:
 			st.set_normal(Vector3(0, 0, 1))
 			st.set_uv(Vector2(v.x / width + .5, v.y / (stem + rise)))
 			st.add_vertex(Vector3(v.x, v.y, 0))
+	st.index() # Exact full-attribute reuse, including the shadow/depth passes.
 	return st.commit()
 
 static func _window_wall(width: float) -> ArrayMesh:
@@ -210,6 +211,7 @@ static func _window_wall(width: float) -> ArrayMesh:
 		_wall_quad(st, p, q, Vector3(q.x, WALL_TOP, 0), Vector3(p.x, WALL_TOP, 0), Vector3.BACK)
 		var toward_opening := Vector3(-cos((a + b) * .5), -sin((a + b) * .5), 0)
 		_wall_quad(st, p, q, q + Vector3.FORWARD, p + Vector3.FORWARD, toward_opening)
+	st.index()
 	return st.commit()
 
 
@@ -245,6 +247,7 @@ static func _vault() -> ArrayMesh:
 			for p in [_vault_point(a,t), _vault_point(b,t), _vault_point(a,u), _vault_point(b,t), _vault_point(b,u), _vault_point(a,u)]:
 				st.set_normal(-Vector3(p.x / (RADIUS * RADIUS), (p.y - WALL_TOP) / pow(CROWN - WALL_TOP, 2), p.z / (RADIUS * RADIUS)).normalized())
 				st.add_vertex(p)
+	st.index()
 	return st.commit()
 
 static func _door(arena: Node3D, center: Vector3, yaw: float, box: Mesh, rod: Mesh, dark: Material, gold: Material, stone: Material) -> void:
@@ -341,6 +344,7 @@ static func _rosette() -> ArrayMesh:
 		for v in [Vector3.ZERO, Vector3(cos(b)*rb,0,sin(b)*rb), Vector3(cos(a)*ra,0,sin(a)*ra)]:
 			st.set_normal(Vector3.UP)
 			st.add_vertex(v)
+	st.index()
 	return st.commit()
 
 
@@ -349,6 +353,24 @@ static func _lighting(arena: Node3D) -> void:
 	var ceiling := _spot(arena, "OculusLight", Vector3(0, 103.8, 0), Vector3(9, 0, 10),
 			Color(.77,.85,1.0), 67.0, 170.0, 30.0)
 	ceiling.set_meta("moon_shadow", true)
+	# Creatures face both sides of the field and can settle outside the window beams.
+	_figure_light(arena, "CreatureKeyLight", Vector3(0.55, 0.67, 1), Color(.98,.94,.88), .80)
+	_figure_light(arena, "CreatureFillLight", Vector3(-.65, .54, -1), Color(.86,.92,1), .68)
+
+
+static func _figure_light(arena: Node3D, label: String, direction: Vector3, color: Color, energy: float) -> void:
+	var light := DirectionalLight3D.new()
+	light.name = label
+	light.basis = Basis.looking_at(-direction)
+	light.light_color = color
+	light.light_energy = energy
+	light.light_specular = 0.0
+	light.light_volumetric_fog_energy = 0.0
+	light.light_bake_mode = Light3D.BAKE_DISABLED
+	light.light_cull_mask = CreatureBall.FIGURE_LIGHT_LAYER
+	light.set_meta("essential_fixture", true)
+	arena._decor.add_child(light)
+	arena._sanctuary_lights.append(light)
 
 static func _spot(arena: Node3D, label: String, origin: Vector3, target: Vector3,
 		color: Color, energy: float, distance: float, spread: float) -> SpotLight3D:

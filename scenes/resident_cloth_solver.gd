@@ -9,6 +9,11 @@ const CACHE_VERSION := 1
 # any future vendor edit gets its actual hash and invalidates normally.
 const GPU_ALLOCATOR_VENDOR_SHA := "88b293bb0a1eaadf9c50dbd84d437fee350c390b544a7fca40022824631a6235"
 const CPU_COMPATIBLE_VENDOR_SHA := "c788381a4b2e79a8ce0ec9b10c23e6fcff51746a559f1770d0b7d123369f5a5a"
+# The cape output mode changes GPU dispatch/texture semantics only.
+const DEFORMATION_OUTPUT_VENDOR_SHA := "f61e74778f9e837f3c1727a53092a0ffeda91b145b07c3976a464392979aaf26"
+# This exact position-only output revision leaves every canonical CPU method
+# unchanged; preserve shipped read-only .pdat keys (see cloth audit/cache_keys.gd).
+const POSITION_ONLY_VENDOR_SHA := "d484d7e65fad1e65467e8515a8961f650f294db85d18d747cdb33cb4b27899da"
 const MEMORY_CACHE_LIMIT := 64 # Шесть стихий × шесть неизменяемых структур, с запасом.
 static var canonical_cache_enabled := true
 static var canonical_cache_hits: Dictionary = {}
@@ -18,6 +23,7 @@ static var _mesh_digests: Dictionary = {}
 static var _vendor_stamp := ""
 var _source_stamp := ""
 var _topology_stamp := ""
+var deformation_materials: Array[ShaderMaterial] = []
 
 func _initialize() -> void:
 	# Base._ready() использует get_script(): у производного класса это уже scenes/.
@@ -59,7 +65,7 @@ func _source_key(kind: String, settings: Array = []) -> String:
 			return ""
 	if _vendor_stamp.is_empty():
 		_vendor_stamp = FileAccess.get_sha256(VENDOR_PATH) if FileAccess.file_exists(VENDOR_PATH) else "compiled-vendor-v1"
-	if _vendor_stamp == GPU_ALLOCATOR_VENDOR_SHA:
+	if _vendor_stamp in [GPU_ALLOCATOR_VENDOR_SHA, DEFORMATION_OUTPUT_VENDOR_SHA, POSITION_ONLY_VENDOR_SHA]:
 		_vendor_stamp = CPU_COMPATIBLE_VENDOR_SHA
 	return _digest([CACHE_VERSION, Engine.get_version_info().get("hash",""), _vendor_stamp, _source_stamp, kind, settings])
 
@@ -230,6 +236,10 @@ func _exit_tree() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
+		for material in deformation_materials:
+			CreatureCloth.clear_rim(material)
+			material.set_shader_parameter("gpu_driven", false)
+			material.set_shader_parameter("positions_tex", null)
 		# Vendor сначала сбрасывает _gpu_init_done и отвязывает Texture2DRD,
 		# затем передаёт только список RID в render-thread lambda (без self).
 		# Поэтому освобождение безопасно и при удалении всей подготовленной сцены.

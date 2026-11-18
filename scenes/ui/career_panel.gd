@@ -17,6 +17,11 @@ const CLASS_NAMES := {&"gold": "Ворота стихии", &"silver": "Воро
 const PROFILE := preload("res://data/player_profile.gd")
 const CAREER := preload("res://core/career.gd")
 
+class DialogTextScroll extends ScrollContainer:
+	func _input(event: InputEvent) -> void:
+		if get_window().visible and VisualUtil.scroll_navigation(self, event):
+			get_viewport().set_input_as_handled()
+
 var _career: RefCounted
 var _team: Array[StringName] = []
 var _picks: Dictionary = {}
@@ -256,7 +261,7 @@ func _build_onboarding() -> void:
 	_page.add_child(_difficulty_choice)
 	var difficulties := _grid(3)
 	_page.add_child(difficulties)
-	var descriptions := ["Учитесь в своём темпе", "Соперник отвечает на карты", "Точные броски и сильные ответы"]
+	var descriptions := ["Учитесь в своём темпе", "Соперник отвечает на карты", "Сочетания карт и сильные ответы"]
 	for i in 3:
 		_difficulty_choice.add_item(["Новичок", "Боец", "Мастер"][i])
 		var button := _button(["Новичок", "Боец", "Мастер"][i] + "\n" + descriptions[i])
@@ -290,7 +295,7 @@ func _update_starter_preview() -> void:
 		var row := HBoxContainer.new()
 		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		_starter_preview.add_child(row)
-		row.add_child(_image(PORTRAITS.presentation_texture(def.id), Vector2(64, 64)))
+		row.add_child(_creature_portrait(def.id, Vector2(64, 64)))
 		row.add_child(_label(def.display_name, 16))
 
 
@@ -346,7 +351,7 @@ func _creature_tile(id: StringName, selected: bool) -> PanelContainer:
 	top.add_child(name_label)
 	var earned: int = _career.level(id)
 	var effective: int = int(_levels.get(String(id), mini(earned, int(_career.league_rules().max_level))))
-	var portrait := _image(PORTRAITS.presentation_texture(id), Vector2(72, 72))
+	var portrait := _creature_portrait(id, Vector2(72, 72))
 	portrait.name = "CareerPortrait_" + String(id)
 	box.get_node("Content").add_child(portrait)
 	var stat := _label("%d G   ·   Уровень %d" % [int(_career.power(id, effective if selected else earned)), earned], 16)
@@ -503,7 +508,7 @@ func _build_shop() -> void:
 		var box := _tile()
 		grid.add_child(box)
 		if creature != null:
-			box.get_node("Content").add_child(_image(PORTRAITS.presentation_texture(id), Vector2(100, 100)))
+			box.get_node("Content").add_child(_creature_portrait(id, Vector2(100, 100)))
 			box.get_node("Content").add_child(_label(creature.display_name, 18))
 			box.get_node("Content").add_child(_label("%d G · уровень 1" % int(_career.power(id, 1)), 16))
 		else:
@@ -724,7 +729,7 @@ func _new_dialog(title: String) -> AcceptDialog:
 
 func _text_dialog(title: String, text: String) -> void:
 	var dialog := _new_dialog(title)
-	var scroll := ScrollContainer.new()
+	var scroll := DialogTextScroll.new()
 	scroll.custom_minimum_size = Vector2(600, 290)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	dialog.add_child(scroll)
@@ -765,6 +770,12 @@ func _tile(selected: bool = false) -> PanelContainer:
 	content.add_theme_constant_override("separation", 5)
 	panel.add_child(content)
 	return panel
+
+
+func _creature_portrait(id: StringName, dimensions: Vector2) -> TextureRect:
+	var portrait := _image(PORTRAITS.presentation_texture(id), dimensions)
+	portrait.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	return portrait
 
 
 func _image(texture: Texture2D, dimensions: Vector2) -> TextureRect:

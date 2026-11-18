@@ -1,7 +1,10 @@
 extends SceneTree
-## Реальный Boot, три обычные дуэли: выбор карты, физический полёт, ожидание результата.
+## Реальный Boot и выход из подготовки, выбора карты, полёта и результата.
 const WindowTest := preload("res://tools/test_window.gd")
 const AutoPlay := preload("res://tools/autoplay.gd")
+const MENU_PATH := "res://scenes/menu/main_menu.tscn"
+const DUEL_PATH := "res://scenes/main.tscn"
+const ONLINE_PATH := "res://scenes/online/online_game.tscn"
 class ResultWaiter extends Node:
 	var game: Node
 	var finished := false
@@ -46,8 +49,119 @@ func click(at: Vector2) -> void:
 		e.pressed = pressed
 		Input.parse_input_event(e)
 		await process_frame
+func click_control(button: Button) -> void:
+	var center := button.get_global_rect().get_center()
+	for pressed in [true,false]:
+		var event := InputEventMouseButton.new()
+		event.position = center
+		event.button_index = MOUSE_BUTTON_LEFT
+		event.pressed = pressed
+		root.push_input(event,true)
+		await process_frame
+func key(code: Key) -> void:
+	for pressed in [true,false]:
+		var event := InputEventKey.new()
+		event.keycode = code
+		event.pressed = pressed
+		root.push_input(event,true)
+		await process_frame
+func find_button(node: Node, title: String) -> Button:
+	for child in node.find_children("*","Button",true,false):
+		if child.text == title and child.is_visible_in_tree(): return child as Button
+	return null
+func wait_scene(path: String) -> bool:
+	return await until(func(): return is_instance_valid(current_scene) and current_scene.scene_file_path == path)
+func open_mode(title: String, path: String) -> bool:
+	var play := find_button(current_scene,"Играть")
+	if play == null: return false
+	await click_control(play)
+	await frames(3)
+	var mode := find_button(current_scene,title)
+	if mode == null: return false
+	await click_control(mode)
+	return await wait_scene(path)
 func preparation_counts() -> Array:
 	return [loader.preparation_count,loader.actor_build_count,loader.arena_build_count,loader.fighter_build_count,SoundFx.i().catalog_load_count]
+func preparation_exit() -> bool:
+	root.size = Vector2i(960,540)
+	var menu_tempo := Engine.time_scale
+	if not await open_mode("Дуэль",DUEL_PATH): return false
+	var game := current_scene
+	var team: TeamMenu = game.team_menu
+	check(game.ctrl == null and team.visible and team._back_btn.text == "← В меню" and not team._back_btn.disabled,"первый шаг дуэли показывает доступный выход до матча")
+	check(is_equal_approx(Engine.time_scale,2.0) and is_equal_approx(menu_tempo,1.0),"подготовка применяет сохранённый темп дуэли")
+	check(root.get_visible_rect().encloses(team._back_btn.get_global_rect()),"выход из подготовки целиком в экране 960×540")
+	await RenderingServer.frame_post_draw
+	check(root.get_texture().get_image().save_png(out.path_join("duel-preparation-960.png")) == OK,"кадр выхода из подготовки 960×540")
+	await key(KEY_3)
+	check(team._step == 2 and team._back_btn.text == "← Назад","на третьем шаге кнопка возвращает к предыдущему шагу")
+	await key(KEY_ESCAPE)
+	check(current_scene == game and team._step == 1,"Esc с третьего шага возвращает к воротам")
+	await click_control(team._back_btn)
+	check(current_scene == game and team._step == 0,"Назад с ворот возвращает к команде")
+	var help_button := find_button(team,"Как играть")
+	if help_button == null: return false
+	await click_control(help_button)
+	var help: HelpOverlay
+	for child in team.get_children():
+		if child is HelpOverlay: help = child
+	check(is_instance_valid(help) and help.visible,"справка открылась над подготовкой")
+	await key(KEY_ESCAPE)
+	check(current_scene == game and (not is_instance_valid(help) or not help.visible),"Esc закрывает справку и оставляет команду")
+	var initial_location := ArenaLocations.current()
+	var preview_location := (initial_location + 1) % ArenaLocations.LOCATIONS.size()
+	await click_control(team._arena_btn)
+	check(team._arena_picker.visible,"выбор арены открыт над подготовкой")
+	await key(KEY_RIGHT)
+	check(game.arena.location_id == preview_location and ArenaLocations.current() == initial_location,"стрелка меняет только предпросмотр арены")
+	await key(KEY_ESCAPE)
+	check(current_scene == game and not team._arena_picker.visible and root.gui_get_focus_owner() == team._arena_btn,"Esc закрывает выбор арены и возвращает фокус к кнопке")
+	check(game.arena.location_id == initial_location and ArenaLocations.current() == initial_location,"Esc восстанавливает сохранённую арену")
+	await click_control(team._arena_btn)
+	await click_control(team._arena_picker._buttons[preview_location])
+	await click_control(team._arena_picker._confirm_button)
+	check(not team._arena_picker.visible and root.gui_get_focus_owner() == team._arena_btn,"подтверждение мышью возвращает фокус к кнопке")
+	var arena: Arena = game.arena
+	var actor: CreatureBall = team._preview._borrowed_ball
+	var location := arena.location_id
+	check(location == preview_location and ArenaLocations.current() == location,"подтверждение сохраняет просмотренную арену")
+	var old_game: WeakRef = weakref(game)
+	check(is_instance_valid(actor) and loader._leased.has(actor.get_instance_id()) and not loader._arenas.has(location),"портретная модель и арена арендованы перед выходом")
+	await click_control(team._back_btn)
+	if not await wait_scene(MENU_PATH): return false
+	check(old_game.get_ref() == null and is_equal_approx(Engine.time_scale,menu_tempo),"выход уничтожает сцену подготовки и возвращает темп меню")
+	check(loader._arenas.size() == 3 and loader._arenas.get(location) == arena,"в каталог возвращена та же арена")
+	check(is_instance_valid(actor) and loader._balls.get(actor.def.id,[]).has(actor) and loader._leased.is_empty(),"в каталог возвращена та же фигура предпросмотра")
+	check(preparation_counts() == counts,"выход из подготовки сохраняет счётчики Boot")
+	if not await open_mode("Дуэль",DUEL_PATH): return false
+	game = current_scene
+	check(game.team_menu.visible and game.ctrl == null and game.arena == arena,"повторный вход открывает первый шаг с той же ареной")
+	await key(KEY_ESCAPE)
+	if not await wait_scene(MENU_PATH): return false
+	check(loader._leased.is_empty() and loader._arenas.size() == 3 and preparation_counts() == counts,"Esc с первого шага возвращает аренду и сохраняет каталог")
+	root.size = Vector2i(1280,720)
+	await frames(4)
+	return true
+func other_mode_navigation() -> bool:
+	if not await open_mode("Новая кампания",DUEL_PATH): return false
+	var game := current_scene
+	var team: TeamMenu = game.team_menu
+	check(team._back_btn.disabled and team._back_btn.text == "← Назад" and game.modes._registration_back.visible,"регистрация сохраняет собственную кнопку выхода")
+	await key(KEY_ESCAPE)
+	check(current_scene == game,"Esc из команды регистрации не запускает выход дуэли")
+	await click_control(game.modes._registration_back)
+	if not await wait_scene(MENU_PATH): return false
+	if not await open_mode("Игра через интернет",ONLINE_PATH): return false
+	var online := current_scene
+	online._choose_deck()
+	await frames(3)
+	team = online.team_menu
+	check(online.client.socket == null,"интерфейс интернет-команды открыт в тесте без подключения")
+	check(team._back_btn.disabled and team._back_btn.text == "← Назад" and online._leave_button.visible,"сетевая команда сохраняет собственный выход")
+	await key(KEY_ESCAPE)
+	check(current_scene == online and team.visible,"Esc из сетевой команды не запускает локальный выход")
+	await click_control(online._leave_button)
+	return await wait_scene(MENU_PATH)
 func start_duel() -> bool:
 	current_scene._on_play()
 	if not await until(func(): return current_scene != null and current_scene.scene_file_path == "res://scenes/main.tscn"): return false
@@ -93,8 +207,14 @@ func menu_exit() -> void:
 			check(ball.surface_bounced.get_connections().is_empty(),"нет старого callback полёта в резерве")
 			check(ball._stage_tween==null and ball._throw_tween==null,"твины арендуемых актёров остановлены")
 func run() -> void:
+	if not OS.get_environment("XDG_DATA_HOME").begins_with(ProjectSettings.globalize_path("res://build/checks/")):
+		check(false,"выбор арены требует изолированных данных tools/check.py")
+		await finish()
+		return
 	DirAccess.make_dir_recursive_absolute(out)
-	Engine.time_scale = 4.0
+	Engine.time_scale = 1.0
+	BattleTempo.loaded = true
+	BattleTempo.selected = 3
 	root.size = Vector2i(1280,720)
 	root.content_scale_size=root.size
 	change_scene_to_file("res://scenes/loading/boot.tscn")
@@ -104,6 +224,15 @@ func run() -> void:
 		return
 	loader=GameLoading.i()
 	counts=preparation_counts()
+	if not await preparation_exit():
+		check(false,"выход мышью и Esc из подготовки возвращает в главное меню")
+		await finish()
+		return
+	if not await other_mode_navigation():
+		check(false,"регистрация и интернет-команда возвращаются через собственные кнопки")
+		await finish()
+		return
+	Engine.time_scale = 4.0
 	if not await start_duel():
 		check(false,"первая дуэль начинается")
 		await finish()
@@ -129,9 +258,10 @@ func run() -> void:
 		main.hud.set_battle_mode(true)
 		main.battle_hud.open(["Атакующий","Защитник"],[0,1],[410,390])
 		await frames(12)
+		var battle_exit: Rect2 = main._duel_menu.get_global_rect()
 		for plate in main.battle_hud._plates:
-			check(not main._duel_menu.get_global_rect().intersects(plate.get_global_rect()),"В меню не перекрывает боевую силу %d"%size.x)
-		check(main._duel_menu.get_global_rect().end.y<64,"в бою В меню находится в свободной верхней полосе")
+			check(not battle_exit.intersects(plate.get_global_rect()),"В меню не перекрывает боевую силу %d"%size.x)
+		check(main._duel_menu.is_visible_in_tree() and root.get_visible_rect().encloses(battle_exit),"кнопка В меню видна целиком в бою %d"%size.x)
 		main.hud.set_battle_mode(false)
 		main.battle_hud.close()
 		await frames(12)

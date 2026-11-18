@@ -15,6 +15,7 @@ var last_ground_errors: Array[float] = []
 # of the affected sampler when its samples or derived anchors change.
 const STANDARD_SOLE_STAMP := "b1ca0046dfd01791aee89a8f68a7664146880aca185a9a3106db437f7944a953"
 const BEETLE_SOLE_STAMP := "stone-and-tide-beetle-soles-1"
+const RIGID_BEETLE_SOLE_STAMP := "light-and-stone-beetle-clearance-1"
 
 func configure(owner: Node3D, model: Node3D) -> void:
 	actor = owner
@@ -197,6 +198,8 @@ func apply(delta: float) -> void:
 				_solve(limb,target,pole)
 				if not limb.get("rigid", false): _set_global_rotation(limb.c,desired.orthonormalized())
 				ground_error = _sole_height(limb)-floor_y
+			if limb.get("protect_clearance", false) and ground_error + offset.y < -h*0.003:
+				ground_error = _protect_clearance(limb, floor_y - offset.y) - floor_y
 			last_ground_errors.append(ground_error)
 
 	# Варианты одного вида имеют разные пропорции. Короткая нога требует немного
@@ -265,9 +268,15 @@ func _collect_soles(model: Node) -> void:
 	var source: PackedScene = model.get_meta("preparation_source", null)
 	var source_path := source.resource_path if source != null else ""
 	var tide_beetle := source_path == "res://assets/creatures_hd/rogozhuk_tide.glb"
-	var extended_samples := tide_beetle or source_path == "res://assets/creatures_hd/rogozhuk_stone.glb"
+	var stone_beetle := source_path == "res://assets/creatures_hd/rogozhuk_stone.glb"
+	var light_beetle := source_path == "res://assets/creatures_hd/rogozhuk_light.glb"
+	var extended_samples := tide_beetle or stone_beetle
 	var sample_limit := 40 if extended_samples else 12
 	var mixed_tip_bone := skeleton.find_bone("thigh.R") if tide_beetle else -1
+	if stone_beetle or light_beetle:
+		for limb in limbs:
+			var name := skeleton.get_bone_name(limb.a)
+			limb["protect_clearance"] = limb.get("rigid", false) and name in [&"thigh.R", &"rear_thigh.R"]
 	# Источник включает сам PackedScene: подмена кандидата с тем же id не использует чужой кэш.
 	var cache_key: Array = ["soles", source.get_instance_id() if source != null else 0, actor.get_height()]
 	var persisted_key := ""
@@ -275,6 +284,7 @@ func _collect_soles(model: Node) -> void:
 		var fingerprint := PreparationStore.source_key(source)
 		if not fingerprint.is_empty():
 			var stamp := BEETLE_SOLE_STAMP if extended_samples else STANDARD_SOLE_STAMP
+			if stone_beetle or light_beetle: stamp = RIGID_BEETLE_SOLE_STAMP
 			var signature: Array = []
 			for limb in limbs: signature.append([limb.a,limb.b,limb.c,limb.rear])
 			persisted_key = str([1,stamp,fingerprint,actor.get_height(),signature]).sha256_text()
@@ -337,7 +347,7 @@ func _collect_soles(model: Node) -> void:
 				var point: Vector3 = transform*vertices[v]
 				if point.y > actor.get_height() * 0.4: continue
 				for l in range(limbs.size()):
-					if point.y > actor.get_height()*(0.4 if limbs[l].rear else 0.18): continue
+					if point.y > actor.get_height()*(0.4 if limbs[l].rear or limbs[l].get("protect_clearance", false) else 0.18): continue
 					var influence := 0.0
 					for k in range(stride):
 						var slot := binds[v*stride+k]
@@ -366,6 +376,21 @@ func _collect_soles(model: Node) -> void:
 			cells[cell] = true
 			samples.append(point)
 			if samples.size() >= sample_limit: break
+		if limbs[l].get("protect_clearance", false):
+			# The lowest parts of the rigid plate change as the socket rocks.
+			# Keep the extrema of oblique directions as well as the rest sole.
+			for x in [-1, 0, 1]:
+				for z in [-1, 0, 1]:
+					for y in [-2, -1]:
+						var direction := Vector3(x, y, z)
+						var best := -INF
+						var selected := {}
+						for point: Dictionary in candidates:
+							var projection := direction.dot(point.rest)
+							if projection > best:
+								best = projection
+								selected = point
+						if not selected.is_empty() and selected not in samples: samples.append(selected)
 		limbs[l]["sole"] = samples
 		if not samples.is_empty():
 			limbs[l]["anchor"].y -= samples[0].rest.y
@@ -393,7 +418,11 @@ func _collect_soles(model: Node) -> void:
 
 
 func _sole_height(limb: Dictionary) -> float:
-	var lowest := INF
+	return _lowest_sole_point(limb).y
+
+
+func _lowest_sole_point(limb: Dictionary) -> Vector3:
+	var lowest := Vector3(0, INF, 0)
 	var matrices: Dictionary = {}
 	for sample in limb.sole:
 		var point := Vector3.ZERO
@@ -402,8 +431,30 @@ func _sole_height(limb: Dictionary) -> float:
 			if not matrices.has(bone): matrices[bone] = skeleton.get_bone_global_pose(bone)
 			point += ((matrices[bone] as Transform3D)*sample.poses[k]*sample.point)*sample.weights[k]
 		var world: Vector3 = sample.mesh.global_transform*point
-		lowest = minf(lowest,world.y)
+		if world.y < lowest.y: lowest = world
 	return lowest
+
+
+func _protect_clearance(limb: Dictionary, floor_y: float) -> float:
+	var point := _lowest_sole_point(limb)
+	var tolerance: float = actor.get_height() * 0.003
+	if point.y >= floor_y - tolerance: return point.y
+	var pivot: Vector3 = skeleton.global_transform * skeleton.get_bone_global_pose(limb.a).origin
+	for iteration in range(4):
+		var axis := (point - pivot).cross(Vector3.UP)
+		var lever := axis.length()
+		if lever < tolerance: break
+		var angle := minf((floor_y - point.y) / lever, 0.14)
+		var bone_axis := (skeleton.global_basis.inverse() * axis).normalized()
+		var basis := skeleton.get_bone_global_pose(limb.a).basis.orthonormalized()
+		_set_global_rotation(limb.a, Basis(bone_axis, angle) * basis)
+		var corrected := _lowest_sole_point(limb)
+		if corrected.y <= point.y:
+			_set_global_rotation(limb.a, basis)
+			break
+		point = corrected
+		if point.y >= floor_y - tolerance: break
+	return point.y
 
 
 func _parent_transform() -> Transform3D:

@@ -164,6 +164,13 @@ func _run() -> void:
 		stage.cam._set_static(Vector3(-74,27,44),Vector3(5,8,-25),{"fov":62.0,"smooth":4.0,"hand":0.0})
 		stage.cam.cut()
 		await capture("location%d-side" % location)
+		if location == 2:
+			# Water remains legible against the square and quay at a low, close angle.
+			stage.cam._set_static(Vector3(-54,15,-48),Vector3(-70,.1,-80),{"fov":58.0,"smooth":4.0,"hand":0.0})
+			stage.cam.cut()
+			await capture("location2-water-close")
+			await frames(54)
+			await capture("location2-water-close-later")
 		# Крупнее источник эффекта вместе с архитектурой: поле с анимированными
 		# картами не попадает в область сравнения и не может подменить движение FX.
 		if location == 1:

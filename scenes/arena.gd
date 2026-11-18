@@ -2,7 +2,7 @@ class_name Arena
 extends Node3D
 const Locations := preload("res://data/arena_locations.gd")
 const Landscape := preload("res://scenes/arena_landscape.gd")
-@export_range(0, 2) var location_id := 0
+@export_range(0, 3) var location_id := 0
 const ElementIcon := preload("res://scenes/element_icon.gd")
 ## Арена: бескрайнее поле боя (пол уходит за горизонт), 6 слотов ворот (сетка 2x3) в освещённом центре,
 ## дальние ориентиры для масштаба. Слоты 0..2 дальний ряд (z<0), 3..5 ближний.
@@ -77,17 +77,21 @@ func apply_quality() -> void:
 		_motes.amount = n
 	for l in _crystal_lights:
 		l.visible = bool(GraphicsSettings.param("lights"))
-	var low := GraphicsSettings.current() == GraphicsSettings.Level.LOW
-	var high := GraphicsSettings.current() == GraphicsSettings.Level.HIGH
+	for batch in _static_shadow_batches:
+		batch.visible = bool(GraphicsSettings.param("shadow_enabled"))
+	var detail := int(GraphicsSettings.option("scene_detail"))
+	var low := detail == GraphicsSettings.Level.LOW
+	var high := detail == GraphicsSettings.Level.HIGH
 	var local_lights := bool(GraphicsSettings.param("lights"))
 	for lamp in _harbor_lights:
 		var min_quality := int(lamp.get_meta("min_quality"))
 		var essential := min_quality == GraphicsSettings.Level.LOW and not GraphicsSettings.overrides.has("lights")
-		lamp.visible = essential or (local_lights and GraphicsSettings.current() >= min_quality)
+		lamp.visible = essential or (local_lights and detail >= min_quality)
 	preload("res://scenes/landscape_atmosphere.gd").quality(self,low)
 	_floor_mat.set_shader_parameter("max_quality", 1.0 if high else 0.0)
 	for l in _sanctuary_lights:
-		l.visible = l is SpotLight3D or local_lights
+		var essential := bool(l.get_meta("essential_fixture", false))
+		l.visible = l is SpotLight3D or essential or local_lights
 		if l is SpotLight3D:
 			if l.has_meta("window_projector"):
 				l.visible = not low or int(l.get_meta("window_projector")) < 2
@@ -100,8 +104,8 @@ func apply_quality() -> void:
 				preload("res://scenes/sanctuary_window_light.gd").apply_quality(l, high)
 			else:
 				var oculus := bool(l.get_meta("moon_shadow", false))
-				l.visible = oculus or bool(l.get_meta("essential_fixture", false)) or local_lights
-				l.shadow_enabled = oculus and not low
+				l.visible = oculus or essential or local_lights
+				l.shadow_enabled = oculus and bool(GraphicsSettings.param("shadow_enabled"))
 				l.light_size = 1.2 if high else 0.0
 	for shaft in _sanctuary_shafts:
 		shaft.visible = not low or int(shaft.get_meta("window_projector", 0)) < 2
@@ -154,21 +158,25 @@ func _build() -> void:
 		floor_body.add_child(wcs)
 
 	# Видимый пол до горизонта: линии силы, круг призыва в центре, туман к краям
+	var coastal := Locations.CoastalStyle.applies(location_id)
 	var fmesh := MeshInstance3D.new()
 	var plane := PlaneMesh.new()
-	plane.size = Vector2(GROUND_SIZE, GROUND_SIZE)
+	plane.size = Vector2(282, 282) if coastal else Vector2(GROUND_SIZE, GROUND_SIZE)
 	plane.subdivide_width = 8
 	plane.subdivide_depth = 8
 	fmesh.mesh = plane
 	var fsm := ShaderMaterial.new()
-	fsm.shader = Shader.new()
-	fsm.shader.code = FLOOR_SHADER
-	fsm.set_shader_parameter("world", FIELD)
-	var location := Locations.definition(location_id)
-	fsm.set_shader_parameter("stone_color", Color(location.stone).linear_to_srgb())
-	fsm.set_shader_parameter("far_color", Color(location.far).linear_to_srgb())
-	fsm.set_shader_parameter("trim_color", Color(location.trim).linear_to_srgb())
-	fsm.set_shader_parameter("location_style", location_id)
+	if coastal:
+		fsm.shader = preload("res://scenes/locations/coastal_floor.gdshader")
+	else:
+		fsm.shader = Shader.new()
+		fsm.shader.code = FLOOR_SHADER
+		fsm.set_shader_parameter("world", FIELD)
+		var location := Locations.definition(location_id)
+		fsm.set_shader_parameter("stone_color", Color(location.stone).linear_to_srgb())
+		fsm.set_shader_parameter("far_color", Color(location.far).linear_to_srgb())
+		fsm.set_shader_parameter("trim_color", Color(location.trim).linear_to_srgb())
+		fsm.set_shader_parameter("location_style", location_id)
 	_floor_mat = fsm
 	fmesh.material_override = fsm
 	fmesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -183,9 +191,12 @@ func _build() -> void:
 		add_child(m)
 		markers.append(m)
 		_highlights.append(_make_ghost(i, m.position))
-	Landscape.build(self, location_id)
-	_build_element_seals()
-	_build_motes()
+	if coastal:
+		preload("res://scenes/locations/coastal_arena.gd").build(self)
+	else:
+		Landscape.build(self, location_id)
+		_build_element_seals()
+		_build_motes()
 
 
 ## Волна идёт по самой поверхности; карты, существа и интерфейс остаются читаемыми.
@@ -573,7 +584,7 @@ func _mi(mesh: Mesh, mat: Material, pos: Vector3, parent: Node = null) -> MeshIn
 	mi.mesh = mesh
 	mi.material_override = mat
 	mi.position = pos
-	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if location_id == 0 else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if location_id in [0, 3] else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	(parent if parent != null else (_decor if _decor != null else self)).add_child(mi)
 	return mi
 
@@ -581,6 +592,7 @@ func _mi(mesh: Mesh, mat: Material, pos: Vector3, parent: Node = null) -> MeshIn
 ## Неподвижный декор (руины, горы) копится по парам «меш + материал» и рисуется одним MultiMesh
 ## на пару: вместо ~120 отдельных MeshInstance3D — 4 вызова отрисовки.
 var _static_sets: Dictionary = {}
+var _static_shadow_batches: Array[MultiMeshInstance3D] = []
 
 
 func _static(mesh: Mesh, mat: Material, pos: Vector3, scl: Vector3, rot: Vector3) -> void:
@@ -591,6 +603,7 @@ func _static(mesh: Mesh, mat: Material, pos: Vector3, scl: Vector3, rot: Vector3
 
 
 func _flush_static() -> void:
+	var shadow_sets: Array = []
 	for key in _static_sets.keys():
 		var xs: Array = _static_sets[key]
 		var mm := MultiMesh.new()
@@ -602,9 +615,42 @@ func _flush_static() -> void:
 		var mmi := MultiMeshInstance3D.new()
 		mmi.multimesh = mm
 		mmi.material_override = key[1]
-		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if location_id == 0 else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if location_id in [0, 3] else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		_decor.add_child(mmi)
+		# A single coastal forest spans kilometres and is submitted to every
+		# cascade. Keep the color batch intact; only its heavy shadow pass is local.
+		if location_id == 3 and key[1] is StandardMaterial3D and xs.size() >= 512 \
+				and (key[0] as Mesh).get_faces().size() * xs.size() >= 600000:
+			mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			shadow_sets.append([key[0], key[1], xs])
+	for entry in shadow_sets:
+		_build_static_shadow_batches(entry[0], entry[1], entry[2])
 	_static_sets.clear()
+
+
+func _build_static_shadow_batches(mesh: Mesh, mat: Material, transforms: Array) -> void:
+	var cells: Dictionary = {}
+	for transform: Transform3D in transforms:
+		var cell := Vector2i(floori(transform.origin.x / 256.0), floori(transform.origin.z / 256.0))
+		if not cells.has(cell): cells[cell] = []
+		cells[cell].append(transform)
+	for cell in cells:
+		var xs: Array = cells[cell]
+		var mm := MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		mm.mesh = mesh
+		mm.instance_count = xs.size()
+		for i in xs.size(): mm.set_instance_transform(i, xs[i])
+		var batch := MultiMeshInstance3D.new()
+		batch.name = "StaticShadow%d" % _static_shadow_batches.size()
+		batch.multimesh = mm
+		batch.material_override = mat
+		batch.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
+		# The original color geometry still supplies any GI. Copies are depth-only.
+		batch.gi_mode = GeometryInstance3D.GI_MODE_DISABLED
+		batch.visible = bool(GraphicsSettings.param("shadow_enabled"))
+		_decor.add_child(batch)
+		_static_shadow_batches.append(batch)
 
 
 func _crystal(pos: Vector3, c: Color, height: float, tilt_seed: int, light: bool = true) -> void:

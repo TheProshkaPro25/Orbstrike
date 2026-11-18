@@ -30,6 +30,14 @@ var _panel: PanelContainer   # заголовок окна, счётчик ка�
 var _title: Label
 var _note: Label
 var _pips: HBoxContainer
+var _gate_preview_btn: Button
+var _gate_preview_card: CardDef
+var _gate_preview_modal: Control
+var _gate_preview_panel: PanelContainer
+var _gate_preview_title: Label
+var _gate_preview_scroll: ScrollContainer
+var _gate_preview_text: Label
+var _gate_preview_close: Button
 var _gate_btn: Button
 var _pass_btn: Button
 var _cards: Array[CardView] = []
@@ -113,6 +121,12 @@ func _build() -> void:
 	_note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_note.custom_minimum_size = Vector2(232, 0)
 	left.add_child(_note)
+	_gate_preview_btn = Button.new()
+	_gate_preview_btn.text = "Посмотреть ворота"
+	_gate_preview_btn.custom_minimum_size.y = 36
+	_gate_preview_btn.hide()
+	_gate_preview_btn.pressed.connect(_open_gate_preview)
+	hb.add_child(_gate_preview_btn)
 	_gate_btn = Button.new()
 	_gate_btn.text = "Открыть мои ворота"
 	_gate_btn.custom_minimum_size = Vector2(176, 44)
@@ -147,12 +161,15 @@ func _build() -> void:
 	_pager.tooltip_text = "Страницы способностей: кнопки, ← / → при фокусе в этой руке или колёсико над картой. Tab — сменить руку. Фокус / наведение — полный текст."
 	_pager.visible = false
 	get_viewport().size_changed.connect(_on_resized)
+	set_process_input(false)
 	_place_device_dock()
 
 
 func _place_device_actions() -> void:
 	var vp := get_viewport_rect().size
-	_panel.position = Vector2((vp.x - _panel.size.x) * 0.5, vp.y - _panel.size.y - 8.0)
+	# Before launch the bottom center belongs to the field target button.
+	var y := 112.0 if _mode == Mode.PRETHROW else vp.y - _panel.size.y - 8.0
+	_panel.position = Vector2((vp.x - _panel.size.x) * 0.5, y)
 
 
 func _place_device_dock() -> void:
@@ -174,6 +191,7 @@ func _on_resized() -> void:
 	_fan.offset_top = -_fan_h
 	_panel.reset_size()
 	_place_device_actions()
+	if is_gate_preview_open(): _size_gate_preview()
 	_rebuild(focused_id)
 
 
@@ -192,9 +210,10 @@ func set_hand(ids: Array) -> void:
 
 ## entries: [{id:StringName, name:String, text:String}] — доступные сейчас карты.
 ## info: {moment: &"battle"/&"pre_throw"/&"after_landing", used: сколько карт уже сыграно (из лимита 3),
-## pass_text: подпись кнопки, note: пояснение под заголовком}.
+## gate_preview: своя закрытая карта текущего боя, pass_text: подпись кнопки, note: пояснение}.
 func show_options(entries: Array, header: String = "Окно способностей", info: Dictionary = {}) -> void:
 	_build()
+	clear_gate_preview()
 	_legal.clear()
 	for e in entries:
 		var cid := StringName(str(e["id"]))
@@ -202,22 +221,32 @@ func show_options(entries: Array, header: String = "Окно способнос�
 		if not _hand.has(cid):
 			_hand.append(cid)
 	_page = 0
-	_info = info
 	var moment: StringName = StringName(str(info.get("moment", &"battle")))
-	_info["header"] = header
-	_mode = Mode.PRETHROW if moment == &"pre_throw" else Mode.WINDOW
+	_info = {"moment": moment, "header": header}
+	var pre_throw := moment == &"pre_throw"
+	_mode = Mode.PRETHROW if pre_throw else Mode.WINDOW
+	var used := int(info.get("used", 0))
 	_title.text = header
 	_note.text = str(info.get("note", ""))
+	# Keep the optional advice above the field in two lines while the target button is below it.
+	_title.custom_minimum_size.x = 530.0 if pre_throw else 232.0
+	_note.custom_minimum_size.x = _title.custom_minimum_size.x
+	if pre_throw:
+		_note.text += "  ·  Карт за бой: %d/%d" % [used, MAX_CARDS]
 	# Длинная справка не должна растить боевой блок поверх последней сыгранной карты.
 	_update_option_note()
 	_panel.tooltip_text = _note.text + ("\nКарты играются по очереди, до трёх за бой. Наведите на название сыгранной карты, чтобы прочитать полные условия. Отдых — два следующих боя, даже после отмены. Последнему сразу возвращаются только синие усиления; явный возврат карты действует раньше." if moment == &"battle" else "")
 	_gate_btn.visible = bool(info.get("can_open_gate", false))
+	if moment == &"battle" and _gate_btn.visible:
+		_gate_preview_card = info.get("gate_preview") as CardDef
+	_gate_preview_btn.visible = _gate_preview_card != null
 	_pass_btn.visible = _mode == Mode.WINDOW
+	_gate_btn.get_parent().visible = not pre_throw
 	_pass_btn.text = str(info.get("pass_text", "Пас"))
 	_pass_btn.tooltip_text = str(info.get("pass_tip", ""))
-	_fill_pips(int(info.get("used", 0)))
+	_fill_pips(used)
 	_panel.visible = true
-	_panel.reset_size()
+	_panel.reset_size.call_deferred()
 	_place_device_actions()
 	_fan.visible = true
 	# Отмена выбора цели не тратит карту в контроллере: show_options получает
@@ -248,12 +277,13 @@ func _fill_pips(used: int) -> void:
 
 func _update_option_note() -> void:
 	var battle := StringName(str(_info.get("moment", &""))) == &"battle"
-	_pips.get_parent().visible = not battle
+	_pips.get_parent().visible = not battle and _mode != Mode.PRETHROW
 	_note.visible = not _note.text.is_empty()
 
 
 func hide_panel() -> void:
 	_build()
+	clear_gate_preview()
 	_mode = Mode.IDLE
 	_legal.clear()
 	_panel.visible = false
@@ -264,10 +294,115 @@ func hide_panel() -> void:
 		cv.set_playable(false)
 
 
+func is_gate_preview_open() -> bool:
+	return is_instance_valid(_gate_preview_modal) and _gate_preview_modal.is_visible_in_tree()
+
+
+func clear_gate_preview() -> void:
+	_gate_preview_card = null
+	if is_instance_valid(_gate_preview_btn): _gate_preview_btn.hide()
+	_close_gate_preview(false)
+
+
+func _open_gate_preview() -> void:
+	if _gate_preview_card == null or not _gate_preview_btn.is_visible_in_tree(): return
+	if not is_instance_valid(_gate_preview_modal): _build_gate_preview()
+	var lines := UiTheme.card_help(_gate_preview_card)
+	_gate_preview_title.text = str(lines[0])
+	_gate_preview_text.text = "%s\n\n%s" % [lines[1], lines[4]]
+	if not str(lines[6]).is_empty():
+		_gate_preview_text.text += "\n\n" + str(lines[6])
+	_gate_preview_scroll.scroll_vertical = 0
+	_size_gate_preview()
+	_gate_preview_modal.show()
+	_gate_preview_close.grab_focus()
+	set_process_input(true)
+
+
+func _build_gate_preview() -> void:
+	_gate_preview_modal = Control.new()
+	_gate_preview_modal.set_meta(DeviceMotion.SKIP_REVEAL, true)
+	add_child(_gate_preview_modal)
+	VisualUtil.full_rect_ignore(_gate_preview_modal)
+	_gate_preview_modal.mouse_filter = Control.MOUSE_FILTER_STOP
+	_gate_preview_modal.mouse_force_pass_scroll_events = false
+	# Выше бликов на картах руки, которые рисуются с z_index до 170.
+	_gate_preview_modal.z_index = 220
+	var shade := ColorRect.new()
+	shade.color = Color(0.015, 0.022, 0.04, 0.76)
+	_gate_preview_modal.add_child(shade)
+	VisualUtil.full_rect_ignore(shade)
+	var center := CenterContainer.new()
+	_gate_preview_modal.add_child(center)
+	VisualUtil.full_rect_ignore(center)
+	_gate_preview_panel = PanelContainer.new()
+	center.add_child(_gate_preview_panel)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 12)
+	_gate_preview_panel.add_child(column)
+	_gate_preview_title = VisualUtil.label("", 24)
+	_gate_preview_title.add_theme_color_override("font_color", UiTheme.DEVICE_ACCENT)
+	_gate_preview_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	column.add_child(_gate_preview_title)
+	_gate_preview_scroll = ScrollContainer.new()
+	_gate_preview_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_gate_preview_scroll.get_v_scroll_bar().focus_mode = Control.FOCUS_NONE
+	_gate_preview_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	column.add_child(_gate_preview_scroll)
+	_gate_preview_text = VisualUtil.label("", 17)
+	_gate_preview_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_gate_preview_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_gate_preview_scroll.add_child(_gate_preview_text)
+	_gate_preview_close = Button.new()
+	_gate_preview_close.text = "Закрыть"
+	_gate_preview_close.custom_minimum_size.y = 44
+	_gate_preview_close.pressed.connect(_close_gate_preview.bind(true))
+	column.add_child(_gate_preview_close)
+	_gate_preview_close.focus_neighbor_left = NodePath(".")
+	_gate_preview_close.focus_neighbor_right = NodePath(".")
+	_gate_preview_close.focus_neighbor_top = NodePath(".")
+	_gate_preview_close.focus_neighbor_bottom = NodePath(".")
+
+
+func _size_gate_preview() -> void:
+	var viewport := get_viewport_rect().size
+	_gate_preview_panel.custom_minimum_size = Vector2(456, 320).min(viewport - Vector2(32, 32))
+
+
+func _input(event: InputEvent) -> void:
+	if not is_gate_preview_open(): return
+	if event is InputEventMouse and not _gate_preview_panel.get_global_rect().has_point(event.position):
+		get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
+		_close_gate_preview(true)
+		return
+	if event.is_action_pressed("ui_focus_next") or event.is_action_pressed("ui_focus_prev"):
+		get_viewport().set_input_as_handled()
+		_gate_preview_close.grab_focus()
+		return
+	if not event is InputEventKey or not event.pressed or event.keycode not in [KEY_PAGEUP, KEY_PAGEDOWN]: return
+	var step := int(_gate_preview_scroll.size.y * 0.8)
+	_gate_preview_scroll.scroll_vertical += step if event.keycode == KEY_PAGEDOWN else -step
+	get_viewport().set_input_as_handled()
+
+
+func _close_gate_preview(restore_focus: bool) -> void:
+	if not is_instance_valid(_gate_preview_modal): return
+	set_process_input(false)
+	_gate_preview_modal.hide()
+	_gate_preview_title.text = ""
+	_gate_preview_text.text = ""
+	if restore_focus and _gate_preview_btn.is_visible_in_tree():
+		_gate_preview_btn.grab_focus()
+
+
 ## Показать или скрыть руку целиком (меню, конец игры).
 func set_dock_visible(on: bool) -> void:
 	_build()
 	if not on:
+		clear_gate_preview()
 		_pending_focus_id = &""
 		_pending_focus_index = -1
 	_fan.visible = on
@@ -377,6 +512,7 @@ func _on_card_pressed(cv: CardView) -> void:
 	_pending_focus_id = cid if cv.has_focus() else &""
 	_pending_focus_index = _hand.find(cid) if cv.has_focus() else -1
 	_mode = Mode.IDLE
+	clear_gate_preview()
 	_panel.visible = false
 	_hovered = null
 	_cards.erase(cv)

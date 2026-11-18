@@ -38,6 +38,9 @@ var _connection_epoch := 0
 var _closed := false
 var _cleaning_match := false
 
+func _initial_arena_location() -> int:
+	return 0
+
 func _ready() -> void:
 	_previous_time_scale = Engine.time_scale
 	Engine.time_scale = 1.0
@@ -343,7 +346,8 @@ func _apply_snapshot(data: Dictionary) -> void:
 		_hide_input()
 		_game_over = true
 		var winner := int(data.winner)
-		game_over_ui.show_result(-1 if winner < 0 else (0 if winner == local_side else 1), _reason_text(StringName(data.reason)), {"summary_only":true,"turns":view.turn,"alive":[view.alive_count(local_side),view.alive_count(1-local_side)],"captures":[view.players[local_side].captured.size(),view.players[1-local_side].captured.size()]})
+		var reason := presentation.reason_text(StringName(data.reason), ctrl, local_side)
+		game_over_ui.show_result(-1 if winner < 0 else (0 if winner == local_side else 1), reason, {"summary_only":true,"turns":view.turn,"alive":[view.alive_count(local_side),view.alive_count(1-local_side)],"captures":[view.players[local_side].captured.size(),view.players[1-local_side].captured.size()]})
 	set_meta("online_presentation","ready")
 
 func _prepare_online_match() -> void:
@@ -410,36 +414,50 @@ func _play_flight(data: Dictionary) -> void:
 	ball.close_up()
 	ball.freeze_at(_start_pos(int(data.owner)))
 	ball.show()
-	ball._figure.hide()
-	ball._show_closed()
 	ball.set_process(false)
 	hud.set_hint("Бросок: сервер рассчитал физику, воспроизводится общая траектория")
 	SoundFx.i().play("ball_throw", -3.0)
 	var samples: Array = data.samples
-	var first_pose: Array = samples.front()
-	var last_pose: Array = samples.back()
+	var points := PackedVector3Array()
+	for sample: Array in samples:
+		points.append(Vector3(float(sample[0]), float(sample[1]), float(sample[2])))
 	# Replayed frozen bodies have no physical velocity on the client. Use the
 	# transmitted motion direction so CameraRig follows the actual pose changes.
-	cam.follow(ball,Vector3(float(last_pose[0])-float(first_pose[0]),0,float(last_pose[2])-float(first_pose[2])))
+	var direction := points[-1] - points[0]
+	direction.y = 0.0
+	cam.follow(ball, direction)
 	var duration := float(data.duration)
+	var sample_interval := duration / float(samples.size() - 1)
+	ball.begin_replayed_shot(Transform3D(Basis(_flight_rotation(samples[0])), points[0]),
+		(points[1] - points[0]) / sample_interval)
 	var elapsed := 0.0
-	while elapsed < duration and is_inside_tree() and not _closed and epoch == _connection_epoch:
-		var cursor := minf(elapsed / duration * (samples.size()-1), samples.size()-1)
-		var a: Array = samples[int(cursor)]
-		var b: Array = samples[mini(int(cursor)+1,samples.size()-1)]
-		var blend := cursor - floorf(cursor)
-		var pos := Vector3(float(a[0]),float(a[1]),float(a[2])).lerp(Vector3(float(b[0]),float(b[1]),float(b[2])),blend)
-		var qa := Quaternion(float(a[3]),float(a[4]),float(a[5]),float(a[6]))
-		var qb := Quaternion(float(b[3]),float(b[4]),float(b[5]),float(b[6]))
-		ball.global_transform = Transform3D(Basis(qa.slerp(qb,blend)),pos)
+	var previous_index := 0
+	while elapsed < duration:
 		await get_tree().process_frame
-		elapsed += get_process_delta_time()
-	if _closed or epoch != _connection_epoch: return
-	var final: Array = samples.back()
-	ball.global_transform = Transform3D(Basis(Quaternion(float(final[3]),float(final[4]),float(final[5]),float(final[6]))),Vector3(float(final[0]),float(final[1]),float(final[2])))
+		if not is_inside_tree() or _closed or epoch != _connection_epoch:
+			break
+		var step := minf(get_process_delta_time(), duration - elapsed)
+		elapsed += step
+		var cursor := elapsed / duration * (samples.size() - 1)
+		var index := mini(int(cursor), samples.size() - 2)
+		# Walk the recorded samples even if a rendered frame spans several.
+		# A change from falling to rising marks an impact in the solved path.
+		for i in range(previous_index + 1, index + 1):
+			var incoming := (points[i].y - points[i - 1].y) / sample_interval
+			var outgoing := (points[i + 1].y - points[i].y) / sample_interval
+			if incoming < -ShotPhysics.REST_VERTICAL and outgoing > .5:
+				ball.present_surface_bounce(points[i], -incoming)
+		previous_index = index
+		var blend := cursor - float(index)
+		var pos := points[index].lerp(points[index + 1], blend)
+		var rotation := _flight_rotation(samples[index]).slerp(_flight_rotation(samples[index + 1]), blend)
+		ball.global_transform = Transform3D(Basis(rotation), pos)
+		ball.update_replayed_shot_fx((points[index + 1] - points[index]) / sample_interval, step)
+	if not is_inside_tree(): return
 	ball.hold_landing_pose()
 	ball.set_process(true)
 	director.flying = false
+	if _closed or epoch != _connection_epoch: return
 	if int(data.slot) >= 0:
 		cam.reveal_orbit(ball.global_position - Vector3(0,BALL_Y,0),ball.figure_height(),Vector3.FORWARD,ball.figure_size())
 		ball.open_animated()
@@ -447,6 +465,11 @@ func _play_flight(data: Dictionary) -> void:
 	else:
 		hud.flash("Промах")
 		await _wait(.3)
+
+
+func _flight_rotation(sample: Array) -> Quaternion:
+	return Quaternion(float(sample[3]), float(sample[4]), float(sample[5]), float(sample[6])).normalized()
+
 
 func _hide_input() -> void:
 	setup_panel.hide_panel()
@@ -492,7 +515,11 @@ func _show_input() -> void:
 func _show_online_abilities(title: String, moment: String) -> void:
 	var entries: Array = []
 	for cid in snapshot.legal.abilities: entries.append({"id":StringName(cid)})
-	ability_panel.show_options(entries,title,{"moment":StringName(moment),"can_open_gate":bool(snapshot.legal.can_reveal_gate),"used":3-int(snapshot.legal.get("abilities_left",3)),"pass_text":"Завершить ход" if moment == "after_landing" else "Пас"})
+	var can_open_gate := bool(snapshot.legal.can_reveal_gate)
+	var gate_preview := PresentationT.own_closed_battle_gate(ctrl.state, local_side) if can_open_gate else null
+	ability_panel.show_options(entries, title, {"moment": StringName(moment), "can_open_gate": can_open_gate,
+		"gate_preview": gate_preview, "used": 3 - int(snapshot.legal.get("abilities_left", 3)),
+		"pass_text": "Завершить ход" if moment == "after_landing" else "Пас"})
 
 func _command(command: String, args: Dictionary = {}) -> void:
 	if _input_pending or events.is_busy() or snapshot.is_empty() or _game_over: return

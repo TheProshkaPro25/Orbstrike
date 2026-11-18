@@ -5,6 +5,8 @@ var _status: Label
 
 
 func _ready() -> void:
+	# Restore pacing before catalog work; quality/atlas setup belongs to each world.
+	GraphicsSettings.apply_frame_pacing()
 	layer = 100
 	var bg := ColorRect.new()
 	bg.color = Color(.018, .026, .042)

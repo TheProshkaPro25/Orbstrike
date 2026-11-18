@@ -108,11 +108,13 @@ func run() -> void:
 	await process_frame
 	var loaded := memory()
 	var catalog := CreatureModels.catalog_defs()
+	var ratnik_count := 0
 	check(loader.ready_to_play and loader.actor_build_count == catalog.size() * 2 and loader.arena_build_count == 3, "two copies of every definition and three arenas before menu")
 	for source in CreatureModels._scenes.values(): walk(source)
 	var original_counts := [loader.actor_build_count, loader.arena_build_count, loader.preparation_count]
 	var activation: Array[float] = []
 	for d in catalog:
+		if CreatureModels.uses_ratnik_trellis(d): ratnik_count += 1
 		var first: CreatureBall = loader._balls[d.id][0]
 		var second: CreatureBall = loader._balls[d.id][1]
 		var a := first._anim._player
@@ -169,17 +171,19 @@ func run() -> void:
 		result.shared_cloth = gpu_shared
 		var baseline_path := out_dir.path_join("baseline.json")
 		if phase == "after": check(FileAccess.file_exists(baseline_path), "baseline exists for exact curve/pose comparison")
-		if FileAccess.file_exists(baseline_path):
+		if phase == "after" and FileAccess.file_exists(baseline_path):
 			var baseline: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(baseline_path))
 			for id in baseline.animation_sha256:
 				check(baseline.animation_sha256[id] == fingerprints.get(id), "dense curves match baseline " + id)
 			for id in baseline.sample_poses:
 				check(baseline.sample_poses[id] == sample_poses.get(id), "skeleton poses match baseline " + id)
-		check(library_ids.size() == catalog.size() and animation_ids.size() == catalog.size() * 5, "one immutable library and five animations per source")
-		check(texture_slots == {"albedo_texture":85}, "only albedo texture slots remain in all HD source scenes")
+		var expected_libraries := catalog.size() - ratnik_count + 1
+		check(library_ids.size() == expected_libraries and animation_ids.size() == expected_libraries * 5,
+			"one immutable library and five animations per source, including the shared Ratnik set")
+		check(texture_slots.keys() == ["albedo_texture"], "only albedo texture slots remain in all HD source scenes")
 		var model_script: GDScript = load("res://scenes/creature_models.gd")
 		var animation_cache: Dictionary = model_script.get("animation_library_cache")
-		check(animation_cache.size() == catalog.size(), "bounded catalogue animation cache has no actor entries")
+		check(animation_cache.size() == expected_libraries, "bounded catalogue animation cache has no actor entries")
 		result.checks = checks
 		result.failures = failures
 	var path := out_dir.path_join(phase + ".json")

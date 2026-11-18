@@ -101,16 +101,14 @@ func _close() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if not is_visible_in_tree() or not event is InputEventKey or not event.pressed: return
+	if not is_visible_in_tree(): return
+	if VisualUtil.scroll_navigation(_scroll, event):
+		get_viewport().set_input_as_handled()
+		return
+	if not event is InputEventKey or not event.pressed: return
 	if event.keycode in [KEY_ESCAPE, KEY_ENTER, KEY_KP_ENTER, KEY_SPACE] and not event.echo:
 		get_viewport().set_input_as_handled()
 		_close()
 	elif event.keycode in [KEY_TAB, KEY_LEFT, KEY_RIGHT]:
 		get_viewport().set_input_as_handled()
 		_close_button.grab_focus()
-	elif event.keycode in [KEY_UP, KEY_DOWN, KEY_PAGEUP, KEY_PAGEDOWN, KEY_HOME, KEY_END]:
-		get_viewport().set_input_as_handled()
-		var step := 64 if event.keycode in [KEY_UP, KEY_DOWN] else 240
-		_scroll.scroll_vertical += -step if event.keycode in [KEY_UP, KEY_PAGEUP] else step
-		if event.keycode == KEY_HOME: _scroll.scroll_vertical = 0
-		if event.keycode == KEY_END: _scroll.scroll_vertical = int(_scroll.get_child(0).size.y)

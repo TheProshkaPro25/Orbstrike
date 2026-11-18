@@ -1,6 +1,7 @@
 extends "res://tools/avatars/build_wardrobe_variants.gd"
 ## Offline additions only: accepted meshes, UVs, weights and source VRMs stay intact.
 const DEST := "res://assets/avatars/street/"
+const BOMBER_SHADER := preload("res://scenes/avatar/mtoon_palette/street_bomber.gdshader")
 
 func run() -> void:
 	DirAccess.make_dir_recursive_absolute(DEST)
@@ -40,8 +41,10 @@ func make_bomber(source: ArrayMesh,waist: Vector3,size: float,rig: Skeleton3D,ta
 	var names: PackedStringArray = source.get_meta("surface_materials").duplicate()
 	var overrides: Dictionary = source.get_meta("variant_materials").duplicate()
 	var top: Array
+	var hem_y := INF
 	for surface in source.get_surface_count():
 		var a := source.surface_get_arrays(surface)
+		var flags := 0
 		if surface == 0 and model == 0:
 			a = restore_donor_neck(a,target_body.surface_get_arrays(0),neck_y,size)
 		if surface == 0: trim_bomber_shoulders(a, neck_y, size)
@@ -57,40 +60,37 @@ func make_bomber(source: ArrayMesh,waist: Vector3,size: float,rig: Skeleton3D,ta
 			deform_arrays(a,shape)
 			remove_hood_and_cords(a,neck_y,size)
 			top = a
+			var rest := PackedFloat32Array()
+			var points: PackedVector3Array = a[Mesh.ARRAY_VERTEX]
+			rest.resize(points.size() * 3)
+			for i in points.size():
+				var point := points[i]
+				if absf(point.x) < .17 * size: hem_y = minf(hem_y, point.y)
+				rest[i * 3] = point.x / size
+				rest[i * 3 + 1] = (point.y - waist.y) / size
+				rest[i * 3 + 2] = point.z / size
+			a[Mesh.ARRAY_CUSTOM0] = rest
+			flags = Mesh.ARRAY_CUSTOM_RGB_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM0_SHIFT
 			var mat := part_material(source,surface).duplicate(false) as ShaderMaterial
+			mat.shader = BOMBER_SHADER
 			mat.resource_name = "Street_Tops_01_CLOTH"
 			mat.set_shader_parameter("_BumpScale",0.0)
 			mat.set_shader_parameter("_Color",Color("536e66"))
 			mat.set_shader_parameter("_ShadeColor",Color("354b48"))
+			mat.set_shader_parameter("bomber_zip_ends", Vector2(
+				(hem_y - waist.y) / size + .028, (neck_y - waist.y) / size - .13))
 			overrides[surface] = mat
-		output.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,a)
-	# Merge new pocket welts and hem into the existing trim surface.
+		output.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, a, [], {}, flags)
+	# The zipper and pocket welts are drawn on the skinned fabric. Only the
+	# separate waistband remains in the old trim surface.
 	var trim := SurfaceTool.new()
 	trim.begin(Mesh.PRIMITIVE_TRIANGLES)
-	# The donor's high cylindrical collar floats inside this wider bomber neck.
-	# Keep its lower zipper, not the collar or exposed upper zipper segment.
-	var donor_trim := source.surface_get_arrays(source.get_surface_count()-1)
-	for polygon in skin_polygons(donor_trim):
-		polygon = clip_neck(polygon,neck_y-.13*size,false)
-		emit_polygon(trim,polygon,0.0,false)
-	var low := INF
-	for p in top[0]:
-		if absf(p.x) < .17*size: low = minf(low,p.y)
 	for segment in 64:
 		var phi := TAU*segment/64.0
 		var next := TAU*(segment+1)/64.0
-		var a := Vector3(cos(phi)*.141*size,low+.010*size,sin(phi)*.100*size)
-		var b := Vector3(cos(next)*.141*size,low+.010*size,sin(next)*.100*size)
+		var a := Vector3(cos(phi)*.141*size,hem_y+.010*size,sin(phi)*.100*size)
+		var b := Vector3(cos(next)*.141*size,hem_y+.010*size,sin(next)*.100*size)
 		quad(trim,a,a+Vector3.UP*.037*size,b+Vector3.UP*.037*size,b,top)
-	for side in [-1,1]:
-		var y := waist.y+.10*size
-		var z := front_at(top,y,size)+.006*size
-		var a := Vector3(side*.055*size,y+.035*size,z)
-		var b := Vector3(side*.105*size,y-.020*size,z-.008*size)
-		quad(trim,a,b,b+Vector3.UP*.009*size,a+Vector3.UP*.009*size,top)
-	# The original Face and retained body already provide textured neck skin.
-	# A duplicate skin shell in this CLOTH surface covered it with a dark jagged
-	# bib. Keep only the actual collar/zip/pocket/hem geometry in this material.
 	trim.generate_normals()
 	var merged := trim.commit()
 	output.surface_remove(output.get_surface_count()-1)

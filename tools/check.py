@@ -22,11 +22,23 @@ parser.add_argument('--only', nargs='+', choices=['experience', 'autoplay'], hel
 args = parser.parse_args()
 if args.logic_only and not args.checks:
     parser.error('--logic-only требует явные --checks')
+if args.logic_only and any(name in args.checks for name in ('illustrated-harbor', 'coastal-arena')):
+    parser.error('coastal-arena/illustrated-harbor требуют графический вывод')
 if args.only and args.profile:
     parser.error('--only и --profile выбирают область разными способами; укажите один')
 MODELS = ['animation', 'support', 'flight', 'idle', 'stance', 'review-state', 'preparation-cache', 'preview-pool', 'memory-catalog', 'cloth-sharing', 'hd-material-retention']
 RULES = ['career', 'career-power', 'card-effect-edges', 'elemental-cards', 'species-cards', 'battle-lockout', 'ai-swap-combo', 'ai-fallen-call', 'ai-formation', 'card-price-rules', 'standoff-lottery', 'last-rush', 'ai-interruption', 'ai-material', 'ai-forecast', 'ai-gust-risk', 'ai-target-flow', 'cards033', 'campaign', 'tournament', 'rules', 'rules-edges', 'cards', 'card-balance', 'card-matches', 'card-counters', 'card-scenarios', 'card-choices', 'card-audit-positions', 'ai', 'ai-gates', 'ai-outcomes', 'ai-rescue-matches', 'shot-physics']
 SCRIPTS = {
+    'menu-shadows': 'tools/test_menu_shadows.gd',
+    'cloth-position-only': 'tests/cloth_position_only_tests.gd',
+    'match-bottleneck': 'tools/match_bottleneck_benchmark.gd',
+    'low-load': 'tools/low_load_benchmark.gd',
+    'match-fx': 'tools/test_match_fx.gd',
+    'armat-load': 'tools/bench_armat_load.gd',
+    'armat-textured': 'tools/bench_armat_load.gd',
+    'armat-expressive': 'tools/bench_armat_expressive.gd',
+    'armat-shell': 'tools/bench_armat_shell.gd',
+    'armat-eyes': 'tools/bench_armat_shell.gd',
     'architecture-contracts': 'tools/test_architecture_contracts.gd',
     'match-lifecycle': 'tools/test_match_lifecycle.gd',
     'local-creatures': 'tools/test_local_creatures.gd',
@@ -43,6 +55,8 @@ SCRIPTS = {
     'preview-refresh': 'tools/test_preview_refresh.gd',
     'optimization': 'tools/test_optimization_regression.gd',
     'location-reveal': 'tools/test_location_reveal.gd',
+    'illustrated-harbor': 'tools/test_illustrated_harbor.gd',
+    'coastal-arena': 'tools/test_illustrated_harbor.gd',
     'grifalon-fullset': 'tools/test_grifalon_fullset.gd',
     'kolossar-fullset': 'tools/test_kolossar_fullset.gd',
     'kolossar-runtime-pool': 'tools/perf_turn_pool.gd',
@@ -51,6 +65,9 @@ SCRIPTS = {
     'grifalon-runtime-pool': 'tools/perf_turn_pool.gd',
     'humanoid-motion': 'tools/test_humanoid_motion.gd',
     'ratnik-family': 'tools/test_humanoid_motion.gd',
+    'ratnik-comparison': 'tools/test_animation_room.gd',
+    'ratnik-trellis': 'tools/test_ratnik_trellis.gd',
+    'gorgul-trellis': 'tools/test_gorgul_trellis.gd',
     'hud-gdelta': 'tools/test_hud_gdelta.gd',
     'card-hover': 'tools/test_card_hover.gd',
     'battle-ui-followup': 'tools/test_battle_ui_followup.gd',
@@ -175,12 +192,23 @@ if args.profile == 'gameplay' and args.checks:
     for optional in ('match-lifecycle', 'local-creatures'):
         if optional in args.checks: plan.append(optional)
 if args.profile == 'models' and args.checks:
+    for optional in ('armat-load', 'armat-textured', 'armat-expressive', 'armat-shell', 'armat-eyes'):
+        if optional in args.checks:
+            if not args.visual or args.logic_only:
+                parser.error(optional + ' требует --visual')
+            plan.append(optional)
     for optional in ['kolossar-runtime-pool', 'kolossar-common-master', 'kolossar-fullset', 'grifalon-common-master', 'grifalon-fullset', 'grifalon-runtime-pool', 'ratnik-family', 'humanoid-motion', 'a03-anatomy', 'cloth-rim-contract', 'gpu-acceptance', 'ratnik-crown-reopen', 'model-wind-import', 'sculpt-import', 'sculpt-candidate-poses', 'a03-material-import', 'sculpt-source-poses', 'a03-candidate-poses']:
         if optional in args.checks: plan.append(optional)
+    for optional in ('ratnik-trellis', 'gorgul-trellis', 'cloth-position-only'):
+        if optional in args.checks: plan.append(optional)
 if args.profile == 'presentation' and args.checks:
+    if 'illustrated-harbor' in args.checks: plan.append('illustrated-harbor')
+    if 'coastal-arena' in args.checks: plan.append('coastal-arena')
+    if 'match-fx' in args.checks: plan.append('match-fx')
+    if 'ratnik-comparison' in args.checks: plan.append('ratnik-comparison')
     for optional in ['creature-element-fx', 'stone-tide-fx', 'device-battle-hud', 'portrait-client-smoke', 'wardrobe-catalog-motion']:
         if optional in args.checks: plan.append(optional)
-    for optional in ['sport-neck', 'sport-style', 'wardrobe-fit', 'wardrobe-palette', 'booth-outfits', 'startup-failure', 'creature-preview-refresh', 'preview-refresh', 'optimization', 'location-reveal', 'hud-gdelta', 'card-hover', 'battle-ui-followup', 'portrait-background', 'portrait-standby']:
+    for optional in ['menu-shadows', 'sport-neck', 'sport-style', 'wardrobe-fit', 'wardrobe-palette', 'booth-outfits', 'startup-failure', 'creature-preview-refresh', 'preview-refresh', 'optimization', 'location-reveal', 'hud-gdelta', 'card-hover', 'battle-ui-followup', 'portrait-background', 'portrait-standby', 'low-load', 'match-bottleneck']:
         if optional in args.checks: plan.append(optional)
 if args.checks:
     unknown = set(args.checks) - set(plan)
@@ -204,8 +232,9 @@ results = []
 
 def run(name, command, timeout=300):
     begin = time.monotonic()
+    test_env = env
     try:
-        result = subprocess.run(command, cwd=ROOT, env=env, capture_output=True, text=True, timeout=timeout)
+        result = subprocess.run(command, cwd=ROOT, env=test_env, capture_output=True, text=True, timeout=timeout)
         output, code = result.stdout + result.stderr, result.returncode
     except subprocess.TimeoutExpired as error:
         output, code = str(error), 124
@@ -226,18 +255,20 @@ for name in plan:
         print('SKIP motion-bank: локальные клипы не установлены', flush=True)
         continue
     command = ['godot', '--path', str(ROOT), '--max-fps', '60', '--log-file', str(OUT/(name + '-engine.log'))]
+    if name in ('match-bottleneck', 'menu-shadows') and os.environ.get('ORBSTRIKE_BENCH_DEBUG_PORT'):
+        command += ['--remote-debug', 'tcp://127.0.0.1:' + os.environ['ORBSTRIKE_BENCH_DEBUG_PORT']]
     if name == 'import':
         command += ['--headless', '--editor', '--import']
     else:
         graphics = name in ['a03-material-import', 'a03-candidate-poses', 'sculpt-import', 'sculpt-source-poses', 'sculpt-candidate-poses', 'model-wind-import', 'ui-audit-fixes', 'ui-card-access', 'menu-access', 'match-keyboard', 'match-keyboard-combo', 'portrait-crop', 'career-ui', 'career-flow', 'device-ui', 'device-feedback', 'opponent-panel', 'location-detail', 'battle-lockout-ui', 'card-pact-price-ui', 'card-leap-price-ui', 'card-sure-price-ui', 'card-price-ui', 'standoff-notice', 'last-rush-ui', 'menu-music', 'memory-catalog', 'cloth-sharing', 'portrait-visibility', 'duel-exit', 'online-ui', 'online-disconnect', 'online-gate-result', 'motion-bank', 'fighter-lighting', 'vrm-fighter', 'wardrobe-wrists', 'street-set', 'sport-set', 'vrm-parts', 'vrm-preview', 'character-editor', 'battle-card-hover', 'cards-ui', 'cards-art', 'cards033-ui', 'menu-environment', 'menu-lighting', 'sanctuary-mood', 'startup-loading', 'experience', 'autoplay', 'gpu-core', 'ability-input', 'window-lighting', 'high-graphics', 'turn-pool', 'campaign-flow', 'campaign-flow', 'tournament-flow', 'tournament-ui', 'hand-placement', 'npc-appearance', 'campaign-ui'] or (name in MODELS and (args.visual or args.profile == 'full'))
-        if name in ['ratnik-family', 'humanoid-motion', 'local-creatures']: graphics = True
+        if name in ['cloth-position-only', 'ratnik-family', 'ratnik-trellis', 'ratnik-comparison', 'gorgul-trellis', 'humanoid-motion', 'local-creatures']: graphics = True
         if name in ['grifalon-fullset', 'grifalon-runtime-pool']: graphics = True
         if name in ['kolossar-fullset', 'kolossar-runtime-pool']: graphics = True
         if name == 'ratnik-crown-reopen': graphics = True
         if name == 'a03-anatomy': graphics = True
-        if name in ['gpu-acceptance']: graphics = True
-        if name in ['creature-element-fx', 'stone-tide-fx', 'device-battle-hud', 'portrait-client-smoke', 'wardrobe-catalog-motion']: graphics = True
-        if name in ['sport-neck', 'sport-style', 'wardrobe-fit', 'wardrobe-palette', 'booth-outfits', 'startup-failure', 'creature-preview-refresh', 'match-lifecycle', 'preview-refresh', 'optimization', 'location-reveal', 'hud-gdelta', 'card-hover', 'battle-ui-followup', 'portrait-background', 'portrait-standby']: graphics = True
+        if name in ['gpu-acceptance', 'armat-load', 'armat-textured', 'armat-expressive', 'armat-shell', 'armat-eyes']: graphics = True
+        if name in ['match-fx', 'creature-element-fx', 'stone-tide-fx', 'device-battle-hud', 'portrait-client-smoke', 'wardrobe-catalog-motion']: graphics = True
+        if name in ['menu-shadows', 'sport-neck', 'sport-style', 'wardrobe-fit', 'wardrobe-palette', 'booth-outfits', 'startup-failure', 'creature-preview-refresh', 'match-lifecycle', 'preview-refresh', 'optimization', 'location-reveal', 'illustrated-harbor', 'coastal-arena', 'hud-gdelta', 'card-hover', 'battle-ui-followup', 'portrait-background', 'portrait-standby', 'low-load', 'match-bottleneck']: graphics = True
         if not graphics or args.logic_only:
             command += ['--headless']
         script = SCRIPTS[name]
@@ -256,6 +287,10 @@ for name in plan:
             command += ['--', str(OUT/(name + '.json')), 'kolossar' if name == 'kolossar-runtime-pool' else 'grifalon']
         elif name == 'ratnik-family':
             command += ['--', 'family-new']
+        elif name in ('ratnik-trellis', 'gorgul-trellis'):
+            command += ['--', str(OUT)]
+        elif name == 'ratnik-comparison':
+            command += ['--', '--comparison-only', '--out=' + str(OUT)]
         elif name in ['sculpt-source-poses', 'sculpt-candidate-poses', 'a03-candidate-poses']:
             variant = 'source' if name == 'sculpt-source-poses' else 'candidate'
             command += ['--', str(ROOT/'build/checks/sculpt-poses'/variant),
@@ -272,7 +307,9 @@ for name in plan:
             command += ['--', 'leap-only']
         elif name == 'card-sure-price-ui':
             command += ['--', 'sure-only']
-        elif name in ['memory-catalog', 'cloth-sharing', 'portrait-visibility']:
+        elif name == 'menu-shadows':
+            command += ['--', '--out=' + str(OUT)]
+        elif name in ['memory-catalog', 'cloth-sharing', 'cloth-position-only', 'portrait-visibility']:
             command += ['--', str(OUT/name)]
         elif name == 'online-ui':
             command += ['--', str(OUT/'ui')]
@@ -286,11 +323,11 @@ for name in plan:
             command += ['--', str(OUT/'experience')]
         elif name == 'stone-tide-fx':
             command += ['--', str(OUT/name), '--stone-tide']
-        elif name in ['battle-card-hover', 'creature-element-fx', 'device-battle-hud', 'portrait-client-smoke']:
+        elif name in ['match-fx', 'battle-card-hover', 'creature-element-fx', 'device-battle-hud', 'portrait-client-smoke', 'illustrated-harbor', 'coastal-arena']:
             command += ['--', str(OUT/name)]
         elif name == 'career-flow':
             command += ['--', str(OUT/name)]
-        elif name in ['match-lifecycle', 'preview-refresh', 'optimization', 'career-ui', 'portrait-crop', 'portrait-background', 'card-hover']:
+        elif name in ['match-lifecycle', 'preview-refresh', 'optimization', 'low-load', 'match-bottleneck', 'career-ui', 'portrait-crop', 'portrait-background', 'card-hover']:
             command += ['--', '--out=' + str(OUT/name)]
         elif name in ['device-ui', 'device-feedback', 'opponent-panel', 'cards-ui', 'cards033-ui']:
             command += ['--', str(OUT/name)]
@@ -319,11 +356,38 @@ for name in plan:
             command += ['--', str(OUT/'turn-pool-timings.json')]
         elif name == 'local-creatures':
             command += ['--', str(OUT)]
+    if name == 'armat-textured':
+        run(name, [*command, '--', str(OUT), 'textured'], timeout=90)
+        continue
+    if name in ['armat-expressive', 'armat-shell', 'armat-eyes']:
+        variant_env = name.upper().replace('-', '_') + '_VARIANT'
+        capture_variant = os.environ.get(variant_env, '')
+        if capture_variant not in ['', 'before', 'after']:
+            parser.error(variant_env + ' допускает before или after')
+        variants = [capture_variant] if capture_variant else (['after'] if name == 'armat-eyes' else ['before', 'after'])
+        for variant in variants:
+            variant_command = command.copy()
+            variant_command[variant_command.index('--log-file') + 1] = str(OUT / f'{name}-{variant}-engine.log')
+            mode = ['eyes'] if name == 'armat-eyes' else []
+            run(f'{name}-{variant}', [*variant_command, '--', str(OUT), variant, *mode], timeout=120)
+            if not results[-1]['ok']:
+                break
+        continue
+    if name == 'armat-load':
+        for variant in ['baseline', 'dense']:
+            variant_command = command.copy()
+            variant_command[variant_command.index('--log-file') + 1] = str(OUT / f'{name}-{variant}-engine.log')
+            run(f'{name}-{variant}', [*variant_command, '--', str(OUT), variant], timeout=90)
+            if not results[-1]['ok']:
+                break
+        continue
     timeout = 60 if name == 'portrait-standby' else (1200 if name == 'card-audit-balance' else (600 if name in MODELS or name in ['autoplay', 'tournament-flow', 'online-ui'] else 360))
     run(name, command, timeout)
 
 # Явные профили имеют собственную свежую сводку; результаты разных областей не смешиваются.
-if args.only:
+if args.only or (plan == ['armat-expressive'] and os.environ.get('ARMAT_EXPRESSIVE_VARIANT')) or (
+    plan == ['armat-shell'] and os.environ.get('ARMAT_SHELL_VARIANT')
+) or plan == ['armat-eyes']:
     previous = json.loads((OUT/'summary.json').read_text()) if (OUT/'summary.json').exists() else []
     replacement = {row['name']: row for row in results}
     current_names = {row['name'] for row in previous}

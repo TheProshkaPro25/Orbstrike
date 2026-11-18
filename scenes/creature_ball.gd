@@ -80,6 +80,7 @@ var _prev_vel := Vector3.ZERO
 var _label_allowed := true
 var _halves: Array[MeshInstance3D] = []  ## части оболочки для раскрытия (лепестки, крышки, пояс)
 var _open_tween: Tween
+var _open_pillar: MeshInstance3D
 var _stage_tween: Tween
 var _throw_tween: Tween
 var _fx_epoch := 0
@@ -105,6 +106,7 @@ var _el := -1
 var _home := Vector3.ZERO     ## откуда бросали (туда сфера улетает при возврате)
 var _home_set := false
 var physical_shot := false
+var _replaying_shot := false
 var bounce_count := 0
 var _shot_previous_vy := 0.0
 var _shot_on_surface := false
@@ -315,6 +317,7 @@ static func _set_rim(n: Node, rim: Material) -> void:
 		return
 	if n is MeshInstance3D and (n as MeshInstance3D).mesh != null:
 		var mi := n as MeshInstance3D
+		if mi.layers == 0: return
 		for i in range(mi.mesh.get_surface_count()):
 			var m := mi.get_surface_override_material(i)
 			if m == null:
@@ -402,11 +405,18 @@ func _start_trail() -> void:
 			_ribbon.color = _ecol()
 			_ribbon.width = maxf(.08, _shell_r() * 1.5)
 			add_child(_ribbon)
+		var trail_amount := BallFx._n(BallFx.TRAIL_PARTICLES)
+		if _trail.amount != trail_amount: _trail.amount = trail_amount
 		_trail.show()
 		_trail.restart()
+		_trail.emitting = true
 		_ribbon.emitting = true
 	if _sparks == null:
 		_build_ground_fx()
+	var spark_amount := BallFx._n(BallFx.ROLL_PARTICLES)
+	var streak_amount := maxi(24, int(90 * BallFx.level_k()))
+	if _sparks.amount != spark_amount: _sparks.amount = spark_amount
+	if _streak.amount != streak_amount: _streak.amount = streak_amount
 
 
 ## Длительность и высота видимой дуги для скорости броска v (м/с): дальний бросок летит выше и дольше.
@@ -447,7 +457,6 @@ func _build_ground_fx() -> void:
 	_streak.top_level = true
 	_streak.local_coords = false
 	_streak.emitting = false
-	_streak.amount = maxi(24, int(90 * BallFx.level_k()))
 	_streak.lifetime = 1.4
 	_streak.gravity = Vector3.ZERO
 	_streak.initial_velocity_min = 0.0
@@ -554,10 +563,29 @@ func launch_towards(destination: Vector3) -> void:
 	_slow = 0.0
 	linear_velocity = ShotMotion.velocity_to(global_position, destination, RADIUS)
 	angular_velocity = Vector3(-linear_velocity.z, 0, linear_velocity.x) / _shell_r() * .38
+	_start_physical_shot_fx(linear_velocity)
+
+
+## The online client presents recorded transforms with the body still frozen.
+func begin_replayed_shot(pose: Transform3D, velocity: Vector3) -> void:
+	_replaying_shot = true
+	global_transform = pose
+	_sync_shell_center()
+	_start_physical_shot_fx(velocity)
+
+
+func update_replayed_shot_fx(velocity: Vector3, delta: float) -> void:
+	_sync_shell_center()
+	var on_floor := global_position.y < RADIUS + _surface_height_at(global_position) + .10 \
+		and absf(velocity.y) < ShotMotion.REST_VERTICAL
+	_update_physical_shot_fx(velocity, on_floor, delta)
+
+
+func _start_physical_shot_fx(velocity: Vector3) -> void:
 	if is_instance_valid(flight_trails):
 		_flight_trail = flight_trails.take(_el, _shell)
 	_start_trail()
-	_throw_fx(linear_velocity)
+	_throw_fx(velocity)
 
 
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
@@ -581,13 +609,21 @@ func _physical_shot_effects(delta: float) -> void:
 	_sync_shell_center()
 	_t += delta
 	for impact in _shot_impacts:
-		SoundFx.i().bounce(float(impact[1]))
-		_touchdown_fx()
-		surface_bounced.emit(impact[0], float(impact[1]))
+		present_surface_bounce(impact[0], float(impact[1]))
 	_shot_impacts.clear()
 	var velocity := linear_velocity
-	var speed := Vector2(velocity.x, velocity.z).length()
 	var on_floor := (_shot_on_surface or global_position.y < RADIUS + .10) and absf(velocity.y) < ShotMotion.REST_VERTICAL
+	_update_physical_shot_fx(velocity, on_floor, delta)
+	if on_floor and Vector2(velocity.x, velocity.z).length() < .17:
+		_slow += delta
+	else:
+		_slow = 0.0
+	if _slow >= .15 or _t >= TIMEOUT or global_position.y < -2:
+		_finish()
+
+
+func _update_physical_shot_fx(velocity: Vector3, on_floor: bool, delta: float) -> void:
+	var speed := Vector2(velocity.x, velocity.z).length()
 	SoundFx.i().set_roll(speed if on_floor else 0.0)
 	if is_instance_valid(_flight_trail):
 		flight_trails.set_airborne(_flight_trail, not on_floor)
@@ -596,17 +632,19 @@ func _physical_shot_effects(delta: float) -> void:
 	else:
 		_trail.emitting = not on_floor
 		_ribbon.emitting = not on_floor or speed > 5.0
-	if _sparks != null:
-		_sparks.global_position = Vector3(global_position.x, .05, global_position.z)
-		_streak.global_position = Vector3(global_position.x, .035, global_position.z)
-		_sparks.emitting = on_floor and speed > 4
-		_streak.emitting = on_floor and speed > 1.5
-	if on_floor and speed < .17:
-		_slow += delta
-	else:
-		_slow = 0.0
-	if _slow >= .15 or _t >= TIMEOUT or global_position.y < -2:
-		_finish()
+	_sparks.emitting = on_floor and speed > 4.0
+	_streak.emitting = on_floor and speed > 1.5
+	if on_floor:
+		var contact := global_position
+		contact.y = _surface_height_at(contact)
+		_sparks.global_position = contact + Vector3.UP * .05
+		_streak.global_position = contact + Vector3.UP * .035
+
+
+func present_surface_bounce(point: Vector3, speed: float) -> void:
+	SoundFx.i().bounce(speed)
+	_touchdown_fx(point)
+	surface_bounced.emit(point, speed)
 
 
 ## Бросок: вспышка, кольцо ускорения поперёк полёта, сердцевина вспыхивает и успокаивается.
@@ -631,11 +669,11 @@ func _throw_fx(impulse: Vector3) -> void:
 
 
 ## Касание пола после дуги: ударная волна пыли по полу и разлёт частиц стихии.
-func _touchdown_fx() -> void:
+func _touchdown_fx(point: Vector3) -> void:
 	if not is_inside_tree():
 		return
 	var w := _fx_parent()
-	var fp := Vector3(global_position.x, 0.06, global_position.z)
+	var fp := Vector3(point.x, _surface_height_at(point) + .06, point.z)
 	VisualUtil.ring_wave(w as Node3D, fp, _ecol(), _shell_r() * 4.5, 0.45)
 	BallFx.one_shot(w, fp + Vector3(0, _shell_r() * 0.3, 0), maxi(_el, 0), "burst", _shell_r() * 0.8)
 
@@ -657,7 +695,7 @@ func open_animated(pose: bool = true) -> Signal:
 	_drive = false
 	var pc := _ecol()
 	var el := maxi(_el, 0)
-	VisualUtil.light_pillar(self, Vector3(0, -RADIUS, 0), pc, Arena.FIG_H * 2.0, Arena.FIG_W * 0.16, 0.9, 0.35 if el == Attr.A.LIGHT else 1.0)
+	_open_pillar = VisualUtil.light_pillar(self, Vector3(0, -RADIUS, 0), pc, Arena.FIG_H * 2.0, Arena.FIG_W * 0.16, 0.9, 0.35 if el == Attr.A.LIGHT else 1.0)
 	if is_inside_tree():
 		var w := _fx_parent()
 		var fp := Vector3(global_position.x, 0.07, global_position.z)
@@ -707,6 +745,10 @@ func _kill_open_tween() -> void:
 	if _open_tween != null and _open_tween.is_valid():
 		_open_tween.kill()
 	_open_tween = null
+	if is_instance_valid(_open_pillar):
+		_open_pillar.hide()
+		_open_pillar.queue_free()
+	_open_pillar = null
 
 
 ## Каталог сохраняет узел живым: его постановка не должна пережить матч.
@@ -755,7 +797,7 @@ func _show_closed() -> void:
 	_shell.scale = Vector3.ONE * _shell_r()
 
 
-func close_up() -> void:
+func close_up(play_flash: bool = true) -> void:
 	_release_landing_shell()
 	_open = false
 	_kill_open_tween()
@@ -771,14 +813,27 @@ func close_up() -> void:
 	_set_dim(0.0)
 	_set_crack(0.0)
 	_visual.scale = Vector3.ONE
-	if is_inside_tree():
+	if play_flash and is_inside_tree():
 		BallFx.flash(_fx_parent(), _shell_center(), _ecol(), _shell_r() * 4.0, 0.25)
+
+
+## An inspection actor can switch forms instantly before replaying a move.
+func show_preview_form(revealed: bool) -> void:
+	close_up(false)
+	set_label_allowed(false)
+	_foot_ring.hide()
+	if not revealed: return
+	_open = true
+	_ball_mesh.hide()
+	_shell.hide()
+	_figure.show()
+	if _anim != null: _anim.idle_on = true
 
 
 ## Фиксирует тело в точке (без вращения); используется и для удержания шара перед броском.
 ## Замороженный шар не сталкивается с катящимися: иначе в слот с существом нельзя попасть (отскок).
 func freeze_at(pos: Vector3, reset_pose: bool = true) -> void:
-	if _launched:
+	if _launched or _replaying_shot:
 		_stop_fx()
 	_release_landing_shell()
 	physical_shot = false
@@ -903,7 +958,7 @@ func _process(delta: float) -> void:
 		_air_t += delta
 		if prev < _air_dur and _air_t >= _air_dur:
 			SoundFx.i().bounce(6.0)  # касание пола после дуги
-			_touchdown_fx()
+			_touchdown_fx(global_position)
 		var y := arc_height(_air_t, _air_dur, _air_h)
 		if _air_t > arc_total(_air_dur) or not _launched:
 			_air_t = -1.0
@@ -1062,6 +1117,7 @@ func _knockout_steps(tw: Tween) -> void:
 
 
 func _stop_fx() -> void:
+	_replaying_shot = false
 	SoundFx.i().set_roll(0.0)
 	if is_instance_valid(_flight_trail) and is_instance_valid(flight_trails):
 		flight_trails.release(_flight_trail)

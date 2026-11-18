@@ -100,7 +100,7 @@ func _new_match() -> void:
 	match_frames = 0
 	main.team_menu._open_arena_picker()
 	main.team_menu._arena_picker.select(1 if done == 0 else 2)
-	main.team_menu._close_arena_picker()
+	main.team_menu._arena_picker.confirm()
 	main.team_menu.pick_random_and_start()
 	await process_frame
 	var profile := PlayerProfile.new()

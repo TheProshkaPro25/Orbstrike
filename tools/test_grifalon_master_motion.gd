@@ -75,7 +75,7 @@ func run() -> void:
 		result.elements[element] = row
 		ModelLifetime.release(a, self)
 		await process_frame
-	for id in [&"creature_dragnar_fire", &"creature_ratnik_stone"]:
+	for id in [&"creature_dragnar_fire", &"creature_klykar_stone"]:
 		var d := CardDB.creature(id)
 		var a := CreatureAnim.new()
 		root.add_child(a)

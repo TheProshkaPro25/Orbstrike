@@ -23,8 +23,12 @@ var tray_offset: float = 0.0
 
 var _box: MeshInstance3D
 var _face: MeshInstance3D
+var _visuals: Node3D
 var _mat: ShaderMaterial
 var _edge: StandardMaterial3D
+var _revealed_card_id: StringName = &""
+var _reveal_tw: Tween
+var _reveal_fx: Node3D
 var _flash_tw: Tween
 var _title: Label3D
 var _power: Label3D
@@ -75,6 +79,8 @@ func _ensure_built() -> void:
 	_lay["title"] = Rect2(0.06, 0.045, 0.88, 0.2)
 	_lay["win"] = Vector3(0.5, SIZE.z / SIZE.x * 0.5 + 0.045, 0.27)
 	_lay["plaque"] = Vector4(0.5, SIZE.z / SIZE.x - 0.16, 0.26, 0.085)
+	_visuals = Node3D.new()
+	add_child(_visuals)
 	_box = MeshInstance3D.new()
 	var bm := BoxMesh.new()
 	bm.size = SIZE
@@ -82,7 +88,7 @@ func _ensure_built() -> void:
 	_box.position = Vector3(0, SIZE.y * 0.5, 0)
 	_edge = VisualUtil.make_material(Color(0.6, 0.62, 0.7), 0.35, 0.9) as StandardMaterial3D
 	_box.material_override = _edge
-	add_child(_box)
+	_visuals.add_child(_box)
 
 	# Лицевая поверхность с шейдером облика карты (рубашка / открытая карта) + вспышка раскрытия.
 	_face = MeshInstance3D.new()
@@ -96,7 +102,7 @@ func _ensure_built() -> void:
 	_mat.set_shader_parameter("aspect", SIZE.z / SIZE.x)
 	_mat.set_shader_parameter("detail", CardView.detail_level())
 	_face.material_override = _mat
-	add_child(_face)
+	_visuals.add_child(_face)
 
 	_title = _mk_label(CardView.title_font(), Color(1.0, 0.94, 0.8))
 	_power = _mk_label(CardView.power_font(), Color(1.0, 0.98, 0.92))
@@ -114,7 +120,7 @@ func _mk_label(font: Font, col: Color) -> Label3D:
 	l.render_priority = 1
 	l.outline_render_priority = 0
 	l.visible = false
-	add_child(l)
+	_visuals.add_child(l)
 	return l
 
 
@@ -137,6 +143,9 @@ func _place(l: Label3D, text: String, center: Vector2, w: float, h: float, max_f
 
 func show_facedown(owner_pl: int, visible_to_owner_def: CardDef) -> void:
 	_ensure_built()
+	if _revealed_card_id != &"":
+		_reset_reveal()
+		_revealed_card_id = &""
 	owner_player = owner_pl
 	var oc: Color = OWNER_COLORS[clampi(owner_pl, 0, 1)]
 	# рубашка: глубокая туманность и эмблема-сфера в цвете владельца, серебристая рамка
@@ -168,6 +177,7 @@ func show_facedown(owner_pl: int, visible_to_owner_def: CardDef) -> void:
 ## Открытая карта без анимации (переворот в reveal; используется и витриной).
 func show_face(def: CardDef) -> void:
 	_ensure_built()
+	_revealed_card_id = def.id
 	var cols: Array = UiTheme.card_colors(def)
 	var fr: int = UiTheme.card_frame(def)
 	_mat.set_shader_parameter("frame", fr)
@@ -198,31 +208,42 @@ func show_face(def: CardDef) -> void:
 
 func reveal(def: CardDef) -> void:
 	_ensure_built()
-	if def == null:
+	if def == null or def.id == _revealed_card_id:
 		return
-	var was_surface := is_in_group("gate_surfaces")
-	set_field_surface(false)
+	_reset_reveal()
+	_revealed_card_id = def.id
 	var flash_col: Color = (UiTheme.card_colors(def)[1] as Color).lightened(0.2)
 	_title.visible = false
 	_power.visible = false
-	# Переворот: поворот ребром, смена лица, поворот обратно, затем вспышка.
-	var tw := create_tween()
-	tw.tween_property(self, "rotation:z", PI * 0.5, 0.22).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
-	tw.parallel().tween_property(self, "position:y", position.y + 0.6 * Arena.WORLD, 0.22)
-	tw.tween_callback(func():
+	# Вращается только вид карты. Её поверхность остаётся на игровом поле.
+	_reveal_tw = create_tween()
+	_reveal_tw.tween_property(_visuals, "rotation:z", PI * 0.5, 0.22).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+	_reveal_tw.parallel().tween_property(_visuals, "position:y", 0.6 * Arena.WORLD, 0.22)
+	_reveal_tw.tween_callback(func():
 		show_face(def)
-		VisualUtil.light_pillar(self, Vector3(0, 0.1, 0), flash_col, Arena.CARD_H * 0.9, Arena.CARD_W * 0.35, 0.7)
-		VisualUtil.ring_wave(self, global_position + Vector3(0, 0.1, 0), flash_col, Arena.CARD_H * 0.75, 0.7)
-		rotation.z = -PI * 0.5)
-	tw.tween_property(self, "rotation:z", 0.0, 0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-	tw.parallel().tween_property(self, "position:y", position.y, 0.25)
-	tw.tween_callback(func():
+		_reveal_fx = Node3D.new()
+		add_child(_reveal_fx)
+		var origin := _visuals.position + Vector3.UP * 0.1
+		VisualUtil.light_pillar(_reveal_fx, origin, flash_col, Arena.CARD_H * 0.9, Arena.CARD_W * 0.35, 0.7)
+		VisualUtil.ring_wave(_reveal_fx, to_global(origin), flash_col, Arena.CARD_H * 0.75, 0.7)
+		_visuals.rotation.z = -PI * 0.5)
+	_reveal_tw.tween_property(_visuals, "rotation:z", 0.0, 0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	_reveal_tw.parallel().tween_property(_visuals, "position:y", 0.0, 0.25)
+	_reveal_tw.tween_callback(func():
 		_mat.set_shader_parameter("flash_col", flash_col)
-		if was_surface: set_field_surface(true)
-		if _flash_tw != null:
-			_flash_tw.kill()
 		_flash_tw = create_tween()
 		_flash_tw.tween_method(func(v: float): _mat.set_shader_parameter("flash", v), 1.0, 0.0, 0.9).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT))
+
+
+func _reset_reveal() -> void:
+	if _reveal_tw != null: _reveal_tw.kill()
+	if _flash_tw != null: _flash_tw.kill()
+	if is_instance_valid(_reveal_fx):
+		_reveal_fx.hide()
+		_reveal_fx.queue_free()
+		_reveal_fx = null
+	_visuals.transform = Transform3D.IDENTITY
+	_mat.set_shader_parameter("flash", 0.0)
 
 
 ## Движение в "лоток" захваченных карт игрока; возвращает сигнал завершения твина.

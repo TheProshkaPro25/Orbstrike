@@ -92,7 +92,7 @@ func _build() -> void:
 
 
 ## stats: {turns:int, alive:[a,b], captures:[a,b], wins:[a,b], abilities:[a,b], traps:int,
-## battles:[{turn:int, winner:String, loser:String, wp:int, lp:int, mine:bool}]}.
+## battles:[{turn:int, wp:int, lp:int, mine:bool, winner/loser or outcome/participants}]}.
 func show_result(winner: int, reason: String, stats: Dictionary = {}) -> void:
 	_build()
 	if winner == 0:
@@ -125,8 +125,12 @@ func show_result(winner: int, reason: String, stats: Dictionary = {}) -> void:
 		var from: int = maxi(0, hist.size() - 6)
 		for i in range(from, hist.size()):
 			var e: Dictionary = hist[i]
-			var l := VisualUtil.label("Ход %d: %s побеждает %s (%d : %d)" % [int(e["turn"]), e["winner"], e["loser"], int(e["wp"]), int(e["lp"])], 14)
-			l.add_theme_color_override("font_color", Color(0.6, 0.85, 1.0) if bool(e["mine"]) else Color(1.0, 0.7, 0.6))
+			var outcome := str(e.get("outcome", ""))
+			if outcome.is_empty() and e.get("winner") == "—": outcome = "Бой без победителя"
+			var text := "%s побеждает %s" % [e["winner"], e["loser"]] if outcome.is_empty() else "%s · %s" % [outcome, e.get("participants", e.get("loser", ""))]
+			var l := VisualUtil.label("Ход %d: %s (%d : %d)" % [int(e["turn"]), text, int(e["wp"]), int(e["lp"])], 14)
+			var color := Color(0.6, 0.85, 1.0) if bool(e["mine"]) else Color(1.0, 0.7, 0.6)
+			l.add_theme_color_override("font_color", color if outcome.is_empty() else UiTheme.TEXT)
 			_battles.add_child(l)
 	_dim.visible = true
 	_panel.visible = true

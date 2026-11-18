@@ -20,7 +20,7 @@ const AVOID_MIN := 1.5
 ## hand — амплитуда «плеча» (м), drift_deg/drift_period — медленный дрейф обзора.
 const SHOTS := {
 	# общий план между ходами: поле в центре, горизонт и ориентиры сверху; медленно дрейфует по кругу
-	&"overview": {"pos": Vector3(0.0, 52.0, 63.0), "look": Vector3(0.0, 0.0, -4.0), "fov": 52.0, "smooth": 1.6,
+	&"overview": {"pos": Vector3(0.0, 52.0, 63.0), "look": Vector3(0.0, 0.0, 4.0), "fov": 52.0, "smooth": 1.6,
 		"hand": 0.35, "drift_deg": 9.0, "drift_period": 28.0},
 	# прицел игрока: за спиной шара, невысоко, видны все ворота
 	&"aim": {"pos": Vector3(0.0, 23.0, 25.0), "look": Vector3(0.0, 0.0, -36.0), "fov": 56.0, "smooth": 3.0, "hand": 0.12},
@@ -82,6 +82,7 @@ var _shake_t := 0.0
 
 func _ready() -> void:
 	far = FAR
+	get_viewport().size_changed.connect(_resize_overview)
 	snap_overview()
 
 
@@ -244,6 +245,37 @@ func overview() -> void:
 	_drift_center = Vector3.ZERO
 	_drift = deg_to_rad(float(s["drift_deg"]))
 	_drift_period = float(s["drift_period"])
+	_goal_fov = _overview_fov()
+
+
+func _resize_overview() -> void:
+	if is_overview():
+		_goal_fov = _overview_fov()
+		fov = _goal_fov
+
+
+func _overview_fov() -> float:
+	var size := get_viewport().get_visible_rect().size
+	var aspect := maxf(size.x, 1.0) / maxf(size.y, 1.0)
+	# Leave space below the cards for the launch button and the closest slot labels.
+	var bottom := clampf(1.0 - 128.0 / maxf(size.y, 1.0), 0.5, 0.95)
+	var half_x := Arena.STEP_X + Arena.CARD_W * 0.5 + 0.65
+	var half_z := (Arena.STEP_Z + Arena.CARD_H) * 0.5 + 0.65
+	var shot: Dictionary = SHOTS[&"overview"]
+	var eye: Vector3 = shot["pos"]
+	var target: Vector3 = shot["look"]
+	var slope := tan(deg_to_rad(float(shot["fov"]) * 0.5))
+	for yaw in [0.0, -_drift, _drift]:
+		# Include the downward part of the overview's drift and a small handheld margin.
+		var sample_eye := eye.rotated(Vector3.UP, yaw) + Vector3.DOWN * 1.7
+		var view := Basis.looking_at(target - sample_eye).transposed()
+		for x in [-half_x, half_x]:
+			for z in [-half_z, half_z]:
+				var corner := view * (Vector3(x, 0.0, z) - sample_eye)
+				slope = maxf(slope, absf(corner.x) / (-corner.z * aspect * 0.95))
+				var vertical_margin := bottom if corner.y < 0.0 else 0.95
+				slope = maxf(slope, absf(corner.y) / (-corner.z * vertical_margin))
+	return rad_to_deg(2.0 * atan(slope))
 
 
 func is_overview() -> bool:
@@ -290,6 +322,33 @@ func follow(n: Node3D, direction: Vector3 = Vector3.ZERO) -> void:
 	elif fwd.length() > 0.01:
 		_follow_dir = fwd.normalized()
 	_update_follow(1.0 / 60.0)
+
+
+## Первый кадр погони сохраняет экранный размер сферы из кадра в руке.
+## Затем _process плавно возвращает объектив к обычному углу слежения.
+func follow_throw(ball: CreatureBall, direction: Vector3, held_center: Vector3 = Vector3.INF) -> void:
+	var held_half_height := 0.0
+	if held_center.is_finite() and is_position_in_frustum(held_center):
+		var held_depth := -(get_camera_transform().affine_inverse() * held_center).z
+		# Экранный диаметр обратно пропорционален глубине и тангенсу половины FOV.
+		held_half_height = held_depth * tan(deg_to_rad(fov * 0.5))
+	follow(ball)
+	var horizontal := direction.slide(Vector3.UP)
+	if not horizontal.is_zero_approx():
+		_follow_dir = horizontal.normalized()
+	_update_follow(1.0 / 60.0)
+	if held_half_height <= 0.0:
+		cut()
+		return
+	var shell_center := ball._shell_center()
+	var follow_look := _goal_look
+	# При узком объективе сфера у нижней границы кадра. Начинаем взгляд ближе к ней.
+	_goal_look = shell_center.lerp(follow_look, 0.4)
+	cut()
+	_goal_look = follow_look
+	var flight_depth := -(get_camera_transform().affine_inverse() * shell_center).z
+	if flight_depth > near:
+		fov = clampf(rad_to_deg(2.0 * atan(held_half_height / flight_depth)), 28.0, 65.0)
 
 
 func _update_follow(delta: float) -> void:
@@ -477,11 +536,11 @@ func location_preview_view(interior: bool = false) -> void:
 
 
 ## Explicit establishing frame: no overview drift, shake or stale follow state.
-func location_frame(at: Vector3, target: Vector3, lens: float = 52.0) -> void:
+func location_frame(at: Vector3, target: Vector3, lens: float = 52.0, roll: float = 0.0) -> void:
 	mode = Mode.STATIC
 	_drift = 0.0
 	_hand = 0.0
-	_roll = 0.0
+	_roll = roll
 	_shake_t = 0.0
 	_goal_pos = at
 	_base = at

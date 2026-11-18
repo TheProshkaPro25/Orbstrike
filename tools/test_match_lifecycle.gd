@@ -69,7 +69,7 @@ func run() -> void:
 		await finish(); return
 	loader = GameLoading.i()
 	catalog_counts = counts()
-	check(loader.ready_to_play and catalog_counts[1] == CreatureModels.catalog_defs().size() * 2 and catalog_counts[2] == 3,"two resident actors per definition and three arenas before menu")
+	check(loader.ready_to_play and catalog_counts[1] == CreatureModels.catalog_defs().size() * 2 and catalog_counts[2] == ArenaLocations.LOCATIONS.size(),"two resident actors per definition and all arenas before menu")
 	current_scene._on_play()
 	if not await until(func(): return current_scene != null and current_scene.scene_file_path == "res://scenes/main.tscn"):
 		check(false,"team scene opens"); await finish(); return
@@ -115,10 +115,13 @@ func run() -> void:
 	var missing_location: int = (old_arena.location_id+1)%3
 	var saved_arena: Arena = loader._arenas[missing_location]
 	loader._arenas.erase(missing_location)
-	main.team_menu._arena_picker.chosen.emit(missing_location)
+	main.team_menu._open_arena_picker()
+	main.team_menu._arena_picker.select(missing_location)
 	check(main.team_menu._arena_btn.text == "Арена: " + str(ArenaLocations.definition(old_location).name),"failed actual picker restores the selected arena label")
+	check(main.team_menu._arena_picker._description.text.contains("недоступна"),"failed arena selection reports the error in the open picker")
 	check(main.arena == old_arena and ArenaLocations.current() == old_location,"failed arena selection preserves lease and persisted choice")
 	loader._arenas[missing_location] = saved_arena
+	main.team_menu._arena_picker.cancel()
 	# Retry the same scene: no duplicated input/controller callbacks.
 	choose()
 	stop_pump()
@@ -140,7 +143,7 @@ func run() -> void:
 	loader.return_ball(leased_again)
 	check(not cancelled_controller._started and main._lifecycle.stage == Lifecycle.Stage.RELEASED and not is_instance_valid(main._location_intro),"release cancels awaiting intro without late controller start")
 	returned()
-	check(loader._arenas.size() == 3,"cancel returns all three arenas")
+	check(loader._arenas.size() == ArenaLocations.LOCATIONS.size(),"cancel returns all arenas")
 	main._release_game_resources()
 	returned()
 	# A new scene can use the returned catalog and the normal intro completion.
@@ -253,7 +256,7 @@ func run() -> void:
 	check(await until(func(): return current_scene != null and current_scene.scene_file_path == "res://scenes/menu/main_menu.tscn"),"normal exit returns to menu")
 	await frames()
 	returned()
-	check(loader._arenas.size() == 3 and Engine.max_fps == 60,"exit returns arena and keeps60FPS wrapper")
+	check(loader._arenas.size() == ArenaLocations.LOCATIONS.size() and Engine.max_fps == 60,"exit returns arena and keeps60FPS wrapper")
 	await fallback_cancel()
 	await finish()
 

@@ -14,6 +14,13 @@ const SHOTS := [
 	 [Vector3(56,16,38),Vector3(43,21,27),Vector3(-43,25,-76)],
 	 [Vector3(-8,60,66),Vector3(0,52,63),Vector3(0,0,-4)]],
 ]
+const HARBOR_FLIGHT := [
+	# Establish the island chain, then give its lighthouse a readable landmark pass.
+	# A gentle bank keeps the sea horizon steady enough to understand the setting.
+	[Vector3(-434, 285, 503), Vector3(-266, 219, 372), Vector3(-96, -8, -96), Vector3(-55, -12, -134), -.025, -.06],
+	[Vector3(-227, 45, -119), Vector3(-278, 39, -112), Vector3(-410, 32, -255), Vector3(-410, 40, -255), .025, -.015],
+	[Vector3(82, 67, 125), Vector3(0, 52, 63), Vector3(0, -6, -12), Vector3(0, 0, 4), -.07, 0.0],
+]
 var title: Label
 var shot_index := -1
 var _camera: CameraRig
@@ -59,6 +66,14 @@ func _ready() -> void:
 	skip.offset_top = -46
 	skip.offset_right = -18
 	skip.offset_bottom = -8
+	skip.focus_next = NodePath(".")
+	skip.focus_previous = NodePath(".")
+	skip.grab_focus()
+
+func _input(event: InputEvent) -> void:
+	if not _finished and _camera != null and event.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
+		finish()
 
 func _resize_title() -> void:
 	title.add_theme_font_size_override("font_size",clampi(int(size.x / 25),24,48))
@@ -74,13 +89,24 @@ func play(camera: CameraRig, location: int) -> void:
 		shot_index = 2
 		_tween.tween_interval(1.8)
 	else:
+		var coastal := ArenaLocations.CoastalStyle.applies(location)
+		if coastal:
+			title.modulate.a = 0.0
 		for index in 3:
 			_tween.tween_callback(func() -> void: shot_index = index)
-			_tween.tween_method(_frame.bind(SHOTS[clampi(location,0,2)][index]),0.0,1.0,SHOT_SECONDS).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+			var draw_frame := _harbor_frame.bind(HARBOR_FLIGHT[index], index) if coastal \
+				else _frame.bind(SHOTS[clampi(location,0,2)][index])
+			_tween.tween_method(draw_frame,0.0,1.0,SHOT_SECONDS).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	_tween.tween_callback(finish)
 
 func _frame(t: float, shot: Array) -> void:
 	_camera.location_frame((shot[0] as Vector3).lerp(shot[1],t),shot[2],52.0)
+
+func _harbor_frame(t: float, shot: Array, index: int) -> void:
+	_camera.location_frame((shot[0] as Vector3).lerp(shot[1],t),
+		(shot[2] as Vector3).lerp(shot[3],t), 52.0, lerpf(shot[4], shot[5], t))
+	if index == 2:
+		title.modulate.a = smoothstep(0.0, .55, t)
 
 func finish() -> void:
 	if _finished: return

@@ -84,6 +84,13 @@ extends Node3D
 ## Combined with the per-substep cloth_weight soft-lerp this replaces v2.x's
 ## skin_attach_radius + velocity-damp boundary clamp.
 @export var max_travel_distance: float = 0.1
+## A separate skinned display mesh can add these offsets to its native pose.
+## Keep targets in the authored pose and apply colliders to particles only.
+var output_skin_delta := false
+## Opt-in contract for an invisible simulation proxy whose display shaders read
+## only positions. Independent of delta output; the ordinary cloth path is full.
+## Set before initialization, never switch while GPU resources are alive.
+var output_positions_only := false
 
 @export_group("Pinning")
 ## Marker3D nodes whose positions pin the nearest welded particle. Markers and
@@ -1188,7 +1195,7 @@ func _initialize() -> void:
 	# Translates render-vert indices through _original_to_welded[] before
 	# bucketing, so the normal accumulator in cloth_output.glsl operates in
 	# welded space (matching positions[]).
-	var adj := _build_adjacency()
+	var adj := {"counts": PackedInt32Array(), "offsets": PackedInt32Array(), "list": PackedInt32Array()} if output_positions_only else _build_adjacency()
 
 	# GPU index buffer for cloth_normals.glsl uses welded indices too
 	# (positions[] is welded-indexed, so cross(positions[i1]-positions[i0], ...)
@@ -1225,8 +1232,8 @@ func _initialize() -> void:
 	# Cloth render verts get their welded particle index; non-cloth verts get 0
 	# (in-range, never sampled because their surfaces aren't cloth-shaded).
 	var lookup_data := PackedFloat32Array()
-	lookup_data.resize(_render_tex_w * _render_tex_h * 4)  # RGBA, only .r used
-	for raw_i in _raw_render_count:
+	lookup_data.resize(0 if output_positions_only else _render_tex_w * _render_tex_h * 4)  # RGBA, only .r used
+	for raw_i in (0 if output_positions_only else _raw_render_count):
 		var f_i: int = _raw_to_filtered_lookup[raw_i]
 		if f_i >= 0:
 			lookup_data[raw_i * 4 + 0] = float(_original_to_welded[f_i])
@@ -1235,8 +1242,9 @@ func _initialize() -> void:
 
 	# ── Texture2DRD wrappers (RIDs assigned on render thread) ──
 	_positions_tex      = Texture2DRD.new()
-	_normals_tex        = Texture2DRD.new()
-	_welded_index_tex   = Texture2DRD.new()
+	if not output_positions_only:
+		_normals_tex        = Texture2DRD.new()
+		_welded_index_tex   = Texture2DRD.new()
 
 	# ── Fishing-line bindings ──
 	# K bindings per particle, each (anchor_idx, max_dist, weight, pad). Anchors
@@ -1342,6 +1350,7 @@ func _initialize() -> void:
 	_output_push = PackedByteArray(); _output_push.resize(16)
 	_output_push.encode_u32(0, _particle_count)
 	_output_push.encode_u32(4, _tex_w)
+	_output_push.encode_u32(8, int(output_skin_delta))
 
 	_fishing_push = PackedByteArray(); _fishing_push.resize(16)
 	_fishing_push.encode_u32(0, _particle_count)
@@ -1456,16 +1465,18 @@ func _gpu_do_init(init_data: Dictionary) -> void:
 	if _collider_tris.size() > 0:
 		_collider_tri_buffer  = _rd.storage_buffer_create(max(_collider_tri_bytes.size(), 64))
 
-	_face_normals_buffer      = _rd.storage_buffer_create(max(_tri_count * 16, 64))
+	if not output_positions_only:
+		_face_normals_buffer      = _rd.storage_buffer_create(max(_tri_count * 16, 64))
 	_indices_gpu_buffer       = _immutable_buffer_create("indices", idx_bytes.size(), idx_bytes)
 	# Always create the proxy buffer (even at size 0 → uses _indices_gpu_buffer
 	# fallback in _ensure_peer_uniform_sets). Sized to whatever the rest-space
 	# voxel decimation produced.
 	if _peer_proxy_tri_count > 0:
 		_peer_proxy_indices_buffer = _immutable_buffer_create("peer_indices", peer_proxy_idx_bytes.size(), peer_proxy_idx_bytes)
-	_vert_tri_counts_buffer   = _immutable_buffer_create("adj_counts", adj_counts_bytes.size(), adj_counts_bytes)
-	_vert_tri_offsets_buffer  = _immutable_buffer_create("adj_offsets", adj_offsets_bytes.size(), adj_offsets_bytes)
-	_vert_tri_list_buffer     = _immutable_buffer_create("adj_list", max(adj_list_bytes.size(), 16), adj_list_bytes)
+	if not output_positions_only:
+		_vert_tri_counts_buffer   = _immutable_buffer_create("adj_counts", adj_counts_bytes.size(), adj_counts_bytes)
+		_vert_tri_offsets_buffer  = _immutable_buffer_create("adj_offsets", adj_offsets_bytes.size(), adj_offsets_bytes)
+		_vert_tri_list_buffer     = _immutable_buffer_create("adj_list", max(adj_list_bytes.size(), 16), adj_list_bytes)
 
 	if _has_anchors:
 		_bindings_buffer       = _immutable_buffer_create("bindings", max(binding_bytes.size(), 16), binding_bytes)
@@ -1479,24 +1490,27 @@ func _gpu_do_init(init_data: Dictionary) -> void:
 	fmt.usage_bits = (RenderingDevice.TEXTURE_USAGE_STORAGE_BIT |
 					  RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT |
 					  RenderingDevice.TEXTURE_USAGE_CAN_UPDATE_BIT)
+	if output_skin_delta:
+		fmt.usage_bits |= RenderingDevice.TEXTURE_USAGE_CAN_COPY_FROM_BIT
 
 	_positions_img_rid = _rd.texture_create(fmt, RDTextureView.new())
-	_normals_img_rid   = _rd.texture_create(fmt, RDTextureView.new())
-
 	_positions_tex.texture_rd_rid = _positions_img_rid
-	_normals_tex.texture_rd_rid   = _normals_img_rid
+	if not output_positions_only:
+		_normals_img_rid = _rd.texture_create(fmt, RDTextureView.new())
+		_normals_tex.texture_rd_rid = _normals_img_rid
 
 	# Welded-index lookup: same format, sized to render-vert count. Static —
 	# uploaded once at init via texture_update, never written by compute.
-	var lookup_fmt := RDTextureFormat.new()
-	lookup_fmt.format     = RenderingDevice.DATA_FORMAT_R32G32B32A32_SFLOAT
-	lookup_fmt.width      = _render_tex_w
-	lookup_fmt.height     = _render_tex_h
-	lookup_fmt.usage_bits = (RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT |
-							 RenderingDevice.TEXTURE_USAGE_CAN_UPDATE_BIT)
-	_welded_index_lookup_rid = _rd.texture_create(lookup_fmt, RDTextureView.new())
-	_rd.texture_update(_welded_index_lookup_rid, 0, lookup_bytes)
-	_welded_index_tex.texture_rd_rid = _welded_index_lookup_rid
+	if not output_positions_only:
+		var lookup_fmt := RDTextureFormat.new()
+		lookup_fmt.format     = RenderingDevice.DATA_FORMAT_R32G32B32A32_SFLOAT
+		lookup_fmt.width      = _render_tex_w
+		lookup_fmt.height     = _render_tex_h
+		lookup_fmt.usage_bits = (RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT |
+								 RenderingDevice.TEXTURE_USAGE_CAN_UPDATE_BIT)
+		_welded_index_lookup_rid = _rd.texture_create(lookup_fmt, RDTextureView.new())
+		_rd.texture_update(_welded_index_lookup_rid, 0, lookup_bytes)
+		_welded_index_tex.texture_rd_rid = _welded_index_lookup_rid
 
 	# ── Shaders ──
 	_skin_shader        = _load_shader(_plugin_dir + "/shaders/compute/cloth_skin.glsl")
@@ -1505,8 +1519,9 @@ func _gpu_do_init(init_data: Dictionary) -> void:
 	_update_shader      = _load_shader(_plugin_dir + "/shaders/compute/cloth_update.glsl")
 	_collide_shader     = _load_shader(_plugin_dir + "/shaders/compute/cloth_collide.glsl")
 	_warm_start_shader  = _load_shader(_plugin_dir + "/shaders/compute/cloth_warm_start.glsl")
-	_normals_shader     = _load_shader(_plugin_dir + "/shaders/compute/cloth_normals.glsl")
-	_output_shader      = _load_shader(_plugin_dir + "/shaders/compute/cloth_output.glsl")
+	if not output_positions_only:
+		_normals_shader = _load_shader(_plugin_dir + "/shaders/compute/cloth_normals.glsl")
+	_output_shader = _load_shader(_plugin_dir + "/shaders/compute/" + ("cloth_output_positions.glsl" if output_positions_only else "cloth_output.glsl"))
 	_skin_collide_shader = _load_shader(_plugin_dir + "/shaders/compute/cloth_skin_collide.glsl")
 	if _collider_tris.size() > 0:
 		_collide_tris_shader = _load_shader(_plugin_dir + "/shaders/compute/cloth_collide_triangles.glsl")
@@ -1530,7 +1545,8 @@ func _gpu_do_init(init_data: Dictionary) -> void:
 	_update_pipeline     = _rd.compute_pipeline_create(_update_shader)
 	_collide_pipeline    = _rd.compute_pipeline_create(_collide_shader)
 	_warm_start_pipeline = _rd.compute_pipeline_create(_warm_start_shader)
-	_normals_pipeline    = _rd.compute_pipeline_create(_normals_shader)
+	if not output_positions_only:
+		_normals_pipeline = _rd.compute_pipeline_create(_normals_shader)
 	_output_pipeline     = _rd.compute_pipeline_create(_output_shader)
 	_skin_collide_pipeline = _rd.compute_pipeline_create(_skin_collide_shader)
 	if _collider_tris.size() > 0:
@@ -1569,6 +1585,7 @@ func _gpu_do_init(init_data: Dictionary) -> void:
 		_make_uniform(2, _velocities_buffer),
 		_make_uniform(5, _cloth_weights_buffer),
 		_make_uniform(6, _skinned_targets_buffer),
+		_make_uniform(7, _collider_tri_buffer if _collider_tri_buffer.is_valid() else _colliders_buffer),
 	])
 	_collide_uniform_set = _create_uniform_set(_collide_shader, [
 		_make_uniform(0, _positions_buffer),         # substep-start pos for friction tangent
@@ -1582,20 +1599,28 @@ func _gpu_do_init(init_data: Dictionary) -> void:
 		_make_uniform(2, _velocities_buffer),
 		_make_uniform(4, _skinned_targets_buffer),
 	])
-	_normals_uniform_set = _create_uniform_set(_normals_shader, [
-		_make_uniform(0, _positions_buffer),
-		_make_uniform(1, _indices_gpu_buffer),
-		_make_uniform(2, _face_normals_buffer),
-	])
-	_output_uniform_set = _create_uniform_set(_output_shader, [
-		_make_uniform(0, _positions_buffer),
-		_make_uniform(1, _face_normals_buffer),
-		_make_uniform(2, _vert_tri_counts_buffer),
-		_make_uniform(3, _vert_tri_offsets_buffer),
-		_make_uniform(4, _vert_tri_list_buffer),
-		_make_image_uniform(5, _positions_img_rid),
-		_make_image_uniform(6, _normals_img_rid),
-	])
+	if output_positions_only:
+		_output_uniform_set = _create_uniform_set(_output_shader, [
+			_make_uniform(0, _positions_buffer),
+			_make_image_uniform(5, _positions_img_rid),
+			_make_uniform(7, _skinned_targets_buffer),
+		])
+	else:
+		_normals_uniform_set = _create_uniform_set(_normals_shader, [
+			_make_uniform(0, _positions_buffer),
+			_make_uniform(1, _indices_gpu_buffer),
+			_make_uniform(2, _face_normals_buffer),
+		])
+		_output_uniform_set = _create_uniform_set(_output_shader, [
+			_make_uniform(0, _positions_buffer),
+			_make_uniform(1, _face_normals_buffer),
+			_make_uniform(2, _vert_tri_counts_buffer),
+			_make_uniform(3, _vert_tri_offsets_buffer),
+			_make_uniform(4, _vert_tri_list_buffer),
+			_make_image_uniform(5, _positions_img_rid),
+			_make_image_uniform(6, _normals_img_rid),
+			_make_uniform(7, _skinned_targets_buffer),
+		])
 	if _has_anchors:
 		_fishing_uniform_set = _create_uniform_set(_fishing_shader, [
 			_make_uniform(1, _predicted_buffer),
@@ -1688,7 +1713,7 @@ func _gpu_do_warm_start() -> void:
 	# the collider surface. Same logic as COLLIDE but operates on the anchor
 	# positions (skinned_targets), not the simulated particles. Ensures the
 	# warm-start positions don't begin inside the body's collider volumes.
-	if _collider_count > 0:
+	if not output_skin_delta and _collider_count > 0:
 		_skin_collide_push.encode_u32(4, _collider_count)
 		_rd.compute_list_bind_compute_pipeline(cl, _skin_collide_pipeline)
 		_rd.compute_list_bind_uniform_set(cl, _skin_collide_uniform_set, 0)
@@ -1700,7 +1725,7 @@ func _gpu_do_warm_start() -> void:
 	# triangle proxy. Critical to prevent rest-jitter when collide_triangles
 	# pushes cloth particles outward each iter while UPDATE pulls them back to
 	# skinned_targets that sit inside the body surface.
-	if _collider_tris.size() > 0:
+	if not output_skin_delta and _collider_tris.size() > 0:
 		_rd.compute_list_bind_compute_pipeline(cl, _skin_collide_tris_pipeline)
 		_rd.compute_list_bind_uniform_set(cl, _skin_collide_tris_uniform_set, 0)
 		_rd.compute_list_set_push_constant(cl, _collide_tris_push, 16)
@@ -1792,8 +1817,8 @@ func _simulate(delta: float) -> void:
 	var local_gravity := _ref_node.global_transform.basis.inverse() * gravity
 
 	# PBD push constant (96 B; layout matches cloth_predict/solve/update/collide).
-	# Last 16 bytes (offsets 80-95) hold gravity_y, gravity_z, and 2 pads —
-	# predict reads them via vec3(gravity_x@4, gravity_y@80, gravity_z@84).
+	# Predict reads gravity_y@80 and gravity_z@84. Update reads the
+	# correction collider count at 88. Other passes ignore these slots.
 	_pbd_push.encode_float(0,  sub_dt)
 	_pbd_push.encode_float(4,  local_gravity.x)
 	_pbd_push.encode_u32(8,    _particle_count)
@@ -1824,7 +1849,7 @@ func _simulate(delta: float) -> void:
 	# Gravity Y and Z (X is at offset 4); padding for non-predict shaders.
 	_pbd_push.encode_float(80, local_gravity.y)
 	_pbd_push.encode_float(84, local_gravity.z)
-	_pbd_push.encode_float(88, 0.0)
+	_pbd_push.encode_u32(88, _collider_tris.size() if output_skin_delta else 0)
 	_pbd_push.encode_float(92, 0.0)
 
 	var push_copy        := _pbd_push.duplicate()
@@ -1888,7 +1913,7 @@ func _gpu_do_simulate(
 	# anchor positions PREDICT and UPDATE will read. Kills rest-jitter and
 	# rest-clipping by ensuring the cloth's anchor is always reachable from
 	# outside the collider volume.
-	if _collider_count > 0:
+	if not output_skin_delta and _collider_count > 0:
 		_skin_collide_push.encode_u32(4, _collider_count)
 		_rd.compute_list_bind_compute_pipeline(cl, _skin_collide_pipeline)
 		_rd.compute_list_bind_uniform_set(cl, _skin_collide_uniform_set, 0)
@@ -1897,7 +1922,7 @@ func _gpu_do_simulate(
 		_rd.compute_list_add_barrier(cl)
 
 	# SANITIZE (mesh) — same purpose, against the triangle collider.
-	if _collider_tris.size() > 0:
+	if not output_skin_delta and _collider_tris.size() > 0:
 		_rd.compute_list_bind_compute_pipeline(cl, _skin_collide_tris_pipeline)
 		_rd.compute_list_bind_uniform_set(cl, _skin_collide_tris_uniform_set, 0)
 		_rd.compute_list_set_push_constant(cl, _collide_tris_push, 16)
@@ -2022,17 +2047,18 @@ func _gpu_do_simulate(
 
 
 func _dispatch_output_passes(cl: int, groups: int, nflip: float) -> void:
-	var tri_groups := ceili(float(_tri_count) / 64.0)
+	if not output_positions_only:
+		var tri_groups := ceili(float(_tri_count) / 64.0)
 
-	var np := PackedByteArray(); np.resize(16)
-	np.encode_u32(0, _tri_count)
-	np.encode_float(4, nflip)
+		var np := PackedByteArray(); np.resize(16)
+		np.encode_u32(0, _tri_count)
+		np.encode_float(4, nflip)
 
-	_rd.compute_list_bind_compute_pipeline(cl, _normals_pipeline)
-	_rd.compute_list_bind_uniform_set(cl, _normals_uniform_set, 0)
-	_rd.compute_list_set_push_constant(cl, np, 16)
-	_rd.compute_list_dispatch(cl, tri_groups, 1, 1)
-	_rd.compute_list_add_barrier(cl)
+		_rd.compute_list_bind_compute_pipeline(cl, _normals_pipeline)
+		_rd.compute_list_bind_uniform_set(cl, _normals_uniform_set, 0)
+		_rd.compute_list_set_push_constant(cl, np, 16)
+		_rd.compute_list_dispatch(cl, tri_groups, 1, 1)
+		_rd.compute_list_add_barrier(cl)
 
 	_rd.compute_list_bind_compute_pipeline(cl, _output_pipeline)
 	_rd.compute_list_bind_uniform_set(cl, _output_uniform_set, 0)

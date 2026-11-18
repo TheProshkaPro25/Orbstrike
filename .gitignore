@@ -7,6 +7,7 @@ tools/ai_models/_vtest/
 tools/ai_models/concepts/
 tools/blender/inspect/
 *.png
+!assets/creatures_hd/ratnik_trellis/*.png
 *.jpg
 __pycache__/
 *.exe
@@ -32,5 +33,13 @@ assets/avatars/motions/kevin_local/
 assets/audio/candidates/*
 !assets/audio/candidates/.gdignore
 
-# Runtime portraits made from the author's exact creature reference concepts.
+# Runtime portraits rendered from creature models.
 !assets/portraits/creatures/*.png
+
+# Illustrated Harbor runtime atlases, reproducible with tools/art/paint_illustrated_harbor.py.
+!assets/experiments/illustrated_harbor/clouds.png
+!assets/experiments/illustrated_harbor/coast.png
+!assets/experiments/illustrated_harbor/landmarks.png
+!assets/experiments/illustrated_harbor/map.png
+!assets/experiments/illustrated_harbor/terrain.png
+!assets/experiments/illustrated_harbor/details.png

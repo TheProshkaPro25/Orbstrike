@@ -95,10 +95,15 @@ func run() -> void:
 	replay.call()
 	check(game.cam._follow_staged,"recorded replay uses transform-based camera velocity")
 	check(game.cam._follow_dir.z > .99,"owner-one camera starts along positive-Z recorded flight")
+	var replay_ball: CreatureBall = game.balls[3]
+	check(replay_ball._ribbon != null and replay_ball._ribbon.emitting and replay_ball._trail.emitting,
+		"replay without Boot activates the fallback ribbon and particles")
 	for frame in 180:
 		await process_frame
 		if replay_finished[0]: break
 	check(replay_finished[0],"short recorded flight completes")
+	check(not replay_ball._ribbon.emitting and replay_ball._ribbon._pts.is_empty() and not replay_ball._ribbon.is_processing() \
+		and not replay_ball._trail.emitting, "fallback trail is cleared when the recording stops")
 	check(game.balls[3].global_position.is_equal_approx(Vector3(0,.4,-31.5)),"camera change preserves exact last recorded position")
 	game.queue_free()
 	for frame in 5: await process_frame

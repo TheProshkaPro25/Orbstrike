@@ -96,6 +96,15 @@ static func _make_device() -> Theme:
 	t.set_color("font_color", "Label", Color(0.86, 0.96, 0.97))
 	t.set_stylebox("slider", "HSlider", box(Color(0.04, 0.11, 0.14), DEVICE_DIM, 1, 2, 0))
 	t.set_stylebox("grabber_area", "HSlider", box(DEVICE_DIM, DEVICE_ACCENT, 0, 2, 0))
+	t.set_type_variation("VolumeSlider", "HSlider")
+	var volume_track := box(DEVICE_DIM, Color.TRANSPARENT, 0, 2, 0)
+	volume_track.content_margin_top = 3
+	volume_track.content_margin_bottom = 3
+	var volume_fill: StyleBoxFlat = volume_track.duplicate()
+	volume_fill.bg_color = DEVICE_ACCENT
+	t.set_stylebox("slider", "VolumeSlider", volume_track)
+	t.set_stylebox("grabber_area", "VolumeSlider", volume_fill)
+	t.set_stylebox("grabber_area_highlight", "VolumeSlider", volume_fill)
 	return t
 
 
@@ -545,9 +554,10 @@ static func card_help(def: CardDef) -> Array:
 
 
 ## Подсказка для существа: имя, стихия, сила и совместимость карт.
-static func creature_help(d: CreatureDef) -> Array:
+static func creature_help(d: CreatureDef, base_power: int = -1) -> Array:
+	var displayed_power := d.base_power if base_power < 0 else base_power
 	return [d.display_name, "Существо · стихия %s" % VisualUtil.attr_name(d.attribute), VisualUtil.attr_color(d.attribute).lightened(0.3),
-		"Сила G (базовая): %d. В бою к ней прибавляются сила ворот и способности." % d.base_power,
+		"Сила G (базовая): %d. В бою к ней прибавляются сила ворот и способности." % displayed_power,
 		"Стихия определяет совместимые способности и силу от ворот.",
 		"Бросается на карту ворот. Проиграв бой, выбывает; победив — уходит в зону использованных.", "", d.attribute]
 

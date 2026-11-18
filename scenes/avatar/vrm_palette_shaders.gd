@@ -14,4 +14,5 @@ const SHADERS := {
 	"mtoon_trans_cull_off.gdshader": preload("res://scenes/avatar/mtoon_palette/mtoon_trans_cull_off.gdshader"),
 	"mtoon_trans_zwrite.gdshader": preload("res://scenes/avatar/mtoon_palette/mtoon_trans_zwrite.gdshader"),
 	"mtoon_trans_zwrite_cull_off.gdshader": preload("res://scenes/avatar/mtoon_palette/mtoon_trans_zwrite_cull_off.gdshader"),
+	"street_bomber.gdshader": preload("res://scenes/avatar/mtoon_palette/street_bomber.gdshader"),
 }

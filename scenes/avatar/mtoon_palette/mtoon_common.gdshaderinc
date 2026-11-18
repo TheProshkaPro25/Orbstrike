@@ -115,7 +115,14 @@ varying vec3 tspace0; // : TEXCOORD1;
 varying vec3 tspace1; // : TEXCOORD2;
 varying vec3 tspace2; // : TEXCOORD3;
 
+#ifdef STREET_BOMBER
+#include "./street_bomber_trim.gdshaderinc"
+#endif
+
 void vertex() {
+#ifdef STREET_BOMBER
+	bomber_rest = CUSTOM0.xyz;
+#endif
 	UV=UV*_MainTex_ST.xy+_MainTex_ST.zw;
 	COLOR=COLOR;
 
@@ -273,6 +280,11 @@ void fragment() {
             shade.rgb = apply_palette(shade.rgb);
         }
     }
+#ifdef STREET_BOMBER
+    float trim_tone = bomber_trim_tone();
+    lit.rgb *= trim_tone;
+    shade.rgb *= trim_tone;
+#endif
 	
 	//shade = min(shade, lit); ///// Mimic look of non-PBR min() clamp we commented out below.
 

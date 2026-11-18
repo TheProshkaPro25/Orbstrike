@@ -1,8 +1,11 @@
 {
   "inputs": {
-    "tools/avatars/build_street_set.gd": "e857ff775c0df8d0464e7c3f036bf372319bbea25888355c38726b133e609e72",
+    "tools/avatars/build_street_set.gd": "f8430a31f50b40a2639942d5173faf5e6143e15ad3dd0bf79178d6311443ff79",
     "tools/avatars/build_wardrobe_variants.gd": "2f7a4d8e4caddea955e19123940325ee6b4739ac6e04cfb88fe222668f560524",
-    "tools/avatars/prepare_vrm_parts.gd": "16fc40164703c5518dd3ee64c503f283a7b1e61bef73fdcd17c53449658944f6",
+    "tools/avatars/prepare_vrm_parts.gd": "b44b8116b67c1147b9b9e3ed6253fc2158756a509fba370ef76efc46cd460c27",
+    "scenes/avatar/mtoon_palette/street_bomber.gdshader": "48f7e2ec891dd2b6223030d518c973f881f97acf69818f4186a1897a5ad3f642",
+    "scenes/avatar/mtoon_palette/street_bomber_trim.gdshaderinc": "d0404919992644ee2622a4580678793266d944e6a905805022cb318df02cae95",
+    "scenes/avatar/mtoon_palette/mtoon_common.gdshaderinc": "a8582cb6d649196d859801f0cd70788124df41eeefc516653191dd23c62c2a5d",
     "assets/avatars/vrm/parts/body_0_0.res": "75eb3e35b767d7172f31c507f2b40c497fde93d1fc87e77aa39927ac1a752d12",
     "assets/avatars/vrm/parts/body_0_1.res": "2cc96c47de459ebfd94982a55c8531961a22052dc4742d85b8f10ec7dd71ac13",
     "assets/avatars/vrm/parts/body_1_0.res": "51f993670230d9e6eb55c56f2d761c0d6f16021bc0761b26c6f253dca9f831cd",
@@ -18,8 +21,8 @@
     "assets/avatars/vrm/HairSample_Male.vrm": "7aeca142dabbc26ba0f5b9c998c8f3cb6df341287d67788427ac837223785a3f"
   },
   "outputs": {
-    "assets/avatars/street/bomber_0.res": "7806d7b3b49a503e9ff0bb4376411b5aefdb0d0b425f87f12bdc8fa04b7d2caa",
-    "assets/avatars/street/bomber_1.res": "36446651735fb4e8b2f661a7790727c0128c6a2e9318e844a13c91d80bff6253",
+    "assets/avatars/street/bomber_0.res": "aa1a2ca7f9f154036216075ed1cea1ef8e5a35bc448b14cf87573e0a9b7dc125",
+    "assets/avatars/street/bomber_1.res": "a2a509cf0ab8d7ca51f3fc13adc53e847f562d683641ee51a0986b6035914278",
     "assets/avatars/street/ponytail_0.res": "a2977df6f539b2b60165161f3c0232fa048082d5cf953b35a9e4fa4ce775a9cc",
     "assets/avatars/street/ponytail_1.res": "e41e4475fdc354bc355ce65d3005044c37969f981d0eb7fac2662ea9b5be9314",
     "assets/avatars/street/case_0.res": "3e02eba4c81bd962a668675a09be9915748bfc718c3634408ae94873defdeebe",

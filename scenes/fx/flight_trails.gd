@@ -8,8 +8,15 @@ const VARIANTS := [
 	ElementalTrail.Style.EARTH, ElementalTrail.Style.DARK, ElementalTrail.Style.WATER,
 ]
 
-# These two silhouettes need more room near the shell in the pursuit camera.
-const MATCH_VIEW_SHAPES := {Attr.A.FIRE: Vector2(1.40, 2.25), Attr.A.STONE: Vector2(1.33, 1.75)}
+# The pursuit camera needs enough width to read the shape near the shell.
+const MATCH_VIEW_SHAPES := {
+	Attr.A.FIRE: Vector2(1.40, 2.25), Attr.A.GALE: Vector2(1.33, 1.6),
+	Attr.A.STONE: Vector2(1.38, 2.10), Attr.A.TIDE: Vector2(1.25, 1.0),
+}
+const MATCH_PALETTES := {
+	Attr.A.GALE: [Color("#c6ffe6"), Color("#38d3ad"), Color("#0b645d")],
+	Attr.A.STONE: [Color("#ffbe8b"), Color("#b5794c"), Color("#573525")],
+}
 
 var _trails: Dictionary[int, ElementalTrail] = {}
 
@@ -20,7 +27,7 @@ func prepare() -> void:
 	for element in Attr.COUNT:
 		var trail := ElementalTrail.new()
 		trail.configure(VARIANTS[element], MATCH_DURATION_SCALE,
-			MATCH_VIEW_SHAPES.get(element, Vector2.ONE))
+			MATCH_VIEW_SHAPES.get(element, Vector2.ONE), MATCH_PALETTES.get(element, []))
 		trail.manual_sampling = true
 		add_child(trail)
 		trail.set_airborne(true, 0.32)

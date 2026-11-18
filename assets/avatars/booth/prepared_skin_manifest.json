@@ -1,0 +1,39 @@
+{
+  "format": 1,
+  "preparation": "sakurada-source-material-sharing-v1",
+  "scope": "Current local derived BOOTH resources; historical published release045-inputs.json is unchanged. No source VRM, pixels, geometry or release package changed.",
+  "source_vrm": {
+    "path": "assets/avatars/vrm/Sakurada_Fumiriya.vrm",
+    "sha256": "d8fb05f33e377df028cb6b9d58c441ce68326c41fa23f6c735d40c65ae3dc710"
+  },
+  "resources": {
+    "assets/avatars/booth/deer_haori_0.res": {
+      "sha256": "8712abd4d90ad4cd15467308317ab87f92874930821a3a6aaa1c9ab1b47ef0ac",
+      "bytes": 7963554,
+      "legacy_sha256": "8276dd27bb28a89fe08b96e243d277bd536e2be39703647e0b36c5ce072ee43a",
+      "legacy_bytes": 15901684,
+      "preparation": "Remove only the exact source skin variant_materials override; VrmParts.material_for resolves the source by part_source/surface_materials."
+    },
+    "assets/avatars/booth/fantasy_robe_0.res": {
+      "sha256": "ad4730de2471ac8a7a4722f10d2de55b2abefc5086a11266e466a064f996e27d",
+      "bytes": 2556168,
+      "legacy_sha256": "4e7de07969de65dbd54e88dd6dd0ac9745f011a34b8a2d970caac2ef243eec38",
+      "legacy_bytes": 10419782,
+      "preparation": "Remove only the exact source skin variant_materials override; VrmParts.material_for resolves the source by part_source/surface_materials."
+    },
+    "assets/avatars/booth/orchid_armor_0.res": {
+      "sha256": "7f48f037a0468c964b0615fc9ab2cfd35a7dde8bb9b63140e28d3004295885fa",
+      "bytes": 10624949,
+      "legacy_sha256": "1755b375be91b8883c3a1ae4899f9d91e0c984f00ff1da7bc61bd61db8bcc53b",
+      "legacy_bytes": 18633202,
+      "preparation": "Remove only the exact source skin variant_materials override; VrmParts.material_for resolves the source by part_source/surface_materials."
+    },
+    "assets/avatars/booth/orchid_uniform_0.res": {
+      "sha256": "957137b0c30d77dee6fa923b4136b6e4fa7466c6ab53326a36ce4290caea4635",
+      "bytes": 6051125,
+      "legacy_sha256": "f79be82a7e04ce38aa60d2440bc3b0fff6fa52c650d4afffda87173f2474f895",
+      "legacy_bytes": 14041535,
+      "preparation": "Remove only the exact source skin variant_materials override; VrmParts.material_for resolves the source by part_source/surface_materials."
+    }
+  }
+}

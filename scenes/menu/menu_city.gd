@@ -1,6 +1,6 @@
 class_name MenuCity
 extends Node3D
-## Живой пейзаж главного меню: город у реки с видом с холма. Всё процедурно: небоскрёбы и дома — один MultiMesh
+## Живой пейзаж главного меню: город у реки с видом с холма. Всё процедурно: небоскрёбы и дома — один видимый MultiMesh
 ## единичных кубов (окна, неон, огни — в building.gdshader), крыши частных домов и деревья — ещё по MultiMesh,
 ## дороги и мосты — MultiMesh плоскостей (разметка и фонари — road.gdshader), вода, земля, горы-силуэты, небо
 ## с облаками. Транспорт (машины, метро, лодки, самолёт, вертолёт) — MenuTraffic, шары стихий в полночь — MenuOrbs. Цикл суток DayCycle.CYCLE_SEC: солнце/луна по дуге, свет, туман, окна и машины по времени.
@@ -47,6 +47,8 @@ var _tree_mat: ShaderMaterial
 var _tower_mat: ShaderMaterial
 var _tree_mis: Array[MultiMeshInstance3D] = []
 var _tree_far_mi: MultiMeshInstance3D
+# Color batches stay intact; only shadow submissions are culled spatially.
+var _shadow_sets: Array[Dictionary] = []
 
 # накопители инстансов: [Transform3D, Color(custom)]
 var _bld: Array = []
@@ -91,6 +93,7 @@ func _ready() -> void:
 	cam.current = true
 	apply_quality(GraphicsSettings.current())
 	_update(0.0)
+	GraphicsSettings.watch(self, "_apply_graphics_settings")
 
 
 func _process(delta: float) -> void:
@@ -98,24 +101,34 @@ func _process(delta: float) -> void:
 
 
 ## Уровень графики: тени, glow, детализация неба, MSAA (через GraphicsSettings.apply_world без SSAO).
+func _apply_graphics_settings() -> void:
+	apply_quality(GraphicsSettings.current())
+
+
 func apply_quality(level: int) -> void:
 	quality = level
 	GraphicsSettings.apply_world(get_viewport(), null, null)
-	var low := level == GraphicsSettings.Level.LOW
-	sun.shadow_enabled = not low
+	var low := int(GraphicsSettings.option("scene_detail")) == GraphicsSettings.Level.LOW
+	var effects := int(GraphicsSettings.param("screen_effects")) > 0
+	sun.shadow_enabled = bool(GraphicsSettings.param("shadow_enabled"))
 	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
 	sun.directional_shadow_max_distance = 1400.0 if level == GraphicsSettings.Level.HIGH else 1000.0
-	env.glow_enabled = not low
+	env.glow_enabled = effects
 	# лёгкое размытие дали: город — простые коробки, вблизи их не разглядеть (на Низких — без размытия)
-	_cam_attr.dof_blur_far_enabled = not low
+	_cam_attr.dof_blur_far_enabled = effects
 	_cam_attr.dof_blur_amount = 0.035 if level == GraphicsSettings.Level.HIGH else 0.025
 	_sky_mat.set_shader_parameter("detail", 0.0 if low else 1.0)
-	traffic.apply_quality(level)
-	orbs.apply_quality(level)
+	traffic.apply_quality(int(GraphicsSettings.option("scene_detail")))
+	orbs.apply_quality(int(GraphicsSettings.option("scene_detail")))
 	if _tree_far_mi != null:
 		_tree_far_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	for mi in _tree_mis:
 		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF if low else GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+
+	for entry in _shadow_sets:
+		entry.source.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		for batch: MultiMeshInstance3D in entry.batches:
+			batch.visible = sun.shadow_enabled and (not entry.tree or not low)
 
 
 # ---------------------------------------------------------------- цикл суток
@@ -657,6 +670,7 @@ func _flush_multimeshes() -> void:
 			_tree_far_mi = mi
 		else:
 			_tree_mis.append(mi)
+			_make_shadow_batches(mi, part, true)
 
 	_tower_mat = ShaderMaterial.new()
 	_tower_mat.shader = load("res://scenes/menu/vehicle.gdshader")
@@ -740,6 +754,43 @@ func _make_mm(mesh: Mesh, items: Array, mat: Material, custom: bool, shadows: bo
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if shadows else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(mi)
 	return mi
+
+
+## MultiMesh culling is per batch, not per instance. Preserve every transform,
+## color and vertex shader; local shadow-only copies avoid city-wide cascades.
+func _make_shadow_batches(source: MultiMeshInstance3D, source_items: Array, tree: bool = false) -> void:
+	var original := source.multimesh
+	if original.instance_count < 64: return
+	var cells: Dictionary = {}
+	for index in original.instance_count:
+		var transform: Transform3D = source_items[index][0]
+		var cell := Vector2i(floori(transform.origin.x / 512.0), floori(transform.origin.z / 512.0))
+		if not cells.has(cell): cells[cell] = []
+		cells[cell].append(index)
+	if cells.size() < 2: return
+	var batches: Array[MultiMeshInstance3D] = []
+	for cell in cells:
+		var items: Array = []
+		var bounds := AABB()
+		for index: int in cells[cell]:
+			var transform: Transform3D = source_items[index][0]
+			items.append(source_items[index])
+			# tree.gdshader displacement is <= .018*.75*max(abs(y))^2
+			# in local X and <= .010*.75*max(abs(y))^2 in local Z.
+			var local_bounds := original.mesh.get_aabb()
+			if tree:
+				var y := maxf(absf(local_bounds.position.y), absf(local_bounds.end.y))
+				local_bounds = local_bounds.grow(.018 * .75 * y * y)
+			var item_bounds: AABB = transform * local_bounds
+			bounds = item_bounds if items.size() == 1 else bounds.merge(item_bounds)
+		var batch := _make_mm(original.mesh, items, source.material_override, original.use_custom_data, true)
+		batch.name = "MenuShadow%d_%d" % [_shadow_sets.size(), batches.size()]
+		batch.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
+		batch.gi_mode = GeometryInstance3D.GI_MODE_DISABLED
+		batch.multimesh.custom_aabb = bounds
+		batches.append(batch)
+	source.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_shadow_sets.append({"source": source, "tree": tree, "batches": batches})
 
 
 # ---------------------------------------------------------------- горы

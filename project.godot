@@ -15,13 +15,16 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Orbstrike"
-config/version="0.4.5"
+config/version="0.4.6"
 run/main_scene="res://scenes/loading/boot.tscn"
+run/max_fps=60
 config/use_custom_user_dir=true
 config/custom_user_dir_name="godot/app_userdata/Сферы Стихий"
 config/features=PackedStringArray("4.7")
 config/custom_user_dir_name.windows="Godot/app_userdata/Сферы Стихий"
 config/custom_user_dir_name.macos="Godot/app_userdata/Сферы Стихий"
+config/custom_user_dir_name.illustrated_harbor="godot/app_userdata/Orbstrike Illustrated Harbor"
+config/custom_user_dir_name.windows.illustrated_harbor="Godot/app_userdata/Orbstrike Illustrated Harbor"
 
 [display]
 

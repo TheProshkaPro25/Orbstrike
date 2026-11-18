@@ -330,15 +330,14 @@ func run() -> void:
 		if not only_element.is_empty() and String(d.id) != "creature_grifalon_" + only_element: continue
 		if not light_only or d.id == &"creature_grifalon_light": await verify_actor(d)
 	check(Motion.load_count == loaded, "no library loads during playback/warm actors")
-	# One unaffected flyer and the accepted sword/cape path keep legacy preparation.
-	for id in [&"creature_gorgul_shadow", &"creature_ratnik_light"]:
+	# The unaffected flyer and grounded creature keep legacy preparation.
+	for id in [&"creature_gorgul_shadow", &"creature_klykar_light"]:
 		if not only_element.is_empty(): continue
 		var control := CreatureAnim.new()
 		root.add_child(control)
 		control.set_process(false)
 		control.set_model(CreatureModels.build(CardDB.creature(id)), CardDB.creature(id))
 		check(not control._authored_fullset and control._support != null, "legacy control intact " + String(id))
-		if id == &"creature_ratnik_light": check(control._cloth != null, "Ratnik GPU cape retained")
 		ModelLifetime.release(control, self)
 		await process_frame
 	CreatureModels.clear()

@@ -604,50 +604,106 @@ void fragment() {
 
 static func _sea_material() -> ShaderMaterial:
 	var mat := ShaderMaterial.new()
+	# Small seamless simplex field, created once with the resident arena.
+	# Sampling its slopes avoids both periodic sine rows and value-noise cell facets.
+	var noise := FastNoiseLite.new()
+	noise.seed = 94517
+	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	noise.fractal_type = FastNoiseLite.FRACTAL_NONE
+	noise.frequency = .09
+	var wave_image := noise.get_seamless_image(256,256)
+	wave_image.generate_mipmaps()
 	mat.shader = Shader.new()
 	mat.shader.code = """shader_type spatial;
-render_mode cull_disabled;
+render_mode cull_disabled, specular_disabled;
 uniform vec3 moon_direction;
-uniform float square_lantern_radius = 63.2;
-uniform float square_lantern_height = 7.84;
-uniform float square_lantern_count = 14.0;
+uniform float square_lantern_radius;
+uniform float square_lantern_height;
+uniform float square_lantern_count;
 uniform float quay_lantern_radius;
 uniform float quay_lantern_height;
+uniform sampler2D wavelets : repeat_enable, filter_linear_mipmap_anisotropic;
 varying vec3 wp;
+// Smooth simplex wavelets have unequal lengths without an axis-aligned cell grid.
+vec3 sea_noise(vec2 p) {
+ vec2 uv=p/24.0;
+ float e=.005;
+ float value=texture(wavelets,uv).r;
+ float dx=(texture(wavelets,uv+vec2(e,0)).r-texture(wavelets,uv-vec2(e,0)).r)/.24;
+ float dy=(texture(wavelets,uv+vec2(0,e)).r-texture(wavelets,uv-vec2(0,e)).r)/.24;
+ return vec3(value,dx,dy);
+}
 void vertex() { wp=(MODEL_MATRIX*vec4(VERTEX,1.0)).xyz; }
 void fragment() {
- float t=TIME*.39;
- float swell=sin(wp.x*.15+wp.z*.09-t);
- float ripple=sin(wp.x*.43+sin(wp.z*.17-t)*1.7+t)*sin(wp.z*.59+sin(wp.x*.21+t));
- float far=smoothstep(80.0,430.0,length(wp.xz));
- vec3 water=mix(vec3(.012,.037,.052),vec3(.009,.020,.039),far);
+ float t=TIME*.52;
  float radius=length(wp.xz);
- vec3 wave = normalize(vec3(ripple*.049+swell*.037,1.0,cos(wp.z*.45+t)*.053));
+ // Several crossing scales break the old parallel washboard bands.
+ // Fine wavelets fragment reflections instead of repeating a full sine crest.
+ float warp=sin(wp.x*.081+wp.z*.13+t*.21)*1.6+sin(wp.z*.057-wp.x*.17)*.8;
+ float swell_phase=dot(wp.xz,vec2(.15,.10))-t*.63+warp;
+ float cross_phase=dot(wp.xz,vec2(-.33,.49))+t*.93+warp*.8;
+ float fine_phase=dot(wp.xz,vec2(.91,.61))-t*1.55+sin(cross_phase)*.8;
+ float fine_cross=dot(wp.xz,vec2(-1.43,1.81))+t*1.27+sin(swell_phase)*1.2;
+ float small_phase=dot(wp.xz,vec2(2.3,.72))-t*2.1+sin(cross_phase)*1.6;
+ float distance_to_eye=length(CAMERA_POSITION_WORLD-wp);
+ float detail=1.0-smoothstep(110.0,480.0,distance_to_eye);
+ float small_detail=1.0-smoothstep(75.0,230.0,distance_to_eye);
+ vec2 drift=vec2(t*.18,-t*.10);
+ vec3 wavelet=sea_noise(vec2(wp.x*.68+wp.z*.19,-wp.x*.09+wp.z*.25)+drift);
+ vec3 short_wavelet=sea_noise(vec2(-wp.x*1.21+wp.z*.47,wp.x*.21+wp.z*.48)-drift*1.8);
+ vec3 skin=sea_noise(wp.xz*vec2(3.4,1.2)+drift*2.1);
+ float swell=sin(swell_phase);
+ float ripple=sin(cross_phase)*.40+sin(fine_phase)*.30+sin(fine_cross)*.20+sin(small_phase)*.10;
+ vec2 slope=vec2(.15,.10)*cos(swell_phase)*.15;
+ slope+=vec2(-.33,.49)*cos(cross_phase)*.095;
+ slope+=vec2(wavelet.y*.68-wavelet.z*.09,wavelet.y*.19+wavelet.z*.25)*.15*detail;
+ slope+=vec2(-short_wavelet.y*1.21+short_wavelet.z*.21,short_wavelet.y*.47+short_wavelet.z*.48)*.075*detail;
+ slope+=skin.yz*vec2(3.4,1.2)*.009*small_detail;
+ vec3 wave=normalize(vec3(-slope.x,1.0,-slope.y));
  vec3 sight = normalize(CAMERA_POSITION_WORLD - wp);
  vec3 reflected = reflect(-sight, wave);
- // Short broken paths line up with the two rows of emissive glass even without SSR.
- vec2 reflected_square = wp.xz + reflected.xz * (square_lantern_height / max(reflected.y, .11));
- float square_angle=atan(reflected_square.y,reflected_square.x);
- float square_light=pow(max(0.0,cos(square_angle*square_lantern_count-PI)),18.0)
-   * exp(-abs(length(reflected_square)-square_lantern_radius)*.16);
- vec2 reflected_quay = wp.xz + reflected.xz * (quay_lantern_height / max(reflected.y, .11));
- float angle=atan(reflected_quay.x,-reflected_quay.y);
- float quay_light=pow(max(0.0,cos((angle+1.43)/.429*TAU)),25.0);
- quay_light*=exp(-abs(length(reflected_quay)-quay_lantern_radius)*.12)*(1.0-smoothstep(1.35,1.55,abs(angle)));
- float broken=mix(.18,1.0,smoothstep(-.02,.65,ripple))*(quay_light + square_light*.83);
- // Узкая прерывистая кромка у камня вместо белого контура всей бухты.
- float shore=exp(-abs(radius-100.2-swell*.10)*5.0);
- shore*=1.0-smoothstep(1.36,1.53,abs(atan(wp.x,-wp.z)));
- float foam=shore*smoothstep(-.2,.8,ripple)*.35;
- float moon = pow(max(dot(reflected,moon_direction),0.0),116.0) * (.28 + .72 * smoothstep(.03,.82,ripple));
- ALBEDO=water+vec3(.003,.005,.006)*(ripple+swell*.5);
- ALBEDO+=vec3(.045,.024,.010)*broken+vec3(.06,.11,.12)*foam;
- EMISSION=vec3(.29,.113,.028)*broken+vec3(.058,.096,.145)*moon;
+ float fresnel=pow(1.0-clamp(dot(sight,wave),0.0,1.0),4.0);
+ float quay_arc=1.0-smoothstep(1.36,1.53,abs(atan(wp.x,-wp.z)));
+ float edge_distance=min(abs(radius-69.6),mix(90.0,abs(radius-100.2),quay_arc));
+ float shallows=exp(-edge_distance*.18);
+ float far=smoothstep(140.0,720.0,radius);
+ vec3 water=mix(vec3(.012,.046,.061),vec3(.009,.026,.043),far);
+ water=mix(water,vec3(.013,.065,.073),shallows*.46);
+ water=mix(water,vec3(.027,.052,.073),fresnel*.35);
+ // A subdued fine crest rhythm remains readable when no bright object reflects.
+ float crest=smoothstep(.48,.82,wavelet.x)*smoothstep(.22,.68,short_wavelet.x);
+ water+=vec3(.005,.012,.015)*crest*detail;
+ float fine_crest=smoothstep(.62,.85,skin.x)*smoothstep(.35,.75,short_wavelet.x);
+ water+=vec3(.003,.006,.008)*fine_crest*small_detail;
+ // The reflected ray meets the real lantern heights and row radii.
+ // Narrow crests break each path into short dashes instead of broad orange fog.
+ vec2 square_hit=wp.xz+reflected.xz*(square_lantern_height/max(reflected.y,.11));
+ float square_angle=atan(square_hit.y,square_hit.x);
+ float square_light=pow(max(0.0,cos(square_angle*square_lantern_count-PI)),52.0)
+  *exp(-pow((length(square_hit)-square_lantern_radius)*.25,2.0));
+ vec2 quay_hit=wp.xz+reflected.xz*(quay_lantern_height/max(reflected.y,.11));
+ float angle=atan(quay_hit.x,-quay_hit.y);
+ float quay_light=pow(max(0.0,cos((angle+1.43)/.429*TAU)),65.0)
+  *exp(-pow((length(quay_hit)-quay_lantern_radius)*.22,2.0))
+  *(1.0-smoothstep(1.35,1.55,abs(angle)));
+ float broken=(square_light+quay_light)*(.12+.88*smoothstep(.25,.72,sin(fine_phase)*.55+sin(small_phase)*.45));
+ // Tidal lace hugs the square and stone quay, with gaps between passing crests.
+ // It never paints a bright continuous outline around the entire harbor.
+ float shore=exp(-abs(edge_distance-.24-swell*.16)*2.1);
+ float wash=.5+.5*sin(edge_distance*4.1-t*1.4+sin(cross_phase)*.6);
+ float foam=shore*smoothstep(.05,.65,ripple)*(.32+.68*wash);
+ float moon_alignment=max(dot(reflected,moon_direction),0.0);
+ float moon=(pow(moon_alignment,82.0)*.52+pow(moon_alignment,240.0)*.48)
+   *(.22+.78*smoothstep(-.12,.65,ripple));
+ ALBEDO=water+vec3(.003,.008,.010)*(ripple+swell*.3);
+ ALBEDO=mix(ALBEDO,vec3(.14,.23,.25),foam*.36);
+ EMISSION=vec3(.34,.14,.039)*broken+vec3(.040,.070,.105)*moon;
  NORMAL=(VIEW_MATRIX*vec4(wave,0.0)).xyz;
- ROUGHNESS=mix(.53,.70,.5+.5*ripple); SPECULAR=.23;
+ ROUGHNESS=mix(.18,.28,.5+.5*ripple)+foam*.23; SPECULAR=.65;
 }
 """
 	mat.set_shader_parameter("moon_direction", Locations.HARBOR_MOON.normalized())
+	mat.set_shader_parameter("wavelets",ImageTexture.create_from_image(wave_image))
 	mat.set_shader_parameter("square_lantern_count", float(SQUARE_LANTERN_COUNT))
 	mat.set_shader_parameter("square_lantern_height", LANTERN_GLASS_HEIGHT * SQUARE_LANTERN_SCALE - .075)
 	mat.set_shader_parameter("square_lantern_radius", SQUARE_LANTERN_RADIUS)

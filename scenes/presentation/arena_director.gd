@@ -336,37 +336,31 @@ func launch_to(slot: int) -> void:
 	var bounce_feedback := func(_point: Vector3, impact: float) -> void:
 		if flying and cam.mode == CameraRig.Mode.FOLLOW:
 			cam.shake(clampf(impact / 80.0, .06, .18), .11)
+	var held_center := Vector3.INF
 	if fighters.size() == 2:
 		var fighter: VrmFighter = fighters[owner_of(ball.uid)]
 		fighter.play_motion("throw")
 		fighter_shots[owner_of(ball.uid)]["throw"] += 1
 		cam.fighter_view(fighter,"throw")
-		# Palm-sized shell keeps the same visible scale through release.
-		var held_scale := 1.0
 		# Suspend the floor offset while holding the visible center in the palm.
 		var was_processing := ball.is_processing()
 		ball.set_process(false)
-		ball._visual.scale = Vector3.ONE*held_scale
-		ball._visual.position = -ball._shell.position*held_scale
+		ball._visual.position = -ball._shell.position
 		# Hold the actual frozen sphere at the hand; launch from the release
 		# point with the existing ballistic solver, then keep real physics.
 		while fighter.motion_time < fighter.ball_release_time():
 			ball.global_position = fighter.ball_hold_position()
 			await get_tree().process_frame
+		held_center = ball._shell_center()
 		ball.global_position = fighter.ball_hold_position()+Vector3.UP*(CreatureBall.RADIUS-CreatureBall._shell_r())
 		start = ball.global_position
-		ball._visual.scale = Vector3.ONE
 		ball._visual.position = Vector3.ZERO
 		ball.set_process(was_processing)
 	ball.surface_bounced.connect(bounce_feedback)
 	SoundFx.i().play("ball_throw", -3.0)
 	ball.launch_towards(target)
 	# Первый реальный кадр скорости задаёт направление погони.
-	cam.follow(ball, Vector3.ZERO)
-	cam._follow_dir = Vector3(target.x - start.x, 0, target.z - start.z).normalized()
-	cam._smooth = 7.0
-	cam._update_follow(1.0 / 60.0)
-	cam.cut()
+	cam.follow_throw(ball, target - start, held_center)
 	cam.shake(.10, .12)
 	var landing: Array = await ball.settled
 	var actual: Vector3 = landing[1]

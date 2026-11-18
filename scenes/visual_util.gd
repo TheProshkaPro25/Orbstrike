@@ -95,9 +95,9 @@ static var _pillar_meshes: Dictionary = {}
 
 
 ## Столб света (появление существа, открытие карты): вспыхивает, сужается и гаснет за dur секунд.
-static func light_pillar(parent: Node3D, local_pos: Vector3, c: Color, height: float, radius: float, dur: float = 0.6, strength: float = 1.0) -> void:
+static func light_pillar(parent: Node3D, local_pos: Vector3, c: Color, height: float, radius: float, dur: float = 0.6, strength: float = 1.0) -> MeshInstance3D:
 	if parent == null or not parent.is_inside_tree():
-		return
+		return null
 	if _pillar_mat == null:
 		var sh := Shader.new()
 		sh.code = PILLAR_SHADER
@@ -130,6 +130,7 @@ static func light_pillar(parent: Node3D, local_pos: Vector3, c: Color, height: f
 	tw.tween_method(func(v: float) -> void: mi.set_instance_shader_parameter("fade", v), 1.0, 0.0, dur * 0.75)
 	tw.parallel().tween_property(mi, "scale", hs * Vector3(0.15, 1.15, 0.15), dur * 0.75)
 	tw.tween_callback(mi.queue_free)
+	return mi
 
 
 ## Вспышка-взрыв частиц (удар, выбывание): one-shot, сама удаляется.
@@ -332,3 +333,27 @@ static func dome(parent: Node3D, world_pos: Vector3, c: Color, radius: float, du
 static func focus_if_present(control: Control) -> void:
 	if is_instance_valid(control) and not control.is_queued_for_deletion() and control.is_inside_tree() and control.is_visible_in_tree():
 		control.grab_focus()
+
+
+## Навигация по длинному тексту без переноса фокуса с кнопок.
+static func scroll_navigation(scroll: ScrollContainer, event: InputEvent) -> bool:
+	if event.is_action_pressed(&"ui_up", true):
+		scroll.scroll_vertical -= 64
+	elif event.is_action_pressed(&"ui_down", true):
+		scroll.scroll_vertical += 64
+	elif event is InputEventKey and event.pressed:
+		var bar := scroll.get_v_scroll_bar()
+		match event.keycode:
+			KEY_PAGEUP:
+				scroll.scroll_vertical -= maxi(64, int(bar.page) - 32)
+			KEY_PAGEDOWN:
+				scroll.scroll_vertical += maxi(64, int(bar.page) - 32)
+			KEY_HOME:
+				scroll.scroll_vertical = 0
+			KEY_END:
+				scroll.scroll_vertical = roundi(bar.max_value - bar.page)
+			_:
+				return false
+	else:
+		return false
+	return true

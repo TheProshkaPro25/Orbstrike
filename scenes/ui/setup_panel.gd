@@ -76,7 +76,7 @@ func _build() -> void:
 	_throw_btn = Button.new()
 	_throw_btn.text = "Ворота + бросок"
 	_throw_btn.toggle_mode = true
-	_throw_btn.tooltip_text = "После выбора места на поле выберите существо. Назад / Esc вернёт к карте без расхода хода."
+	_throw_btn.tooltip_text = "После выбора места на поле выберите существо. Назад, Esc или правая кнопка вернут к выкладке без расхода хода."
 	_panel.add_child(_throw_btn)
 	_actions = HBoxContainer.new()
 	_actions.add_theme_constant_override("separation", 6)
@@ -142,7 +142,9 @@ func set_hand(ids: Array) -> void:
 	_build()
 	if ids == _hand: return
 	_hand = ids.duplicate()
+	if not _hand.has(_selected): _selected = &""
 	_rebuild()
+	if _panel.visible: _refresh_selection()
 
 func _rebuild() -> void:
 	var restore_focus := _owns_focus()
@@ -248,7 +250,6 @@ func _change_page(delta: int) -> void:
 	var next_page := clampi(_page + delta, 0, pages - 1)
 	if next_page == _page: return
 	_page = next_page
-	_selected = &""
 	_rebuild()
 	_refresh_selection()
 

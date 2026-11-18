@@ -50,9 +50,15 @@ func physical_parameters(solver: Node) -> Dictionary:
 
 func prepare(label: String, cache: bool) -> Dictionary:
 	Solver.canonical_cache_enabled = cache
+	# Keep the split CapeGPU model as a fixture for the GPU solver.
+	var key := "hd:ratnik_tide"
+	var previous = CreatureModels._scenes.get(key)
+	CreatureModels._scenes[key] = load("res://assets/creatures_hd/ratnik_tide.glb")
 	var ball := CreatureBall.new()
 	root.add_child(ball)
 	ball.setup(CardDB.creature(&"creature_ratnik_tide"),balls.size())
+	if previous == null: CreatureModels._scenes.erase(key)
+	else: CreatureModels._scenes[key] = previous
 	ball.freeze_at(Vector3(0,CreatureBall.RADIUS,0))
 	ball.set_process(false)
 	ball._anim.set_process(false)

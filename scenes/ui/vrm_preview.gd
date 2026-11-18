@@ -45,7 +45,8 @@ func _ready() -> void:
 	row.add_child(preview)
 	viewport = SubViewport.new()
 	viewport.own_world_3d = true
-	viewport.msaa_3d = Viewport.MSAA_4X
+	GraphicsSettings.apply_viewport(viewport)
+	GraphicsSettings.watch(self, "_apply_graphics_settings")
 	preview.add_child(viewport)
 	var world := Node3D.new()
 	viewport.add_child(world)
@@ -81,6 +82,7 @@ func _ready() -> void:
 	options_scroll = scroll
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.follow_focus = true
 	panel.add_child(scroll)
 	var options := VBoxContainer.new()
 	options.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -100,6 +102,10 @@ func _ready() -> void:
 	_update_expressions()
 	set_face_view(false)
 	_preview_activity = preload("res://scenes/ui/preview_activity.gd").new(viewport,preview,self)
+
+func _apply_graphics_settings() -> void:
+	GraphicsSettings.apply_viewport(viewport)
+
 
 func _title_text() -> String:
 	return "АНИМЕ-МОДЕЛИ · ПРЕДПРОСМОТР"

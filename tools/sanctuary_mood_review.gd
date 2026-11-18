@@ -60,12 +60,15 @@ func run() -> void:
 	main.team_menu.hide()
 	main.ui_layer.visible = false
 	main.arena._motes.emitting = false
-	for id in [&"creature_dragnar_fire", &"creature_klykar_shadow", &"creature_kolossar_light"]:
+	for id in [&"creature_dragnar_fire", &"creature_klykar_shadow", &"creature_kolossar_light",
+			&"creature_gorgul_shadow", &"creature_ratnik_shadow", &"creature_levian_shadow"]:
 		var index := actors.size()
+		var side := 1.0 if index < 3 else -1.0
 		var ball := CreatureBall.new()
 		main.world.add_child(ball)
 		ball.setup(CardDB.creature(id), index)
-		ball.freeze_at(Vector3((index - 1) * Arena.STEP_X, .36, Arena.STEP_Z * .5))
+		ball.freeze_at(Vector3((index % 3 - 1) * Arena.STEP_X, .36, side * Arena.STEP_Z * .5))
+		ball._figure.rotation.y = 0.0 if side > 0.0 else PI
 		ball.set_label_allowed(false)
 		ball.open_animated(false)
 		actors.append(ball)
@@ -81,6 +84,13 @@ func run() -> void:
 		actor._anim._phase = 0
 		actor._anim.reset()
 		actor._anim.set_process(false)
+	var fills: Array[Light3D] = []
+	for light: Light3D in main.arena._sanctuary_lights:
+		if light.light_cull_mask == CreatureBall.FIGURE_LIGHT_LAYER:
+			fills.append(light)
+			check(not light.shadow_enabled and light.light_volumetric_fog_energy == 0.0,
+				"figure fill leaves sanctuary shadows and shafts to the fixtures")
+	check(fills.size() == 2, "both facing directions have a figure fill")
 	for level in [GraphicsSettings.Level.LOW, GraphicsSettings.Level.MEDIUM, GraphicsSettings.Level.HIGH]:
 		GraphicsSettings.level = level
 		main.apply_graphics()
@@ -88,38 +98,11 @@ func run() -> void:
 		main.cam.set_process(false)
 		await frames(15)
 		await capture("%s-%s-wide" % [variant, level])
-		main.cam._set_static(Vector3(8, 22, 78), Vector3(0, 7, Arena.STEP_Z * .5), {"fov":58.0,"smooth":4.0,"hand":0.0})
-		main.cam.cut()
-		var lit := await capture("%s-%s-creature" % [variant, level])
-		for actor in actors: actor._figure.visible = false
-		var empty := await capture("%s-%s-architecture" % [variant, level])
-		for actor in actors: actor._figure.visible = true
-		var samples: Array = []
-		for actor in actors:
-			var base: Vector3 = actor.global_position - Vector3.UP * CreatureBall.RADIUS
-			var a: Vector2 = main.cam.unproject_position(base + Vector3.UP * actor.figure_height() * .90)
-			var b: Vector2 = main.cam.unproject_position(base + Vector3.UP * actor.figure_height() * .20)
-			var rect := Rect2i(Vector2i(minf(a.x,b.x) - 100, minf(a.y,b.y)), Vector2i(200, maxf(absf(a.y-b.y),1)))
-			rect = rect.intersection(Rect2i(0,0,lit.get_width(),lit.get_height()))
-			var count := 0
-			var total := 0.0
-			var contrast := 0.0
-			for y in range(rect.position.y, rect.end.y, 2):
-				for x in range(rect.position.x, rect.end.x, 2):
-					var c := lit.get_pixel(x,y)
-					var bg := empty.get_pixel(x,y)
-					if Vector3(c.r-bg.r,c.g-bg.g,c.b-bg.b).length() < .10: continue
-					count += 1
-					total += luminance(c)
-					contrast += absf(luminance(c)-luminance(bg))
-			var mean := total / maxi(count,1)
-			var delta := contrast / maxi(count,1)
-			samples.append({"id":String(actor.def.id),"samples":count,"body_mean_luma":mean,"contrast":delta})
-			check(count > 100 and mean > .07 and delta > .04, "readable creature %s at quality %s" % [actor.def.id,level])
-		var architecture_luma := mean_luma(empty,Rect2i(40,50,1200,450))
-		if variant != "before":
-			check(architecture_luma < .27, "subdued sanctuary architecture at quality %s" % level)
-		report.append({"level":level,"architecture_luma":architecture_luma,"creatures":samples})
+		for fill: Light3D in fills:
+			check(fill.visible, "figure fill active at quality %s" % level)
+		for row in 2:
+			await review_row(level, row, fills)
+		for actor in actors: actor._figure.show()
 	main.queue_free()
 	await frames(5)
 	if is_instance_valid(GameLoading._inst): GameLoading._inst.queue_free()
@@ -130,3 +113,59 @@ func run() -> void:
 	file.store_string(JSON.stringify({"failures":failures,"variant":variant,"report":report},"  "))
 	print("SANCTUARY MOOD ",JSON.stringify({"failures":failures,"report":report}))
 	quit(1 if failures else 0)
+
+
+func review_row(level: int, row: int, fills: Array[Light3D]) -> void:
+	var side := 1.0 if row == 0 else -1.0
+	for index in actors.size():
+		actors[index]._figure.visible = (index < 3) == (row == 0)
+	main.cam._set_static(Vector3(8 * side, 22, 78 * side), Vector3(0, 7, Arena.STEP_Z * .5 * side),
+		{"fov":58.0,"smooth":4.0,"hand":0.0})
+	main.cam.cut()
+	var caption := "%s-%s-row%d" % [variant, level, row]
+	var lit := await capture(caption + "-creature")
+	for fill: Light3D in fills: fill.hide()
+	var unfilled := await capture(caption + "-no-fill")
+	for actor in actors: actor._figure.hide()
+	var empty := await capture(caption + "-architecture")
+	for fill: Light3D in fills: fill.show()
+	var empty_lit := await capture(caption + "-architecture-fill")
+	var samples: Array = []
+	for index in range(row * 3, row * 3 + 3):
+		var result := sample_figure(actors[index], lit, unfilled, empty)
+		samples.append(result)
+		check(result.samples > 100 and result.body_mean_luma > .12 and result.contrast > .04,
+			"readable creature %s at quality %s (%s)" % [result.id, level, result])
+		check(result.body_mean_luma > result.without_fill + .02,
+			"visible figure fill on %s at quality %s (%s)" % [result.id, level, result])
+	var architecture_rect := Rect2i(40, 50, 1200, 450)
+	var architecture_luma := mean_luma(empty_lit, architecture_rect)
+	var architecture_delta := absf(architecture_luma - mean_luma(empty, architecture_rect))
+	check(architecture_luma < .29 and architecture_delta < .006,
+		"subdued sanctuary architecture at quality %s, row %s (%s, delta %s)" % [level, row, architecture_luma, architecture_delta])
+	report.append({"level":level,"row":row,"architecture_luma":architecture_luma,
+		"architecture_delta":architecture_delta,"creatures":samples})
+
+
+func sample_figure(actor: CreatureBall, lit: Image, unfilled: Image, empty: Image) -> Dictionary:
+	var base := actor.global_position - Vector3.UP * CreatureBall.RADIUS
+	var a: Vector2 = main.cam.unproject_position(base + Vector3.UP * actor.figure_height() * .90)
+	var b: Vector2 = main.cam.unproject_position(base + Vector3.UP * actor.figure_height() * .20)
+	var rect := Rect2i(Vector2i(minf(a.x,b.x) - 100, minf(a.y,b.y)), Vector2i(200, maxf(absf(a.y-b.y),1)))
+	rect = rect.intersection(Rect2i(0,0,lit.get_width(),lit.get_height()))
+	var count := 0
+	var total := 0.0
+	var total_unfilled := 0.0
+	var contrast := 0.0
+	for y in range(rect.position.y, rect.end.y, 2):
+		for x in range(rect.position.x, rect.end.x, 2):
+			var c := lit.get_pixel(x,y)
+			var unlit := unfilled.get_pixel(x,y)
+			var bg := empty.get_pixel(x,y)
+			if Vector3(c.r-bg.r,c.g-bg.g,c.b-bg.b).length() < .10 and Vector3(unlit.r-bg.r,unlit.g-bg.g,unlit.b-bg.b).length() < .10: continue
+			count += 1
+			total += luminance(c)
+			total_unfilled += luminance(unlit)
+			contrast += absf(luminance(c)-luminance(bg))
+	return {"id":String(actor.def.id),"samples":count,"body_mean_luma":total / maxi(count, 1),
+		"without_fill":total_unfilled / maxi(count, 1),"contrast":contrast / maxi(count, 1)}

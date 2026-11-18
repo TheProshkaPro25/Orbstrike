@@ -1,22 +1,18 @@
 class_name CreaturePortrait
 extends Control
-## Точный 2D-концепт по ID; при его отсутствии — камера раскрытой резидентной фигуры.
-## Нет копии модели, setup или своего мира.
+## Прозрачный рендер модели по ID. Для неизвестного ID доступна камера
+## уже раскрытой резидентной фигуры, без копирования модели и setup.
 const ART := preload("res://scenes/ui/card_artwork.gd")
 const ELEMENT_ICON := preload("res://scenes/element_icon.gd")
-const HUD_CROPS := preload("res://scenes/ui/creature_portrait_crops.gd")
-const MATTE := preload("res://scenes/ui/portrait_matte.gd")
-const INTERIOR_BACKGROUND := preload("res://scenes/ui/portrait_background_regions.gd")
 const BACKDROP := preload("res://scenes/ui/portrait_backdrop.gdshader")
-const BATTLE_ART := preload("res://scenes/ui/battle_portrait.gdshader")
 const BATTLE_BACKDROP := preload("res://scenes/ui/battle_portrait_backdrop.gdshader")
 const BATTLE_CORNER_RADIUS := 10
 const BATTLE_ART_INSET := 3.0
 const ELEMENT_BACKDROPS := [Color("c96229"), Color("39a58d"), Color("cfb05f"), Color("97816a"), Color("9560c6"), Color("3686b8")]
 const PORTRAIT_LAYER := 1 << 20
 const FRAME_INTERVAL := 1.0 / 15.0
-## Exact original concept filenames. Preloads share Boot resources and perform no match-time lookup.
-const REFERENCE_TEXTURES := {
+## Exact model renders shared with Boot, including the rare encounter.
+const RENDERED_TEXTURES := {
 	&"creature_dragnar_fire": preload("res://assets/portraits/creatures/dragnar_fire.png"),
 	&"creature_dragnar_gale": preload("res://assets/portraits/creatures/dragnar_gale.png"),
 	&"creature_dragnar_light": preload("res://assets/portraits/creatures/dragnar_light.png"),
@@ -66,9 +62,6 @@ const REFERENCE_TEXTURES := {
 	&"creature_gorgul_shadow": preload("res://assets/portraits/creatures/gorgul_shadow.png"),
 	&"creature_gorgul_tide": preload("res://assets/portraits/creatures/gorgul_tide.png"),
 	&"creature_likorez_shadow": preload("res://assets/portraits/creatures/likorez_shadow.png"),
-}
-## Рендеры новых моделей уже содержат прозрачность.
-const RENDERED_TEXTURES := {
 	&"creature_floris_fire": preload("res://assets/portraits/creatures/floris_fire.png"),
 	&"creature_floris_gale": preload("res://assets/portraits/creatures/floris_gale.png"),
 	&"creature_floris_light": preload("res://assets/portraits/creatures/floris_light.png"),
@@ -101,68 +94,22 @@ var _layers: Array[Dictionary] = []
 var _elapsed := 0.0
 var _active := false
 var _reference_texture: Texture2D
-var _hud_crop_enabled := false
 var _battle_style := false
 var _battle_backdrop: ShaderMaterial
 var _battle_frame: Panel
-static var _hud_reference_textures: Dictionary = {}
-static var _presentation_textures: Dictionary = {}
-static var _battle_textures: Dictionary = {}
-static var _presentation_stats: Dictionary = {}
 static var _background_materials: Dictionary = {}
-static var _battle_art: ShaderMaterial
 static var _battle_frame_style: StyleBoxFlat
 static var _battle_mask_style: StyleBoxFlat
 
 
-## Explicit preparation is the only path that performs segmentation.
-## Texture getters/present/resize only reuse resources, never Nodes.
 static func preload_catalog() -> int:
-	for definition_id: StringName in REFERENCE_TEXTURES:
-		_prepare_reference(definition_id)
-	for definition_id: StringName in HUD_CROPS.REGIONS:
-		hud_reference_texture(definition_id)
 	for element in ELEMENT_BACKDROPS.size():
 		_background_material(element)
-	return REFERENCE_TEXTURES.size()
+	return RENDERED_TEXTURES.size()
 
 
-## Boot keeps rendering its loading screen between the bounded per-image tasks.
-static func preload_catalog_async(tree: SceneTree, progress: Callable = Callable()) -> int:
-	var done := 0
-	for definition_id: StringName in REFERENCE_TEXTURES:
-		var preparing := not _presentation_textures.has(definition_id)
-		_prepare_reference(definition_id)
-		done += 1
-		if progress.is_valid():
-			progress.call(done, REFERENCE_TEXTURES.size())
-		if preparing and tree != null:
-			await tree.process_frame
-	return preload_catalog()
-
-
-static func _prepare_reference(definition_id: StringName) -> void:
-	if _presentation_textures.has(definition_id):
-		return
-	var begin := Time.get_ticks_usec()
-	var prepared: Dictionary = MATTE.prepare(reference_texture(definition_id), false,
-		INTERIOR_BACKGROUND.REGIONS.get(definition_id, {}), INTERIOR_BACKGROUND.BATTLE_REGIONS.get(definition_id, {}))
-	if prepared.is_empty():
-		push_error("Could not prepare exact portrait: " + String(definition_id))
-		return
-	_presentation_textures[definition_id] = prepared.texture
-	if prepared.battle_texture != null:
-		_battle_textures[definition_id] = prepared.battle_texture
-	_presentation_stats[definition_id] = {"background_pixels": prepared.background_pixels, "interior_background_pixels": prepared.interior_background_pixels, "retained_closed_white_pixels": prepared.retained_closed_white_pixels, "softened_edge_pixels": prepared.softened_edge_pixels, "prepare_ms": (Time.get_ticks_usec() - begin) / 1000.0}
-	_hud_reference_textures.erase(definition_id)
-
-
-## A missing explicit preparation honestly falls back to the source, without
-## triggering expensive work from a UI event or touching an original bitmap.
-static func presentation_texture(definition_id: StringName, battle: bool = false) -> Texture2D:
-	if battle and _battle_textures.has(definition_id):
-		return _battle_textures[definition_id] as Texture2D
-	return _presentation_textures.get(definition_id, reference_texture(definition_id)) as Texture2D
+static func presentation_texture(definition_id: StringName) -> Texture2D:
+	return RENDERED_TEXTURES.get(definition_id) as Texture2D
 
 
 static func _background_material(element: int) -> ShaderMaterial:
@@ -173,34 +120,6 @@ static func _background_material(element: int) -> ShaderMaterial:
 	material.set_shader_parameter("element_color", ELEMENT_BACKDROPS[clampi(element, 0, ELEMENT_BACKDROPS.size() - 1)])
 	_background_materials[element] = material
 	return material
-
-static func reference_texture(definition_id: StringName) -> Texture2D:
-	return REFERENCE_TEXTURES.get(definition_id, RENDERED_TEXTURES.get(definition_id)) as Texture2D
-
-
-## Only explicitly reviewed IDs crop; every other exact source remains full-body.
-static func hud_reference_texture(definition_id: StringName) -> Texture2D:
-	var source := presentation_texture(definition_id)
-	if source == null or not HUD_CROPS.REGIONS.has(definition_id): return source
-	if _hud_reference_textures.has(definition_id): return _hud_reference_textures[definition_id] as Texture2D
-	var base_region: Rect2 = HUD_CROPS.REGIONS[definition_id]
-	var factor := Vector2(source.get_width(), source.get_height()) / HUD_CROPS.COORDINATE_SIZE
-	var region := Rect2(base_region.position * factor, base_region.size * factor)
-	if region.size.x <= 0 or region.size.y <= 0 or not Rect2(Vector2.ZERO, source.get_size()).encloses(region): return source
-	var texture := AtlasTexture.new()
-	texture.atlas = source
-	texture.region = region
-	texture.filter_clip = true
-	_hud_reference_textures[definition_id] = texture
-	return texture
-
-
-## Explicitly scoped to the small public HUD; other consumers keep the full reference.
-func set_hud_crop_enabled(enabled: bool) -> void:
-	if _hud_crop_enabled == enabled: return
-	_hud_crop_enabled = enabled
-	_update_fallback()
-
 
 func set_battle_style(enabled: bool) -> void:
 	if _battle_style == enabled: return
@@ -232,6 +151,7 @@ func _ready() -> void:
 	add_child(_image)
 	_fallback = _texture()
 	_fallback.name = "PublicSpeciesFallback"
+	_fallback.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	_fallback.hide()
 	add_child(_fallback)
 	visibility_changed.connect(_sync)
@@ -408,25 +328,16 @@ func _texture() -> TextureRect:
 
 
 func _update_fallback() -> void:
-	_reference_texture = reference_texture(_definition.id) if _definition != null else null
+	_reference_texture = presentation_texture(_definition.id) if _definition != null else null
 	var battle := _battle_style and _definition != null
 	if is_instance_valid(_fallback):
-		var texture: Texture2D = presentation_texture(_definition.id, battle) if _definition != null else null
-		if _hud_crop_enabled and _definition != null and _reference_texture != null:
-			texture = hud_reference_texture(_definition.id)
+		var texture := _reference_texture
 		if texture == null and _definition != null:
 			texture = ART.TEXTURES.get(String(_definition.species)) as Texture2D
 		if texture == null and _definition != null:
 			texture = ELEMENT_ICON.badge(_definition.attribute)
 		_fallback.texture = texture
 		_fallback.visible = not _active and _definition != null
-		# Only full, prepared mattes use the battle filter. Atlas crops and
-		# unprepared images keep their usual sampling and bounds.
-		var filtered := battle and not _hud_crop_enabled and (_presentation_textures.has(_definition.id) or RENDERED_TEXTURES.has(_definition.id))
-		if filtered and _battle_art == null:
-			_battle_art = ShaderMaterial.new()
-			_battle_art.shader = BATTLE_ART
-		_fallback.material = _battle_art if filtered else null
 	if is_instance_valid(_backdrop):
 		_backdrop.visible = _definition != null
 		if battle:

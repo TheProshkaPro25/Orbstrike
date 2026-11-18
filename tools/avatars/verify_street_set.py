@@ -19,6 +19,8 @@ outputs = [f'assets/avatars/street/{part}_{model}.res'
            for part in ['bomber', 'ponytail', 'case'] for model in range(2)]
 inputs = ['tools/avatars/build_street_set.gd', 'tools/avatars/build_wardrobe_variants.gd',
           'tools/avatars/prepare_vrm_parts.gd']
+inputs += [f'scenes/avatar/mtoon_palette/{name}' for name in
+           ['street_bomber.gdshader', 'street_bomber_trim.gdshaderinc', 'mtoon_common.gdshaderinc']]
 inputs += [f'assets/avatars/vrm/parts/{name}.res' for name in
            ['body_0_0', 'body_0_1', 'body_1_0', 'body_0_2', 'body_1_3', 'hair_0_0', 'hair_1_0', 'skin_0', 'skin_1', 'wardrobe_cloth']]
 inputs += [f'assets/avatars/vrm/{name}.vrm'

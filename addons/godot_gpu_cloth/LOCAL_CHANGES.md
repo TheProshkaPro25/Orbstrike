@@ -17,6 +17,14 @@ Upstream: alien-life/gpu-cloth-sim 3.0.0, MIT (see LICENSE).
 - Add overridable immutable-buffer allocation and queued cleanup hooks. The
   resident solver shares readonly storage by packed content with render-thread
   reference counts. Mutable state and output images retain actor ownership.
+- Optionally write the simulation offset from the bone-skinned target into the
+  position texture. Ratnik TRELLIS.2 applies this offset to its authored mesh
+  and keeps the skinned targets fixed while colliding the simulated particles.
+
+- Explicit position-only output for the invisible Ratnik TRELLIS.2 grid proxy.
+  Its display and owner-rim shaders read positions only: skip normals dispatch,
+  face/adjacency buffers and normal/lookup textures. Preserve collision indices,
+  physics and the default full cloth output. See the 2026-11-18 cloth audit.
 
 The editor plugin need not be enabled to instantiate the runtime classes.
 `scenes/creature_cloth.gd` configures the solver, body proxy and ground box.

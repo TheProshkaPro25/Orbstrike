@@ -8,13 +8,15 @@ extends Control
 ## в центре — карты шага (фильтр по классу), справа — предпросмотр: 3D-модель существа или крупная карта.
 ## Клавиши: 1–3 — шаг, ←/→ — назад/далее, Enter — в бой (или далее), R — случайная колода.
 
-signal location_previewed(index: int)
+enum LocationAction { PREVIEW, CONFIRM, CANCEL }
+signal location_requested(index: int, action: LocationAction)
 signal location_preview_closed
 const Locations := preload("res://data/arena_locations.gd")
 const ArenaPickerT := preload("res://scenes/ui/arena_picker.gd")
 
 signal team_chosen(ids: Array[StringName])
 signal deck_chosen(creatures: Array[StringName], arena: Array[StringName], abilities: Array[StringName])
+signal preparation_exit_requested
 
 const MAX_TEAM := 3
 ## Через preload: новые классы видны и без пересборки кэша глобальных классов (godot --import).
@@ -41,9 +43,9 @@ static var last_online_deck: Dictionary = {}
 ## Сложность ИИ (AIPlayer.Difficulty): выбирается в меню, переживает перезагрузку сцены.
 static var difficulty: int = AIPlayer.Difficulty.NORMAL
 const DIFF_TIPS := [
-	"Новичок: бросает неточно, не прикрепляет карты, плохо читает ловушки.",
-	"Боец: обычная точность, отвечает на способности, иногда блефует воротами.",
-	"Мастер: точный бросок, держит запас силы на ответ, ставит ловушки-приманки.",
+	"Новичок: менее предсказуемо выбирает цели и чаще пасует в бою.",
+	"Боец: учитывает карту и существо на воротах, отвечает способностями.",
+	"Мастер: ищет сочетания карт, держит запас силы на ответ и ставит ловушки-приманки.",
 ]
 
 ## Ширины боковых колонок и отступы (логические пиксели; окно растягивается из 1280×720).
@@ -74,6 +76,7 @@ var _step: int = 0
 var _filter: StringName = &""   # класс карт, показанный на шаге 2/3 ("" — все)
 var _rng := RandomNumberGenerator.new()
 var _built := false
+var _preparation_exit_enabled := false
 
 var _steps: Array[Button] = []
 var _filters: HBoxContainer
@@ -92,6 +95,7 @@ var _hover_id: StringName = &""
 var _hover_t := 0.0
 var _arena_picker: ArenaPickerT
 var _arena_btn: Button
+var _settings: MenuSettings
 var _graphics_button: Button
 var _fps_button: Button
 var _hidden_for_arena: Array[Control] = []
@@ -109,6 +113,12 @@ func refresh_settings_labels() -> void:
 		_graphics_button.text = "Графика: " + GraphicsSettings.level_name()
 	if is_instance_valid(_fps_button):
 		_fps_button.text = "FPS: " + GraphicsSettings.fps_name()
+
+
+func set_preparation_exit_enabled(enabled: bool) -> void:
+	_preparation_exit_enabled = enabled
+	if is_instance_valid(_back_btn):
+		_update_back_button()
 
 
 func _build() -> void:
@@ -152,18 +162,28 @@ func _build() -> void:
 	var sp := Control.new()
 	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(sp)
-	# уровень графики: Низкие → Средние → Высокие, сохраняется в user://settings.cfg и применяется сразу
+	# Полный диалог доступен и после выхода из главного меню.
 	var gfx := _button("Графика: " + GraphicsSettings.level_name(), 160, 40, 15)
 	_graphics_button = gfx
-	gfx.tooltip_text = "Низкие — простые тени и меньше частиц, минимальная нагрузка.\nСредние — баланс качества и скорости.\nВысокие — мягкие подробные тени, отражения, непрямой свет и сглаженные края. Требовательнее к видеокарте."
+	gfx.tooltip_text = "Графика, производительность, звук и интерфейс. Изменения применяются сразу."
 	gfx.pressed.connect(func() -> void:
-		GraphicsSettings.set_level((GraphicsSettings.current() + 1) % 3)
-		gfx.text = "Графика: " + GraphicsSettings.level_name()
-		var m := get_tree().current_scene
-		if m != null and m.has_method("apply_graphics"):
-			m.apply_graphics())
+		if is_instance_valid(_settings):
+			_settings.open()
+			return
+		var settings := MenuSettings.new()
+		_settings = settings
+		settings.name = "TeamSettings"
+		settings.theme = UiTheme.get_theme()
+		# Overlay is above the team menu's scrollable contents.
+		add_child(settings)
+		settings.closed.connect(func() -> void:
+			settings.queue_free()
+			_settings = null
+			refresh_settings_labels()
+			gfx.grab_focus())
+		settings.open())
 	head.add_child(gfx)
-	# ограничитель кадров: 60 / 90 / 120 / 144 / без лимита, применяется сразу
+	# ограничитель кадров: 30 / 45 / 60 / 90 / 120 / 144 / без лимита, применяется сразу
 	var fps := _button("FPS: " + GraphicsSettings.fps_name(), 104, 40, 15)
 	_fps_button = fps
 	fps.tooltip_text = "Предел кадров в секунду. Меньше — тише вентилятор и дольше батарея."
@@ -204,13 +224,15 @@ func _build() -> void:
 	nav.add_theme_constant_override("separation", 10)
 	center.add_child(nav)
 	_back_btn = _button("← Назад", 130)
-	_back_btn.pressed.connect(func() -> void: _show_step(_step - 1))
+	_back_btn.pressed.connect(_go_back)
 	nav.add_child(_back_btn)
-	var keys := VisualUtil.label("Tab / стрелки — выбор · Enter — выбрать · 1–3 — шаг · R — случайная", 12)
-	keys.add_theme_color_override("font_color", Color(UiTheme.TEXT_DIM, 0.7))
+	var keys := VisualUtil.label("Tab / стрелки — выбор · Enter — выбрать\n1–3 — шаг · R — случайная колода", 15)
+	keys.add_theme_color_override("font_color", UiTheme.TEXT_DIM)
 	keys.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	keys.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	keys.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	keys.clip_text = true
+	keys.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	keys.add_theme_constant_override("line_spacing", 0)
 	nav.add_child(keys)
 	_next_btn = _button("Далее →", 150)
 	_next_btn.pressed.connect(func() -> void: _show_step(_step + 1))
@@ -222,10 +244,12 @@ func _build() -> void:
 
 	_arena_picker = ArenaPickerT.new()
 	add_child(_arena_picker)
+	_arena_picker.preview_requested.connect(func(index: int) -> void:
+		location_requested.emit(index, LocationAction.PREVIEW))
 	_arena_picker.chosen.connect(func(index: int) -> void:
-		_arena_btn.text = "Арена: " + str(Locations.definition(index).name)
-		location_previewed.emit(index))
-	_arena_picker.closed.connect(_close_arena_picker)
+		location_requested.emit(index, LocationAction.CONFIRM))
+	_arena_picker.canceled.connect(func() -> void:
+		location_requested.emit(Locations.current(), LocationAction.CANCEL))
 
 	get_viewport().size_changed.connect(func() -> void:
 		if visible:
@@ -311,6 +335,20 @@ func _button(text: String, w: float, h: float = 42.0, fs: int = 17) -> Button:
 
 # ---------------------------------------------------------------- шаги
 
+func _update_back_button() -> void:
+	var exits := _step == 0 and _preparation_exit_enabled
+	_back_btn.text = "← В меню" if exits else "← Назад"
+	_back_btn.tooltip_text = "Вернуться в главное меню (Esc)" if exits else ""
+	_back_btn.disabled = _step == 0 and not exits
+
+
+func _go_back() -> void:
+	if _step > 0:
+		_show_step(_step - 1)
+	elif _preparation_exit_enabled:
+		preparation_exit_requested.emit()
+
+
 func _show_step(step: int) -> void:
 	var owner := get_viewport().gui_get_focus_owner()
 	var restore_cards := owner != null and _page.is_ancestor_of(owner)
@@ -334,7 +372,7 @@ func _show_step(step: int) -> void:
 			_build_cards_page(CardDef.Kind.ARENA, CardDB.GATE_CLASSES)
 		2:
 			_build_cards_page(CardDef.Kind.ABILITY, CardDB.ABILITY_CLASSES)
-	_back_btn.disabled = _step == 0
+	_update_back_button()
 	_next_btn.disabled = _step == 2
 	_focus_id = _default_focus()
 	_hover_id = &""
@@ -827,12 +865,16 @@ func _slot(text: String, c: Color, right: String, element: int, step: int, id: S
 		x.tooltip_text = "Убрать из колоды"
 		x.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		x.pressed.connect(func() -> void:
+			var slot_index := b.get_index() if x.has_focus() else -1
 			if step == 0:
 				_team.erase(id)
 				_drop_unfit_picks()
 			else:
 				_pick.erase(cls)
-			_show_step(_step))
+			_show_step(_step)
+			# Продолжить со слота в той же строке, включая пустой слот после удаления.
+			if slot_index >= 0:
+				(_deck_box.get_child(slot_index) as Control).grab_focus())
 		hb.add_child(x)
 	b.tooltip_text = ("Показать «%s»" % text) if filled else ("Выбрать: " + (String(CLASS_NAMES[cls]) if cls != &"" else "существо"))
 	b.pressed.connect(func() -> void:
@@ -857,7 +899,16 @@ func _slot(text: String, c: Color, right: String, element: int, step: int, id: S
 # ---------------------------------------------------------------- клавиатура
 
 func _unhandled_key_input(e: InputEvent) -> void:
+	if is_instance_valid(_settings) and _settings.visible:
+		if e.is_action_pressed("ui_cancel"):
+			_settings.close()
+			get_viewport().set_input_as_handled()
+		return
 	if not visible or (_arena_picker != null and _arena_picker.visible) or not (e is InputEventKey) or not e.pressed or e.echo:
+		return
+	if _preparation_exit_enabled and e.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
+		_go_back()
 		return
 	# Button подтверждает ui_accept при отпускании. Общий Enter не должен
 	# запускать матч на нажатии до выбора сфокусированной карты/кнопки.
@@ -982,10 +1033,19 @@ func _open_arena_picker() -> void:
 	_arena_picker.open(Locations.current())
 
 
+func apply_location_selection(index: int, action: LocationAction) -> void:
+	if action == LocationAction.PREVIEW:
+		_arena_picker.show_selection(index)
+		return
+	_arena_btn.text = "Арена: " + str(Locations.definition(index).name)
+	_close_arena_picker()
+
+
 func _close_arena_picker() -> void:
-	_arena_picker.visible = false
+	_arena_picker.hide()
 	for child in _hidden_for_arena:
 		if is_instance_valid(child): child.visible = true
 	_hidden_for_arena.clear()
 	_show_preview(_focus_id, false)
 	location_preview_closed.emit()
+	_arena_btn.grab_focus()

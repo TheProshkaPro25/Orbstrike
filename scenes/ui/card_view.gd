@@ -578,9 +578,10 @@ func _set_artwork(def: CardDef) -> void:
 
 
 ## Карта существа.
-func for_creature(def: CreatureDef, p_uid: int, note: String = "", size_px: Vector2 = Vector2(150, 210)) -> CardView:
+func for_creature(def: CreatureDef, p_uid: int, note: String = "", size_px: Vector2 = Vector2(150, 210), base_power: int = -1) -> CardView:
 	uid = p_uid
-	_help = UiTheme.creature_help(def)
+	var displayed_power := def.base_power if base_power < 0 else base_power
+	_help = UiTheme.creature_help(def, displayed_power)
 	var ac: Color = VisualUtil.attr_color(def.attribute)
 	var txt := "Стихия: %s" % VisualUtil.attr_name(def.attribute)
 	if note != "":
@@ -590,7 +591,7 @@ func for_creature(def: CreatureDef, p_uid: int, note: String = "", size_px: Vect
 	set_elements([def.attribute])
 	# в окне — знак вида (стихию показывают свечение и камни накладок)
 	var sg: int = UiTheme.species_sigil(def.species)
-	return set_mark(sg if sg > 0 else def.attribute + 1, "%d" % def.base_power, ac)
+	return set_mark(sg if sg > 0 else def.attribute + 1, "%d" % displayed_power, ac)
 
 
 ## Карта неактивна (нельзя сыграть сейчас): серая, но остаётся на месте.

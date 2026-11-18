@@ -191,9 +191,9 @@ func _hold_materials_until_draw() -> void:
 	var held := local_materials.duplicate()
 	if held.is_empty(): return
 	if DisplayServer.get_name() == "headless":
-		get_tree().process_frame.connect(held.clear,CONNECT_ONE_SHOT)
+		get_tree().process_frame.connect(func() -> void: held.clear(), CONNECT_ONE_SHOT)
 	elif not RenderingServer.frame_post_draw.is_connected(held.clear):
-		RenderingServer.frame_post_draw.connect(held.clear,CONNECT_ONE_SHOT)
+		RenderingServer.frame_post_draw.connect(held.clear, CONNECT_ONE_SHOT)
 
 func _exit_tree() -> void:
 	_hold_materials_until_draw()

@@ -181,7 +181,7 @@ void fragment() {
 	} else if (style == 2) {
 		inks = earth(detail_x, y, t, aa);
 	} else if (style == 3) {
-		inks = electric(x, y, t, aa);
+		inks = electric(detail_x, y, t, aa);
 	} else if (style == 4) {
 		inks = fire(detail_x, y, t, aa);
 	} else if (style == 5) {

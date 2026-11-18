@@ -1,0 +1,13 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://bqsslhnypya2i"
+path="res://.godot/imported/cloth_output_positions.glsl-640552180e7def18cc826fc0de0fc5c1.res"
+
+[deps]
+
+source_file="res://addons/godot_gpu_cloth/shaders/compute/cloth_output_positions.glsl"
+dest_files=["res://.godot/imported/cloth_output_positions.glsl-640552180e7def18cc826fc0de0fc5c1.res"]
+
+[params]

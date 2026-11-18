@@ -2,12 +2,12 @@ extends Node
 ## Offline mode/domain/UI owner. It never receives Main or scene-private callbacks.
 const MatchSpec := preload("res://scenes/modes/match_spec.gd")
 const ModeResult := preload("res://scenes/modes/mode_result.gd")
+const CAMPAIGN_ARENAS := [1, 2, 0]
 
 signal match_requested(spec: MatchSpec)
 signal restart_requested(entry_mode: String)
 signal restart_rejected(message: String)
 signal exit_requested
-signal arena_selection_requested(index: int, save_choice: bool)
 signal duel_menu_requested
 signal modal_opening
 signal focus_restore_requested
@@ -47,7 +47,8 @@ func configure(team: TeamMenu, hud: HudUI, interface: CanvasLayer, random: Rando
 	duel_button = ordinary_exit
 	if is_instance_valid(duel_button): duel_button.pressed.connect(duel_menu_requested.emit)
 	_team.deck_chosen.connect(submit_deck)
-	_team.location_previewed.connect(func(index: int) -> void: arena_selection_requested.emit(index,true))
+	_team.set_preparation_exit_enabled(true)
+	_team.preparation_exit_requested.connect(request_exit)
 	_hud.battle_mode_changed.connect(place_exit)
 
 func mode_name() -> String:
@@ -62,6 +63,7 @@ func enter_requested_mode() -> void:
 	enter(entry)
 
 func enter(entry: String) -> void:
+	if not entry.is_empty(): _team.set_preparation_exit_enabled(false)
 	if entry == "career":
 		enter_career()
 		return
@@ -87,8 +89,15 @@ func _configure_registration() -> void:
 	_team._go_btn.text = "Зарегистрироваться"
 	_team._go_btn.tooltip_text = "Команда, колода и сложность закрепятся на всю кампанию" if campaign_registration else "Команда, колода и сложность закрепятся на весь турнир"
 	_team._arena_btn.disabled = true
-	_team._arena_btn.text = "Арены по этапам"
-	_team._arena_btn.tooltip_text = "Группы — Каньон; полуфиналы — Гавань; финал — Святилище"
+	if campaign_registration:
+		_team._arena_btn.text = "Арены по кубкам"
+		var schedule: PackedStringArray = ["Все матчи кубка проходят на его арене."]
+		for i in CAMPAIGN_ARENAS.size():
+			schedule.append("%s — %s" % [Campaign.CUP_TITLES[i], ArenaLocations.definition(CAMPAIGN_ARENAS[i]).name])
+		_team._arena_btn.tooltip_text = "\n".join(schedule)
+	else:
+		_team._arena_btn.text = "Арены по этапам"
+		_team._arena_btn.tooltip_text = "Группы — Каньон; полуфиналы — Гавань; финал — Святилище"
 	for label in _team.find_children("*","Label",true,false):
 		if label.text == "Соперник": label.text = "Сложность кампании" if campaign_registration else "Сложность турнира"
 		elif label.text.contains("Enter — в бой"): label.text = "1–3 шаги · ←/→ · Enter — регистрация · R — случайная"
@@ -146,7 +155,7 @@ func prepare_match_spec() -> MatchSpec:
 
 func arena_for_match() -> int:
 	if career != null: return [1,2,0][int(career.state.league)]
-	if campaign != null: return [1,2,0][campaign.cup_index()]
+	if campaign != null: return CAMPAIGN_ARENAS[campaign.cup_index()]
 	if tournament != null and not fixture.is_empty():
 		return 1 if String(fixture.stage).begins_with("group") else (2 if fixture.stage == "semifinal" else 0)
 	return ArenaLocations.current()
@@ -194,11 +203,6 @@ func match_rejected(message: String) -> void:
 func start_failed(message: String) -> void:
 	match_rejected(message)
 
-func arena_selection_completed(index: int, accepted: bool, message: String = "") -> void:
-	if not accepted:
-		_team._arena_btn.text = "Арена: " + str(ArenaLocations.definition(index).name)
-		_team._preview.show_hint(message)
-
 func register_tournament(creatures: Array[StringName], gates: Array[StringName], abilities: Array[StringName]) -> void:
 	_team.show()
 	var error := CardDB.deck_error(creatures,gates,abilities)
@@ -212,7 +216,7 @@ func register_tournament(creatures: Array[StringName], gates: Array[StringName],
 	confirm.title = "Кампания · три кубка" if campaign_registration else "Регистрация на турнир"
 	confirm.dialog_text = "8 участников · 2 группы · полуфиналы и финал.\nКоманда, 3 карты ворот, 3 способности и сложность «%s»\nзакрепятся до конца турнира. Арены выбираются этапом.\nНезавершённый матч повторяется с начала с тем же начальным раскладом." % AIPlayer.difficulty_name(TeamMenu.difficulty)
 	if campaign_registration:
-		confirm.dialog_text = "Три последовательных кубка: Каньон → Гавань → Стихии.\nТе же семь соперников; каждый кубок — группы и плей-офф.\nСледующий кубок открывается после завершения текущего, независимо от места.\nКоманда и сложность закрепятся на кампанию; соперники помнят только завершённые встречи с вами.\nСкрытого усиления характеристик и карт нет. Старый отдельный турнир сохранится."
+		confirm.dialog_text = "Три последовательных кубка: Каньона, Гавани и Стихий.\nВсе матчи кубка проходят на его арене.\nТе же семь соперников; каждый кубок — группы и плей-офф.\nСледующий кубок открывается после завершения текущего, независимо от места.\nКоманда и сложность закрепятся на кампанию; соперники помнят только завершённые встречи с вами.\nСкрытого усиления характеристик и карт нет. Старый отдельный турнир сохранится."
 	if invalid_save: confirm.dialog_text += "\nПрежнее сохранение не читается: оно останется отдельной резервной копией."
 	elif FileAccess.file_exists(save_path): confirm.dialog_text += "\nПредыдущее активное сохранение будет заменено. История останется."
 	confirm.ok_button_text = "Начать кампанию" if campaign_registration else "Начать турнир"

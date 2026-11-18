@@ -18,6 +18,7 @@ const KolossarMotion := preload("res://scenes/kolossar_motion.gd")
 const AuthoredGroundSupport := preload("res://scenes/authored_ground_support.gd")
 var _authored_fullset := false
 var _authored_grounded := false
+var _ratnik_trellis := false
 var _authored_hover_envelope := 0.0
 var _support
 var _cloth
@@ -43,6 +44,7 @@ var _phase := 0.0
 var _blend := 0.0
 var _hover_blend := 0.0
 var _color := Color.WHITE
+var _model: Node3D
 var _meshes: Array[MeshInstance3D] = []
 var _player: AnimationPlayer
 var _overlay: StandardMaterial3D
@@ -85,6 +87,7 @@ func _cancel_hidden_strike() -> void:
 
 func set_model(model: Node3D, d: CreatureDef) -> void:
 	var preparation_started := Time.get_ticks_usec()
+	_model = model
 	add_child(model)
 	_height = float(model.get_meta("height", 1.5))
 	_extent = float(model.get_meta("extent", _height))
@@ -104,17 +107,22 @@ func set_model(model: Node3D, d: CreatureDef) -> void:
 		for name in [&"chest", &"neck2", &"hips"]:
 			_strike_bone = _strike_skeleton.find_bone(name)
 			if _strike_bone >= 0: break
-	_authored_fullset = GrifalonMotion.install(model, _player, d) or KolossarMotion.install(model, _player, d)
-	_authored_grounded = _authored_fullset and _species == &"kolossar"
+	_ratnik_trellis = bool(model.get_meta("ratnik_trellis", false))
+	if _ratnik_trellis:
+		_authored_fullset = _ratnik_clips_ready()
+	else:
+		_authored_fullset = GrifalonMotion.install(model, _player, d) or KolossarMotion.install(model, _player, d)
+	_authored_grounded = _authored_fullset and (_species == &"kolossar" or _ratnik_trellis)
 	_authored_hover_envelope = 0.0
 	if _authored_fullset:
 		# One species master keeps identical timings across elemental variants.
 		# The player's global BattleTempo still affects the whole match equally.
 		_tempo = 1.0
-		var unit_scale := float(model.get_meta("normalization_scale", 1.0))
-		var floor_source := float(model.get_meta("normalization_floor_source", 0.0))
-		_authored_hover_envelope = maxf(0.0, (float(model.get_meta("authored_visual_top_source")) - floor_source) * unit_scale - _height)
-		_extent = maxf(_extent, float(model.get_meta("authored_visual_extent_source")) * unit_scale)
+		if not _ratnik_trellis:
+			var unit_scale := float(model.get_meta("normalization_scale", 1.0))
+			var floor_source := float(model.get_meta("normalization_floor_source", 0.0))
+			_authored_hover_envelope = maxf(0.0, (float(model.get_meta("authored_visual_top_source")) - floor_source) * unit_scale - _height)
+			_extent = maxf(_extent, float(model.get_meta("authored_visual_extent_source")) * unit_scale)
 	var animations_started := Time.get_ticks_usec()
 	if _player != null:
 		# Prepared curves are immutable; playback/seek/blends belong to each player.
@@ -134,8 +142,9 @@ func set_model(model: Node3D, d: CreatureDef) -> void:
 						if skeleton == null: continue
 						var bone := skeleton.find_bone(path.get_subname(0))
 						if bone >= 0: rest_signature.append([path, skeleton.get_bone_rest(bone)])
-			rest_signature.append_array(HumanoidStrike.cache_signature(original, _player, _creature_id))
-			var key := str([source.get_instance_id(), original.get_instance_id(), name, _species, _creature_id]) + ":" + var_to_bytes(rest_signature).hex_encode().sha256_text()
+			if not _ratnik_trellis: rest_signature.append_array(HumanoidStrike.cache_signature(original, _player, _creature_id))
+			var motion_id := _species if _ratnik_trellis else _creature_id
+			var key := str([source.get_instance_id(), original.get_instance_id(), name, _species, motion_id]) + ":" + var_to_bytes(rest_signature).hex_encode().sha256_text()
 			var cache := CreatureModels.animation_library_cache
 			if not cache.has(key):
 				var prepared := original.duplicate(true) as AnimationLibrary
@@ -166,12 +175,23 @@ func set_model(model: Node3D, d: CreatureDef) -> void:
 		"total": (Time.get_ticks_usec() - preparation_started) / 1000.0}
 
 
+func _ratnik_clips_ready() -> bool:
+	if _player == null or _strike_skeleton == null:
+		return false
+	var expected := {&"idle": 2.4, &"stance": 1.1, &"roar": 1.1, &"attack": 1.2, &"hit": 0.8}
+	for clip in expected:
+		if not _player.has_animation(clip) or not is_equal_approx(_player.get_animation(clip).length, expected[clip]):
+			return false
+	var sword := _strike_skeleton.find_bone("sword")
+	return sword >= 0 and _strike_skeleton.get_bone_parent(sword) == _strike_skeleton.find_bone("hand.R")
+
+
 ## Called exactly once before publication in the shared cache; never at playback.
 func _prepare_library(library: AnimationLibrary) -> void:
 	for clip in library.get_animation_list():
 		var animation := library.get_animation(clip)
 		if _authored_fullset:
-			# Preserve Astra's values/interpolation; only the idle playback mode loops.
+			# Preserve authored values and interpolation; only idle loops.
 			animation.loop_mode = Animation.LOOP_LINEAR if clip == &"idle" else Animation.LOOP_NONE
 			for track in animation.get_track_count(): animation.track_set_interpolation_loop_wrap(track, clip == &"idle")
 			continue
@@ -299,8 +319,7 @@ func reset() -> void:
 	_flash_duration = 0.0
 	for mesh in _meshes:
 		mesh.material_overlay = null
-		if mesh.has_meta("cloth_material"):
-			mesh.get_meta("cloth_material").set_shader_parameter("flash_tint", Color(0, 0, 0, 0))
+		CreatureCloth.set_flash(mesh, Color(0, 0, 0, 0))
 	_idle_clip(0.0)
 	_apply(_clock)
 	if is_instance_valid(_cloth): _cloth.reset_simulation()
@@ -419,6 +438,8 @@ func _advance_clip(t: float) -> void:
 func _attack_progress(t: float) -> float:
 	if t <= _contact_time:
 		return t / _contact_time / 3.0
+	if _ratnik_trellis:
+		return 1.0 / 3.0 + (t - _contact_time) / (_duration - _contact_time) * 2.0 / 3.0
 	if t <= _contact_time + 0.07:
 		return 1.0 / 3.0
 	return 1.0 / 3.0 + (t - _contact_time - 0.07) / (_duration - _contact_time - 0.07) * 2.0 / 3.0
@@ -593,9 +614,7 @@ func flash_color(c: Color, strength: float = 0.22, dur: float = 0.28) -> void:
 	_flash_strength = strength
 	_overlay.albedo_color = Color(c.r, c.g, c.b, strength)
 	for mesh in _meshes:
-		if mesh.has_meta("cloth_material"):
-			mesh.get_meta("cloth_material").set_shader_parameter("flash_tint", _overlay.albedo_color)
-		else:
+		if not CreatureCloth.set_flash(mesh, _overlay.albedo_color):
 			mesh.material_overlay = _overlay
 
 
@@ -605,8 +624,7 @@ func _update_flash(delta: float) -> void:
 	_flash_age += delta
 	_overlay.albedo_color.a = _flash_strength * (1.0 - _ease(_flash_age / _flash_duration))
 	for mesh in _meshes:
-		if mesh.has_meta("cloth_material"):
-			mesh.get_meta("cloth_material").set_shader_parameter("flash_tint", _overlay.albedo_color)
+		CreatureCloth.set_flash(mesh, _overlay.albedo_color)
 	if _flash_age >= _flash_duration:
 		_flash_duration = 0.0
 		for mesh in _meshes:

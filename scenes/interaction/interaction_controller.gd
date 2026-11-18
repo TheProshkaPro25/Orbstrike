@@ -100,6 +100,7 @@ func stop() -> void:
 		view.launch.hide()
 		view.arena_picker.dismiss()
 		view.ability_picker.hide()
+		view.ability.clear_gate_preview()
 
 func _queue_next_turn(turn: int, controller_id: int) -> void:
 	events.push(_show_next_turn.bind(turn, controller_id))
@@ -141,6 +142,7 @@ func _waiting_for_turn() -> bool:
 func invalidate(phase: int, _side: int) -> void:
 	launch_target.hide()
 	arena_slot_picker.dismiss()
+	ability_panel.clear_gate_preview()
 	if ability_target_picker.visible:
 		ability_target_picker.hide()
 		ability_target_card = &""
@@ -396,18 +398,21 @@ func do_ability(player: int) -> void:
 		var note := "Два паса подряд завершат бой. На карту соперника можно ответить."
 		if preview.passed.size() == 2 and preview.passed[1 - my_side]:
 			note = "Соперник спасовал. Ваш пас завершит бой."
+		var can_open_gate := ctrl.can_reveal_gate(HUMAN)
+		var gate_preview := Presentation.own_closed_battle_gate(ctrl.get_view(HUMAN), HUMAN) if can_open_gate else null
 		if not ctrl.state.slots[preview.slot].revealed:
-			note = ("Ворота закрыты. " if ctrl.can_reveal_gate(HUMAN) else "Закрытые ворота соперника. ") + note
+			note = ("Ворота закрыты. " if can_open_gate else "Закрытые ворота соперника. ") + note
 		if entries.is_empty():
 			hud.set_hint("Откройте свои ворота или пропустите ответ")
-		elif ctrl.can_reveal_gate(HUMAN):
+		elif can_open_gate:
 			hud.set_hint("Сыграйте карту, откройте ворота или спасуйте")
 		else:
 			hud.set_hint("Сыграйте слияние или спасуйте" if fusion_only else "Сыграйте способность или спасуйте")
 		# Справка доступна наведением на блок ответа; отдельная большая карточка
 		# наставника закрывала ленту и управление на невысоком экране.
 		ability_panel.show_options(entries, hdr, {"moment": &"battle", "used": MatchController.MAX_BATTLE_ABILITIES - ctrl.abilities_left(HUMAN),
-			"can_open_gate": ctrl.can_reveal_gate(HUMAN), "pass_text": "Пас", "pass_tip": "Пропустить ход обмена. Спасуют оба подряд — бой решится.", "note": note})
+			"can_open_gate": can_open_gate, "gate_preview": gate_preview,
+			"pass_text": "Пас", "pass_tip": "Пропустить ход обмена. Спасуют оба подряд — бой решится.", "note": note})
 		focus_ability_action.call_deferred()
 	else:
 		hud.set_hint("Соперник думает...")
@@ -504,7 +509,9 @@ func on_setup_placed_throw(card_id: StringName, slot: int) -> void:
 
 func focus_ability_action() -> void:
 	if ability_panel._owns_focus(): return
-	if ability_panel._gate_btn.visible:
+	if ability_panel._gate_preview_btn.visible:
+		focus_action(ability_panel._gate_preview_btn)
+	elif ability_panel._gate_btn.visible:
 		focus_action(ability_panel._gate_btn)
 	elif ability_panel._pass_btn.visible:
 		focus_action(ability_panel._pass_btn)

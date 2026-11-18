@@ -15,6 +15,8 @@ class CounterAI extends AIPlayer:
 const DRAIN := &"ability_fire_drain"
 const BOOST := &"ability_fire_spark"
 const FIELD := &"arena_field_fire"
+const TRAP := &"arena_mute"
+const MatchPresentation := preload("res://scenes/presentation/match_presentation.gd")
 const GALE_CALL := &"ability_gale_call"
 const GALE_SWAP := &"ability_gale_swap"
 const SIZES := [Vector2i(1280, 720), Vector2i(960, 540), Vector2i(1024, 768)]
@@ -34,6 +36,7 @@ func _initialize() -> void:
 func _run() -> void:
 	var args := OS.get_cmdline_user_args()
 	out = args[0] if not args.is_empty() else "res://build/checks/presentation/device-battle-hud"
+	var gate_only := args.has("--gate-preview-only")
 	var bright := OS.get_environment("ORBSTRIKE_DEVICE_BRIGHT") == "1"
 	if bright: out = out.path_join("canyon")
 	DirAccess.make_dir_recursive_absolute(out)
@@ -49,6 +52,7 @@ func _run() -> void:
 	popup = sound._cache.get(POPUP_PATH)
 	_check(popup is AudioStreamOggVorbis and popup.get_length() > .35 and popup.get_length() < .42, "short popup recording is cached at boot")
 	CardDB.load_all()
+	CreaturePortrait.preload_catalog()
 	preload("res://data/arena_locations.gd").choose(1 if bright else 0)
 	_size(SIZES[0])
 	game = load("res://scenes/main.tscn").instantiate()
@@ -128,15 +132,12 @@ func _run() -> void:
 		ctrl.state.slots[support_slot].card_id = field
 		ctrl.state.slots[support_slot].card_owner = 0
 		ctrl.state.slots[support_slot].occupant_uid = support
-		for uid in ctrl.state.players[0].creature_uids:
-			CreaturePortrait._prepare_reference(game.presentation.creature_def(uid).id)
 	var boosts := [&"ability_fire_spark", &"ability_gale_gust", &"ability_light_glint", &"ability_stone_firm", &"ability_shadow_haze", &"ability_tide_spray"]
 	var counters := [&"ability_fire_counter", &"ability_gale_rebuttal", &"ability_light_counter", &"ability_stone_counter", &"ability_shadow_counter", &"ability_tide_counter"]
 	var attr: int = game.presentation.creature_def(attacker_uid).attribute
 	rival.counter = counters[attr]
 	ctrl.state.players[1].ability_hand.assign([boosts[attr], rival.counter])
 	for uid in [defender_uid, attacker_uid]:
-		CreaturePortrait._prepare_reference(game.presentation.creature_def(uid).id)
 		var actor: CreatureBall = game.presentation.spawn_ball(uid)
 		actor.freeze_at(game.arena.slot_position(slot) + Vector3(0, CreatureBall.RADIUS, 0))
 		if uid == defender_uid: game.director.open_creature(actor, false)
@@ -151,7 +152,7 @@ func _run() -> void:
 	_check(before != null and not ctrl.state.slots[slot].revealed, "gate remains closed at the response")
 	_check(hud.own_panel._uid == defender_uid and hud.opponent_panel._uid == attacker_uid, "HUD keeps player on the left while defending")
 	await _frames(28)
-	for dimensions in ([SIZES[1], SIZES[2]] if bright else SIZES):
+	for dimensions in ([SIZES[1], SIZES[2]] if bright or gate_only else SIZES):
 		_size(dimensions)
 		await _frames(6)
 		_verify_layout(hud, setup, ability, battle)
@@ -162,6 +163,7 @@ func _run() -> void:
 		await _test_target_and_swap(ctrl, hud, ability, battle, defender_uid)
 		await _finish()
 		return
+	await _test_closed_gate_preview(ctrl, ability, slot, before)
 	var idle_gate: CardView = setup._card_buttons.values()[0]
 	await _click(idle_gate)
 	_check(not idle_gate.button_pressed and setup._selected == &"" and idle_gate._help[6].contains("выкладки"), "gate outside setup shows the reason without selecting")
@@ -180,8 +182,12 @@ func _run() -> void:
 		await _finish()
 		return
 	_check(not ability._gate_btn.visible and ctrl.state.slots[slot].revealed, "opened gate is no longer an available action")
+	_check(not ability._gate_preview_btn.visible and ability._gate_preview_card == null, "opened gate clears private inspection")
 	var after_gate := ctrl.get_battle_preview()
 	_check(after_gate.powers[1] == before.powers[1] + 120, "closed gate gave no G before opening")
+	if gate_only:
+		await _finish()
+		return
 	var drain: CardView
 	for card in ability._cards:
 		if card.card_id == DRAIN: drain = card
@@ -310,6 +316,93 @@ func _test_target_and_swap(ctrl: MatchController, hud: HudUI, ability: AbilityPa
 	await _save("swap")
 	await _key(KEY_ENTER)
 	await _until(func() -> bool: return not game.events.is_busy(), "replacement presentation completes")
+
+
+func _test_closed_gate_preview(ctrl: MatchController, ability: AbilityPanel, slot: int, before: BattleResult) -> void:
+	var closed := ctrl.state.slots[slot]
+	var card := CardDB.card(closed.card_id)
+	var trace_size := ctrl.action_trace.size()
+	var event_size := ctrl.event_log.size()
+	var button := ability._gate_preview_btn
+	_check(button.is_visible_in_tree() and ability._gate_btn.is_visible_in_tree(), "inspection and opening have separate controls")
+	for _attempt in 24:
+		if root.gui_get_focus_owner() == button: break
+		await _key(KEY_TAB)
+	_check(root.gui_get_focus_owner() == button, "Tab reaches closed-gate inspection")
+	await _key(KEY_ENTER)
+	if not _check(ability.is_gate_preview_open(), "Enter opens read-only gate inspection"): return
+	var dialog := ability._gate_preview_panel
+	var title := ability._gate_preview_title
+	var close := ability._gate_preview_close
+	var card_help := UiTheme.card_help(card)
+	_check(dialog.get_viewport() == root and game.interaction.blocking_modal(), "inspection is modal inside the match viewport")
+	await _key(KEY_TAB)
+	_check(root.gui_get_focus_owner() == close, "Tab keeps focus inside inspection")
+	_check(title.text == card.display_name and ability._gate_preview_text.text.contains(card.full_text())
+		and ability._gate_preview_text.text.contains(str(card_help[6])), "inspection shows own gate, full effect and G")
+	_check(root.get_visible_rect().encloses(dialog.get_global_rect()), "inspection fits at 960×540")
+	await _save("closed-gate-field-960")
+	await _click(ability._gate_btn)
+	_check(ability.is_gate_preview_open() and not closed.revealed, "click behind inspection cannot open the gate")
+	var exit_pressed := [false]
+	game._duel_menu.pressed.connect(func() -> void: exit_pressed[0] = true, CONNECT_ONE_SHOT)
+	await _click(game._duel_menu)
+	_check(not exit_pressed[0], "click behind inspection cannot activate the match exit")
+	_check(not dialog.has_meta(DeviceMotion.REGISTRY), "inspection text is stable while hand effects are active")
+	await _key(KEY_ESCAPE)
+	_check(not ability.is_gate_preview_open(), "Escape closes inspection")
+	_check(root.gui_get_focus_owner() == button, "Escape restores focus to the inspection control")
+	await _key(KEY_TAB)
+	_check(root.gui_get_focus_owner() == ability._gate_btn, "opening is the next separate keyboard action")
+	await _click(button)
+	if not _check(ability.is_gate_preview_open(), "mouse opens the same inspection"): return
+	await _click(close)
+	_check(not ability.is_gate_preview_open() and root.gui_get_focus_owner() == button, "mouse closes inspection and restores focus")
+	_check(ctrl.action_trace.size() == trace_size and ctrl.event_log.size() == event_size
+		and not closed.revealed and ctrl.get_battle_preview().powers == before.powers, "viewing the card sends no action and changes no G")
+
+	await _click(button)
+	var trap := CardDB.card(TRAP)
+	closed.card_id = trap.id
+	game.interaction.do_ability(0)
+	_check(not ability.is_gate_preview_open() and title.text.is_empty() and ability._gate_preview_text.text.is_empty(),
+		"new reply clears the previous gate inspection")
+	await _frames(4)
+	await _click(button)
+	if _check(ability.is_gate_preview_open(), "replacement gate can be inspected"):
+		_check(title.text == trap.display_name and ability._gate_preview_text.text.contains(trap.full_text())
+			and trap.full_text() != trap.text, "inspection shows the long trap rules from the replacement gate")
+		await _save("closed-gate-trap-960")
+		dialog.custom_minimum_size = Vector2(280, 162)
+		await _frames(4)
+		await _key(KEY_PAGEDOWN)
+		_check(ability._gate_preview_scroll.scroll_vertical > 0, "Page Down scrolls long gate rules when the dialog is short")
+		await _key(KEY_PAGEUP)
+		_check(ability._gate_preview_scroll.scroll_vertical == 0, "Page Up returns to the start of the rules")
+		_check(not closed.revealed and not ctrl.get_battle_preview().silenced.has(true)
+			and ctrl.action_trace.size() == trace_size and ctrl.event_log.size() == event_size, "reading the trap does not reveal it or activate its effect")
+
+	ability.hide_panel()
+	_check(not ability.is_gate_preview_open() and ability._gate_preview_card == null and not button.is_visible_in_tree(),
+		"hiding the reply removes private text and its control")
+	closed.card_owner = 1
+	game.interaction.do_ability(0)
+	var enemy_view := ctrl.get_view(0)
+	_check(enemy_view.slots[slot].card_id == &"" and not button.visible and not ability._gate_btn.visible,
+		"rival's closed gate is masked in the player's reply")
+	enemy_view.slots[slot].card_id = trap.id
+	_check(MatchPresentation.own_closed_battle_gate(enemy_view, 0) == null,
+		"presentation rejects another player's closed gate even if the view carried its ID")
+	closed.card_owner = 0
+	closed.card_id = card.id
+	game.interaction.do_ability(0)
+	await _frames(4)
+	await _click(button)
+	game.interaction.invalidate(MatchController.Phase.RESOLVING, 0)
+	_check(not ability.is_gate_preview_open() and ability._gate_preview_card == null and root.gui_get_focus_owner() != button,
+		"phase invalidation removes the inspection and stale focus")
+	game.interaction.do_ability(0)
+	await _frames(4)
 
 
 func _visible_card(ability: AbilityPanel, id: StringName) -> CardView:

@@ -5,6 +5,7 @@ extends Control
 
 const DURATIONS := {"boot": 0.56, "scan": 0.62, "power": 0.52, "activation": 0.62, "turn": 0.55}
 const REGISTRY := "orbstrike_device_motion"
+const SKIP_REVEAL := &"skip_device_reveal"
 
 var kind := "scan"
 var color := UiTheme.DEVICE_ACCENT
@@ -119,6 +120,7 @@ class RevealWatcher extends Node:
 
 	func _collect(node: Node) -> void:
 		if node == self or node is OpponentPanel or node.name == "DeviceFrame" or String(node.name).begins_with("DeviceMotion"): return
+		if bool(node.get_meta(SKIP_REVEAL, false)): return
 		if node is Control and (node is BaseButton or node is PanelContainer or node is Label or bool(node.get_meta("device_reveal_region",false))):
 			_register(node)
 			return

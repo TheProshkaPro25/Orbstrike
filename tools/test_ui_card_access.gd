@@ -107,10 +107,11 @@ func _run() -> void:
 	check(root.get_visible_rect().encloses(card._focus_disclosure._panel.get_global_rect()), "focus disclosure stays inside logical viewport")
 	await key(KEY_RIGHT)
 	check(setup._page == 1 and ability._page == 0, "right arrow in gate hand changes only gate page")
-	check(setup._selected == selected, "paging preserves selected gate without spending it")
+	check(setup._selected == selected and not setup._slot_btn.disabled, "paging preserves selected gate and placement action")
 	check(setup._owns_focus(), "gate page rebuild keeps keyboard focus in gate hand")
 	await key(KEY_LEFT)
 	check(setup._page == 0 and ability._page == 0, "left arrow returns gate page only")
+	check(setup._card_buttons[selected].button_pressed, "returning to a gate page highlights the selected card")
 	await wheel(setup._card_buttons.values()[0])
 	check(setup._page == 1 and ability._page == 0, "wheel over gate changes only gate page")
 	check(setup._selected == selected, "wheel preserves chosen gate")
@@ -126,6 +127,14 @@ func _run() -> void:
 	setup._card_buttons.values()[0].grab_focus()
 	await key(KEY_ESCAPE)
 	check(setup._selected == &"", "Escape clears gate choice without placement")
+	var removed: StringName = setup._card_buttons.keys()[0]
+	await key(KEY_ENTER)
+	check(setup._selected == removed, "focused gate can be selected on the next page")
+	var remaining := gates.duplicate()
+	remaining.erase(removed)
+	setup.set_hand(remaining)
+	await frames()
+	check(setup._selected == &"" and setup._slot_btn.disabled, "a gate that leaves the hand cannot remain selected")
 	var outsider := Button.new()
 	outsider.text = "Outside both hands"
 	root.add_child(outsider)
@@ -191,6 +200,21 @@ func _run() -> void:
 	await frames()
 	await key(KEY_ENTER)
 	check(chosen.size() == 1 and chosen[0].target_card == gates[0], "Enter confirms exactly the focused legal target")
+	var view := MatchState.new()
+	var grifalon := CardDB.creature(&"creature_grifalon_gale")
+	var career_uid := 1
+	var ordinary_uid := 2
+	var career_power := Career.new().power(String(grifalon.id), 2)
+	view.creatures[career_uid] = CreatureState.new(career_uid, grifalon.id)
+	view.creature(career_uid).base_power_override = career_power
+	view.creatures[ordinary_uid] = CreatureState.new(ordinary_uid, grifalon.id)
+	picker.show_targets(&"ability_gale_call", [{"target_uid": career_uid}, {"target_uid": ordinary_uid}], view)
+	await frames()
+	check(career_power != grifalon.base_power, "career fixture differs from the catalog value")
+	for target: CardView in picker._choices.get_children():
+		var base := PowerCalc.base_power(view, target.uid)
+		check(target._power.text == str(base) and str(target._help[3]).contains(": %d." % base),
+			"target %d uses its match base G in card and help" % target.uid)
 	picker.queue_free()
 	source.queue_free()
 	await frames()
@@ -208,6 +232,7 @@ func _run() -> void:
 	await frames()
 	var cancelled_id := hand._cards[0].card_id
 	var source_node := hand._cards[0]
+	var source_instance := source_node.get_instance_id()
 	hand.ability_chosen.connect(func(id: StringName) -> void:
 		hand.hide_panel()
 		modal.show_targets(id, [{"target_card": gates[0]}], null))
@@ -215,10 +240,10 @@ func _run() -> void:
 	source_node.grab_focus()
 	await frames()
 	await key(KEY_ENTER)
-	check(modal.visible and source_node.focus_mode == Control.FOCUS_NONE and not hand._cards.has(source_node), "production ability activation removes source before target choice")
+	check(modal.visible and not is_instance_valid(source_node), "production ability activation removes source before target choice")
 	await key(KEY_ESCAPE)
 	var restored := root.gui_get_focus_owner() as CardView
-	check(not modal.visible and restored != null and restored != source_node and restored.card_id == cancelled_id and hand._page == 1, "cancel restores rebuilt ability by ID and returns to its page")
+	check(not modal.visible and restored != null and restored.get_instance_id() != source_instance and restored.card_id == cancelled_id and hand._page == 1, "cancel restores rebuilt ability by ID and returns to its page")
 	check(hand._pending_focus_id == &"", "source focus request is consumed once")
 	hand.queue_free()
 	modal.queue_free()

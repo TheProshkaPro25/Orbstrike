@@ -257,6 +257,11 @@ func append_target_parts(mesh: ArrayMesh, names: PackedStringArray, materials: D
 			if SOLE_OFFSETS.has(key): tuck_skin_under_footwear(arrays, skeleton, key == "dirndl")
 			if model == 1: original = vita_skin(original, donor_skin[0].material, key)
 			append_surface(mesh, names, materials, arrays, original)
+			# Sakurada uses the unchanged source skin material. material_for()
+			# resolves it by part_source + surface_materials; serializing it here
+			# would embed another pair of 2048² textures in every costume.
+			# Vita's fitted skin is a real override and must remain per outfit.
+			if model == 0: materials.erase(names.size()-1)
 		elif "Shoes_" in original.resource_name and not garment_roles.has("Shoes"):
 			append_surface(mesh, names, materials, base.surface_get_arrays(surface), original)
 		elif "Bottoms_" in original.resource_name and not garment_roles.has("Bottoms") and key in ["deer_haori", "orchid_armor"]:

@@ -103,6 +103,13 @@ static func _begin() -> SurfaceTool:
 	return st
 
 
+## Reuse identical complete vertices in color and shadow passes. No positions,
+## normals or seam UVs are approximated; each indexed triangle stays unchanged.
+static func _commit(st: SurfaceTool) -> ArrayMesh:
+	st.index()
+	return st.commit()
+
+
 static func _build() -> void:
 	if _closed != null:
 		return
@@ -131,7 +138,7 @@ static func _build() -> void:
 			var rot := Basis(axis, 0.3)
 			var moved := rot * (centre - hinge) + hinge
 			var sign := 1.0 if Vector2(moved.x, moved.z).length() > Vector2(centre.x, centre.z).length() else -1.0
-			_parts.append({"mesh": st.commit(), "kind": Kind.PETAL, "top": top, "hinge": hinge, "axis": axis, "sign": sign})
+			_parts.append({"mesh": _commit(st), "kind": Kind.PETAL, "top": top, "hinge": hinge, "axis": axis, "sign": sign})
 		# полярная крышка с эмблемой
 		var stc := _begin()
 		for s in [stc, all]:
@@ -139,13 +146,13 @@ static func _build() -> void:
 				_patch(s, CAP_LAT + g, PI * 0.5, 0.0, TAU, 4, 24, Kind.CAP, false, true, false)
 			else:
 				_patch(s, -PI * 0.5, -CAP_LAT - g, 0.0, TAU, 4, 24, Kind.CAP, false, false, true)
-		_parts.append({"mesh": stc.commit(), "kind": Kind.CAP, "top": top, "hinge": Vector3(0, sgn, 0), "axis": Vector3.UP, "sign": 1.0})
+		_parts.append({"mesh": _commit(stc), "kind": Kind.CAP, "top": top, "hinge": Vector3(0, sgn, 0), "axis": Vector3.UP, "sign": 1.0})
 	# экваторный пояс (чуть выступает)
 	var stb := _begin()
 	for s in [stb, all]:
 		_patch(s, -BELT + g * 0.3, BELT - g * 0.3, 0.0, TAU, 1, 40, Kind.BELT, false, false, false, 1.012)
-	_parts.append({"mesh": stb.commit(), "kind": Kind.BELT, "top": true, "hinge": Vector3.ZERO, "axis": Vector3.UP, "sign": 1.0})
-	_closed = all.commit()
+	_parts.append({"mesh": _commit(stb), "kind": Kind.BELT, "top": true, "hinge": Vector3.ZERO, "axis": Vector3.UP, "sign": 1.0})
+	_closed = _commit(all)
 
 
 ## Поза части при раскрытии t (0 — закрыта, 1 — раскрыта): лепестки откидываются наружу вокруг кромки,

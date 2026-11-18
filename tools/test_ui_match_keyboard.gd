@@ -213,6 +213,16 @@ func tab_to(target: Control) -> bool:
 	return root.gui_get_focus_owner() == target
 
 
+func right_click(point: Vector2) -> void:
+	for down in [true, false]:
+		var event := InputEventMouseButton.new()
+		event.button_index = MOUSE_BUTTON_RIGHT
+		event.position = point
+		event.pressed = down
+		root.push_input(event, true)
+		await process_frame
+
+
 func stable(game: MatchFixture) -> void:
 	for _i in 90:
 		await process_frame
@@ -576,6 +586,8 @@ func combo_scenario() -> Dictionary:
 		for child in game.ui_layer.get_children():
 			if child is HelpOverlay: help = child
 		check(is_instance_valid(help), "Help opens through actual HUD keyboard action")
+		await right_click(game.hud._creature_panel.get_global_rect().get_center())
+		check(is_instance_valid(help) and game._gate_pick == pick, "right-click under Help keeps the compound choice")
 		await key(KEY_ESCAPE)
 		check(not is_instance_valid(help) and game._gate_pick == pick and game.hud._creature_panel.visible, "Help Escape returns to still-pending compound choice")
 		check(game.hud._creature_box.get_child(0).has_focus(), "Help returns focus to compound creature, ahead of setup cards")
@@ -585,6 +597,11 @@ func combo_scenario() -> Dictionary:
 		check(game._gate_pick.is_empty() and not game.hud._creature_panel.visible and game.setup_panel._panel.visible, "compound Escape returns to gate setup")
 		check(game.ctrl.debug_snapshot() == original and game.ctrl.state.players[0].arena_hand.size() == hand_size and game.director.landings.is_empty(), "compound cancellation preserves hand, turn and all controller commands")
 		check(root.gui_get_focus_owner() is CardView and game.setup_panel._owns_focus(), "compound cancellation focuses a live setup card")
+		if await open_combo_selector(game):
+			await right_click(game.hud._creature_panel.get_global_rect().get_center())
+			await stable(game)
+			check(game._gate_pick.is_empty() and not game.hud._creature_panel.visible and game.setup_panel._panel.visible, "right-click on creature selection returns to gate setup")
+			check(game.ctrl.debug_snapshot() == original and game.director.landings.is_empty(), "right-click spends no gate, action or throw")
 		if await open_combo_selector(game):
 			var final_pick := game._gate_pick.duplicate()
 			var orb := game.hud._creature_box.get_child(0) as OrbButton

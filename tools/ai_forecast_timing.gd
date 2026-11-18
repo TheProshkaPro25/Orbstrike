@@ -28,6 +28,8 @@ class BeforeAI extends AIPlayer:
 	# Exact pre-forecast implementations; retain all prior uncommitted card support.
 	func _hidden_guard_gate(view: MatchState, _uid: int, occ: int, _slot: int) -> StringName:
 		return _field_of(view.creatures[occ])
+	func _flip_prob_with_pools(view: MatchState, r: BattleResult, side: int, _risk_pools: Dictionary) -> float:
+		return _flip_prob(view, r, side)
 	func _flip_prob(view: MatchState, r: BattleResult, side: int) -> float:
 		var fs: int = 1 - side
 		if r.passed[fs] or _foe_plays_left(view, r, side) <= 0:

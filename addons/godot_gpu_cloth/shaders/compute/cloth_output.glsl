@@ -19,11 +19,13 @@ layout(set = 0, binding = 4, std430) restrict readonly buffer VertTriList    { u
 
 layout(set = 0, binding = 5, rgba32f) uniform writeonly image2D positions_img;
 layout(set = 0, binding = 6, rgba32f) uniform writeonly image2D normals_img;
+layout(set = 0, binding = 7, std430) restrict readonly buffer SkinnedTargets { vec4 skinned_targets[]; };
 
 layout(push_constant, std430) uniform Params {
 	uint particle_count;
 	uint tex_width;
-	float pad1; float pad2;
+	uint output_skin_delta;
+	float pad;
 };
 
 void main() {
@@ -32,7 +34,11 @@ void main() {
 
 	ivec2 coord = ivec2(int(idx % tex_width), int(idx / tex_width));
 
-	imageStore(positions_img, coord, positions[idx]);
+	vec4 position = positions[idx];
+	if (output_skin_delta != 0u) {
+		position.xyz -= skinned_targets[idx].xyz;
+	}
+	imageStore(positions_img, coord, position);
 
 	uint count  = vert_tri_counts[idx];
 	uint offset = vert_tri_offsets[idx];

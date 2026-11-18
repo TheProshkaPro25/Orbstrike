@@ -9,6 +9,8 @@ const FLASH_SHADER: Shader = preload("res://scenes/shaders/fx_flash.gdshader")
 const SIGIL_SHADER: Shader = preload("res://scenes/shaders/fx_sigil.gdshader")
 const KENNEY_SPARK := preload("res://assets/vfx_vendor/kenney/spark_05.png")
 const KENNEY_FLARE := preload("res://assets/vfx_vendor/kenney/flare_01.png")
+const TRAIL_PARTICLES := 26
+const ROLL_PARTICLES := 30
 
 ## Стихии (порядок VisualUtil.ATTR_NAMES).
 enum { FIRE, STORM, LIGHT, STONE, SHADOW, TIDE }
@@ -372,7 +374,7 @@ static func particles(el: int, role: String, s: float) -> CPUParticles3D:
 		"trail":
 			if el in [FIRE, STORM, LIGHT]:
 				tex = "kenney_spark"
-			p.amount = _n(26)
+			p.amount = _n(TRAIL_PARTICLES)
 			p.lifetime = 0.55
 			p.emission_shape = CPUParticles3D.EMISSION_SHAPE_SPHERE
 			p.emission_sphere_radius = 0.45 * s
@@ -385,7 +387,7 @@ static func particles(el: int, role: String, s: float) -> CPUParticles3D:
 		"roll":
 			if el == FIRE:
 				tex = "kenney_flare"
-			p.amount = _n(30)
+			p.amount = _n(ROLL_PARTICLES)
 			p.lifetime = 0.5
 			p.direction = Vector3.UP
 			p.spread = 50.0
@@ -537,7 +539,8 @@ static func _emit_one_shot(p: CPUParticles3D) -> void:
 	if not is_instance_valid(p) or not p.is_inside_tree(): return
 	p.restart()
 	p.emitting = true
-	p.get_tree().create_timer(p.lifetime + 0.4).timeout.connect(p.queue_free)
+	# A paused preview freezes both the particles and their remaining lifetime.
+	p.create_tween().tween_interval(p.lifetime + 0.4).finished.connect(p.queue_free)
 
 
 # ------------------------------------------------------------------ вспышки и кольца

@@ -184,6 +184,8 @@ func _run() -> void:
 		ordinary.free()
 		check(direct_geometry == ordinary_geometry, "ordinary oriented triangle fingerprints match source " + row["key"])
 		var definition := CardDB.creature(StringName("creature_" + row["key"]))
+		# Review the exact historical asset identified by the manifest.
+		CreatureModels._scenes["hd:" + row["key"]] = packed
 		var ball := CreatureBall.new()
 		world.add_child(ball)
 		ball.setup(definition, 71106)

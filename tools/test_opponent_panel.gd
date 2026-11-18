@@ -185,33 +185,31 @@ func _check_layout(panel: OpponentPanel) -> void:
 
 func _check_portrait(panel: OpponentPanel) -> void:
 	var portrait: CreaturePortrait = panel._portrait
-	check(portrait._viewport == null and portrait._camera == null and not portrait._image.visible,"real2D portrait needs no render viewport or live camera")
+	check(portrait._viewport == null and portrait._camera == null and not portrait._image.visible,"imported portrait needs no render viewport or live camera")
 	check(portrait._image.mouse_filter == Control.MOUSE_FILTER_IGNORE and panel.mouse_filter == Control.MOUSE_FILTER_IGNORE,"portrait never blocks input")
 	var mesh: MeshInstance3D = other._figure.get_child(other._figure.get_child_count()-1)
 	var original := mesh.layers
 	var identity := mesh.get_instance_id()
 	var transform := mesh.global_transform
 	portrait._sync()
-	check(mesh.layers == original and portrait._layers.is_empty(),"reference portrait never borrows actor render layers")
+	check(mesh.layers == original and portrait._layers.is_empty(),"imported portrait never borrows actor render layers")
 	panel.stop()
 	check(mesh.layers == original and mesh.get_instance_id() == identity and mesh.global_transform == transform,"stop restores exact layers without replacing or moving model")
 	check(portrait._viewport == null and not portrait.is_processing(),"hidden portrait renders/processes nothing")
 	panel.present(CardDB.creature(CardDB.RARE_SHADOW_ID),77,370)
-	check(portrait._fallback.texture == CreaturePortrait.reference_texture(CardDB.RARE_SHADOW_ID),"rare known species uses its exact original 2D reference")
-	check(CreaturePortrait.preload_catalog() == 49
-		and CreaturePortrait.RENDERED_TEXTURES.size() == 18
-		and CreatureModels.catalog_defs().size() == 67, "all concept portraits and transparent renders are resident")
+	check(portrait._fallback.texture == CreaturePortrait.presentation_texture(CardDB.RARE_SHADOW_ID),"rare known species uses its exact model render")
+	check(CreaturePortrait.preload_catalog() == CreatureModels.catalog_defs().size(), "all model portrait renders are resident")
 	panel.present(CardDB.creature(CardDB.RARE_SHADOW_ID),77,370)
 	panel.show_context("reveal")
 	check(portrait._fallback.material == null and portrait._backdrop.material == CreaturePortrait._background_material(Attr.A.SHADOW), "battle filter stays off during ordinary reveal")
 	for definition: CreatureDef in CreatureModels.catalog_defs():
 		var id: StringName = definition.id
-		var texture := CreaturePortrait.reference_texture(id)
+		var texture := CreaturePortrait.presentation_texture(id)
 		var expected_path := "res://assets/portraits/creatures/" + String(id).trim_prefix("creature_") + ".png"
 		check(texture != null and texture.resource_path == expected_path,"portrait catalog maps exact definition id " + String(id))
 		check(texture != null and texture.get_width() > 0 and texture.get_height() > 0,"portrait resource has real pixels " + String(id))
 		panel.present(definition,77,370)
-		check(portrait._fallback.texture == CreaturePortrait.presentation_texture(id) and not portrait._hud_crop_enabled and portrait._viewport == null and portrait._camera == null,"present keeps full2D silhouette without graphics setup " + String(id))
+		check(portrait._fallback.texture == CreaturePortrait.presentation_texture(id) and portrait._viewport == null and portrait._camera == null,"present keeps full model silhouette without graphics setup " + String(id))
 	check(mesh.layers == original and mesh.global_transform == transform,"complete portrait iteration preserves resident actor")
 	game._present_battle_opponent(0,4,[420,510])
 

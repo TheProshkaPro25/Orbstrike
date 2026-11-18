@@ -14,10 +14,50 @@ func check(value: bool, message: String) -> void:
 func _initialize() -> void:
 	call_deferred("run")
 
+func _screen_diameter(camera: CameraRig, shell: Node3D) -> float:
+	var center := shell.global_position
+	var offset := camera.get_camera_transform().basis.x * shell.global_basis.x.length()
+	return camera.unproject_position(center - offset).distance_to(camera.unproject_position(center + offset))
+
+func _check_release_camera() -> void:
+	var viewport := SubViewport.new()
+	root.add_child(viewport)
+	var camera := CameraRig.new()
+	viewport.add_child(camera)
+	var ball := CreatureBall.new()
+	viewport.add_child(ball)
+	var held := Vector3(0, 1.45, 0)
+	ball.freeze_at(held + Vector3.UP * (CreatureBall.RADIUS - CreatureBall._shell_r()))
+	var directions := [Vector3.FORWARD, Vector3.BACK]
+	var sizes := [Vector2i(1280, 720), Vector2i(1440, 620)]
+	for i in directions.size():
+		var direction: Vector3 = directions[i]
+		viewport.size = sizes[i]
+		camera.location_frame(held - direction * 3.2, held, 38.0)
+		var held_diameter := _screen_diameter(camera, ball._shell)
+		camera.follow_throw(ball, direction, held)
+		check(camera.mode == CameraRig.Mode.FOLLOW and camera._follow_dir.dot(direction) > .999, "погоня ориентирована по броску с обеих сторон")
+		check(absf(_screen_diameter(camera, ball._shell) - held_diameter) < .01, "экранный диаметр непрерывен при выпуске на %s" % sizes[i])
+		var safe_frame := viewport.get_visible_rect().grow(-held_diameter * 0.5)
+		check(safe_frame.has_point(camera.unproject_position(ball._shell_center())), "в первом кадре полёта помещается вся сфера")
+		var entry_fov := camera.fov
+		camera._process(.25)
+		check(entry_fov < camera.fov and camera.fov < camera._goal_fov, "погоня плавно раскрывает обзор")
+	for unavailable in [Vector3.INF, held + Vector3.UP * 20.0]:
+		camera.location_frame(held - Vector3.FORWARD * 3.2, held, 38.0)
+		camera.follow_throw(ball, Vector3.FORWARD, unavailable)
+		check(is_equal_approx(camera.fov, camera._goal_fov), "без кадра сферы в руке используется обычный объектив")
+	for depth in [0.2, 20.0]:
+		camera.location_frame(held - Vector3.FORWARD * depth, held, 38.0)
+		camera.follow_throw(ball, Vector3.FORWARD, held)
+		check(is_equal_approx(camera.fov, 28.0 if depth < 1.0 else 65.0), "при резкой смене расстояния угол ограничен")
+	viewport.queue_free()
+
 func run() -> void:
 	Engine.max_fps = 60
 	Engine.time_scale = 4
 	Engine.physics_ticks_per_second = 240
+	_check_release_camera()
 	var floor_body := StaticBody3D.new()
 	var floor_shape := CollisionShape3D.new()
 	var box := BoxShape3D.new()

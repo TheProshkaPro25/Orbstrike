@@ -67,8 +67,7 @@ func prepare(progress: Callable = Callable()) -> void:
 		_fail_preparation(progress, required_error)
 		return
 	SoundFx.i().preload_catalog()
-	await preload("res://scenes/ui/creature_portrait.gd").preload_catalog_async(get_tree(), func(done: int, total: int) -> void:
-		_report(progress, .22 + .02 * float(done) / total, "Подготовка портретов · %d / %d" % [done, total]))
+	CreaturePortrait.preload_catalog()
 	var catalog_error := _preload_creature_catalog()
 	if not catalog_error.is_empty():
 		_fail_preparation(progress, catalog_error)
@@ -111,7 +110,8 @@ func prepare(progress: Callable = Callable()) -> void:
 			_storage.add_child(ball)
 			ball.flight_trails = _flight_trails
 			ball.setup(d, -1)
-			if d.species in [&"grifalon", &"kolossar"] and (ball._anim == null or not ball._anim._authored_fullset):
+			var requires_authored := d.species in [&"grifalon", &"kolossar"] or CreatureModels.uses_ratnik_trellis(d)
+			if requires_authored and (ball._anim == null or not ball._anim._authored_fullset):
 				_fail_preparation(progress, "Не удалось подготовить анимации существ. Проверьте файлы игры.")
 				return
 			ball.freeze_at(Vector3(0, CreatureBall.RADIUS, 0))
@@ -135,8 +135,9 @@ func prepare(progress: Callable = Callable()) -> void:
 	_report(progress, .87, "Подготовка эффектов…")
 	await _flight_trails.prepare()
 	await StartupCatalog.warm_effects(_storage)
-	for index in 3:
-		_report(progress, .87 + float(index) * .025, "Подготовка арен · %d / 3" % [index + 1])
+	var arena_count := ArenaLocations.LOCATIONS.size()
+	for index in arena_count:
+		_report(progress, .87 + float(index) * .075 / arena_count, "Подготовка арен · %d / %d" % [index + 1, arena_count])
 		await get_tree().process_frame
 		var instance := arena_scene.instantiate()
 		var arena := instance as Arena
@@ -165,8 +166,8 @@ func prepare(progress: Callable = Callable()) -> void:
 	# Рендер настоящего игрового viewport под непрозрачным Boot выделяет карты
 	# теней и компилирует варианты материалов до первого входа в команду.
 	var selected_location := ArenaLocations.current()
-	for index in 3:
-		_report(progress, .96 + float(index) * .008, "Подготовка освещения · %d / 3" % [index + 1])
+	for index in arena_count:
+		_report(progress, .96 + float(index) * .024 / arena_count, "Подготовка освещения · %d / %d" % [index + 1, arena_count])
 		_game._preview_arena_location(index, false)
 		await get_tree().process_frame
 		await get_tree().process_frame
@@ -417,14 +418,18 @@ func show_game() -> void:
 
 
 func show_online() -> void:
-	# Return the parked offline arena before taking the resident online resources.
+	release_parked_game()
+	var scene := (resources["res://scenes/online/online_game.tscn"] as PackedScene).instantiate()
+	add_child(scene)
+	_replace_scene(scene)
+
+
+## Free the hidden first game's arena for another client mode using the catalog.
+func release_parked_game() -> void:
 	if is_instance_valid(_game):
 		_game._release_game_resources()
 		_game.queue_free()
 		_game = null
-	var scene := (resources["res://scenes/online/online_game.tscn"] as PackedScene).instantiate()
-	add_child(scene)
-	_replace_scene(scene)
 
 
 func _replace_scene(scene: Node) -> void:

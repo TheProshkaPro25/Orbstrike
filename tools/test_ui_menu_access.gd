@@ -45,7 +45,7 @@ func _run() -> void:
 		await _frames()
 		menu._show_home()
 		await _frames()
-		_check(menu._visible_buttons().size() == 5, "главный уровень содержит пять действий")
+		_check(menu._visible_buttons().size() == 6, "главный уровень содержит шесть действий")
 		_check_layout(menu, physical, "home")
 		await _key(KEY_ENTER)
 		_check(menu._modes_open and root.gui_get_focus_owner() == menu._mode_buttons[0], "Enter открывает режимы и фокусирует карьеру")

@@ -1,10 +1,11 @@
 class_name MainMenu
 extends Node
-## Главное меню после начальной загрузки: живой пейзаж города (MenuCity) и кнопки «Играть», «Мой персонаж», «Как играть», «Настройки»,
-## «Выход». «Играть» — затемнение и переход в подготовленную сцену выбора команды; сцена меню
+## Главное меню после начальной загрузки: живой пейзаж города (MenuCity), выбор режима, редактор и комната анимаций.
+## «Играть» — затемнение и переход в подготовленную сцену выбора команды; сцена меню
 ## при этом освобождается целиком. Клавиатура/геймпад: фокус по кнопкам, Esc/«назад» закрывает окна.
 
 const GAME_SCENE := "res://scenes/main.tscn"
+const AnimationRoom := preload("res://scenes/ui/animation_room.gd")
 const LOGO_SIZE := 68
 
 var city: MenuCity
@@ -25,8 +26,11 @@ var _clock: Label
 var _settings: MenuSettings
 var _help: HelpOverlay
 var _character_editor: CharacterEditor
+var _animation_room: Control
 var _leaving := false
 var _mouse_hover := false
+var _background_covers: Array[Node] = []
+var _background_state: Dictionary = {}
 
 
 func _ready() -> void:
@@ -48,14 +52,16 @@ func _process(_d: float) -> void:
 
 
 func _unhandled_input(e: InputEvent) -> void:
-	if is_instance_valid(_character_editor):
+	if is_instance_valid(_character_editor) or is_instance_valid(_animation_room):
+		return
+	if _settings != null and _settings.visible:
+		if e.is_action_pressed("ui_cancel"):
+			_settings.close()
+			get_viewport().set_input_as_handled()
 		return
 	if e.is_action_pressed("ui_cancel"):
 		if _help != null and is_instance_valid(_help):
 			_help.queue_free()
-			get_viewport().set_input_as_handled()
-		elif _settings != null and _settings.visible:
-			_settings.close()
 			get_viewport().set_input_as_handled()
 		elif _modes_open and not _leaving:
 			_show_home()
@@ -176,7 +182,7 @@ void fragment() {
 	_mode_actions.add_theme_constant_override("separation", 6)
 	_mode_actions.hide()
 	vb.add_child(_mode_actions)
-	for spec in [["Играть", _show_modes], ["Мой персонаж", _on_character], ["Как играть", _on_help], ["Настройки", _on_settings], ["Выход", _on_quit]]:
+	for spec in [["Играть", _show_modes], ["Мой персонаж", _on_character], ["Комната анимаций", _on_animation_room], ["Как играть", _on_help], ["Настройки", _on_settings], ["Выход", _on_quit]]:
 		_home_buttons.append(_add_action(_home_actions, spec[0], spec[1]))
 	for spec in [["Карьера", _on_career], ["Дуэль", _on_play], ["Игра через интернет", _on_online], ["Новая кампания", _on_new_campaign], ["Продолжить кампанию", _on_continue_campaign], ["Новый турнир", _on_new_tournament], ["Продолжить турнир", _on_continue_tournament], ["Назад", _show_home]]:
 		var button := _add_action(_mode_actions, spec[0], spec[1])
@@ -205,12 +211,13 @@ void fragment() {
 	ui.add_child(_clock)
 
 	# версия игры (application/config/version в project.godot — её же берёт экспорт)
-	var ver := VisualUtil.label("версия " + str(ProjectSettings.get_setting("application/config/version", "")), 14)
+	var version := "версия " + str(ProjectSettings.get_setting("application/config/version", ""))
+	var ver := VisualUtil.label(version, 14)
 	ver.add_theme_color_override("font_color", Color(UiTheme.TEXT_DIM, 0.85))
 	ver.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.55))  # читается и на дневном небе
 	ver.add_theme_constant_override("outline_size", 5)
 	ver.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	ver.offset_left = -200
+	ver.offset_left = -320
 	ver.offset_right = -24
 	ver.offset_top = 14
 	ver.offset_bottom = 38
@@ -220,7 +227,10 @@ void fragment() {
 	_settings = MenuSettings.new()
 	_settings.city = city
 	_settings.visible = false
-	_settings.closed.connect(func() -> void: _focus_button("Настройки"))
+	_settings.closed.connect(func() -> void:
+		for button in _buttons:
+			button.focus_mode = Control.FOCUS_ALL
+		_focus_button("Настройки"))
 	ui.add_child(_settings)
 
 	_fade = ColorRect.new()
@@ -308,7 +318,7 @@ func _appear() -> void:
 		b.modulate.a = 0.0
 		tc.tween_property(b, "modulate:a", 1.0, 0.45).set_delay(0.7 + 0.1 * i)
 	tc.chain().tween_callback(func() -> void:
-		if not _leaving and get_viewport().gui_get_focus_owner() == null:
+		if not _leaving and not _settings.visible and get_viewport().gui_get_focus_owner() == null:
 			_mouse_hover = true   # первый фокус — без звука
 			_visible_buttons()[0].grab_focus())
 
@@ -372,6 +382,8 @@ func _on_help() -> void:
 
 
 func _on_settings() -> void:
+	for button in _buttons:
+		button.focus_mode = Control.FOCUS_NONE
 	_settings.open()
 
 
@@ -386,10 +398,63 @@ func _on_character() -> void:
 	if is_instance_valid(_character_editor): return
 	_character_editor = CharacterEditor.new()
 	ui.add_child(_character_editor)
-	_column.hide()
+	_cover_background(_character_editor)
+	var editor := _character_editor
 	_character_editor.closed.connect(func() -> void:
-		_column.show()
+		_uncover_background(editor)
 		_focus_button("Мой персонаж"))
+
+
+func _on_animation_room() -> void:
+	if _leaving or is_instance_valid(_animation_room): return
+	var room := AnimationRoom.new()
+	_animation_room = room
+	ui.add_child(room)
+	_cover_background(room)
+	room.closed.connect(func() -> void:
+		_animation_room = null
+		_uncover_background(room)
+		_focus_button("Комната анимаций"))
+
+
+## Both editors cover the root viewport with an opaque background. Their own
+## SubViewports remain live; avoid drawing/animating the city underneath them.
+func _cover_background(cover: Node) -> void:
+	if _background_covers.has(cover): return
+	if _background_covers.is_empty():
+		var viewport := get_viewport()
+		_background_state = {"viewport": viewport, "disable_3d": viewport.disable_3d,
+			"visible": city.visible, "process_mode": city.process_mode,
+			"column_visible": _column.visible}
+		viewport.disable_3d = true
+		city.hide()
+		city.process_mode = Node.PROCESS_MODE_DISABLED
+		_column.hide()
+	_background_covers.append(cover)
+	var restore := _uncover_background.bind(cover)
+	if not cover.tree_exited.is_connected(restore):
+		cover.tree_exited.connect(restore, CONNECT_ONE_SHOT)
+
+
+func _uncover_background(cover: Node) -> void:
+	_background_covers.erase(cover)
+	if _background_covers.is_empty(): _restore_background()
+
+
+func _restore_background() -> void:
+	if _background_state.is_empty(): return
+	var viewport: Viewport = _background_state.viewport
+	if is_instance_valid(viewport): viewport.disable_3d = _background_state.disable_3d
+	if is_instance_valid(city):
+		city.visible = _background_state.visible
+		city.process_mode = _background_state.process_mode
+	if is_instance_valid(_column): _column.visible = _background_state.column_visible
+	_background_state.clear()
+
+
+func _exit_tree() -> void:
+	_restore_background()
+	_background_covers.clear()
 
 
 func _on_new_campaign() -> void:

@@ -39,6 +39,16 @@ func _ready() -> void:
 	_adapt_layout()
 
 
+func _unhandled_input(event: InputEvent) -> void:
+	if not is_visible_in_tree():
+		return
+	var owner := get_viewport().gui_get_focus_owner()
+	if owner != null and not is_ancestor_of(owner):
+		return
+	if VisualUtil.scroll_navigation(scroll, event):
+		get_viewport().set_input_as_handled()
+
+
 func _build() -> void:
 	if _built:
 		return

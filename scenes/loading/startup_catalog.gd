@@ -33,6 +33,7 @@ static func resource_paths() -> Array[String]:
 	paths.append_array(CreatureModels.KolossarMotion.resource_paths())
 	paths.append(CreatureModels.KolossarLightSkin.PATH)
 	paths.append(CreatureModels.GrifalonGaleSkin.PATH)
+	paths.append(CreatureModels.RATNIK_PALETTES)
 	for d in CreatureModels.catalog_defs():
 		var path: String = CreatureModels._key_path(d)[1]
 		if not paths.has(path):

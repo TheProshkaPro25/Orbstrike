@@ -74,16 +74,18 @@ func _init() -> void:
 
 
 ## shape_scale widens the strip and brings more of its pattern into the close camera.
-func configure(new_style: Style, duration_scale: float = 1.0, shape_scale: Vector2 = Vector2.ONE) -> void:
+func configure(new_style: Style, duration_scale: float = 1.0, shape_scale: Vector2 = Vector2.ONE,
+		palette: Array = []) -> void:
 	style = new_style
 	var profile: Array = PROFILES[style]
 	_step = duration_scale * float(profile[0]) / (POINT_COUNT - 1)
 	_width_in_radii = shape_scale.x * float(profile[1])
 	_material.set_shader_parameter(&"style", style)
 	_material.set_shader_parameter(&"pattern_scale", shape_scale.y)
-	_material.set_shader_parameter(&"core_color", profile[2])
-	_material.set_shader_parameter(&"body_color", profile[3])
-	_material.set_shader_parameter(&"halo_color", profile[4])
+	var colors := profile.slice(2) if palette.is_empty() else palette
+	_material.set_shader_parameter(&"core_color", colors[0])
+	_material.set_shader_parameter(&"body_color", colors[1])
+	_material.set_shader_parameter(&"halo_color", colors[2])
 
 
 func set_airborne(airborne: bool, radius: float = 0.045,

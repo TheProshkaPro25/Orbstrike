@@ -24,6 +24,10 @@ func difference(left: Array, right: Array) -> float:
  return result
 func sample_actor(id: String, baseline: bool) -> Dictionary:
  var a := CreatureAnim.new();root.add_child(a);a.set_process(false)
+ if id.begins_with("creature_ratnik_"):
+  # The November 8 comparison targets the earlier left-hand sword overlay.
+  var variant := id.trim_prefix("creature_")
+  CreatureModels._scenes["hd:" + variant] = load(CreatureModels.HD_DIR % variant)
  a.set_model(CreatureModels.build(CardDB.creature(StringName(id))),CardDB.creature(StringName(id)))
  if baseline:
   # Rebuild from the original source library, with only the new overlay omitted.

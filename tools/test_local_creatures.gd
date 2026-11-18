@@ -117,7 +117,7 @@ func run() -> void:
 	check(not game.team_menu._go_btn.disabled, "normal UI accepts both new species in a valid deck")
 	game.team_menu._open_arena_picker()
 	game.team_menu._arena_picker.select(1)
-	game.team_menu._close_arena_picker()
+	game.team_menu._arena_picker.confirm()
 	game.team_menu._go_btn.pressed.emit()
 	if not await until(func() -> bool: return game.ctrl != null and game.ctrl._started, 30):
 		check(false, "ready match starts")

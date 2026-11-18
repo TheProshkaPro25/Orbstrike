@@ -3,10 +3,12 @@ extends SceneTree
 var main: Node
 var out_dir := "user://experience_review"
 var failures := 0
+var assertions := 0
 const Locations := preload("res://data/arena_locations.gd")
 const AutoPlay := preload("res://tools/autoplay.gd")
 
 func check(value: bool, message: String) -> void:
+	assertions += 1
 	if not value:
 		failures += 1
 		printerr("FAIL: ", message)
@@ -39,12 +41,13 @@ func _run() -> void:
 	root.add_child(main)
 	await process_frame
 	# Настоящий выбор локации: предпросмотр, сохранение и одинаковая сетка ворот.
+	var saved_location := Locations.current()
 	main.team_menu._open_arena_picker()
 	for location in Locations.LOCATIONS.size():
 		main.team_menu._arena_picker.select(location)
 		await _frames(12)
 		check(main.arena.location_id == location, "выбранная локация применяется")
-		check(Locations.current() == location, "выбор локации сохраняется")
+		check(Locations.current() == saved_location, "предпросмотр не меняет настройку арены")
 		check(main.arena.markers.size() == 6, "у каждой арены шесть мест")
 		for slot in 6:
 			check(main.arena.slot_at(main.arena.slot_position(slot)) == slot, "локация сохраняет геометрию слотов")
@@ -57,8 +60,9 @@ func _run() -> void:
 	main.cam.cut()
 	await _frames(8)
 	await save("sanctuary-vault")
-	main.team_menu._close_arena_picker()
+	main.team_menu._arena_picker.confirm()
 	await _frames(3)
+	check(Locations.current() == 0, "подтверждение сохраняет выбранную арену")
 	check(not main.team_menu._arena_picker.visible and main.team_menu._arena_btn.visible, "возврат из выбора к команде")
 	var deck := CardDB.preset_deck(0)
 	main.team_menu.hide()
@@ -159,22 +163,33 @@ func _run() -> void:
 	var entries: Array = []
 	for id in hand.slice(0, 3): entries.append({"id": id})
 	main.ability_panel.set_hand(hand)
+	main.setup_panel.set_hand(gates)
+	main.setup_panel.set_dock_visible(true)
 	for resolution in [Vector2i(1280, 720), Vector2i(1366, 768), Vector2i(960, 540)]:
 		root.size = resolution
 		await _frames(3)
-		main.ability_panel.show_options(entries, "Ваш ответ: способность или пас", {"moment": &"battle", "can_open_gate": true, "note": "Ворота закрыты. Два паса подряд завершат бой. На карту соперника можно ответить."})
+		main.ability_panel.show_options(entries, "Ваш ответ: способность или пас", {
+			"moment": &"battle", "can_open_gate": true, "gate_preview": CardDB.card(gates[0]),
+			"note": "Ворота закрыты. Два паса подряд завершат бой. На карту соперника можно ответить."})
 		await _frames(5)
 		var panel: AbilityPanel = main.ability_panel
 		var controls := panel._panel.get_global_rect()
-		var screen := panel.get_viewport_rect().size
-		check(controls.position.x > screen.x * .70 and controls.end.x <= screen.x and controls.end.y <= screen.y, "панель паса справа внизу")
-		check(controls.size.y < screen.y * .55, "панель с открытием ворот остаётся компактной")
+		var screen := panel.get_viewport_rect()
+		check(screen.encloses(controls) and absf(controls.get_center().x - screen.get_center().x) <= 1.0
+			and absf(controls.end.y - (screen.end.y - 8.0)) <= 1.0, "панель ответа целиком внизу по центру %s" % resolution)
+		check(controls.size.y < screen.size.y * .55, "панель с открытием ворот остаётся компактной")
+		for button: Button in [panel._gate_preview_btn, panel._gate_btn, panel._pass_btn]:
+			check(button.is_visible_in_tree() and not button.disabled and button.focus_mode != Control.FOCUS_NONE
+				and controls.encloses(button.get_global_rect()), "в панели доступна кнопка «%s» при %s" % [button.text, resolution])
+		check(main.setup_panel._dock.is_visible_in_tree() and not main.setup_panel._card_buttons.is_empty(), "рука ворот видна")
+		for card: CardView in main.setup_panel._card_buttons.values():
+			check(not card.get_global_rect().intersects(controls), "рука ворот слева не перекрывает управление")
 		var seen: Array = []
 		var pages := ceili(float(hand.size()) / panel._capacity)
 		for page in pages:
 			for card in panel._cards:
 				seen.append(card.card_id)
-				check(not card.get_global_rect().intersects(controls), "рука слева не перекрывает управление")
+				check(not card.get_global_rect().intersects(controls), "рука способностей справа не перекрывает управление")
 				var rect := card.get_global_rect()
 				check(rect.position.x >= 0 and rect.end.x <= panel.get_viewport_rect().size.x, "карта внутри экрана %s" % resolution)
 			panel._change_page(1)
@@ -208,7 +223,7 @@ func _run() -> void:
 	await _frames(2)
 	# Дать звуковому потоку обработать stop и отпустить декодер Ogg.
 	await create_timer(.15, true, false, true).timeout
-	print("Experience review: %d ошибок" % failures)
+	print("Experience review: %d проверок, %d ошибок" % [assertions, failures])
 	quit(1 if failures else 0)
 
 func _settle() -> void:

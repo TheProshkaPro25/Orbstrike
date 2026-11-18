@@ -14,6 +14,9 @@ func _ready() -> void:
 	theme = UiTheme.get_theme()
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	mouse_force_pass_scroll_events = false
+	# Поверх поднятой карты руки (50) и её DeviceMotion (ещё 120).
+	z_index = 220
 	var shade := ColorRect.new()
 	shade.color = Color(0.015, 0.022, 0.04, 0.8)
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -61,7 +64,7 @@ func show_targets(card_id: StringName, targets: Array, view: MatchState) -> void
 		var parent: Control = _choices
 		if target.has("target_uid"):
 			var uid := int(target.target_uid)
-			cv.for_creature(CardDB.creature(view.creature(uid).def_id), uid, "", card_size)
+			cv.for_creature(CardDB.creature(view.creature(uid).def_id), uid, "", card_size, PowerCalc.base_power(view, uid))
 		elif target.has("target_slot"):
 			var slot := int(target.target_slot)
 			var gate: SlotState = view.slots[slot]
@@ -77,6 +80,8 @@ func show_targets(card_id: StringName, targets: Array, view: MatchState) -> void
 		cv.pressed.connect(_select.bind(target.duplicate(true)))
 		parent.add_child(cv)
 		focusables.append(cv)
+	# Порядок узлов определяет ввод GUI независимо от порядка отрисовки.
+	move_to_front()
 	show()
 	# Tab остаётся в обратимом выборе цели, не уходит в скрытую за ним руку.
 	focusables.append(_cancel)

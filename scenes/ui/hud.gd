@@ -378,8 +378,21 @@ func wait_read(sec: float) -> void:
 	_skip_flag = false
 
 
+func _input(e: InputEvent) -> void:
+	if not (e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_RIGHT): return
+	if not _can_cancel_creature_choice(): return
+	for sibling in get_parent().get_children():
+		if sibling is HelpOverlay and sibling.is_visible_in_tree(): return
+	get_viewport().set_input_as_handled()
+	creature_cancelled.emit()
+
+
+func _can_cancel_creature_choice() -> bool:
+	return _built and _cancel_btn.is_visible_in_tree()
+
+
 func _unhandled_input(e: InputEvent) -> void:
-	if e is InputEventKey and e.pressed and not e.echo and e.keycode == KEY_ESCAPE and _creature_panel.visible and _cancel_btn.visible:
+	if e is InputEventKey and e.pressed and not e.echo and e.keycode == KEY_ESCAPE and _can_cancel_creature_choice():
 		get_viewport().set_input_as_handled()
 		creature_cancelled.emit()
 		return

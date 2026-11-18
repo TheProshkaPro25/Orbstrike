@@ -16,6 +16,10 @@ const MAX_WIDTH := 1.3
 const DIR := "res://assets/creatures/%s.glb"
 ## Модели существ (Pixal3D, со своей текстурой): assets/creatures_hd/<вид>_<стихия>.glb (= id без creature_).
 const HD_DIR := "res://assets/creatures_hd/%s.glb"
+const GORGUL_SHADOW_MODEL := "res://assets/creatures_hd/gorgul_trellis/gorgul_shadow.glb"
+const RATNIK_MODEL := "res://assets/creatures_hd/ratnik_trellis/ratnik.glb"
+const RATNIK_PALETTES := "res://assets/creatures_hd/ratnik_trellis/palettes.tres"
+const RATNIK_ATLAS_SLOTS := [11, 12, 13]
 const GrifalonMotion := preload("res://scenes/grifalon_motion.gd")
 const KolossarMotion := preload("res://scenes/kolossar_motion.gd")
 const KolossarLightSkin := preload("res://scenes/kolossar_light_skin.gd")
@@ -57,6 +61,7 @@ const NORMALIZATION_FRAMES := {
 ## прежнее время жизни ресурсов одного матча.
 static var resident_catalog := false
 static var _scenes: Dictionary = {}
+static var _ratnik_palettes: Resource
 ## Производные неизменяемые данные текущего набора моделей; без узлов экземпляров.
 static var preparation_cache: Dictionary = {}
 ## Immutable prepared curves; players, poses and blend state stay on each actor.
@@ -70,11 +75,16 @@ render_mode specular_disabled, cull_disabled;
 uniform sampler2D color_map : source_color, filter_linear_mipmap_anisotropic;
 uniform vec4 tint : source_color = vec4(1.0);
 uniform bool has_texture = true;
+uniform bool use_vertex_color = false;
 uniform bool shadow_palette = false;
+uniform bool soft_wing_light = false;
+varying float wing_membrane;
 void fragment() {
 	if (!FRONT_FACING) { NORMAL = -NORMAL; }
 	vec3 tex = tint.rgb;
 	if (has_texture) { tex *= texture(color_map, UV).rgb; }
+	if (use_vertex_color) { tex *= COLOR.rgb; }
+	wing_membrane = soft_wing_light ? 1.0 - COLOR.a : 0.0;
 	if (shadow_palette) {
 		// Small foreign green patches in generated shadow textures aren't part of their palette.
 		float foreign_green = smoothstep(0.025, 0.12, tex.g - max(tex.r, tex.b));
@@ -93,6 +103,7 @@ void light() {
 	float facing = max(dot(NORMAL, LIGHT), 0.0);
 	float shade = mix(0.32, 0.72, smoothstep(0.12, 0.2, facing));
 	shade = mix(shade, 1.0, smoothstep(0.65, 0.73, facing));
+	shade = mix(shade, mix(0.40, 0.84, facing), wing_membrane);
 	// Godot applies ALBEDO after light(): multiply it once, not twice.
 	DIFFUSE_LIGHT += LIGHT_COLOR * ATTENUATION * shade / PI;
 }
@@ -103,10 +114,30 @@ static var _anime_shader: Shader
 
 static func _key_path(d: CreatureDef) -> Array:
 	var key := String(d.id).trim_prefix("creature_")
+	if d.id == &"creature_gorgul_shadow":
+		return ["hd:" + key, GORGUL_SHADOW_MODEL]
+	if uses_ratnik_trellis(d):
+		return ["hd:" + key, RATNIK_MODEL]
 	var hd_path := HD_DIR % key
 	if ResourceLoader.exists(hd_path):
 		return ["hd:" + key, hd_path]
 	return [archetype_of(d), DIR % archetype_of(d)]
+
+
+static func uses_ratnik_trellis(d: CreatureDef) -> bool:
+	return d != null and d.species == &"ratnik" and String(d.id).trim_prefix("creature_ratnik_") in GameData.ATTR_KEYS
+
+
+static func _ratnik_palette(element: String) -> Array:
+	if _ratnik_palettes == null:
+		_ratnik_palettes = load(RATNIK_PALETTES)
+	if _ratnik_palettes == null:
+		return []
+	var palettes: Dictionary = _ratnik_palettes.get_meta("element_palettes", {})
+	var palette: Array = palettes.get(element, [])
+	if palette.size() != 2 or not palette[0] is Texture2D or not palette[1] is PackedColorArray or palette[1].size() != 19:
+		return []
+	return palette
 
 
 ## Загрузка моделей существ матча (6 штук) при старте матча: к первому раскрытию они уже в памяти,
@@ -118,6 +149,7 @@ static func preload_match(defs: Array) -> void:
 		if d != null:
 			var kp := _key_path(d)
 			_scene(kp[0], kp[1])
+			if uses_ratnik_trellis(d): _ratnik_palette(String(d.id).trim_prefix("creature_ratnik_"))
 			GrifalonMotion.preload_for(d)
 			KolossarMotion.preload_for(d)
 			if d.id == &"creature_kolossar_light": KolossarLightSkin.preload_required()
@@ -144,6 +176,7 @@ static func clear() -> void:
 	if resident_catalog:
 		return
 	_scenes.clear()
+	_ratnik_palettes = null
 	preparation_cache.clear()
 	animation_library_cache.clear()
 	GrifalonMotion.clear()
@@ -172,6 +205,12 @@ static func build(d: CreatureDef) -> Node3D:
 	var ps: PackedScene = _scene(kp[0], kp[1])
 	if ps == null:
 		return null
+	var ratnik_palette: Array = []
+	if ps.resource_path == RATNIK_MODEL:
+		ratnik_palette = _ratnik_palette(String(d.id).trim_prefix("creature_ratnik_"))
+		if ratnik_palette.is_empty():
+			push_error("Ratnik TRELLIS.2 palette unavailable: " + String(d.id))
+			return null
 	var root := Node3D.new()
 	var inst := ps.instantiate() as Node3D
 	if d.id == &"creature_kolossar_light":
@@ -223,7 +262,8 @@ static func build(d: CreatureDef) -> Node3D:
 	if hd:
 		# Audit the whole instance before replacing any active material.
 		_release_unused_hd_maps(model)
-		_fix_hd_materials(model, d.attribute)
+		_fix_hd_materials(model, d.attribute, ratnik_palette, ps.resource_path == GORGUL_SHADOW_MODEL)
+		if not ratnik_palette.is_empty(): root.set_meta("ratnik_trellis", true)
 	else:
 		_recolor(model, d)
 	return root
@@ -343,7 +383,8 @@ static func _protect_material_value(value: Variant, protected: Dictionary) -> vo
 ## Матовая аниме-подача: текстура цвета сохраняется, но PBR-карты не создают
 ## блестящие пятна, грязные впадины и шум нормалей на сгенерированной поверхности.
 ## Геометрические дефекты исходного меша требуют отдельной правки модели.
-static func _fix_hd_materials(node: Node, attribute: int = -1) -> void:
+static func _fix_hd_materials(node: Node, attribute: int = -1, ratnik_palette: Array = [],
+		use_vertex_color: bool = false) -> void:
 	if node is MeshInstance3D:
 		var mi := node as MeshInstance3D
 		if mi.mesh == null:
@@ -358,14 +399,22 @@ static func _fix_hd_materials(node: Node, attribute: int = -1) -> void:
 				_anime_shader.code = ANIME_SHADER
 			var m := ShaderMaterial.new()
 			m.shader = _anime_shader
-			m.set_shader_parameter("tint", src.albedo_color)
-			m.set_shader_parameter("shadow_palette", attribute == Attr.A.SHADOW)
-			m.set_shader_parameter("has_texture", src.albedo_texture != null)
-			if src.albedo_texture != null:
-				m.set_shader_parameter("color_map", src.albedo_texture)
+			var tint := src.albedo_color
+			var texture := src.albedo_texture
+			if not ratnik_palette.is_empty():
+				var slot := int(String(src.resource_name).trim_prefix("RatnikSlot"))
+				tint = ratnik_palette[1][slot]
+				texture = ratnik_palette[0] if slot in RATNIK_ATLAS_SLOTS else null
+			m.set_shader_parameter("tint", tint)
+			m.set_shader_parameter("use_vertex_color", use_vertex_color)
+			m.set_shader_parameter("soft_wing_light", use_vertex_color and src.resource_name == "Skin · Горгул")
+			m.set_shader_parameter("shadow_palette", attribute == Attr.A.SHADOW and ratnik_palette.is_empty() and not use_vertex_color)
+			m.set_shader_parameter("has_texture", texture != null)
+			if texture != null:
+				m.set_shader_parameter("color_map", texture)
 			mi.set_surface_override_material(i, m)
 	for ch in node.get_children():
-		_fix_hd_materials(ch, attribute)
+		_fix_hd_materials(ch, attribute, ratnik_palette, use_vertex_color)
 
 
 static func _recolor(node: Node, d: CreatureDef) -> void:

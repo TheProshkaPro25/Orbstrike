@@ -2,12 +2,10 @@ extends "res://tools/autoplay.gd"
 ## Start a normal client duel and stop at the first battle with two visible portraits.
 
 const MATTE := preload("res://scenes/ui/portrait_matte.gd")
-const EDGE := preload("res://scenes/ui/battle_portrait.gdshader")
 const BACKDROP := preload("res://scenes/ui/battle_portrait_backdrop.gdshader")
 var output: String
 var checks := 0
 var failures := 0
-var preparations := 0
 
 
 func _initialize() -> void:
@@ -23,11 +21,13 @@ func _initialize() -> void:
 func _wait_for_scene(path: String, timeout_seconds: float, previous: Node = null) -> bool:
 	if not await super._wait_for_scene(path, timeout_seconds, previous): return false
 	if path == "res://scenes/menu/main_menu.tscn":
-		var expected := CreaturePortrait.REFERENCE_TEXTURES.size()
-		preparations = MATTE.generation_count
-		_check(CreaturePortrait._presentation_textures.size() == expected and preparations == expected,
-			"Boot cached all 49 base portraits before main menu")
-		_check(CreaturePortrait._battle_textures.size() == 33, "Boot cached 33 corrected battle mattes")
+		var definitions := CreatureModels.catalog_defs()
+		_check(CreaturePortrait.RENDERED_TEXTURES.size() == definitions.size()
+			and definitions.all(func(definition: CreatureDef) -> bool:
+				var texture := CreaturePortrait.presentation_texture(definition.id)
+				return texture != null and texture == GameLoading.i().resources.get(texture.resource_path)),
+			"Boot holds the imported model portrait for every definition before main menu")
+		_check(MATTE.generation_count == 0, "Boot uses the renders' own alpha without segmentation")
 		_check(current_scene.ui.get_node("DeviceFrame").visible, "normal client uses Wrist Device with old profile")
 	return true
 
@@ -69,15 +69,16 @@ func _process(_delta: float) -> bool:
 func _verify_battle(hud: HudUI) -> void:
 	_finishing = true
 	_check(hits[0] + hits[1] > 0, "physical throws reached a real arena slot")
-	_check(MATTE.generation_count == preparations and _preparation_counts() == startup_counts, "battle reused the Boot caches")
+	_check(MATTE.generation_count == 0 and _preparation_counts() == startup_counts, "battle reused the Boot caches")
 	for panel: OpponentPanel in [hud.own_panel, hud.opponent_panel]:
 		var portrait := panel._portrait
 		var definition: StringName = portrait._definition.id
-		_check(portrait._fallback.material is ShaderMaterial and portrait._fallback.material.shader == EDGE,
-			"real battle portrait uses the final edge shader: " + str(definition))
-		_check(portrait._fallback.texture == CreaturePortrait.presentation_texture(definition, true)
+		_check(portrait._fallback.texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+			and portrait._fallback.texture.get_image().has_mipmaps(),
+			"real battle portrait uses mipmap filtering for the small panel: " + str(definition))
+		_check(portrait._fallback.texture == CreaturePortrait.presentation_texture(definition)
 			and portrait._backdrop.material.shader == BACKDROP and portrait._battle_frame.visible,
-			"real battle portrait uses the prepared matte and elemental frame: " + str(definition))
+			"real battle portrait uses the imported model render and elemental frame: " + str(definition))
 	await RenderingServer.frame_post_draw
 	_check(root.get_texture().get_image().save_png(output.path_join("portrait-client-device.png")) == OK, "save real device battle")
 	_check(Engine.max_fps == 60, "standard wrapper holds 60 FPS")

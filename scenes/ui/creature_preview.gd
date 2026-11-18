@@ -92,7 +92,7 @@ func _init() -> void:
 	_vp = SubViewport.new()
 	_vp.own_world_3d = true
 	_vp.transparent_bg = true
-	_vp.msaa_3d = Viewport.MSAA_4X
+	GraphicsSettings.apply_viewport(_vp)
 	_vp.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	_vpc.add_child(_vp)
 	_build_world()
@@ -160,6 +160,13 @@ func _init() -> void:
 	vb.add_child(_full_card_scroll)
 	resized.connect(_resize_card)
 
+
+func _ready() -> void:
+	GraphicsSettings.watch(self, "_apply_graphics_settings")
+
+
+func _apply_graphics_settings() -> void:
+	GraphicsSettings.apply_viewport(_vp)
 
 
 func _build_world() -> void:

@@ -216,6 +216,7 @@ func _ready() -> void:
 	SoundFx.i()
 	rng.randomize()
 	_build_world()
+	GraphicsSettings.watch(self, "apply_graphics")
 	_build_ui()
 	_create_next_turn_button()
 	_lifecycle = MatchLifecycleT.new()
@@ -356,7 +357,7 @@ func _build_world() -> void:
 	cam.snap_overview()
 	cam.current = true
 
-	_resources.select_arena(Locations.current())
+	_resources.select_arena(_initial_arena_location())
 	arena = _resources.arena
 	if arena != null: _apply_arena_environment(arena.location_id)
 	apply_graphics()
@@ -365,6 +366,10 @@ func _build_world() -> void:
 	add_child(events)
 	director = ArenaDirector.new()
 	add_child(director)
+
+
+func _initial_arena_location() -> int:
+	return Locations.current()
 
 
 ## Применить уровень графики (при старте и после смены в меню команды).
@@ -409,8 +414,7 @@ func _build_ui(elemental_cards: bool = true, online_roster: bool = false) -> voi
 	_launch_target.hide()
 	_launch_target.pressed.connect(_request_launch_slot)
 	ui_layer.add_child(_launch_target)
-	_place_launch_target()
-	get_viewport().size_changed.connect(_place_launch_target)
+	VisualUtil.place(_launch_target, 0.5, 1.0, 0.0, -8.0)
 	arena_slot_picker = ArenaSlotPicker.new()
 	ui_layer.add_child(arena_slot_picker)
 	arena_slot_picker.chosen.connect(_on_slot_picked)
@@ -424,6 +428,7 @@ func _build_ui(elemental_cards: bool = true, online_roster: bool = false) -> voi
 	team_menu.elemental_cards = elemental_cards
 	team_menu.online_roster = online_roster
 	ui_layer.add_child(team_menu)
+	team_menu.location_requested.connect(_request_team_arena)
 	team_menu.location_preview_closed.connect(func() -> void: cam.snap_overview(); hud.visible = true)
 	hover_tips = HoverTips.new()
 	hover_tips.resolver = _tip_at
@@ -441,11 +446,6 @@ func _build_ui(elemental_cards: bool = true, online_roster: bool = false) -> voi
 	hud.register_interface(_duel_menu)
 	hud.register_interface(_launch_target)
 	_configure_views()
-
-func _place_launch_target() -> void:
-	var card_height := UiTheme.device_hand_card(get_viewport().get_visible_rect().size).y
-	VisualUtil.place(_launch_target, 0.5, 1.0, 0.0, -card_height - 76.0)
-
 
 func _create_next_turn_button() -> void:
 	_next_turn = Button.new()
@@ -467,13 +467,18 @@ func _apply_arena_environment(index: int) -> void:
 	var data := Locations.definition(index)
 	var low := GraphicsSettings.current() == GraphicsSettings.Level.LOW
 	var sanctuary := index == 0
+	var canyon := index == Locations.CANYON
 	var harbor := index == 2
+	var coastal := Locations.CoastalStyle.applies(index)
+	_env.background_mode = Environment.BG_SKY
+	_env.fog_enabled = true
 	_arena_sky.set_shader_parameter("sky_zenith", Color(data.zenith).linear_to_srgb())
 	_arena_sky.set_shader_parameter("sky_horizon", Color(data.horizon).linear_to_srgb())
 	_arena_sky.set_shader_parameter("sky_mist", Color(data.mist).linear_to_srgb())
 	_arena_sky.set_shader_parameter("harbor_sky", harbor)
 	if harbor: _arena_sky.set_shader_parameter("harbor_moon_direction", Locations.HARBOR_MOON.normalized())
-	_env.fog_light_color = Color(.083, .118, .173) if harbor else data.fog
+	# Let the far sea and the sky meet in the same moonlit haze.
+	_env.fog_light_color = Color(.21, .32, .42) if harbor else data.fog
 	_env.ambient_light_color = Color(.50, .57, .66) if harbor else data.ambient
 	_env.tonemap_exposure = 1.04 if harbor else LIGHT_EXPOSURE
 	_env.glow_intensity = .64 if harbor else (.69 if sanctuary else .8)
@@ -481,7 +486,7 @@ func _apply_arena_environment(index: int) -> void:
 	# Overcast night sky and water return light into the faces turned away from the moon.
 	_env.ambient_light_energy = (.25 if low else .16) if sanctuary else ((.61 if low else .54) if harbor else .75)
 	_env.fog_density = .0013 if sanctuary else (.0024 if harbor else .0025)
-	_env.fog_sky_affect = .12 if harbor else (.8 if sanctuary else .25)
+	_env.fog_sky_affect = .45 if harbor else (.8 if sanctuary else .25)
 	_env.volumetric_fog_enabled = false
 	_sun.light_color = Color(.77, .87, 1.0) if harbor else data.sun
 	_sun.light_energy = 1.65 if harbor else (0.0 if sanctuary else data.sun_energy)
@@ -494,6 +499,19 @@ func _apply_arena_environment(index: int) -> void:
 	_sun.shadow_opacity = .49 if harbor else .6
 	_fill.visible = not (harbor or sanctuary)
 	_fill.light_color = Color(data.ambient).lightened(.15)
+	_fill.light_energy = 1.05 if canyon else .9
+	if coastal:
+		_env.ambient_light_color = data.ambient
+		_env.ambient_light_energy = .50
+		_env.tonemap_exposure = 1.0
+		_env.glow_intensity = .40
+		_env.fog_density = .0009
+		_env.fog_sky_affect = .25
+		_sun.rotation_degrees = Vector3(-48, -30, 0)
+		_sun.light_color = data.sun
+		_sun.light_energy = data.sun_energy
+		_sun.shadow_opacity = .72
+		_fill.light_energy = .48
 
 
 func _configure_views() -> void:
@@ -528,7 +546,6 @@ func _configure_modes() -> void:
 	_modes_configured = true
 	modes.configure(team_menu,hud,ui_layer,rng,_duel_menu)
 	modes.match_requested.connect(_request_match)
-	modes.arena_selection_requested.connect(_preview_arena_location)
 	modes.restart_requested.connect(_restart_scene)
 	modes.restart_rejected.connect(func(message: String) -> void: game_over_ui.show_result(ctrl.winner,message,presentation.state.stats))
 	modes.exit_requested.connect(_exit_mode)
@@ -697,9 +714,9 @@ func _restart_scene(entry: String) -> void:
 	else: get_tree().reload_current_scene()
 
 func _exit_mode() -> void:
-	interaction.stop()
 	events.stop()
-	SoundFx.i().cancel_match_sfx()
+	_release_game_resources()
+	_restore_time_scale()
 	get_tree().change_scene_to_file("res://scenes/menu/main_menu.tscn")
 
 func _request_duel_menu() -> void:
@@ -712,13 +729,21 @@ func _invalid_slot() -> void:
 	if interaction.human_field_input_allowed():
 		hud.reject_action("Выберите одно из подсвеченных мест на поле")
 
+func _request_team_arena(index: int, action: TeamMenu.LocationAction) -> void:
+	if _preview_arena_location(index, action == TeamMenu.LocationAction.CONFIRM):
+		team_menu.apply_location_selection(index, action)
+
 func _preview_arena_location(index: int, save_choice: bool = true) -> bool:
 	if ctrl != null: return false
 	var result := _ensure_resources().select_arena(index)
 	if not result.is_ok():
-		modes.arena_selection_completed(arena.location_id if is_instance_valid(arena) else Locations.current(),false,result.message)
+		if team_menu._arena_picker.is_visible_in_tree():
+			team_menu._arena_picker.show_error(result.message)
 		return false
-	if save_choice: Locations.choose(index)
+	if save_choice and Locations.choose(index) != OK:
+		if team_menu._arena_picker.is_visible_in_tree():
+			team_menu._arena_picker.show_error("Не удалось сохранить арену. Попробуйте ещё раз.")
+		return false
 	apply_graphics()
 	_apply_arena_environment(index)
 	cam.location_preview_view(index == 0)

@@ -396,6 +396,18 @@ func resolved_slot_help(index: int, slot: SlotState, view: MatchState) -> Array:
 func resolved_creature_help(uid: int, view: MatchState) -> Array:
 	return creature_help.call(uid,view) if creature_help.is_valid() else creature_tip(uid,view)
 
+## Сведения только о закрытых воротах текущего боя из вида получателя.
+static func own_closed_battle_gate(view: MatchState, player: int) -> CardDef:
+	if view.phase != MatchController.Phase.ABILITY_WINDOW or view.active_player != player or view.battle_context == null:
+		return null
+	var index := view.battle_context.slot
+	if index < 0 or index >= view.slots.size():
+		return null
+	var slot: SlotState = view.slots[index]
+	if not slot.has_card or slot.revealed or slot.card_owner != player:
+		return null
+	return CardDB.card(slot.card_id)
+
 func slot_tip(i: int, sl: SlotState, view: MatchState) -> Array:
 	if not sl.has_card:
 		if ctrl.get_phase() == MatchController.Phase.SETUP and ctrl.get_active_player() == HUMAN and ctrl.legal_setup_slots().has(i):
@@ -510,8 +522,8 @@ func on_battle_resolved(result: BattleResult) -> void:
 	_queued_battle_result = result
 	refresh_hand()
 	if result.winner_uid < 0:
-		var what: String = "Бой прерван: Отлив" if result.interrupted else "Выбывают оба бойца"
-		state.stats["battles"].append({"turn": ctrl.get_turn(), "winner": "—", "loser": "%s и %s" % [cname(result.attacker_uid), cname(result.defender_uid)],
+		var what := "Бой прерван (Отлив)" if result.interrupted else ("Выбывают оба бойца" if result.both_lose else "Бой без победителя")
+		state.stats["battles"].append({"turn": ctrl.get_turn(), "outcome": what, "participants": "%s и %s" % [cname(result.attacker_uid), cname(result.defender_uid)],
 			"wp": result.powers[0], "lp": result.powers[1], "mine": false})
 		events.push(anim_battle_resolved.bind(result))
 		log_event(what, UiTheme.GOLD)
@@ -1046,15 +1058,30 @@ func spawn_ball(uid: int) -> CreatureBall:
 func start_pos(player: int) -> Vector3:
 	return Vector3(0.0, BALL_Y, THROW_Z if player == HUMAN else -THROW_Z)
 
-func reason_text(reason: StringName) -> String:
+func reason_text(reason: StringName, controller: MatchController = null, viewer: int = HUMAN) -> String:
+	var heading: String
 	match reason:
 		&"knockout":
 			return "Все три существа проигравшего выбиты"
 		&"turn_limit":
-			return "Лимит ходов (%d): по числу оставшихся существ" % MatchController.MAX_TURNS
-		&"stalemate", &"no_gates":
-			return "Бросать больше некому: по числу оставшихся существ"
-	return String(reason)
+			heading = "Лимит ходов (%d)" % MatchController.MAX_TURNS
+		&"stalemate":
+			heading = "Тупик матча"
+		&"no_gates":
+			heading = "Ворота закончились"
+		_:
+			return String(reason)
+	var match_controller := ctrl if controller == null else controller
+	if match_controller == null: return heading
+	var opponent := 1 - viewer
+	var own_alive := match_controller.state.alive_count(viewer)
+	var rival_alive := match_controller.state.alive_count(opponent)
+	if own_alive != rival_alive:
+		return "%s · Существ осталось %d : %d" % [heading, own_alive, rival_alive]
+	var own_power := match_controller._alive_power(viewer)
+	var rival_power := match_controller._alive_power(opponent)
+	var comparison := "%s · Существ поровну (%d : %d)\nСумма базовой G %d : %d" % [heading, own_alive, rival_alive, own_power, rival_power]
+	return comparison + (" · ничья" if own_power == rival_power else "")
 
 func gate_slots() -> Array:
 	var out: Array = []

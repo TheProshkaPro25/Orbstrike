@@ -15,6 +15,12 @@ func run():
   for track in range(clip.get_track_count()):check(clip.track_get_interpolation_loop_wrap(track),'%s: periodic interpolation'%id)
   for track in range(clip.get_track_count()):
    if clip.track_get_type(track) != Animation.TYPE_ROTATION_3D:continue
+   if a._ratnik_trellis:
+    # Preserve the source's sampled keys and require a closed authored loop.
+    var first:Quaternion=clip.track_get_key_value(track,0)
+    var last:Quaternion=clip.track_get_key_value(track,clip.track_get_key_count(track)-1)
+    check(first.angle_to(last)<.001,'%s: authored rotations close the loop, track %d'%[id,track])
+    continue
    var epsilon := clip.length*.001
    var q0:Quaternion = clip.rotation_track_interpolate(track,0)
    var prev:Quaternion = clip.rotation_track_interpolate(track,clip.length-epsilon)
@@ -26,9 +32,7 @@ func run():
    var lv:=Vector3(left.x,left.y,left.z)*2/epsilon
    var rv:=Vector3(right.x,right.y,right.z)*2/epsilon
    check(lv.distance_to(rv)<.02,'%s: no rotation velocity jump at loop seam, track %d: %.5f'%[id,track,lv.distance_to(rv)])
-  var speed:float=a._player.speed_scale
-  # AnimationPlayer uses the speed passed to play(), not speed_scale.
-  speed=a._tempo*{&'kolossar':.62,&'rogozhuk':.68,&'levian':.7,&'dragnar':.72,&'ratnik':.72,&'klykar':.8}.get(d.species,.85)
+  var speed:float=1.0 if a._authored_grounded else a._tempo*{&'rogozhuk':.68,&'levian':.7,&'dragnar':.72,&'ratnik':.72,&'klykar':.8}.get(d.species,.85)
   for frame in range(720):a._process(1.0/120)
   var expected:=fposmod(a._clock*speed+a._phase/TAU*clip.length,clip.length)
   check(absf(a._player.current_animation_position-expected)<.002,'%s: continuous idle phase'%id)

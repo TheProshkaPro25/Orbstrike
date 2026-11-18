@@ -9,6 +9,7 @@ layout(set = 0, binding = 2, std430) restrict buffer    Velocities     { vec4 ve
 // x = cloth influence weight [0..1]: 0 = fully skeleton-driven, 1 = fully simulated
 layout(set = 0, binding = 5, std430) restrict readonly buffer ClothWeights   { vec4 cloth_weights[];   };
 layout(set = 0, binding = 6, std430) restrict readonly buffer SkinnedTargets { vec4 skinned_targets[]; };
+layout(set = 0, binding = 7, std430) restrict readonly buffer BodyTriangles { vec4 body_triangles[]; };
 
 layout(push_constant, std430) uniform Params {
     float dt;
@@ -24,8 +25,37 @@ layout(push_constant, std430) uniform Params {
     // Rotational counter-rotation quaternion — only consumed by predict.
     float pad_qx, pad_qy, pad_qz, pad_qw;
     // Gravity Y, Z, pads — only consumed by predict.
-    float pad_gy, pad_gz, pad_g1, pad_g2;
+    float pad_gy, pad_gz;
+    uint skin_delta_collider_count;
+    float pad_g2;
 };
+
+// Keep the correction on the same side of each body face as the animated
+// target. The blend and travel limit can otherwise leave a particle past a
+// thin face, even after the predicted position was resolved against it.
+float correction_fraction(vec3 origin, vec3 delta) {
+    float fraction = 1.0;
+    for (uint tri = 0u; tri < skin_delta_collider_count; tri++) {
+        vec3 a = body_triangles[tri * 3u].xyz;
+        vec3 ab = body_triangles[tri * 3u + 1u].xyz - a;
+        vec3 ac = body_triangles[tri * 3u + 2u].xyz - a;
+        vec3 p = cross(delta, ac);
+        float det = dot(ab, p);
+        if (abs(det) <= 1e-9) continue;
+        vec3 ap = origin - a;
+        float u = dot(ap, p) / det;
+        if (u < 0.0 || u > 1.0) continue;
+        vec3 q = cross(ap, ab);
+        float v = dot(delta, q) / det;
+        if (v < 0.0 || u + v > 1.0) continue;
+        float t = dot(ac, q) / det;
+        if (t >= 0.0 && t < fraction) fraction = t;
+    }
+    if (fraction < 1.0) {
+        return max(0.0, fraction - 0.001 / max(0.001, length(delta)));
+    }
+    return fraction;
+}
 
 void main() {
     uint idx = gl_GlobalInvocationID.x;
@@ -67,6 +97,14 @@ void main() {
         float sub_w = pow(cloth_w, inv_substeps);
         new_pos = mix(skinned_targets[idx].xyz, new_pos, sub_w);
         vel *= sub_w;
+    }
+
+    if (skin_delta_collider_count > 0u) {
+        vec3 target = skinned_targets[idx].xyz;
+        vec3 delta = new_pos - target;
+        float fraction = correction_fraction(target, delta);
+        new_pos = target + delta * fraction;
+        vel *= fraction;
     }
 
     positions[idx]  = vec4(new_pos, w);

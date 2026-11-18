@@ -59,17 +59,17 @@ func used_count(player: int) -> int:
 
 ## Полная копия без маскировки (для пробных расчётов: «Вихревая подмена», «Сдвиг плит»).
 func duplicate_full() -> MatchState:
-	var v: MatchState = duplicate_view(-1)
-	for i in range(players.size()):
-		v.players[i] = players[i].clone(false)
-	for i in range(slots.size()):
-		v.slots[i] = slots[i].clone(false)
-	return v
+	return _duplicate_state(-1, true)
 
 
 ## Копия состояния с точки зрения for_player: чужие закрытые карты арены и чужие руки замаскированы.
 ## for_player = -1 даёт вид наблюдателя (скрыто всё скрытое).
 func duplicate_view(for_player: int) -> MatchState:
+	return _duplicate_state(for_player, false)
+
+
+## Маскированный и полный снимки копируют каждый объект ровно один раз.
+func _duplicate_state(for_player: int, full: bool) -> MatchState:
 	var v: MatchState = MatchState.new(players.size())
 	v.ruleset = ruleset
 	v.card_pool = card_pool
@@ -81,10 +81,10 @@ func duplicate_view(for_player: int) -> MatchState:
 	v.final_round = final_round
 	v.play_stamp = play_stamp
 	for i in range(players.size()):
-		v.players[i] = players[i].clone(i != for_player)
+		v.players[i] = players[i].clone(not full and i != for_player)
 	for i in range(slots.size()):
 		var s: SlotState = slots[i]
-		var mask: bool = (not s.revealed) and s.card_owner != for_player
+		var mask: bool = not full and (not s.revealed) and s.card_owner != for_player
 		v.slots[i] = s.clone(mask)
 	for uid in creatures:
 		var c: CreatureState = creatures[uid]

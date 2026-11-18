@@ -1,0 +1,44 @@
+{
+  "version": "0.4.6",
+  "godot": "4.7.2.stable.arch_linux.ed1daf0bf",
+  "windows_preset": "Windows Desktop",
+  "local_roster_size": 67,
+  "arena_count": 4,
+  "public_source_total_outfits": 21,
+  "windows_release_total_outfits": 24,
+  "local_total_outfits": 25,
+  "network_protocol": "online-rules-11",
+  "public_server": {
+    "version": "0.4.0",
+    "protocol": "online-rules-10",
+    "compatible": false
+  },
+  "overlay_file_count": 5,
+  "package_only_fitted_resources": {
+    "assets/avatars/booth/fantasy_robe_0.res": {
+      "bytes": 2556168,
+      "sha256": "ad4730de2471ac8a7a4722f10d2de55b2abefc5086a11266e466a064f996e27d"
+    },
+    "assets/avatars/booth/operator_1.res": {
+      "bytes": 9372193,
+      "sha256": "99da4e2107f2edcf763dddf9b9d6195f642e2fbcb688e46e183f43fe1df62569"
+    },
+    "assets/avatars/booth/dreamy_angel_1.res": {
+      "bytes": 11418710,
+      "sha256": "e6883607c5a3f9004a4c4cd308a484c37d3eb9bfe21a8b00f54d8a195cfdf662"
+    }
+  },
+  "package_only_prepared_motion_libraries": {
+    "assets/avatars/motions/kevin_local/fighter_0.res": {
+      "bytes": 377269,
+      "sha256": "9aef6e8c3d110e27d056970c76268d5a13e999e3d122da1b984ce9caf0ae3029"
+    },
+    "assets/avatars/motions/kevin_local/fighter_1.res": {
+      "bytes": 377406,
+      "sha256": "654e39f226f421e0e40c49a00c86a38101017b271012f027d1d4b60cc8540a8a"
+    }
+  },
+  "withheld_from_package": [
+    "assets/avatars/booth/dirndl_1.res"
+  ]
+}

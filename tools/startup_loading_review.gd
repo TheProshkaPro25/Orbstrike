@@ -67,7 +67,7 @@ func run() -> void:
 	var defs := CreatureModels.catalog_defs()
 	check(defs.size() == 67, "в стартовом каталоге 66 обычных вариантов и редкий Ликорез")
 	check(loader.actor_build_count == defs.size() * 2, "две готовые сферы каждого определения для двух игроков")
-	check(loader.arena_build_count == 3, "все три локации построены перед меню")
+	check(loader.arena_build_count == ArenaLocations.LOCATIONS.size(), "все локации построены перед меню")
 	for def in defs:
 		check(loader.has_ball(def.id), "готовый вид %s" % def.id)
 		var first: CreatureBall = loader.take_ball(def.id, 1001, Vector3(0, CreatureBall.RADIUS, 12))
@@ -142,7 +142,7 @@ func run() -> void:
 		await process_frame
 		map_preview_ms.append((Time.get_ticks_usec() - preview_begin) / 1000.0)
 		check(main.arena.get_instance_id() == arena_ids[index], "повторный выбор возвращает ту же арену %s" % index)
-	main.team_menu._close_arena_picker()
+	main.team_menu._arena_picker.confirm()
 	check(counts() == initial_counts, "смена арен не строит геометрию заново")
 	await save("team-ready")
 
