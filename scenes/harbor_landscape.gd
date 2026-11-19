@@ -11,6 +11,8 @@ const LANTERN_GLASS_HEIGHT := 8.6
 const QUAY_LANTERN_RADIUS := 99.9
 const QUAY_LANTERN_SCALE := .78
 const QUAY_LANTERN_FOOT := 11.48
+static var _sea_shader: Shader
+static var _sea_shader_reflections: Shader
 
 static func build(arena: Node3D) -> void:
 	var r := {
@@ -47,7 +49,8 @@ static func build(arena: Node3D) -> void:
 	r.cloth.cull_mode = BaseMaterial3D.CULL_DISABLED
 	# Собственная вода только ЗА каменным кругом: убирает белое пятно и сетку волн,
 	# не меняя материал поля, его геометрию, узоры или физику.
-	arena._static(_sea(),_sea_material(),Vector3(0,.075,0),Vector3.ONE,Vector3.ZERO)
+	arena._harbor_water_mat = _sea_material()
+	arena._static(_sea(),arena._harbor_water_mat,Vector3(0,.075,0),Vector3.ONE,Vector3.ZERO)
 	_square_and_piers(arena,r)
 	_quays(arena,r)
 	_port_work(arena,r)
@@ -613,9 +616,14 @@ static func _sea_material() -> ShaderMaterial:
 	noise.frequency = .09
 	var wave_image := noise.get_seamless_image(256,256)
 	wave_image.generate_mipmaps()
-	mat.shader = Shader.new()
-	mat.shader.code = """shader_type spatial;
-render_mode cull_disabled, specular_disabled;
+	if _sea_shader == null:
+		_sea_shader = Shader.new()
+		_sea_shader.code = """shader_type spatial;
+render_mode cull_disabled, specular_disabled, depth_draw_always;
+#ifdef QUAY_REFLECTIONS
+uniform sampler2D quay_color : hint_screen_texture, repeat_disable, filter_linear;
+uniform sampler2D quay_depth : hint_depth_texture, repeat_disable, filter_nearest;
+#endif
 uniform vec3 moon_direction;
 uniform float square_lantern_radius;
 uniform float square_lantern_height;
@@ -648,28 +656,32 @@ void fragment() {
  float distance_to_eye=length(CAMERA_POSITION_WORLD-wp);
  float detail=1.0-smoothstep(110.0,480.0,distance_to_eye);
  float small_detail=1.0-smoothstep(75.0,230.0,distance_to_eye);
+ float quay_arc=1.0-smoothstep(1.36,1.53,abs(atan(wp.x,-wp.z)));
+ float edge_distance=min(abs(radius-69.6),mix(90.0,abs(radius-100.2),quay_arc));
+ float exposure=smoothstep(1.5,26.0,edge_distance);
  vec2 drift=vec2(t*.18,-t*.10);
- vec3 wavelet=sea_noise(vec2(wp.x*.68+wp.z*.19,-wp.x*.09+wp.z*.25)+drift);
- vec3 short_wavelet=sea_noise(vec2(-wp.x*1.21+wp.z*.47,wp.x*.21+wp.z*.48)-drift*1.8);
+ vec3 wavelet=sea_noise(vec2(wp.x*.51+wp.z*.22,-wp.x*.22+wp.z*.42)+drift);
+ vec3 short_wavelet=sea_noise(vec2(-wp.x*.78+wp.z*.64,wp.x*.63+wp.z*.74)-drift*1.8);
  vec3 skin=sea_noise(wp.xz*vec2(3.4,1.2)+drift*2.1);
  float swell=sin(swell_phase);
  float ripple=sin(cross_phase)*.40+sin(fine_phase)*.30+sin(fine_cross)*.20+sin(small_phase)*.10;
- vec2 slope=vec2(.15,.10)*cos(swell_phase)*.15;
- slope+=vec2(-.33,.49)*cos(cross_phase)*.095;
- slope+=vec2(wavelet.y*.68-wavelet.z*.09,wavelet.y*.19+wavelet.z*.25)*.15*detail;
- slope+=vec2(-short_wavelet.y*1.21+short_wavelet.z*.21,short_wavelet.y*.47+short_wavelet.z*.48)*.075*detail;
- slope+=skin.yz*vec2(3.4,1.2)*.009*small_detail;
+ vec2 slope=vec2(.15,.10)*cos(swell_phase)*.12;
+ slope+=vec2(-.33,.49)*cos(cross_phase)*.06;
+ slope+=vec2(wavelet.y*.51-wavelet.z*.22,wavelet.y*.22+wavelet.z*.42)*.14*detail;
+ slope+=vec2(-short_wavelet.y*.78+short_wavelet.z*.63,short_wavelet.y*.64+short_wavelet.z*.74)*.050*detail;
+ // The lee of the quay retains fine secondary ripples, but the long waves
+ // flatten so the actual reflected arcade remains visible between highlights.
+ slope*=mix(.42,.92,exposure);
+ slope+=skin.yz*vec2(3.4,1.2)*.004*small_detail;
  vec3 wave=normalize(vec3(-slope.x,1.0,-slope.y));
  vec3 sight = normalize(CAMERA_POSITION_WORLD - wp);
  vec3 reflected = reflect(-sight, wave);
  float fresnel=pow(1.0-clamp(dot(sight,wave),0.0,1.0),4.0);
- float quay_arc=1.0-smoothstep(1.36,1.53,abs(atan(wp.x,-wp.z)));
- float edge_distance=min(abs(radius-69.6),mix(90.0,abs(radius-100.2),quay_arc));
  float shallows=exp(-edge_distance*.18);
  float far=smoothstep(140.0,720.0,radius);
- vec3 water=mix(vec3(.012,.046,.061),vec3(.009,.026,.043),far);
- water=mix(water,vec3(.013,.065,.073),shallows*.46);
- water=mix(water,vec3(.027,.052,.073),fresnel*.35);
+ vec3 water=mix(vec3(.059,.113,.142),vec3(.040,.081,.110),far);
+ water=mix(water,vec3(.073,.153,.163),shallows*.46);
+ water=mix(water,vec3(.084,.131,.161),fresnel*.35);
  // A subdued fine crest rhythm remains readable when no bright object reflects.
  float crest=smoothstep(.48,.82,wavelet.x)*smoothstep(.22,.68,short_wavelet.x);
  water+=vec3(.005,.012,.015)*crest*detail;
@@ -695,13 +707,57 @@ void fragment() {
  float moon_alignment=max(dot(reflected,moon_direction),0.0);
  float moon=(pow(moon_alignment,82.0)*.52+pow(moon_alignment,240.0)*.48)
    *(.22+.78*smoothstep(-.12,.65,ripple));
+ // The 21 arcade fronts in _quays follow a cylinder at r=103. Intersect
+ // the reflected ray with it to locate the visible stones across the basin.
+ vec3 quay_ray=reflect(-sight,normalize(mix(vec3(0.0,1.0,0.0),wave,.55)));
+ float cover=0.0;
+ vec4 masonry=vec4(0.0);
+ if (radius<103.0) {
+  float a=max(dot(quay_ray.xz,quay_ray.xz),.0001);
+  float b=dot(wp.xz,quay_ray.xz);
+  float travel=(-b+sqrt(max(0.0,b*b+a*(103.0*103.0-radius*radius))))/a;
+  vec3 wall=wp+quay_ray*travel;
+  cover=(1.0-smoothstep(1.39,1.51,abs(atan(wall.x,-wall.z))))*(1.0-smoothstep(12.0,15.0,wall.y));
+  cover*=1.0-smoothstep(80.0,105.0,travel);
+#ifdef QUAY_REFLECTIONS
+  if (cover>.001) {
+   vec4 wall_view=VIEW_MATRIX*vec4(wall,1.0);
+   vec4 clip=PROJECTION_MATRIX*wall_view;
+   if (clip.w>.1) {
+    vec2 uv=clip.xy/clip.w*.5+.5;
+    vec2 edge=min(uv,1.0-uv);
+    if (min(edge.x,edge.y)>0.0) {
+     float depth=textureLod(quay_depth,uv,0.0).r;
+#if CURRENT_RENDERER == RENDERER_COMPATIBILITY
+     depth=depth*2.0-1.0;
+#endif
+     vec4 hit=INV_PROJECTION_MATRIX*vec4(uv*2.0-1.0,depth,1.0);
+     vec3 hit_view=hit.xyz/hit.w;
+     float hit_y=(INV_VIEW_MATRIX*vec4(hit_view,1.0)).y;
+     // Recessed arches sit behind the quay front. Foreground ships/actors
+     // or sky at the projected coordinate cannot stand in for that wall.
+     float valid=1.0-smoothstep(3.0,12.0,abs(hit_view.z-wall_view.z));
+     valid*=smoothstep(.10,.65,hit_y)*smoothstep(0.0,.04,min(edge.x,edge.y));
+     masonry=vec4(textureLod(quay_color,uv,0.0).rgb,valid*cover);
+    }
+   }
+  }
+#endif
+ }
  ALBEDO=water+vec3(.003,.008,.010)*(ripple+swell*.3);
  ALBEDO=mix(ALBEDO,vec3(.14,.23,.25),foam*.36);
- EMISSION=vec3(.34,.14,.039)*broken+vec3(.040,.070,.105)*moon;
+ ALBEDO*=1.0-fresnel*cover*.84;
+ EMISSION=vec3(.34,.14,.039)*broken+vec3(.040,.070,.105)*moon*(1.0-cover);
+ EMISSION+=masonry.rgb*masonry.a*fresnel;
+ RADIANCE=vec4(vec3(0.0),cover*.85);
  NORMAL=(VIEW_MATRIX*vec4(wave,0.0)).xyz;
- ROUGHNESS=mix(.18,.28,.5+.5*ripple)+foam*.23; SPECULAR=.65;
+ // Broad, subdued scene reflections sit under the broken lantern and moon paths.
+ ROUGHNESS=mix(.235,.345,exposure)+.040*wavelet.x+foam*.23; SPECULAR=.23;
 }
 """
+		_sea_shader_reflections = Shader.new()
+		_sea_shader_reflections.code = _sea_shader.code.replace("shader_type spatial;", "shader_type spatial;\n#define QUAY_REFLECTIONS")
+	apply_water_quality(mat, int(GraphicsSettings.param("screen_effects")) == 2)
 	mat.set_shader_parameter("moon_direction", Locations.HARBOR_MOON.normalized())
 	mat.set_shader_parameter("wavelets",ImageTexture.create_from_image(wave_image))
 	mat.set_shader_parameter("square_lantern_count", float(SQUARE_LANTERN_COUNT))
@@ -710,6 +766,13 @@ void fragment() {
 	mat.set_shader_parameter("quay_lantern_height", QUAY_LANTERN_FOOT + LANTERN_GLASS_HEIGHT * QUAY_LANTERN_SCALE - .075)
 	mat.set_shader_parameter("quay_lantern_radius", QUAY_LANTERN_RADIUS)
 	return mat
+
+
+static func apply_water_quality(mat: ShaderMaterial, reflections: bool) -> void:
+	# Only the full screen-effects preset needs the opaque screen/depth copies.
+	var selected := _sea_shader_reflections if reflections else _sea_shader
+	if mat.shader != selected:
+		mat.shader = selected
 
 
 static func _sea() -> ArrayMesh:

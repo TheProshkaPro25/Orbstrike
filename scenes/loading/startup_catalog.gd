@@ -22,10 +22,17 @@ const CreatureElementFx := preload("res://scenes/presentation/creature_element_f
 
 static func resource_paths() -> Array[String]:
 	var paths: Array[String] = ["res://assets/avatars/vrm/Sakurada_Fumiriya.vrm", "res://assets/avatars/vrm/Vita.vrm", "res://assets/avatars/vrm/HairSample_Male.vrm", "res://assets/avatars/vrm/HairSample_Female.vrm", "res://assets/avatars/vrm/Vivi.vrm"]
+	if ResourceLoader.exists(VrmParts.VITA_FACE_VARIANTS_PATH, "ArrayMesh"):
+		paths.append(VrmParts.VITA_FACE_VARIANTS_PATH)
+	if ResourceLoader.exists(VrmParts.VIVI_FACE_SKIN_PATH, "Texture2D"):
+		paths.append(VrmParts.VIVI_FACE_SKIN_PATH)
 	_collect("res://scenes/", paths)
 	_collect("res://assets/fonts/", paths)
 	_collect("res://assets/avatars/editor/", paths)
+	var hair_additions := HairCatalog.available_additions()
 	for model in WardrobeCatalog.LEGACY_COUNTS.size():
+		for id in hair_additions:
+			paths.append(HairCatalog.asset_path(model, id))
 		for id in WardrobeCatalog.available_ids(model):
 			if WardrobeCatalog.is_addition(model, id): paths.append(WardrobeCatalog.asset_path(model, id))
 	_collect("res://assets/portraits/", paths)
@@ -58,12 +65,11 @@ static func load_paths(paths: Array[String], progress: Callable = Callable()) ->
 	var frame_budget := Time.get_ticks_usec()
 	for index in paths.size():
 		var path := paths[index]
-		if not ResourceLoader.exists(path):
-			result.error = "Отсутствует ресурс: " + path
-			break
-		var resource := ResourceLoader.load(path)
+		var exists := ResourceLoader.exists(path)
+		var resource := ResourceLoader.load(path) if exists else null
 		if resource == null:
-			result.error = "Не удалось загрузить ресурс: " + path
+			if path in [VrmParts.VITA_FACE_VARIANTS_PATH, VrmParts.VIVI_FACE_SKIN_PATH]: continue
+			result.error = ("Не удалось загрузить ресурс: " if exists else "Отсутствует ресурс: ") + path
 			break
 		result.resources[path] = resource
 		if progress.is_valid():
@@ -193,17 +199,25 @@ static func warm_avatar_parts(parent: Node3D) -> void:
 		parent.add_child(avatar)
 		avatar.position.x = (model*2-1)*.7
 		actors.append(avatar)
-	var warm_steps: int = PlayerProfile.LIMITS.vrm_style
+	var warm_steps := HairCatalog.LEGACY_COUNT
 	for model in actors.size(): warm_steps = maxi(warm_steps, WardrobeCatalog.available_ids(model).size())
 	for step in warm_steps:
 		for model in actors.size():
 			var profile := PlayerProfile.DEFAULT.duplicate(true)
 			profile.vrm_model = model
-			profile.vrm_style = step % PlayerProfile.LIMITS.vrm_style
+			if model == PlayerProfile.VITA_MODEL and step == 0:
+				profile.vrm_face = PlayerProfile.FACE_VIVI
+			profile.vrm_style = step % HairCatalog.LEGACY_COUNT
 			profile.vrm_case = 1
 			var outfits := WardrobeCatalog.available_ids(model)
 			profile.vrm_clothes = outfits[step % outfits.size()]
 			actors[model].apply_profile(profile)
+		await parent.get_tree().process_frame
+
+	# The default outfit leaves every new silhouette visible during warmup.
+	for id in HairCatalog.available_additions():
+		for model in actors.size():
+			actors[model].apply_profile({"vrm_model": model, "vrm_style": id})
 		await parent.get_tree().process_frame
 
 	# Upload every denim texture before the menu; no first-use upload during a match.

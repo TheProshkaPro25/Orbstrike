@@ -1,5 +1,33 @@
 # Авторы и лицензии
 
+## Вариант лица Vivi
+
+- **Vivi**, β Ver AvatarSample_2 — VRoid Project / pixiv Inc., CC0 1.0.
+  Нейтральная форма лица перенесена на сетку и мимику Виты. На стыке шеи
+  сохранена геометрия Виты. Текстура лица Vivi подогнана к тону кожи Виты.
+  Радужки и блики взяты из Vivi. [Исходная модель и лицензия](https://vroid.pixiv.help/hc/en-us/articles/360014900273).
+
+## Дополнительные причёски редактора с OpenGameArt
+
+- **Ponytail hair style for female model** — Micket, CC0 1.0. Для игры
+  использована геометрия волос с подгонкой под Сакураду и Виту.
+  [Исходник](https://opengameart.org/content/ponytail-hair-style-for-female-model) ·
+  [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
+- **Anime girl model (rigged, textured, high poly)** — major4zMeakrob,
+  версия OpenGameArt подготовлена bart. Из модели выделены волосы, изменены
+  UV и посадка, применена CC0-текстура волос hiamBoz из каталога Orbstrike.
+  Производные меши волос распространяются по CC BY-SA 3.0 Unported.
+  [Исходник](https://opengameart.org/content/anime-girl-model-rigged-textured-high-poly) ·
+  [Текстура](https://hiamboz.itch.io/stylized-female-base-mesh-blend) ·
+  [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+- **Victoria Rubin** и **Sendagaya Shino** — VRoid Project / pixiv Inc.,
+  CC0 1.0. Использованы причёски и их текстуры с подгонкой на обе основы.
+  [Архивы](https://opengameart.org/content/vroid-studio-cc0-models) ·
+  [Условия Victoria](https://vroid.pixiv.help/hc/en-us/articles/360014900233) ·
+  [Условия Shino](https://vroid.pixiv.help/hc/en-us/articles/360013482714-Sendagaya-Shino).
+
+[Файлы игры, исходные архивы и контрольные суммы](assets/avatars/hair/manifest.json).
+
 ## Визуальные эффекты игры и стенда
 
 - PSCactux — Godot Effects Lab, MIT. [Исходный пакет](https://github.com/PSCactux/godot-effects-lab).
@@ -218,6 +246,12 @@ GPU Cloth Sim 3.0.0 — alien-life, MIT: https://github.com/alien-life/gpu-cloth
 без записи или извлечения звука из аниме. Амплитуда ограничена, при воспроизведении
 дополнительно используются −7/−8 dB. Декор новых арен создан примитивами Godot;
 новые сторонние текстуры и модели не использовались.
+
+## Вступление Каменной бухты — 2026-11-18
+
+Звуки `coastal_intro_wind.ogg` и `coastal_intro_ascent.ogg` сделаны для игры
+из фильтрованного шума и синтезированной восходящей ноты. Исходник генератора —
+`tools/audio/build_coastal_intro.py`. Сторонних записей в эффектах нет.
 
 
 ## Аниме-персонаж игрока — актуальный состав (31 октября 2026)

@@ -1,0 +1,122 @@
+{
+  "version": 1,
+  "coordinates": "Head-local metres in Godot axes, +Y up, +Z front.",
+  "packer": "tools/avatars/pack_fitted_hair.gd",
+  "styles": {
+    "micket_pony": {
+      "id": 11,
+      "author": "Micket",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "page": "https://opengameart.org/content/ponytail-hair-style-for-female-model",
+      "download": "https://opengameart.org/sites/default/files/female_hair_ponytail2.blend",
+      "sha256": "fe75fbed7f08ab70d8d24f075863579cd1dfd0c32d2a5af294b98328d08db2e9",
+      "derivative": "Hair mesh, original unwrap, chestnut material. Rear-only target-derived cap offsets skin by 1.8 mm.",
+      "cap_credit": "Derived from Sakurada Fumiriya or Vita skin, pixiv Inc., CC0-1.0. See assets/avatars/vrm/README.md.",
+      "resources": [
+        {
+          "file": "micket_pony_0.res",
+          "avatar": "Sakurada_Fumiriya",
+          "sha256": "378dc388908a725edd94f4e85c7d900eab177b8c12ec3a9260f3819a71bcca6a",
+          "source_glb_sha256": "3cab029d9c5fb8dda2e603899649169c1503ad2928fe5089b7d24e505e65c20c",
+          "triangles": 928
+        },
+        {
+          "file": "micket_pony_1.res",
+          "avatar": "Vita",
+          "sha256": "519068ee70051aba0e85834af6fc468b5cf0b02c8996ea46d17884bd11e1ee2d",
+          "source_glb_sha256": "4b03d6264719545ff05d71eb718f6ce0c19041fbcc3d127709c1aad48ce86688",
+          "triangles": 897
+        }
+      ]
+    },
+    "anime_long": {
+      "id": 12,
+      "author": "major4zMeakrob; OpenGameArt adaptation submitted by bart",
+      "license": "CC-BY-SA-3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "page": "https://opengameart.org/content/anime-girl-model-rigged-textured-high-poly",
+      "download": "https://opengameart.org/sites/default/files/anime-model.blend",
+      "sha256": "2f6c5802b28d298f8c2864e66e09ea2f29cdfadcdda7f76513e1302e851c8c30",
+      "derivative": "Selected Plane.004, Cube, Cube.002, Cube.003 and Cube.004 only. Baked mirror, thickness and level-one subdivision. Remapped UVs into the brown strand interior of the separate project texture. Raised 4 mm. Distribute this adapted hair under CC BY-SA 3.0 and retain attribution.",
+      "texture": {
+        "path": "assets/avatars/itch/modular_bob_hairbobdifuse.png",
+        "sha256": "3d1ae47d286bf58994a879c9dc4116ed372c2ce95f1905c5c3a526434628b25d",
+        "author": "hiamBoz",
+        "license": "CC0-1.0",
+        "url": "https://hiamboz.itch.io/stylized-female-base-mesh-blend",
+        "uv_pixels": "x 792..868, y 456..724 from top; confirmed painted at all pixels"
+      },
+      "resources": [
+        {
+          "file": "anime_long_0.res",
+          "avatar": "Sakurada_Fumiriya",
+          "sha256": "3b1f08f2d276ffdb493ce6fdee06f45c4222dcdf202c4964d91fbcca8483e69e",
+          "source_glb_sha256": "1ad80fac776854cd4630fc936d55ff3ffd0e71c55ed29ba07156e7f2c93423e4",
+          "triangles": 20584
+        },
+        {
+          "file": "anime_long_1.res",
+          "avatar": "Vita",
+          "sha256": "d69f052585c2ab6fece4261031e07d47c102cb3767f97ccd893b192ff7f3f059",
+          "source_glb_sha256": "126c55f71d40b0fc6e5da21d3ffa4e28e8c407dcbed974a547ff1eea3c35a513",
+          "triangles": 20584
+        }
+      ]
+    },
+    "victoria": {
+      "id": 13,
+      "author": "VRoid Project / pixiv Inc.; submitted by hecko",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "page": "https://opengameart.org/content/vroid-studio-cc0-models",
+      "download": "https://opengameart.org/sites/default/files/avatarsample_g.zip",
+      "sha256": "3dc643aa55bf565512aa445775943b3ee93c71dc157b8ea8394863d494811b34",
+      "derivative": "Victoria Rubin / legacy AvatarSample G. Extracted hair and HairBack scalp by material. Rigid fit. Native UV, PBR image bytes, color factors and alpha settings.",
+      "author_license_page": "https://vroid.pixiv.help/hc/en-us/articles/360014900233",
+      "resources": [
+        {
+          "file": "victoria_0.res",
+          "avatar": "Sakurada_Fumiriya",
+          "sha256": "be8e62d3ba9dad5db475558d9fdcecd415eca58a87d13736b61643046fe23270",
+          "source_glb_sha256": "6d503d71c176fbfe7110c9688712b618cbd542adde0d20be0c85d3a7c5e8390f",
+          "triangles": 15164
+        },
+        {
+          "file": "victoria_1.res",
+          "avatar": "Vita",
+          "sha256": "b33ca440ac46cd627a8fb7f69605b8ffce5cc3916256891563dc399bfb5215a2",
+          "source_glb_sha256": "ee3ea4fd486e1a228370bc00e3ea787ccff9f52ba67456078c1ba91ca5f2f1ae",
+          "triangles": 15164
+        }
+      ]
+    },
+    "shino": {
+      "id": 14,
+      "author": "VRoid Project / pixiv Inc.; submitted by hecko",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "page": "https://opengameart.org/content/vroid-studio-cc0-models",
+      "download": "https://opengameart.org/sites/default/files/sendagaya_shino.zip",
+      "sha256": "ff85ff42c1d041fd66dabdb36761a98557d7b55199f635769f3698a41c0a3696",
+      "derivative": "Sendagaya Shino. Extracted hair and HairBack scalp by material. Rigid fit. Native UV, PBR image bytes, color factors and alpha settings.",
+      "author_license_page": "https://vroid.pixiv.help/hc/en-us/articles/360013482714",
+      "resources": [
+        {
+          "file": "shino_0.res",
+          "avatar": "Sakurada_Fumiriya",
+          "sha256": "d3c7fe5916751f6a763b69752621afeac31c1ba5e15c37d503740a695c097eb9",
+          "source_glb_sha256": "1fcc94b6db5fbea4537c12af04ee679dc7b7fc34f3a9a82907f44bec97551d8d",
+          "triangles": 16810
+        },
+        {
+          "file": "shino_1.res",
+          "avatar": "Vita",
+          "sha256": "6a52b9ddebd5b14bc0f284f4387fffd8ab70bdf421e6a3da509a3aed68c71500",
+          "source_glb_sha256": "32355fa6debd94b12d7b6a0ebf09dd72f562b160f4f31c865dfff8fcb2028180",
+          "triangles": 16810
+        }
+      ]
+    }
+  }
+}

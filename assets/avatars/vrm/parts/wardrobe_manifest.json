@@ -1,18 +1,19 @@
 {
   "generators": {
-    "tools/avatars/build_wardrobe_variants.gd": "2f7a4d8e4caddea955e19123940325ee6b4739ac6e04cfb88fe222668f560524",
+    "tools/avatars/build_wardrobe_variants.gd": "628c6ec5e79f9064816c5794e9574ba603e8bb9a2097dd3f26d0f6b7363422c4",
     "tools/avatars/prepare_vrm_parts.gd": "b44b8116b67c1147b9b9e3ed6253fc2158756a509fba370ef76efc46cd460c27",
-    "tools/avatars/trim_covered_upper_arms.gd": "cb53334d1f4aa30efa8a350dc737bf7fac114d89c1f16ec35f234a3f4151b5fa"
+    "tools/avatars/trim_covered_upper_arms.gd": "cb53334d1f4aa30efa8a350dc737bf7fac114d89c1f16ec35f234a3f4151b5fa",
+    "tools/avatars/fit_costume_scalps.gd": "d132cc69c762dad0afd8656768d1fa88ffd39df990b6c6bfd0fbf3f7b36b05c6"
   },
-  "base_manifest_sha256": "653c3f6361044a72dd2c6a96dcf145350ff29a2542055e63184e835c48722a96",
+  "base_manifest_sha256": "512c698fe5fb940a6933376e28c587670668b04857ebb74a29db524fbaa71dd8",
   "files": {
     "wardrobe_cloth.res": "96c62a0b979a4cfe0cb394b9c505b9d54d35634857ef0704380c7da26a6c66e4",
-    "hair_0_5.res": "511e204f63cb37bba8faa7c60041a6f39f7096250d70a612edf0d3fea580383a",
+    "hair_0_5.res": "b02044c56643ce38436c811409e29c0daa3212cfcf05dc88f1893520a82bda8f",
     "hair_0_6.res": "5906ec61e8325acaff0c1bf700f01b35293cc13dec979369cfd1193f000cdb10",
-    "hair_1_5.res": "a170eecae9764af20856a127d172af6b2a127d3533a23ef9472ec84c6cd4495f",
-    "hair_1_6.res": "ebb9742de11e2640c429af227c542fde1668f32f7eb9815d0fbcd3ee57d8b8fa",
-    "body_0_2.res": "80bb27fcf171f9cf91f2da8a2f2b3e89189222ac5096379724be6e3c6bcf3f6d",
-    "body_0_3.res": "c0c46897de4524431e13352939169dd3b41dce6345708d4da6fd19f290049f49",
+    "hair_1_5.res": "521ca99161366f3beb74b98580417d4f9553f930ce4a4ff9478b9b7bde58a583",
+    "hair_1_6.res": "94c4d246d694cf47e5788f96f6759d89f7644b43cd35860f35e269382e85dfa0",
+    "body_0_2.res": "796e29a78d4179bca5b49719e51b9d2970b9ffb090f22b2a5249453cf69e3916",
+    "body_0_3.res": "4287a754ab7471100ac3e0eb3cc44223107dbfc272e7798aa8476c6fd0b355b7",
     "body_1_3.res": "c61694f3e4cbc834e4a063a132c7d0de02839162dec0a31b07d7236eeb5b3ddf",
     "body_1_4.res": "017b70ba169ee8914f1f9b84865241de22c5bcc4c415b433569dbb74a8879651"
   },

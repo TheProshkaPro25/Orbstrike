@@ -494,28 +494,31 @@ func triangle_polygons(a: Array) -> Array:
 	return output
 
 func make_swept_hair(model: int,actor: Node3D,rig: Skeleton3D) -> ArrayMesh:
-	# The accepted HairSample_Male has coherent front/side/back layered locks.
-	# Preserve authored strand topology/UV and material passes; derive a local
-	# brighter diffuse below while retaining the strand texture detail and alpha.
+	# Turn the whorl and fringe in opposite directions around the head. Rotating
+	# along the skull keeps the authored tapered tips outside the forehead.
 	var source: ArrayMesh = load(OUTPUT+"hair_%d_2.res" % model)
 	var size := source.get_aabb().size.x/.269615
 	var shape := func(p: Vector3) -> Vector3:
-		var q := p
-		var front := smoothstep(.0*size,.075*size,p.z)
-		var low := 1.0-smoothstep(.070*size,.175*size,p.y)
-		var temple := smoothstep(.065*size,.11*size,absf(p.x))
-		var nape := 1.0-smoothstep(-.10*size,-.035*size,p.z)
-		# Short diagonal fringe, with the existing irregular tips and overlapping
-		# locks. Sideburns and nape stop above the old long tips.
-		q.x += .029*size*front*low
-		q.y += .045*size*front*low+.016*size*temple*low+.019*size*nape*low
-		q.z += .006*size*nape*low-.006*size*front*low
-		# The fitted sports donor skull is a little taller than the target face.
-		# Lift the whole crown smoothly, then flatten only the thin ahoge outlier;
-		# this preserves scalp clearance without a new visible cap or tall tuft.
-		q.y += .027*size*smoothstep(.085*size,.170*size,p.y)
-		q.y -= .035*size*smoothstep(.215*size,.260*size,p.y)
-		return q
+		var v := p/size
+		var front := smoothstep(-.075,.082,v.z)
+		var crown := smoothstep(.10,.19,v.y)
+		var ends := 1.0-smoothstep(.035,.165,v.y)
+		var center := Vector3(0,.08,-.012)
+		var offset := v-center
+		var crown_turn := .39*crown*lerpf(.45,1.0,front)
+		offset = offset.rotated(Vector3.BACK,crown_turn)
+		var sweep := .70*front*(1.0-crown)
+		offset = offset.rotated(Vector3.UP,sweep)
+		var q := center+offset
+		# Lift the short side at the temple, retain the longer diagonal on the
+		# opposite side and keep the entire nape below the ear.
+		var short_side := 1.0-smoothstep(-.09,.045,q.x)
+		q.y += ends*(.016+.041*front*short_side)
+		q.y += .021*smoothstep(.060,.180,v.y)
+		q.y -= .028*smoothstep(.211,.260,v.y)
+		q.x *= 1.022
+		q.z += .005*front-.018*ends*smoothstep(.014,.084,-v.z)
+		return q*size
 	var output := deform_mesh(source,shape)
 	var template := part_material(source,0)
 	prepare_sport_hair_textures(template)
@@ -552,7 +555,7 @@ func prepare_sport_hair_textures(template: ShaderMaterial) -> void:
 		for x in original.get_width():
 			var pixel := original.get_pixel(x,y)
 			var value := maxf(pixel.r,maxf(pixel.g,pixel.b))
-			var brightness := .32+.68*sqrt(value)
+			var brightness := .14+.80*sqrt(value)
 			var color := Color(brightness,brightness*.72,brightness*.53,pixel.a)
 			diffuse.set_pixel(x,y,color)
 			color.a = 1.0
@@ -607,16 +610,24 @@ func add_rear_underlayer(output: ArrayMesh,model: int,actor: Node3D,rig: Skeleto
 		var line := PackedVector3Array()
 		for segment in 73:
 			var phi := TAU*segment/72.0
-			var front := smoothstep(.1,.7,sin(phi))
-			var rear := smoothstep(.12,.8,-sin(phi))
-			var theta := row/28.0*lerpf(lerpf(1.85,2.80,rear),.78,front)
+			var forward := sin(phi)
+			var rear := smoothstep(.12,.82,-forward)
+			# Raise the lining over the ear. Only the forward temple needs
+			# backing where the outer fringe sweeps away from the hairline.
+			var temple := smoothstep(.15,.46,forward)*(1.0-smoothstep(.59,.93,forward))
+			var front := smoothstep(.60,.98,forward)
+			var swept_side := smoothstep(-.15,.45,-cos(phi))
+			var nape := 2.79+.045*cos(9.0*phi)+.024*sin(15.0*phi)
+			var hairline := lerpf(lerpf(1.50,nape,rear),1.12,front)+temple*lerpf(-.02,.45,swept_side)
+			var theta := row/28.0*hairline
 			var direction := Vector3(sin(theta)*cos(phi),cos(theta),sin(theta)*sin(phi))
 			var radius := 0.0
 			for tri in skull:
 				var hit = Geometry3D.ray_intersects_triangle(center,direction,tri[0],tri[1],tri[2])
 				if hit != null: radius = maxf(radius,(hit-center).length())
 			if radius < .025*size: radius = 1.0/sqrt(pow(direction.x/(.108*size),2)+pow(direction.y/(.12*size),2)+pow(direction.z/(.117*size),2))
-			line.append(center+direction*(radius+.014*size))
+			var inset := lerpf(lerpf(.004,.001,smoothstep(.88,1.0,row/28.0)),.012,rear)
+			line.append(center+direction*(radius+inset*size))
 		grid.append(line)
 	var tool := SurfaceTool.new()
 	tool.begin(Mesh.PRIMITIVE_TRIANGLES)

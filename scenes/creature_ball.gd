@@ -475,10 +475,11 @@ static var _streak_meshes: Dictionary = {}
 static func _streak_mesh() -> PlaneMesh:
 	if not _streak_meshes.has("mesh"):
 		var pl := PlaneMesh.new()  # лежит на полу
-		pl.size = Vector2(RADIUS * 3.2, RADIUS * 3.2)
+		pl.size = Vector2.ONE * (_shell_r() * 3.2)
 		var pmat := StandardMaterial3D.new()
 		pmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		pmat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+		# Use the soft-dot and particle alpha without summing overlapping marks to white.
+		pmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 		pmat.vertex_color_use_as_albedo = true
 		pmat.albedo_texture = VisualUtil.soft_dot()
 		pmat.cull_mode = BaseMaterial3D.CULL_DISABLED
@@ -492,7 +493,7 @@ static func _streak_ramp(c: Color) -> Gradient:
 	var key := c.to_html()
 	if not _streak_meshes.has(key):
 		var tg := Gradient.new()
-		tg.set_color(0, Color(c.r, c.g, c.b, 0.75).lightened(0.4))
+		tg.set_color(0, Color(c.r, c.g, c.b, 0.75))
 		tg.add_point(0.25, Color(c.r, c.g, c.b, 0.4))
 		tg.set_color(tg.get_point_count() - 1, Color(c.r, c.g, c.b, 0.0))
 		_streak_meshes[key] = tg

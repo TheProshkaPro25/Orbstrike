@@ -26,7 +26,8 @@ for name, expected in original['model_sha256'].items():
 names = ['wardrobe_cloth.res']
 names += [f'hair_{model}_{style}.res' for model in range(2) for style in [5, 6]]
 names += ['body_0_2.res', 'body_0_3.res', 'body_1_3.res', 'body_1_4.res']
-generators = ['tools/avatars/build_wardrobe_variants.gd', 'tools/avatars/prepare_vrm_parts.gd']
+generators = ['tools/avatars/build_wardrobe_variants.gd', 'tools/avatars/prepare_vrm_parts.gd',
+              'tools/avatars/trim_covered_upper_arms.gd', 'tools/avatars/fit_costume_scalps.gd']
 if args.record:
     data = dict(generators={name: digest(ROOT / name) for name in generators},
                 base_manifest_sha256=digest(PARTS / 'manifest.json'),

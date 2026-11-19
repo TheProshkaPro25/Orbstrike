@@ -5,6 +5,11 @@ var white: ImageTexture
 var cloth_texture: Texture2D
 
 func run() -> void:
+	if "--tousled-and-vita-fringe" in OS.get_cmdline_user_args():
+		for model in 2: save_hair_variant(model,0)
+		save_hair_variant(1,1)
+		quit()
+		return
 	var image := Image.create(2,2,false,Image.FORMAT_RGBA8)
 	image.fill(Color.WHITE)
 	white = ImageTexture.create_from_image(image)
@@ -28,10 +33,7 @@ func run() -> void:
 	assert(ResourceSaver.save(cloth,OUTPUT+"wardrobe_cloth.res",ResourceSaver.FLAG_COMPRESS)==OK)
 	cloth_texture = load(OUTPUT+"wardrobe_cloth.res")
 	for model in 2:
-		for variant in 2:
-			var source: ArrayMesh = load(OUTPUT+"hair_%d_%d.res" % [model,2 if variant == 0 else 0])
-			var hair := deform_mesh(source,func(p: Vector3) -> Vector3: return hair_shape(p,variant))
-			assert(ResourceSaver.save(hair,OUTPUT+"hair_%d_%d.res" % [model,5+variant],ResourceSaver.FLAG_COMPRESS)==OK)
+		for variant in 2: save_hair_variant(model,variant)
 		var hoodie: ArrayMesh
 		if model == 0:
 			hoodie = load(OUTPUT+"body_0_1.res")
@@ -49,19 +51,61 @@ func run() -> void:
 	print("Wardrobe variants prepared; original parts untouched")
 	quit()
 
-func hair_shape(p: Vector3,variant: int) -> Vector3:
-	var q := p
+func save_hair_variant(model: int, variant: int) -> void:
+	var mesh := build_hair_variant(model,variant)
+	assert(ResourceSaver.save(mesh,OUTPUT+"hair_%d_%d.res" % [model,5+variant],ResourceSaver.FLAG_COMPRESS) == OK)
+
+func build_hair_variant(model: int, variant: int) -> ArrayMesh:
+	var source: ArrayMesh = load(OUTPUT+"hair_%d_%d.res" % [model,2 if variant == 0 else 0])
 	if variant == 0:
-		var crown := smoothstep(.065,.22,p.y)
-		q.y += .062*crown*(.65+.35*sin(p.x*36+p.z*27))
-		q.x *= 1.0+.20*crown
-		q.z -= .018*crown
-	else:
-		var bang := smoothstep(.025,.13,p.z)*smoothstep(-.01,.14,p.y)
-		q.x += .060*bang
-		q.y += .021*bang
-		q.z += .005*bang
+		var size := source.get_aabb().size.x/.269615
+		var tuft_top := source.get_aabb().end.y/size
+		return deform_mesh(source,func(p: Vector3) -> Vector3: return tousled_point(p/size,tuft_top)*size)
+	var swept := deform_mesh(source,asymmetric_point)
+	if model == 1: return deform_mesh(swept,vita_forelock_point)
+	return swept
+
+func tousled_point(v: Vector3, tuft_top: float) -> Vector3:
+	var ends := 1.0-smoothstep(.042,.152,v.y)
+	var front := smoothstep(-.032,.088,v.z)
+	var outer := smoothstep(.052,.12,absf(v.x))
+	var crown := smoothstep(.065,.195,v.y)
+	var azimuth := atan2(v.x,v.z)
+	var ripple := sin(3.0*azimuth+.55)+.34*sin(5.0*azimuth-.75)
+	var flare := (.011+.012*ripple)*outer*(1.0-front*.66)
+	var q := v
+	q.x += signf(v.x)*flare
+	# Smooth through the whorl's axis so the UV highlight bends with the locks.
+	q.x += .009*crown*v.x/sqrt(v.x*v.x+v.z*v.z+.022*.022)
+	q.y += .014*crown+.018*outer*(.55+.45*ripple)+.038*front*ends
+	q.y -= .017*smoothstep(.205,.260,v.y)
+	q.z += .006*front-.009*(1.0-front)*outer
+	# Bend the thin crown tuft across the part. Its tip remains readable from
+	# three quarters while its root follows the same surface as the forelock.
+	var tuft := smoothstep(tuft_top-.023,tuft_top-.012,v.y)*smoothstep(.002,.058,-v.x)
+	q.x -= .005*tuft
+	q.z -= .019*tuft
+	q.y += .0035*tuft
+	# Guide the pointed temple locks forward of the ear rim on each base.
+	var temple := outer*ends*smoothstep(-.012,.026,v.z)*(1.0-smoothstep(.066,.108,v.z))
+	q.z += .009*temple
+	q.y += .003*temple
 	return q
+
+func asymmetric_point(p: Vector3) -> Vector3:
+	var q := p
+	var bang := smoothstep(.025,.13,p.z)*smoothstep(-.01,.14,p.y)
+	q.x += .060*bang
+	q.y += .021*bang
+	q.z += .005*bang
+	return q
+
+func vita_forelock_point(p: Vector3) -> Vector3:
+	# Ease the middle of the diagonal forelock around Vita's forehead.
+	var front := smoothstep(-.015,.075,p.z)
+	var height := smoothstep(.033,.085,p.y)*(1.0-smoothstep(.150,.204,p.y))
+	var normal := Vector3(p.x,.38*(p.y-.093),p.z+.014).normalized()
+	return p+normal*(.013*front*height)
 
 func deform_mesh(source: ArrayMesh,shape: Callable) -> ArrayMesh:
 	var output := ArrayMesh.new()

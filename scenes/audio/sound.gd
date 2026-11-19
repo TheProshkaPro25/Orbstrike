@@ -27,6 +27,7 @@ const SFX_NAMES: Array[String] = [
 	"ability_play", "ability_cancel", "ability_fusion",
 	"ability_fire", "ability_gale", "ability_light", "ability_stone", "ability_shadow", "ability_tide",
 	"impact_fire", "impact_gale", "impact_light", "impact_stone", "impact_shadow", "impact_tide",
+	"coastal_intro_wind", "coastal_intro_ascent",
 ]
 ## Суффиксы стихий по Attr.A (как GameData.ATTR_KEYS): имя способности и файлов криков.
 const ATTR_KEYS: Array[String] = ["fire", "gale", "light", "stone", "shadow", "tide"]
@@ -153,6 +154,15 @@ func _load(path: String) -> AudioStream:
 ## Есть ли файл эффекта (для стенда и проверок).
 func has_sfx(sfx_name: String) -> bool:
 	return _load(SFX_DIR + sfx_name) != null
+
+
+## Плеер для эффекта, время жизни которого задаёт вызывающая сцена.
+func create_sfx_player(sfx_name: String, db: float) -> AudioStreamPlayer:
+	var player := AudioStreamPlayer.new()
+	player.bus = "SFX"
+	player.stream = _load(SFX_DIR + sfx_name)
+	player.volume_db = db
+	return player
 
 
 func _play_stream(s: AudioStream, db: float, pitch: float, bus_name: String = "SFX") -> void:

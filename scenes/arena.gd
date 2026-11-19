@@ -39,6 +39,8 @@ const PHYS_HALF := 130.0
 const WALL_HEIGHT := 6.0
 
 var _floor_mat: ShaderMaterial
+var _coastal_water_mat: ShaderMaterial
+var _harbor_water_mat: ShaderMaterial
 var _wave_tw: Tween
 var _decor: Node3D
 ## Парящие осколки: [узел, базовая высота, фаза, скорость вращения].
@@ -89,6 +91,11 @@ func apply_quality() -> void:
 		lamp.visible = essential or (local_lights and detail >= min_quality)
 	preload("res://scenes/landscape_atmosphere.gd").quality(self,low)
 	_floor_mat.set_shader_parameter("max_quality", 1.0 if high else 0.0)
+	var water_reflections := int(GraphicsSettings.param("screen_effects")) == 2
+	if _coastal_water_mat != null:
+		_coastal_water_mat.set_shader_parameter("local_reflections", water_reflections)
+	if _harbor_water_mat != null:
+		preload("res://scenes/harbor_landscape.gd").apply_water_quality(_harbor_water_mat, water_reflections)
 	for l in _sanctuary_lights:
 		var essential := bool(l.get_meta("essential_fixture", false))
 		l.visible = l is SpotLight3D or essential or local_lights

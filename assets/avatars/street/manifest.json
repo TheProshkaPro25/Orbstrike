@@ -7,9 +7,9 @@
     "scenes/avatar/mtoon_palette/street_bomber_trim.gdshaderinc": "d0404919992644ee2622a4580678793266d944e6a905805022cb318df02cae95",
     "scenes/avatar/mtoon_palette/mtoon_common.gdshaderinc": "a8582cb6d649196d859801f0cd70788124df41eeefc516653191dd23c62c2a5d",
     "assets/avatars/vrm/parts/body_0_0.res": "75eb3e35b767d7172f31c507f2b40c497fde93d1fc87e77aa39927ac1a752d12",
-    "assets/avatars/vrm/parts/body_0_1.res": "2cc96c47de459ebfd94982a55c8531961a22052dc4742d85b8f10ec7dd71ac13",
+    "assets/avatars/vrm/parts/body_0_1.res": "4e13e0afb9fce69e82b5759207c23409e199f1467c2bac4140548780cdf95f14",
     "assets/avatars/vrm/parts/body_1_0.res": "51f993670230d9e6eb55c56f2d761c0d6f16021bc0761b26c6f253dca9f831cd",
-    "assets/avatars/vrm/parts/body_0_2.res": "80bb27fcf171f9cf91f2da8a2f2b3e89189222ac5096379724be6e3c6bcf3f6d",
+    "assets/avatars/vrm/parts/body_0_2.res": "796e29a78d4179bca5b49719e51b9d2970b9ffb090f22b2a5249453cf69e3916",
     "assets/avatars/vrm/parts/body_1_3.res": "c61694f3e4cbc834e4a063a132c7d0de02839162dec0a31b07d7236eeb5b3ddf",
     "assets/avatars/vrm/parts/hair_0_0.res": "1e57df43df0fcfcf83d4344723e1e8de7dbaf3a713ab107f0c22fc39fdc9fa90",
     "assets/avatars/vrm/parts/hair_1_0.res": "5f20d708c42edff102cdc345d3883789e2268dfc9dbee8dbddfc8776eeba15b9",
@@ -18,10 +18,11 @@
     "assets/avatars/vrm/parts/wardrobe_cloth.res": "96c62a0b979a4cfe0cb394b9c505b9d54d35634857ef0704380c7da26a6c66e4",
     "assets/avatars/vrm/Sakurada_Fumiriya.vrm": "d8fb05f33e377df028cb6b9d58c441ce68326c41fa23f6c735d40c65ae3dc710",
     "assets/avatars/vrm/Vita.vrm": "f2bf78f28a24e2f75f5ca0b6c3b646654c394e4b03592dfaa0d0633ef0972b4d",
-    "assets/avatars/vrm/HairSample_Male.vrm": "7aeca142dabbc26ba0f5b9c998c8f3cb6df341287d67788427ac837223785a3f"
+    "assets/avatars/vrm/HairSample_Male.vrm": "7aeca142dabbc26ba0f5b9c998c8f3cb6df341287d67788427ac837223785a3f",
+    "tools/avatars/fit_costume_scalps.gd": "d132cc69c762dad0afd8656768d1fa88ffd39df990b6c6bfd0fbf3f7b36b05c6"
   },
   "outputs": {
-    "assets/avatars/street/bomber_0.res": "aa1a2ca7f9f154036216075ed1cea1ef8e5a35bc448b14cf87573e0a9b7dc125",
+    "assets/avatars/street/bomber_0.res": "658186a5b4a25a947623bbf1416ca3c605c36cf5de36210f4ee0903682f73943",
     "assets/avatars/street/bomber_1.res": "a2a509cf0ab8d7ca51f3fc13adc53e847f562d683641ee51a0986b6035914278",
     "assets/avatars/street/ponytail_0.res": "a2977df6f539b2b60165161f3c0232fa048082d5cf953b35a9e4fa4ce775a9cc",
     "assets/avatars/street/ponytail_1.res": "e41e4475fdc354bc355ce65d3005044c37969f981d0eb7fac2662ea9b5be9314",

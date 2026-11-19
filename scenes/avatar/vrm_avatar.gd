@@ -16,6 +16,13 @@ var case_part: MeshInstance3D
 var _hair_source := -1
 var _outfit := -1
 var appearance_profile: Dictionary = {}
+var _vita_face: MeshInstance3D
+var _vita_face_original: ArrayMesh
+const VIVI_SKIN_MATERIAL := "F00_000_00_Face_00_SKIN"
+const VIVI_TEXTURE_MATERIALS := [
+	VIVI_SKIN_MATERIAL, "F00_000_00_EyeIris_00_EYE", "F00_000_00_EyeHighlight_00_EYE",
+]
+var _vita_face_materials: Dictionary[ShaderMaterial, ShaderMaterial] = {}
 
 func select_model(index: int) -> void:
 	if selected == index and actor != null: return
@@ -24,6 +31,8 @@ func select_model(index: int) -> void:
 		remove_child(actor)
 		actor.queue_free()
 	meshes.clear()
+	_vita_face = null
+	_vita_face_original = null
 	selected = clampi(index,0,MODELS.size()-1)
 	actor = MODELS[selected].instantiate() as Node3D
 	add_child(actor)
@@ -92,10 +101,7 @@ func apply_profile(profile: Dictionary) -> void:
 			"hair":
 				index = p.vrm_hair
 				color = HAIR_COLORS[index]
-			"eyes":
-				index = p.vrm_eyes
-				color = EYE_COLORS[index]
-			"outfit":
+			"eyes", "outfit":
 				continue
 			"skin":
 				color = SKIN_TINTS[p.vrm_skin]
@@ -106,8 +112,21 @@ func apply_profile(profile: Dictionary) -> void:
 			mat.set_shader_parameter("_ShadeColor",entry.shade_color * color)
 
 	_apply_denim(p.vrm_denim if VrmParts.supports_denim(selected,p.vrm_clothes) else 0)
+	_apply_face_variant_textures()
+	set_eye_palette(p.vrm_eyes, p.vrm_eye_color)
 	set_outfit_palette(p.vrm_outfit, p.vrm_outfit_color)
 	_apply_face()
+
+func set_eye_palette(index: int, custom_color: String) -> void:
+	appearance_profile.vrm_eyes = index
+	appearance_profile.vrm_eye_color = custom_color
+	var custom := not custom_color.is_empty()
+	var color: Color = Color.html(custom_color) if custom else EYE_COLORS[index]
+	for entry in palette_materials:
+		if entry.role != "eyes": continue
+		var material: ShaderMaterial = entry.material
+		material.set_shader_parameter("palette_enabled", custom or index != 0)
+		material.set_shader_parameter("palette_color", color)
 
 ## The editor can update the dye without rebuilding the fighter or resetting its pose.
 func set_outfit_palette(index: int, custom_color: String) -> void:
@@ -143,16 +162,22 @@ func _apply_denim(index: int) -> void:
 func _localize_materials() -> void:
 	palette_materials.clear()
 	local_materials.clear()
+	_vita_face_materials.clear()
 	var copies: Dictionary = {}
 	for mesh in meshes:
+		var material_source: Mesh = _vita_face_original if mesh == _vita_face else mesh.mesh
 		for surface in mesh.mesh.get_surface_count():
-			var original := mesh.mesh.surface_get_material(surface) as ShaderMaterial
-			if mesh.mesh.has_meta("part_source"): original = VrmParts.material_for(mesh.mesh,surface)
+			var original := material_source.surface_get_material(surface) as ShaderMaterial
+			if material_source.has_meta("part_source"): original = VrmParts.material_for(material_source,surface)
 			if original == null: continue
-			var slot := _costume_color_role(original.resource_name) if mesh == body_part else ""
+			var slot := "hair" if mesh == hair_part else ""
+			if mesh == body_part: slot = _costume_color_role(original.resource_name)
 			var key := "%d:%s" % [original.get_instance_id(), slot]
+			var face_texture := mesh == _vita_face and original.resource_name in VIVI_TEXTURE_MATERIALS
+			if face_texture: key += ":face"
 			if not copies.has(key): copies[key] = _copy_material(original,slot)
 			mesh.set_surface_override_material(surface,copies[key])
+			if face_texture: _vita_face_materials[original] = copies[key]
 
 func _costume_color_role(name: String) -> String:
 	if name == AUTHORED_UNIFORM_TRIM: return "preset_fabric"
@@ -167,7 +192,7 @@ func _copy_material(original: ShaderMaterial, assigned_role: String = "") -> Sha
 	var name := original.resource_name
 	var role := assigned_role
 	if role in ["denim", "custom_fabric", "preset_fabric"]: role = "outfit"
-	elif role == "outfit": pass
+	elif role in ["outfit", "hair"]: pass
 	elif "_HAIR" in name or "FaceBrow" in name: role = "hair"
 	elif "EyeIris" in name: role = "eyes"
 	elif "_SKIN" in name: role = "skin"
@@ -175,6 +200,7 @@ func _copy_material(original: ShaderMaterial, assigned_role: String = "") -> Sha
 	var key := original.shader.resource_path.get_file()
 	if VrmPaletteShaders.SHADERS.has(key):
 		copy.shader = VrmPaletteShaders.SHADERS[key]
+		if assigned_role == "hair": copy.set_shader_parameter("palette_hair_dye", true)
 		if not role.is_empty():
 			palette_materials.append({
 				"material":copy, "role":role, "denim":assigned_role == "denim",
@@ -214,7 +240,17 @@ func _freeze_secondary_motion() -> void:
 
 func _setup_parts() -> void:
 	for mesh in meshes:
-		if not "Face" in str(mesh.name): mesh.hide()
+		if not "Face" in str(mesh.name):
+			mesh.hide()
+			continue
+		if selected != PlayerProfile.VITA_MODEL or mesh.name != &"Face": continue
+		var original := mesh.mesh as ArrayMesh
+		if original == null: continue
+		var prepared := VrmParts.vita_face_variants(original)
+		if prepared == null: continue
+		_vita_face = mesh
+		_vita_face_original = original
+		mesh.mesh = prepared
 	var attachment := BoneAttachment3D.new()
 	attachment.bone_name = &"Head"
 	skeleton.add_child(attachment)
@@ -242,10 +278,12 @@ func _setup_parts() -> void:
 	_outfit = 0
 
 func _sync_parts(p: Dictionary) -> void:
-	var source: int = [selected,2,3,4,1-selected,5,6,7,8,9,10][p.vrm_style]
+	var source: int = p.vrm_style
+	if source < HairCatalog.LEGACY_COUNT:
+		source = [selected,2,3,4,1-selected,5,6,7,8,9,10][source]
 	if _hair_source == source and _outfit == p.vrm_clothes: return
 	_hold_materials_until_draw()
-	hair_part.mesh = VrmParts.HAIR[selected][source]
+	hair_part.mesh = VrmParts.hair_mesh(selected, source)
 	body_part.mesh = VrmParts.outfit_mesh(selected, p.vrm_clothes)
 	hair_part.visible = not body_part.mesh.get_meta("covers_hair", false)
 	_hair_source = source
@@ -256,6 +294,51 @@ func _apply_face() -> void:
 	apply_profile_face_to(meshes)
 
 
+func has_vivi_face() -> bool:
+	return _vita_face != null
+
+
+func set_face_variant(id: int) -> void:
+	if not has_vivi_face() or appearance_profile.is_empty(): return
+	if id != PlayerProfile.FACE_ORIGINAL and id != PlayerProfile.FACE_VIVI: return
+	appearance_profile.vrm_face = id
+	_apply_face_variant_textures()
+	_apply_face_variant_to(_vita_face)
+
+func _apply_face_variant_textures() -> void:
+	if _vita_face_materials.is_empty(): return
+	var vivi: bool = appearance_profile.vrm_face == PlayerProfile.FACE_VIVI
+	var clean_skin: Texture2D
+	if vivi and ResourceLoader.exists(VrmParts.VIVI_FACE_SKIN_PATH, "Texture2D"):
+		clean_skin = load(VrmParts.VIVI_FACE_SKIN_PATH) as Texture2D
+	for original in _vita_face_materials:
+		var source: ShaderMaterial = original
+		var skin: Texture2D = clean_skin if original.resource_name == VIVI_SKIN_MATERIAL else null
+		if vivi and original.resource_name != VIVI_SKIN_MATERIAL:
+			var donor := VrmParts.source_material(VrmParts.VIVI_SOURCE, original.resource_name)
+			if donor != null: source = donor
+		var material := _vita_face_materials[original]
+		while material != null:
+			material.set_shader_parameter("_MainTex", skin if skin != null else source.get_shader_parameter("_MainTex"))
+			material.set_shader_parameter("_ShadeTexture", skin if skin != null else source.get_shader_parameter("_ShadeTexture"))
+			material = material.next_pass as ShaderMaterial
+			if source.next_pass is ShaderMaterial: source = source.next_pass as ShaderMaterial
+
+
+func _apply_face_variant_to(mesh: MeshInstance3D) -> void:
+	var index := mesh.find_blend_shape_by_name(VrmParts.VITA_FACE_VIVI_BLEND)
+	if index < 0: return
+	var vivi: bool = appearance_profile.vrm_face == PlayerProfile.FACE_VIVI
+	mesh.set_blend_shape_value(index, 1.0 if vivi else 0.0)
+	var blink := 0.0
+	if vivi:
+		for shape in index:
+			if str(mesh.mesh.get_blend_shape_name(shape)).ends_with("_EYE_Close"):
+				blink = mesh.get_blend_shape_value(shape)
+				break
+	mesh.set_blend_shape_value(mesh.find_blend_shape_by_name(VrmParts.VITA_FACE_VIVI_BLINK), blink)
+
+
 func apply_profile_face_to(target_meshes: Array[MeshInstance3D]) -> void:
 	if appearance_profile.is_empty(): return
 	var eye: int = appearance_profile.vrm_eye_shape
@@ -263,6 +346,7 @@ func apply_profile_face_to(target_meshes: Array[MeshInstance3D]) -> void:
 	var mouth: int = appearance_profile.vrm_mouth
 	for mesh in target_meshes:
 		if not "Face" in str(mesh.name): continue
+		if has_vivi_face(): _apply_face_variant_to(mesh)
 		for index in mesh.get_blend_shape_count():
 			var name := str(mesh.mesh.get_blend_shape_name(index))
 			var weight := -1.0

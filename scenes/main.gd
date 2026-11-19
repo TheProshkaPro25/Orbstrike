@@ -256,6 +256,8 @@ uniform vec4 sky_horizon : source_color = vec4(0.08, 0.14, 0.19, 1.0);
 uniform vec4 sky_mist : source_color = vec4(0.11, 0.035, 0.13, 1.0);
 uniform bool harbor_sky = false;
 uniform vec3 harbor_moon_direction = vec3(-1.0, 0.0, 0.0);
+uniform bool coastal_sky = false;
+uniform vec3 coastal_sun_direction = vec3(0.0, 1.0, 0.0);
 // Непрерывные волны без floor/hash: нет клеток на гранях небесного куба.
 void sky() {
 	vec3 d = normalize(EYEDIR);
@@ -271,6 +273,13 @@ void sky() {
 		float clouds = smoothstep(0.36, 0.85, mist) * (1.0 - smoothstep(0.03, 0.26, abs(d.y - 0.15)));
 		col = zenith * 0.69 + sky_horizon.rgb * horizon * 0.78 + sky_mist.rgb * clouds * 0.61;
 		col += vec3(0.048, 0.077, 0.128) * halo;
+	}
+	// The real directional light already supplies direct sunlight and its reflection.
+	if (coastal_sky && !AT_CUBEMAP_PASS) {
+		float alignment = max(dot(d, coastal_sun_direction), 0.0);
+		float disk = smoothstep(0.99979, 0.99987, alignment);
+		col += vec3(0.58, 0.36, 0.16) * pow(alignment, 190.0);
+		col += vec3(3.3, 2.7, 1.8) * disk;
 	}
 	COLOR = col;
 }
@@ -472,10 +481,12 @@ func _apply_arena_environment(index: int) -> void:
 	var coastal := Locations.CoastalStyle.applies(index)
 	_env.background_mode = Environment.BG_SKY
 	_env.fog_enabled = true
+	_env.fog_mode = Environment.FOG_MODE_DEPTH if coastal else Environment.FOG_MODE_EXPONENTIAL
 	_arena_sky.set_shader_parameter("sky_zenith", Color(data.zenith).linear_to_srgb())
 	_arena_sky.set_shader_parameter("sky_horizon", Color(data.horizon).linear_to_srgb())
 	_arena_sky.set_shader_parameter("sky_mist", Color(data.mist).linear_to_srgb())
 	_arena_sky.set_shader_parameter("harbor_sky", harbor)
+	_arena_sky.set_shader_parameter("coastal_sky", coastal)
 	if harbor: _arena_sky.set_shader_parameter("harbor_moon_direction", Locations.HARBOR_MOON.normalized())
 	# Let the far sea and the sky meet in the same moonlit haze.
 	_env.fog_light_color = Color(.21, .32, .42) if harbor else data.fog
@@ -505,9 +516,14 @@ func _apply_arena_environment(index: int) -> void:
 		_env.ambient_light_energy = .50
 		_env.tonemap_exposure = 1.0
 		_env.glow_intensity = .40
-		_env.fog_density = .0009
-		_env.fog_sky_affect = .25
-		_sun.rotation_degrees = Vector3(-48, -30, 0)
+		# Start a light blue-grey veil past the nearby actors, letting it build
+		# gradually through the straits to the existing offshore horizon.
+		_env.fog_depth_begin = 52.0
+		_env.fog_depth_end = 1750.0
+		_env.fog_depth_curve = .68
+		_env.fog_density = .73
+		_sun.rotation_degrees = Locations.CoastalStyle.SUN_ROTATION
+		_arena_sky.set_shader_parameter("coastal_sun_direction", _sun.global_basis.z)
 		_sun.light_color = data.sun
 		_sun.light_energy = data.sun_energy
 		_sun.shadow_opacity = .72

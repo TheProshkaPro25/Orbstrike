@@ -9,7 +9,7 @@ MANIFEST = ROOT / 'assets/avatars/sport/manifest.json'
 OUTPUTS = [f'assets/avatars/sport/{part}_{model}.res'
            for part in ['tracksuit', 'swept_hair'] for model in range(2)]
 INPUTS = [f'tools/avatars/{name}.gd' for name in
-          ['build_sport_set', 'build_street_set', 'build_wardrobe_variants', 'prepare_vrm_parts']]
+          ['build_sport_set', 'build_street_set', 'build_wardrobe_variants', 'prepare_vrm_parts', 'fit_costume_scalps']]
 INPUTS += [f'assets/avatars/vrm/parts/body_{model}_{outfit}.res'
            for model, count in [(0, 4), (1, 5)] for outfit in range(count)]
 INPUTS += [f'assets/avatars/itch/parts/body_{model}.res' for model in range(2)]

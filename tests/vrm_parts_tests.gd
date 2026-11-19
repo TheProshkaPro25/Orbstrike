@@ -37,6 +37,7 @@ func run() -> void:
 		view.select_model(model)
 		view.set_face_view(true)
 		for style in PlayerProfile.LIMITS.vrm_style:
+			if not HairCatalog.has_style(style): continue
 			view._select(style,"vrm_style")
 			await cell(view,hair_atlas,Vector2i(style*300,model*300),Vector2i(300,300))
 			check(view.avatar.hair_part.mesh != null,"hair exists %d/%d" % [model,style])

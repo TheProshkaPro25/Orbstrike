@@ -110,7 +110,7 @@ func run() -> void:
 		for model in 2:
 			editor.select_model(model)
 			for key in ["vrm_style", "vrm_clothes"]:
-				var last: int = VrmParts.HAIR_STYLE_COUNT-1 if key == "vrm_style" else VrmParts.BODY[model].size()-1
+				var last: int = HairCatalog.LEGACY_COUNT-1 if key == "vrm_style" else VrmParts.BODY[model].size()-1
 				editor.gallery_buttons[key][last].pressed.emit()
 				check(editor.draft[key] == last and editor.gallery_buttons[key][last].button_pressed,"gallery selects ID for base %d" % model)
 		editor._show_category("hair")
@@ -176,7 +176,7 @@ func run() -> void:
 			for key in ["vrm_style", "vrm_clothes"]:
 				var id: int = editor.draft[key]
 				var icon: AtlasTexture = editor.gallery_buttons[key][id].icon
-				var tile: int = id + (VrmParts.HAIR_STYLE_COUNT if key == "vrm_clothes" else 0)
+				var tile: int = id + (11 if key == "vrm_clothes" else 0)
 				check(icon.atlas == CharacterEditor.CATALOGS[sport_model] and icon.region == Rect2((tile%5)*160,(tile/5)*192,160,192),"sport thumbnail uses correct atlas cell")
 			if size.x == 1280:
 				editor._show_category("image")

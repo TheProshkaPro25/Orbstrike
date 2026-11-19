@@ -22,8 +22,8 @@ parser.add_argument('--only', nargs='+', choices=['experience', 'autoplay'], hel
 args = parser.parse_args()
 if args.logic_only and not args.checks:
     parser.error('--logic-only требует явные --checks')
-if args.logic_only and any(name in args.checks for name in ('illustrated-harbor', 'coastal-arena')):
-    parser.error('coastal-arena/illustrated-harbor требуют графический вывод')
+if args.logic_only and any(name in args.checks for name in ('illustrated-harbor', 'coastal-arena', 'hair-coverage')):
+    parser.error('Выбранная проверка требует графический вывод')
 if args.only and args.profile:
     parser.error('--only и --profile выбирают область разными способами; укажите один')
 MODELS = ['animation', 'support', 'flight', 'idle', 'stance', 'review-state', 'preparation-cache', 'preview-pool', 'memory-catalog', 'cloth-sharing', 'hd-material-retention']
@@ -47,6 +47,7 @@ SCRIPTS = {
     'stone-tide-fx': 'tools/test_creature_element_fx.gd',
     'sport-neck': 'tools/test_sport_neck.gd',
     'sport-style': 'tools/test_sport_style.gd',
+    'hair-coverage': 'tools/test_hair_coverage.gd',
     'wardrobe-fit': 'tools/test_wardrobe_fit.gd',
     'wardrobe-catalog-motion': 'tools/test_wardrobe_catalog_motion.gd',
     'wardrobe-palette': 'tools/test_wardrobe_palette.gd',
@@ -208,7 +209,7 @@ if args.profile == 'presentation' and args.checks:
     if 'ratnik-comparison' in args.checks: plan.append('ratnik-comparison')
     for optional in ['creature-element-fx', 'stone-tide-fx', 'device-battle-hud', 'portrait-client-smoke', 'wardrobe-catalog-motion']:
         if optional in args.checks: plan.append(optional)
-    for optional in ['menu-shadows', 'sport-neck', 'sport-style', 'wardrobe-fit', 'wardrobe-palette', 'booth-outfits', 'startup-failure', 'creature-preview-refresh', 'preview-refresh', 'optimization', 'location-reveal', 'hud-gdelta', 'card-hover', 'battle-ui-followup', 'portrait-background', 'portrait-standby', 'low-load', 'match-bottleneck']:
+    for optional in ['menu-shadows', 'sport-neck', 'sport-style', 'hair-coverage', 'wardrobe-fit', 'wardrobe-palette', 'booth-outfits', 'startup-failure', 'creature-preview-refresh', 'preview-refresh', 'optimization', 'location-reveal', 'hud-gdelta', 'card-hover', 'battle-ui-followup', 'portrait-background', 'portrait-standby', 'low-load', 'match-bottleneck']:
         if optional in args.checks: plan.append(optional)
 if args.checks:
     unknown = set(args.checks) - set(plan)
@@ -268,7 +269,7 @@ for name in plan:
         if name == 'a03-anatomy': graphics = True
         if name in ['gpu-acceptance', 'armat-load', 'armat-textured', 'armat-expressive', 'armat-shell', 'armat-eyes']: graphics = True
         if name in ['match-fx', 'creature-element-fx', 'stone-tide-fx', 'device-battle-hud', 'portrait-client-smoke', 'wardrobe-catalog-motion']: graphics = True
-        if name in ['menu-shadows', 'sport-neck', 'sport-style', 'wardrobe-fit', 'wardrobe-palette', 'booth-outfits', 'startup-failure', 'creature-preview-refresh', 'match-lifecycle', 'preview-refresh', 'optimization', 'location-reveal', 'illustrated-harbor', 'coastal-arena', 'hud-gdelta', 'card-hover', 'battle-ui-followup', 'portrait-background', 'portrait-standby', 'low-load', 'match-bottleneck']: graphics = True
+        if name in ['menu-shadows', 'sport-neck', 'sport-style', 'hair-coverage', 'wardrobe-fit', 'wardrobe-palette', 'booth-outfits', 'startup-failure', 'creature-preview-refresh', 'match-lifecycle', 'preview-refresh', 'optimization', 'location-reveal', 'illustrated-harbor', 'coastal-arena', 'hud-gdelta', 'card-hover', 'battle-ui-followup', 'portrait-background', 'portrait-standby', 'low-load', 'match-bottleneck']: graphics = True
         if not graphics or args.logic_only:
             command += ['--headless']
         script = SCRIPTS[name]

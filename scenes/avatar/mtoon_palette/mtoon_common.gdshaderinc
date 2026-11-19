@@ -41,12 +41,23 @@ const bool CALCULATE_LIGHTING_IN_FRAGMENT = true;
 // Project palette adaptation. Source MToon is MIT; see LICENSE.
 uniform bool palette_enabled = false;
 uniform bool palette_fabric_dye = false;
+uniform bool palette_hair_dye = false;
 uniform vec4 palette_color : source_color = vec4(1.0);
 float palette_value(vec3 color) {
     return max(color.r,max(color.g,color.b));
 }
 vec3 apply_palette(vec3 original) {
     return palette_color.rgb * palette_value(original);
+}
+vec3 apply_hair_dye(vec3 original) {
+    // Expand the tones in dark source maps so the painted strands survive dyeing.
+    float value = clamp(palette_value(original), 0.0, 1.0);
+    float lifted = value / (0.075 + 0.925 * value);
+    float tone = mix(value, lifted, 0.65);
+    vec3 dye = palette_color.rgb;
+    float dark_dye = 1.0 - smoothstep(0.025, 0.36, palette_value(dye));
+    vec3 sheen = mix(dye, vec3(1.0), 0.55) * (0.10 * dark_dye);
+    return dye * (0.09 + 0.91 * tone) + sheen * tone;
 }
 float dyed_fabric_tone(float value) {
     // Lift even dark source textures while keeping their tonal detail.
@@ -273,7 +284,10 @@ void fragment() {
 	shade *= _ShadeColor;
 	lit *= _Color;
     if (palette_enabled) {
-        if (palette_fabric_dye) {
+        if (palette_hair_dye) {
+            lit.rgb = apply_hair_dye(lit.rgb);
+            shade.rgb = apply_hair_dye(shade.rgb);
+        } else if (palette_fabric_dye) {
             apply_fabric_dye(lit.rgb, shade.rgb);
         } else {
             lit.rgb = apply_palette(lit.rgb);

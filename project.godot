@@ -15,12 +15,14 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Orbstrike"
-config/version="0.4.6"
+config/version="0.4.6.5"
 run/main_scene="res://scenes/loading/boot.tscn"
-run/max_fps=60
+boot_splash/show_image=false
+boot_splash/bg_color=Color(0.018, 0.026, 0.042, 1)
 config/use_custom_user_dir=true
 config/custom_user_dir_name="godot/app_userdata/Сферы Стихий"
 config/features=PackedStringArray("4.7")
+run/max_fps=60
 config/custom_user_dir_name.windows="Godot/app_userdata/Сферы Стихий"
 config/custom_user_dir_name.macos="Godot/app_userdata/Сферы Стихий"
 config/custom_user_dir_name.illustrated_harbor="godot/app_userdata/Orbstrike Illustrated Harbor"

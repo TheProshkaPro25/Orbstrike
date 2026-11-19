@@ -2,7 +2,7 @@ class_name CameraRig
 extends Camera3D
 ## Режиссёрская камера в духе аниме: набор ракурсов (таблица SHOTS), плавные переходы и мгновенные
 ## каты, лёгкое «плечо» (мягкий шум), тряска, облёты, наезды и слежение за шаром с запаздыванием.
-## Камера никогда не опускается ниже MIN_Y (не проваливается под пол).
+## В ходе матча камера не опускается ниже MIN_Y (не проваливается под пол).
 ##
 ## Режимы: STATIC — цель неподвижна (обзор дрейфует сам); FOLLOW — за шаром; ORBIT — облёт точки
 ## по дуге (угол, высота и точка взгляда меняются по времени); DOLLY — наезд от текущей точки к цели.
@@ -167,11 +167,11 @@ static func _push_out(p: Vector3, box: AABB) -> Vector3:
 	return Vector3(c.x + d.x * t, p.y, c.z + d.y * t)
 
 
-## Итоговый кадр: чистая позиция + «плечо» (мягкий шум, разный по осям) + крен; не ниже MIN_Y.
-func _apply_transform() -> void:
+## Итоговый кадр с мягким шумом, креном и ограничением высоты.
+func _apply_transform(floor_y: float = MIN_Y) -> void:
 	var hand := Vector3(sin(_t * 0.83) + 0.4 * sin(_t * 2.1 + 1.0), sin(_t * 0.67 + 2.0) + 0.3 * sin(_t * 1.7), sin(_t * 0.59 + 4.0)) * _hand
 	var cam_pos := _base + hand
-	cam_pos.y = maxf(cam_pos.y, MIN_Y)
+	cam_pos.y = maxf(cam_pos.y, floor_y)
 	var look := _look + hand * 0.5
 	position = cam_pos
 	if not is_inside_tree():
@@ -536,7 +536,7 @@ func location_preview_view(interior: bool = false) -> void:
 
 
 ## Explicit establishing frame: no overview drift, shake or stale follow state.
-func location_frame(at: Vector3, target: Vector3, lens: float = 52.0, roll: float = 0.0) -> void:
+func location_frame(at: Vector3, target: Vector3, lens: float = 52.0, roll: float = 0.0, floor_y: float = MIN_Y) -> void:
 	mode = Mode.STATIC
 	_drift = 0.0
 	_hand = 0.0
@@ -548,4 +548,4 @@ func location_frame(at: Vector3, target: Vector3, lens: float = 52.0, roll: floa
 	_look = target
 	_goal_fov = lens
 	fov = lens
-	_apply_transform()
+	_apply_transform(floor_y)

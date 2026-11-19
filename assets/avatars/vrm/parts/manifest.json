@@ -11,10 +11,10 @@
   },
   "files": {
     "body_0_0.res": "75eb3e35b767d7172f31c507f2b40c497fde93d1fc87e77aa39927ac1a752d12",
-    "body_0_1.res": "2cc96c47de459ebfd94982a55c8531961a22052dc4742d85b8f10ec7dd71ac13",
+    "body_0_1.res": "4e13e0afb9fce69e82b5759207c23409e199f1467c2bac4140548780cdf95f14",
     "body_1_0.res": "51f993670230d9e6eb55c56f2d761c0d6f16021bc0761b26c6f253dca9f831cd",
-    "body_1_1.res": "6dd3b1709f96e68ea5648292e3cab5247dddc964037128babc101e37196d203b",
-    "body_1_2.res": "a8b5c0193427406d05f3aaaed65284ebfffc0ad68c7dc3e0a5e46401b7fecf8e",
+    "body_1_1.res": "654709501afc5d2d099da6f135c44ec2d0f97bd8bcca3a18d86f6a09d1d5de9e",
+    "body_1_2.res": "6f4ad9947a2e3f54e9b37345ff9d80355aeeb4b76782bc3b8735c95149815ed6",
     "hair_0_0.res": "1e57df43df0fcfcf83d4344723e1e8de7dbaf3a713ab107f0c22fc39fdc9fa90",
     "hair_0_1.res": "ebb1a208f35ee5196d4fad71fe2cd3a3c4c0d6e7fdf6f15c1209710515ae3264",
     "hair_0_2.res": "6f8d68f861479332760b5647437e9526b3eb65c09f60fcdda701068aa7bfa368",
@@ -38,5 +38,8 @@
   },
   "skin_mask_postprocessor": {
     "tools/avatars/trim_covered_upper_arms.gd": "cb53334d1f4aa30efa8a350dc737bf7fac114d89c1f16ec35f234a3f4151b5fa"
+  },
+  "scalp_fit_postprocessor": {
+    "tools/avatars/fit_costume_scalps.gd": "d132cc69c762dad0afd8656768d1fa88ffd39df990b6c6bfd0fbf3f7b36b05c6"
   }
 }

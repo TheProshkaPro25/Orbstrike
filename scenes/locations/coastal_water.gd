@@ -5,7 +5,7 @@ const WATER_SHADER := preload("res://scenes/locations/coastal_water.gdshader")
 static var _wavelets: ImageTexture
 
 
-static func build(parent: Node3D, sea_level: float = -4.5, extent: Vector2 = Vector2(1800.0, 1800.0)) -> Node3D:
+static func build(parent: Node3D, sea_level: float = -4.5, extent: Vector2 = Vector2(1800.0, 1800.0)) -> ShaderMaterial:
 	var root := Node3D.new()
 	root.name = "ClearCoastalWater"
 	parent.add_child(root)
@@ -37,7 +37,7 @@ static func build(parent: Node3D, sea_level: float = -4.5, extent: Vector2 = Vec
 	horizon.extra_cull_margin = 1.0
 	root.add_child(horizon)
 	root.set_meta("coastal_water", true)
-	return root
+	return material
 
 
 static func _outer_sea(half_extent: Vector2, radius: float) -> ArrayMesh:

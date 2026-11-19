@@ -187,6 +187,13 @@ func _check_replay(game: Online, card: ArenaCardNode, catalog: GameLoading) -> v
 	_check(not trail._active and not trail.visible, "resident flight trail switches off during rolling")
 	_check(ball._sparks.emitting and ball._streak.global_position.y > card.surface_height_at(ball.global_position),
 		"recorded movement emits sparks and puts marks above the card")
+	var mark := ball._streak.mesh as PlaneMesh
+	var material := mark.material as StandardMaterial3D
+	_check(mark.size.is_equal_approx(Vector2.ONE * CreatureBall._shell_r() * 3.2),
+		"roll marks use the size of the visible shell")
+	_check(material.transparency == BaseMaterial3D.TRANSPARENCY_ALPHA \
+		and material.blend_mode == BaseMaterial3D.BLEND_MODE_MIX,
+		"roll marks keep their soft edges and color when they overlap")
 	await _capture("online-flight-rolling")
 	_check(await _until(func() -> bool: return not game.events.is_busy(), 3.0), "flight queue drains after miss")
 	var last: Array = points[-1]

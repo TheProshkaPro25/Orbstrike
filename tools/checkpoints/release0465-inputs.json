@@ -1,0 +1,121 @@
+{
+  "version": "0.4.6.5",
+  "godot": "4.7.2.stable.arch_linux.ed1daf0bf",
+  "windows_preset": "Windows Desktop",
+  "local_roster_size": 67,
+  "arena_count": 4,
+  "public_source_total_outfits": 21,
+  "windows_release_total_outfits": 24,
+  "local_total_outfits": 25,
+  "network_protocol": "online-rules-11",
+  "public_server": {
+    "version": "0.4.0",
+    "protocol": "online-rules-10",
+    "compatible": false
+  },
+  "overlay_file_count": 5,
+  "package_only_fitted_resources": {
+    "assets/avatars/booth/fantasy_robe_0.res": {
+      "bytes": 2556168,
+      "sha256": "ad4730de2471ac8a7a4722f10d2de55b2abefc5086a11266e466a064f996e27d"
+    },
+    "assets/avatars/booth/operator_1.res": {
+      "bytes": 9372193,
+      "sha256": "99da4e2107f2edcf763dddf9b9d6195f642e2fbcb688e46e183f43fe1df62569"
+    },
+    "assets/avatars/booth/dreamy_angel_1.res": {
+      "bytes": 11418710,
+      "sha256": "e6883607c5a3f9004a4c4cd308a484c37d3eb9bfe21a8b00f54d8a195cfdf662"
+    }
+  },
+  "package_only_prepared_motion_libraries": {
+    "assets/avatars/motions/kevin_local/fighter_0.res": {
+      "bytes": 377269,
+      "sha256": "9aef6e8c3d110e27d056970c76268d5a13e999e3d122da1b984ce9caf0ae3029"
+    },
+    "assets/avatars/motions/kevin_local/fighter_1.res": {
+      "bytes": 377406,
+      "sha256": "654e39f226f421e0e40c49a00c86a38101017b271012f027d1d4b60cc8540a8a"
+    }
+  },
+  "withheld_from_package": [
+    "assets/avatars/booth/dirndl_1.res"
+  ],
+  "baseline_tag": "v0.4.6",
+  "baseline_commit": "b6c27f4dbe958759e58f64df42064e0e2b4a73e7",
+  "source_parent": "20e1e65d234ec7b65b18e3e950a21f339e5c9aa6",
+  "windows_release_x86_64_template": {
+    "bytes": 109268480,
+    "sha256": "d34d36f3be1a6c49c56525ae86469b92e4f417ddf0b43cf00dd80c385c4b0562"
+  },
+  "startup": {
+    "scene": "res://scenes/loading/boot.tscn",
+    "engine_splash_image": false,
+    "splash_rgba": [
+      0.018,
+      0.026,
+      0.042,
+      1
+    ],
+    "export_console_wrapper": 0
+  },
+  "editor_hair_styles_per_avatar": 15,
+  "added_hair_meshes": {
+    "assets/avatars/hair/anime_long_0.res": {
+      "bytes": 352500,
+      "sha256": "3b1f08f2d276ffdb493ce6fdee06f45c4222dcdf202c4964d91fbcca8483e69e"
+    },
+    "assets/avatars/hair/anime_long_1.res": {
+      "bytes": 352388,
+      "sha256": "d69f052585c2ab6fece4261031e07d47c102cb3767f97ccd893b192ff7f3f059"
+    },
+    "assets/avatars/hair/micket_pony_0.res": {
+      "bytes": 19934,
+      "sha256": "378dc388908a725edd94f4e85c7d900eab177b8c12ec3a9260f3819a71bcca6a"
+    },
+    "assets/avatars/hair/micket_pony_1.res": {
+      "bytes": 19306,
+      "sha256": "519068ee70051aba0e85834af6fc468b5cf0b02c8996ea46d17884bd11e1ee2d"
+    },
+    "assets/avatars/hair/shino_0.res": {
+      "bytes": 1420407,
+      "sha256": "d3c7fe5916751f6a763b69752621afeac31c1ba5e15c37d503740a695c097eb9"
+    },
+    "assets/avatars/hair/shino_1.res": {
+      "bytes": 1420465,
+      "sha256": "6a52b9ddebd5b14bc0f284f4387fffd8ab70bdf421e6a3da509a3aed68c71500"
+    },
+    "assets/avatars/hair/victoria_0.res": {
+      "bytes": 1312886,
+      "sha256": "be8e62d3ba9dad5db475558d9fdcecd415eca58a87d13736b61643046fe23270"
+    },
+    "assets/avatars/hair/victoria_1.res": {
+      "bytes": 1313328,
+      "sha256": "b33ca440ac46cd627a8fb7f69605b8ffce5cc3916256891563dc399bfb5215a2"
+    }
+  },
+  "vivi_face_resources": {
+    "assets/avatars/vrm/Vivi.vrm": {
+      "bytes": 18089136,
+      "sha256": "eaf902e041a7a810f1423599ae75682f61184ab6ef0206da9a8ed9caa8ec3a9d"
+    },
+    "assets/avatars/vrm/parts/vita_face_variants.res": {
+      "bytes": 3771243,
+      "sha256": "6a61a782f892911c7f7e2173e22e96c6419603d1a59f719891c62b655c3d34d7"
+    },
+    "assets/avatars/vrm/parts/vivi_face_skin.png": {
+      "bytes": 310701,
+      "sha256": "f3c79ec5edf0cd63bbae6cc4d9561f994cb75bb41f1fa262d79d07777aaf750c"
+    }
+  },
+  "coastal_intro_audio": {
+    "assets/audio/sfx/coastal_intro_ascent.ogg": {
+      "bytes": 18780,
+      "sha256": "a3cf5194a224a91f30b484d44da75c5bec0a4dc5d0a10848255309247a14022a"
+    },
+    "assets/audio/sfx/coastal_intro_wind.ogg": {
+      "bytes": 67404,
+      "sha256": "6548cf0d714a8f394a644c32829ff7b11508c7d75e9f2c7d29f3dd683b111b76"
+    }
+  }
+}
