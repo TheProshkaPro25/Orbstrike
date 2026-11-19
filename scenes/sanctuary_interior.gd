@@ -260,6 +260,36 @@ static func _door(arena: Node3D, center: Vector3, yaw: float, box: Mesh, rod: Me
 	_arch_trim(arena, center, yaw, rod, stone, 23, 43, 10, 1)
 	_arch_trim(arena, center, yaw, rod, gold, 25, 43, 11, 1)
 
+	# Six enamel leaves frame the north door. Each catches the same travelling light.
+	var hub := center + Basis(Vector3.UP, yaw) * Vector3(0, 42, 4)
+	var rim := TorusMesh.new()
+	rim.inner_radius = 6.9
+	rim.outer_radius = 7.5
+	rim.rings = 48
+	rim.ring_segments = 6
+	arena._static(rim, gold, hub, Vector3.ONE, Vector3(PI * .5, yaw, 0))
+	var leaf := SphereMesh.new()
+	leaf.radial_segments = 4
+	leaf.rings = 2
+	var enamel := ShaderMaterial.new()
+	enamel.shader = preload("res://scenes/shaders/sanctuary_enamel.gdshader")
+	var petals := MultiMesh.new()
+	petals.transform_format = MultiMesh.TRANSFORM_3D
+	petals.use_colors = true
+	petals.mesh = leaf
+	petals.instance_count = 6
+	for el in 6:
+		var frame := Basis(Vector3.UP, yaw) * Basis(Vector3.BACK, TAU * el / 6.0)
+		petals.set_instance_transform(el, Transform3D(frame * Basis.from_scale(Vector3(3.2, 6.6, 1.8)), frame * Vector3.UP * 3.7))
+		petals.set_instance_color(el, VisualUtil.attr_color(el).srgb_to_linear())
+	var rose := MultiMeshInstance3D.new()
+	rose.name = "SixElementDoorRose"
+	rose.multimesh = petals
+	rose.material_override = enamel
+	rose.position = hub
+	rose.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	arena._decor.add_child(rose)
+
 static func _shrine(arena: Node3D, el: int, box: Mesh, shaft: Mesh, rod: Mesh, stone: Material, gold: Material, dark: Material) -> void:
 	var angle := TAU * el / 6.0
 	var center := Vector3(cos(angle) * 91, 0, sin(angle) * 91)

@@ -169,7 +169,7 @@ func gate_slots() -> Array:
 
 
 func report(uid: int, slot: int) -> void:
-	if finished:
+	if state == State.STOPPED or finished:
 		return
 	_execute(Action.Kind.REPORT_LANDING,HUMAN,&"",uid,slot)
 
@@ -268,9 +268,14 @@ func do_launch(player: int) -> void:
 	else:
 		hud.set_hint("Соперник выбирает цель…")
 		await presentation.wait(0.45)
+		if not is_inside_tree() or state != State.CHOOSING_LAUNCH:
+			return
 		var target: int = ai_target_slot
-		if not gate_slots().has(target):
-			target = int(gate_slots()[0])
+		var slots := gate_slots()
+		if slots.is_empty():
+			return
+		if not slots.has(target):
+			target = int(slots[0])
 		state = State.IN_FLIGHT
 		await director.launch_to(target)
 

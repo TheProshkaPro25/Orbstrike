@@ -14,6 +14,7 @@ signal creature_opened(uid: int)
 signal battle_presented(attacker: int, defender: int, powers: Array)
 signal battle_cleared
 signal landing_ready(uid: int, slot: int)
+signal _flight_finished
 var resources: Resources
 var state: State
 var controller: MatchController
@@ -33,6 +34,7 @@ var balls: Dictionary:
 var fighters: Array[VrmFighter]:
 	get: return resources.fighters if resources != null else []
 var flying := false
+var _flight_ball: CreatureBall
 var fighter_shots := {0:{"throw":0,"card_throw":0,"command":0,"gate":0},1:{"throw":0,"card_throw":0,"command":0,"gate":0}}
 
 ## Same synchronous reveal entry for landing, battle arrival and replacement.
@@ -321,10 +323,12 @@ func play_strike(attacker: CreatureBall, target: CreatureBall, strength: float =
 ## Выбирается карта-цель. Начальная скорость рассчитана заранее; дальше действуют
 ## настоящие столкновения, отскоки и трение. Учитывается фактическая точка остановки.
 func launch_to(slot: int) -> void:
-	if flying or state.active_ball == null or not gate_slots().has(slot):
+	if flying or not is_inside_tree() or not is_instance_valid(state.active_ball) or not is_instance_valid(arena) or not gate_slots().has(slot):
 		return
 	flying = true
 	var ball: CreatureBall = state.active_ball
+	_flight_ball = ball
+	var tree := get_tree()
 	var start: Vector3 = ball.global_position
 	var target: Vector3 = arena.slot_position(slot)
 	target += Vector3(rng.randf_range(-.20, .20) * Arena.CARD_W, 0, rng.randf_range(-.18, .18) * Arena.CARD_H)
@@ -333,9 +337,6 @@ func launch_to(slot: int) -> void:
 	hud.dismiss_coach("throw")
 	hud.dismiss_coach("prethrow")
 	hud.set_hint("Бросок на ворота %d…" % (slot + 1))
-	var bounce_feedback := func(_point: Vector3, impact: float) -> void:
-		if flying and cam.mode == CameraRig.Mode.FOLLOW:
-			cam.shake(clampf(impact / 80.0, .06, .18), .11)
 	var held_center := Vector3.INF
 	if fighters.size() == 2:
 		var fighter: VrmFighter = fighters[owner_of(ball.uid)]
@@ -350,30 +351,66 @@ func launch_to(slot: int) -> void:
 		# point with the existing ballistic solver, then keep real physics.
 		while fighter.motion_time < fighter.ball_release_time():
 			ball.global_position = fighter.ball_hold_position()
-			await get_tree().process_frame
+			await tree.process_frame
+			if not _owns_flight(ball):
+				return
 		held_center = ball._shell_center()
 		ball.global_position = fighter.ball_hold_position()+Vector3.UP*(CreatureBall.RADIUS-CreatureBall._shell_r())
 		start = ball.global_position
 		ball._visual.position = Vector3.ZERO
 		ball.set_process(was_processing)
-	ball.surface_bounced.connect(bounce_feedback)
+	ball.surface_bounced.connect(_on_flight_bounced)
+	ball.settled.connect(_on_flight_settled, CONNECT_ONE_SHOT)
 	SoundFx.i().play("ball_throw", -3.0)
 	ball.launch_towards(target)
 	# Первый реальный кадр скорости задаёт направление погони.
 	cam.follow_throw(ball, target - start, held_center)
 	cam.shake(.10, .12)
-	var landing: Array = await ball.settled
-	var actual: Vector3 = landing[1]
-	ball.surface_bounced.disconnect(bounce_feedback)
+	# The caller awaits through landing_ready, on a signal owned by this scene.
+	await _flight_finished
+
+
+func _owns_flight(ball: CreatureBall) -> bool:
+	return is_inside_tree() and is_instance_valid(ball) and _flight_ball == ball
+
+
+## Catalog actors outlive the scene. Disconnect before their lease is returned.
+func cancel_flight() -> void:
+	if not flying:
+		return
+	var ball := _flight_ball
+	_flight_ball = null
+	flying = false
+	if is_instance_valid(ball):
+		if ball.surface_bounced.is_connected(_on_flight_bounced):
+			ball.surface_bounced.disconnect(_on_flight_bounced)
+		if ball.settled.is_connected(_on_flight_settled):
+			ball.settled.disconnect(_on_flight_settled)
+	_flight_finished.emit()
+
+
+func _on_flight_bounced(_point: Vector3, impact: float) -> void:
+	if flying and cam.mode == CameraRig.Mode.FOLLOW:
+		cam.shake(clampf(impact / 80.0, .06, .18), .11)
+
+
+func _on_flight_settled(ball: CreatureBall, actual: Vector3) -> void:
+	if not _owns_flight(ball):
+		return
+	ball.surface_bounced.disconnect(_on_flight_bounced)
 	state.active_ball = null
 	var landed_slot: int = arena.slot_at(actual)
 	ball.hold_landing_pose()
 	if landed_slot < 0 or not gate_slots().has(landed_slot):
 		cam.zoom_slot(actual)
 		await wait(.12)
+		if not _owns_flight(ball):
+			return
 	# Попадание сразу передаётся раскрытию: один непрерывный облёт без серии катов.
+	_flight_ball = null
 	flying = false
 	landing_ready.emit(ball.uid, landed_slot)
+	_flight_finished.emit()
 
 
 ## Маленькая карта летит до самого пола. Волна и рост начинаются только после касания.
@@ -382,6 +419,10 @@ const CARD_FLIGHT_TIME := 0.95
 const CARD_GROW_TIME := 0.68
 
 func card_placed(player: int, slot: int) -> void:
+	if not is_inside_tree():
+		return
+	var revision := resources._revision
+	var tree := get_tree()
 	var node: ArenaCardNode = CARD_SCENE.instantiate()
 	world.add_child(node)
 	var pos: Vector3 = arena.slot_position(slot)
@@ -406,7 +447,9 @@ func card_placed(player: int, slot: int) -> void:
 		while fighter.motion_time < fighter.card_release_time():
 			node.global_transform = fighter.card_hand_transform("Right").scaled_local(Vector3.ONE*CARD_FLIGHT_SCALE)
 			node.set_meta("flight_scale",node.scale)
-			await get_tree().process_frame
+			await tree.process_frame
+			if not is_inside_tree() or revision != resources._revision:
+				return
 		start = node.global_position
 		flight_scale = node.scale
 		release_basis = node.global_basis.orthonormalized()
@@ -435,6 +478,8 @@ func card_placed(player: int, slot: int) -> void:
 		node.scale = flight_scale
 		cam.card_flight_view(node.position, false, 1.0 if player == 0 else -1.0), 0.0, 1.0, CARD_FLIGHT_TIME)
 	await tw.finished
+	if not is_inside_tree() or revision != resources._revision:
+		return
 	SoundFx.i().stop_sfx("gate_flight_wind")
 	node.position = pos
 	node.rotation = Vector3.ZERO
@@ -444,12 +489,16 @@ func card_placed(player: int, slot: int) -> void:
 	cam.card_expansion_view(pos)
 	SoundFx.i().play("card_place", -17.0, 0.01)
 	await wait(0.10)
+	if not is_inside_tree() or revision != resources._revision:
+		return
 	node.set_meta("placement_stage", &"expanding")
 	arena.element_wave(pos, col, 0.80)
 	SoundFx.i().play("gate_expand_wave", -4.0, 0.0)
 	var grow := create_tween()
 	grow.tween_property(node, "scale", Vector3.ONE, CARD_GROW_TIME).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	await grow.finished
+	if not is_inside_tree() or revision != resources._revision:
+		return
 	node.set_meta("placement_stage", &"ready")
 	node.set_field_surface(true)
 	cam.overview()

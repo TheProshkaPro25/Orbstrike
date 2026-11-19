@@ -6,6 +6,7 @@ signal play_requested
 signal advance_requested
 signal exit_requested
 
+const Bracket := preload("res://scenes/ui/tournament_bracket.gd")
 const SURFACE := Color("111e30")
 const BORDER := Color("34475f")
 const ACCENT := Color("82d7df")
@@ -18,18 +19,22 @@ var content: VBoxContainer
 var exit_button: Button
 var scroll: ScrollContainer
 
-var _tournament
-var _campaign
+var _tournament: Tournament
+var _campaign: Campaign
 var _built := false
 var _busy := false
 var _play_next := false
 var _title: Label
 var _subtitle: Label
 var _notice: Label
+var _overview: BoxContainer
+var _group_section: VBoxContainer
 var _groups: GridContainer
+var _fixtures: GridContainer
 var _participants: GridContainer
 var _margin: MarginContainer
 var _warning: Label
+var _actions: BoxContainer
 
 
 func _ready() -> void:
@@ -68,7 +73,6 @@ func _build() -> void:
 	shell.add_theme_constant_override("separation", 12)
 	_margin.add_child(shell)
 	_title = _label("Турнир стихий", 32, UiTheme.GOLD)
-	_title.add_theme_font_override("font", UiTheme.heading_font())
 	shell.add_child(_title)
 	_subtitle = _label("", 16, UiTheme.TEXT_DIM)
 	shell.add_child(_subtitle)
@@ -86,36 +90,41 @@ func _build() -> void:
 	_notice = _label("", 15, UiTheme.TEXT_DIM)
 	_notice.visible = false
 	shell.add_child(_notice)
-	_warning = _label("Если выйти во время встречи, она начнётся заново с тем же начальным раскладом. Результаты завершённых встреч сохраняются.", 14, UiTheme.TEXT_DIM)
+	_warning = _label("Прерванная встреча начнётся заново с тем же раскладом. Завершённые встречи сохраняются.", 14, UiTheme.TEXT_DIM)
 	shell.add_child(_warning)
-	var actions := HBoxContainer.new()
-	actions.add_theme_constant_override("separation", 12)
-	shell.add_child(actions)
+	_actions = BoxContainer.new()
+	_actions.add_theme_constant_override("separation", 12)
+	shell.add_child(_actions)
 	primary_button = Button.new()
 	primary_button.custom_minimum_size = Vector2(0, 50)
 	primary_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	primary_button.add_theme_color_override("font_color", ACCENT)
 	primary_button.pressed.connect(_on_primary)
-	actions.add_child(primary_button)
+	_actions.add_child(primary_button)
 	exit_button = Button.new()
 	exit_button.text = "В главное меню"
 	exit_button.custom_minimum_size = Vector2(0, 50)
 	exit_button.pressed.connect(func() -> void:
 		if not _busy:
 			exit_requested.emit())
-	actions.add_child(exit_button)
+	_actions.add_child(exit_button)
 
 
-func display(tournament, history_entries: Array = [], campaign = null) -> void:
+func display(tournament: Tournament, history_entries: Array = [], campaign: Campaign = null) -> void:
 	_build()
 	_tournament = tournament
 	_campaign = campaign
 	_title.text = campaign.cup_title() if campaign != null else "Турнир стихий"
 	visible = true
 	_busy = false
+	_play_next = false
 	_notice.visible = false
 	_clear(content)
+	scroll.scroll_vertical = 0
+	_overview = null
+	_group_section = null
 	_groups = null
+	_fixtures = null
 	_participants = null
 	if _tournament == null:
 		_subtitle.text = "Турнир недоступен"
@@ -123,29 +132,33 @@ func display(tournament, history_entries: Array = [], campaign = null) -> void:
 		_warning.visible = false
 		exit_button.disabled = false
 		return
-	var state: Dictionary = _tournament.state
-	var finished: bool = _tournament.completed()
+	var state := _tournament.state
+	var finished := _tournament.completed()
+	var next := _tournament.next_match()
+	var next_id := String(next.get("id", ""))
+	var group_fixtures := {"A": [], "B": []}
 	var played := 0
 	var total := 15
-	for entry in state.get("matches", []):
+	for entry: Dictionary in state.matches:
+		var stage := String(entry.stage)
+		if stage.begins_with("group_"):
+			group_fixtures[stage.trim_prefix("group_")].append(entry)
 		if int(entry.get("attempt", 0)) > 0:
 			total += 1
-		if not entry.get("result", {}).is_empty():
+		if entry.has("result"):
 			played += 1
-	_subtitle.text = "8 участников · 2 группы → полуфиналы → финал · Сложность: %s (фиксирована)\nЗавершено встреч: %d / %d" % [AIPlayer.difficulty_name(int(state.get("difficulty", 1))), played, total]
+	_subtitle.text = "%s · Встречи: %d / %d · Сложность: %s" % [_current_stage(next, finished), played, total, AIPlayer.difficulty_name(int(state.get("difficulty", 1)))]
 	if _campaign != null:
 		_subtitle.text = _campaign.progress_text() + "\n" + _subtitle.text
 	_warning.visible = not finished
-	_build_next(finished)
-	_build_groups()
-	_build_bracket()
+	_build_next(next, finished)
+	_build_overview(group_fixtures, next_id)
+	_build_fixtures(group_fixtures, next_id)
 	_build_participants()
-	_build_results()
 	if finished:
 		_build_history(history_entries)
 	primary_button.visible = not finished or (_campaign != null and _campaign.can_advance())
 	if finished and _campaign != null and _campaign.can_advance():
-		_play_next = false
 		primary_button.text = "Следующий кубок →"
 	primary_button.disabled = false
 	exit_button.disabled = false
@@ -166,101 +179,150 @@ func set_busy(value: bool) -> void:
 	exit_button.disabled = value
 
 
-func _build_next(finished: bool) -> void:
+func _build_next(next: Dictionary, finished: bool) -> void:
 	var box := _card(content, true)
+	box.add_theme_constant_override("separation", 4)
 	if finished:
 		var champion: int = _tournament.champion()
 		var own: bool = champion == 0
 		box.add_child(_label("ВЫ — ЧЕМПИОН!" if own else "ТУРНИР ЗАВЕРШЁН", 18, GOOD if own else ACCENT))
-		box.add_child(_label(_name(champion), 30, UiTheme.GOLD))
-		box.add_child(_label("Победитель турнира. Все встречи и итог сохранены.", 16, UiTheme.TEXT_DIM))
+		box.add_child(_label(_name(champion), 26, UiTheme.GOLD))
+		box.add_child(_label("Итог турнира сохранён.", 15, UiTheme.TEXT_DIM))
 		if _campaign != null:
 			box.add_child(_label("Кампания завершена: все три кубка сохранены." if _campaign.completed() else "Следующий кубок открыт. Соперники сохранят опыт ваших встреч; команда и сложность прежние.", 16, GOOD))
 		return
-	var next: Dictionary = _tournament.next_match()
 	var eliminated: bool = _tournament.player_eliminated()
 	_play_next = not next.is_empty() and (int(next.a) == 0 or int(next.b) == 0)
 	if eliminated:
-		box.add_child(_label("ВАШЕ УЧАСТИЕ ЗАВЕРШЕНО", 18, BAD))
-		box.add_child(_label("Турнир продолжается", 27))
-		box.add_child(_label("Можно досчитать оставшиеся встречи и узнать чемпиона. Ваши результаты останутся в таблицах.", 16, UiTheme.TEXT_DIM))
+		box.add_child(_label("ВАШЕ УЧАСТИЕ ЗАВЕРШЕНО", 16, BAD))
 		primary_button.text = "Узнать чемпиона"
 	elif _play_next:
-		box.add_child(_label("ВАША СЛЕДУЮЩАЯ ВСТРЕЧА", 17, ACCENT))
+		box.add_child(_label("ВАША СЛЕДУЮЩАЯ ВСТРЕЧА", 16, ACCENT))
 		primary_button.text = "Играть встречу"
 	else:
-		box.add_child(_label("БЛИЖАЙШАЯ ВСТРЕЧА", 17, ACCENT))
+		box.add_child(_label("БЛИЖАЙШАЯ ВСТРЕЧА", 16, ACCENT))
 		primary_button.text = "Следующие встречи"
 	if not next.is_empty():
-		box.add_child(_label("%s  —  %s" % [_name(int(next.a)), _name(int(next.b))], 25))
-		var extra := " · переигровка" if int(next.get("attempt", 0)) > 0 else ""
-		box.add_child(_label(_stage(str(next.get("stage", ""))) + extra, 15, UiTheme.TEXT_DIM))
+		box.add_child(_label("%s  —  %s" % [_name(int(next.a)), _name(int(next.b))], 22))
+		var detail := _stage(String(next.stage))
+		if String(next.stage).begins_with("group_"):
+			detail += " · тур %d" % int(next.round)
+		if int(next.get("attempt", 0)) > 0:
+			detail += " · переигровка"
+		box.add_child(_label(detail, 15, UiTheme.TEXT_DIM))
 		if _play_next:
 			var opponent: int = int(next.b) if int(next.a) == 0 else int(next.a)
 			box.add_child(_label(_campaign.opponent_brief(opponent) if _campaign != null else "Стиль соперника: %s" % _tournament.participant_style(opponent), 16, UiTheme.TEXT_DIM))
 		elif not eliminated:
-			box.add_child(_label("Встречи соперников будут рассчитаны до вашего следующего выхода.", 16, UiTheme.TEXT_DIM))
+			box.add_child(_label("Встречи соперников будут рассчитаны до вашего следующего выхода.", 15, UiTheme.TEXT_DIM))
 	else:
 		box.add_child(_label("Подготовка следующего этапа", 22))
 		primary_button.text = "Следующие встречи"
 
 
-func _build_groups() -> void:
-	content.add_child(_label("Групповой этап", 23, UiTheme.GOLD))
+func _build_overview(group_fixtures: Dictionary, next_id: String) -> void:
+	_overview = BoxContainer.new()
+	_overview.add_theme_constant_override("separation", 18)
+	content.add_child(_overview)
+	_group_section = VBoxContainer.new()
+	_group_section.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_group_section.size_flags_stretch_ratio = 0.9
+	_group_section.add_theme_constant_override("separation", 8)
+	_overview.add_child(_group_section)
+	_group_section.add_child(_label("Групповой этап", 23, UiTheme.GOLD))
 	_groups = GridContainer.new()
-	_groups.columns = 2
-	_groups.add_theme_constant_override("h_separation", 16)
-	_groups.add_theme_constant_override("v_separation", 16)
-	content.add_child(_groups)
+	_groups.add_theme_constant_override("h_separation", 12)
+	_groups.add_theme_constant_override("v_separation", 10)
+	_group_section.add_child(_groups)
+
+	var seeds := {}
 	for group in ["A", "B"]:
-		var box := _card(_groups)
-		box.add_child(_label("Группа " + group, 20, ACCENT))
-		var grid := GridContainer.new()
-		grid.columns = 6
-		grid.add_theme_constant_override("h_separation", 12)
-		grid.add_theme_constant_override("v_separation", 10)
-		box.add_child(grid)
-		for heading in ["№", "Участник", "И", "В–Н–П", "±", "О"]:
-			var head := _label(heading, 13, UiTheme.TEXT_DIM)
-			head.autowrap_mode = TextServer.AUTOWRAP_OFF
-			head.tooltip_text = "И — встречи; В–Н–П — победы, ничьи, поражения; ± — разница оставшихся существ; О — очки."
-			grid.add_child(head)
-		for row in _tournament.standings(group):
-			var values: Array = [str(row.rank), _name(int(row.id)), str(row.played), "%d–%d–%d" % [int(row.wins), int(row.draws), int(row.losses)], "%+d" % int(row.diff), str(row.points)]
-			for i in values.size():
-				var cell := _label(values[i], 16, ACCENT if int(row.id) == 0 else UiTheme.TEXT)
-				if i == 1:
-					cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-				else:
-					cell.autowrap_mode = TextServer.AUTOWRAP_OFF
-				grid.add_child(cell)
-	content.add_child(_label("По два лучших выходят из группы. При равенстве очков: личные встречи (мини-таблица), общая разница оставшихся существ, победы, сохранённый жребий.", 14, UiTheme.TEXT_DIM))
+		_build_group(group, group_fixtures[group], seeds)
+
+	var playoff := VBoxContainer.new()
+	playoff.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	playoff.size_flags_stretch_ratio = 1.9
+	playoff.add_theme_constant_override("separation", 8)
+	_overview.add_child(playoff)
+	playoff.add_child(_label("Плей-офф", 23, UiTheme.GOLD))
+	var bracket := Bracket.new()
+	playoff.add_child(bracket)
+	bracket.build(_tournament, seeds, next_id)
+	playoff.add_child(_label("Счёт показывает число оставшихся существ. При ничьей назначается одна переигровка. При повторной ничьей учитываются место в группе, очки, разница существ, победы и жребий.", 14, UiTheme.TEXT_DIM))
 
 
-func _build_bracket() -> void:
-	var box := _card(content)
-	box.add_child(_label("Плей-офф", 23, UiTheme.GOLD))
-	var semifinals: Array = []
-	var finals: Array = []
-	for entry in _tournament.state.get("matches", []):
-		if str(entry.get("stage", "")) == "semifinal":
-			semifinals.append(entry)
-		elif str(entry.get("stage", "")) == "final":
-			finals.append(entry)
-	box.add_child(_label("Полуфиналы", 17, ACCENT))
-	if semifinals.is_empty():
-		box.add_child(_label("1-е место A  —  2-е место B\n1-е место B  —  2-е место A", 17))
-	else:
-		for entry in semifinals:
-			box.add_child(_label(_match_line(entry), 17))
-	box.add_child(HSeparator.new())
-	box.add_child(_label("Финал", 17, ACCENT))
-	if finals.is_empty():
-		box.add_child(_label("Победители полуфиналов", 17, UiTheme.TEXT_DIM))
-	else:
-		for entry in finals:
-			box.add_child(_label(_match_line(entry), 18, UiTheme.GOLD))
-	box.add_child(_label("Ничья в плей-офф: одна переигровка. При повторной ничьей учитываются место в группе, очки, разница оставшихся существ, победы, затем сохранённый жребий.", 14, UiTheme.TEXT_DIM))
+func _build_group(group: String, fixtures: Array, seeds: Dictionary) -> void:
+	var played := 0
+	for entry: Dictionary in fixtures:
+		if entry.has("result"):
+			played += 1
+	var settled := played == fixtures.size()
+	var color := Bracket.GROUP_A if group == "A" else Bracket.GROUP_B
+	var box := _card(_groups, false, 11)
+	box.add_theme_constant_override("separation", 4)
+	box.add_child(_label("Группа %s · %d/%d встреч" % [group, played, fixtures.size()], 18, color))
+	for row: Dictionary in _tournament.standings(group):
+		var id := int(row.id)
+		var rank := int(row.rank)
+		var qualified := settled and rank <= 2
+		var place := group + str(rank) if qualified else str(rank)
+		if qualified:
+			seeds[place] = id
+		var line := HBoxContainer.new()
+		line.add_theme_constant_override("separation", 8)
+		line.mouse_filter = Control.MOUSE_FILTER_PASS
+		box.add_child(line)
+		var seed_label := _label(place, 14, color if qualified else UiTheme.TEXT_DIM)
+		seed_label.custom_minimum_size.x = 24
+		line.add_child(seed_label)
+		var entrant := ("Вы · " if id == 0 else "") + _tournament.participant_name(id)
+		var name_label := _label(entrant, 15, ACCENT if id == 0 else UiTheme.TEXT)
+		name_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+		name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		line.add_child(name_label)
+		var points := _label("%d очк." % int(row.points), 14, UiTheme.TEXT_DIM)
+		points.autowrap_mode = TextServer.AUTOWRAP_OFF
+		line.add_child(points)
+		line.tooltip_text = "%s · Победы: %d · Ничьи: %d · Поражения: %d · Разница: %+d" % [entrant, int(row.wins), int(row.draws), int(row.losses), int(row.diff)]
+	var qualification := _label("%s1 и %s2 вышли в полуфиналы" % [group, group] if settled else "Первые два места выходят в полуфиналы", 13, color if settled else UiTheme.TEXT_DIM)
+	qualification.mouse_filter = Control.MOUSE_FILTER_PASS
+	qualification.tooltip_text = "При равенстве очков учитываются личные встречи, общая разница оставшихся существ, победы и жребий."
+	box.add_child(qualification)
+
+
+func _build_fixtures(group_fixtures: Dictionary, next_id: String) -> void:
+	content.add_child(_label("Результаты встреч", 23, UiTheme.GOLD))
+	content.add_child(_label("Расписание группового этапа", 14, UiTheme.TEXT_DIM))
+	_fixtures = GridContainer.new()
+	_fixtures.add_theme_constant_override("h_separation", 16)
+	_fixtures.add_theme_constant_override("v_separation", 12)
+	content.add_child(_fixtures)
+	for group in ["A", "B"]:
+		var box := _card(_fixtures, false, 13)
+		box.add_child(_label("Группа " + group, 19, Bracket.GROUP_A if group == "A" else Bracket.GROUP_B))
+		var previous_round := 0
+		for entry: Dictionary in group_fixtures[group]:
+			var round_number := int(entry.round)
+			if round_number != previous_round:
+				box.add_child(_label("Тур %d" % round_number, 14, UiTheme.TEXT_DIM))
+				previous_round = round_number
+			_build_fixture(box, entry, next_id)
+
+
+func _build_fixture(parent: VBoxContainer, entry: Dictionary, next_id: String) -> void:
+	var is_next := String(entry.id) == next_id
+	var own := int(entry.a) == 0 or int(entry.b) == 0
+	var box := _card(parent, is_next, 8)
+	box.add_theme_constant_override("separation", 2)
+	box.add_child(_label("%s  —  %s" % [_name(int(entry.a)), _name(int(entry.b))], 16, ACCENT if own or is_next else UiTheme.TEXT))
+	var result: Dictionary = entry.get("result", {})
+	var status := "Следующая встреча" if is_next else "В расписании"
+	if not result.is_empty():
+		var alive: Array = result.alive
+		var winner := int(result.winner)
+		status = "%d : %d · %s" % [int(alive[0]), int(alive[1]), "Ничья" if winner < 0 else "Победа · " + _name(winner)]
+	box.add_child(_label(status, 14, ACCENT if is_next else UiTheme.TEXT_DIM))
 
 
 func _build_participants() -> void:
@@ -277,19 +339,6 @@ func _build_participants() -> void:
 		box.add_child(_label(str(_tournament.participant_style(id)), 15, UiTheme.TEXT_DIM))
 
 
-func _build_results() -> void:
-	var box := _card(content)
-	box.add_child(_label("Результаты встреч", 23, UiTheme.GOLD))
-	var any_result := false
-	for entry in _tournament.state.get("matches", []):
-		if entry.get("result", {}).is_empty():
-			continue
-		any_result = true
-		box.add_child(_label("%s · %s" % [_stage(str(entry.get("stage", ""))), _match_line(entry)], 16))
-	if not any_result:
-		box.add_child(_label("Первые результаты появятся после завершения встреч.", 16, UiTheme.TEXT_DIM))
-
-
 func _build_history(entries: Array) -> void:
 	if entries.is_empty():
 		return
@@ -301,21 +350,6 @@ func _build_history(entries: Array) -> void:
 		var rank := int(entry.get("player_rank", 0))
 		var result := "победа" if rank == 1 else ("финалист" if rank == 2 else ("полуфинал" if rank == 3 else "групповой этап"))
 		box.add_child(_label("%s · Чемпион: %s · Ваш итог: %s" % [str(entry.get("name", "Турнир стихий")), str(entry.get("champion_name", "Не определён")), result], 16))
-
-
-func _match_line(entry: Dictionary) -> String:
-	var names := "%s  —  %s" % [_name(int(entry.a)), _name(int(entry.b))]
-	var result: Dictionary = entry.get("result", {})
-	if result.is_empty():
-		return names + " · ожидает"
-	var alive: Array = result.get("alive", [0, 0])
-	var score := "%d : %d" % [int(alive[0]), int(alive[1])]
-	var winner: int = int(result.get("winner", -1))
-	var outcome := "ничья" if winner < 0 else "победа: " + _name(winner)
-	if winner < 0 and int(result.get("advancing", -1)) >= 0:
-		outcome += "; проходит " + _name(int(result.advancing))
-	var retry := " · после переигровки" if int(entry.get("attempt", 0)) > 0 else ""
-	return "%s · %s · %s%s" % [names, score, outcome, retry]
 
 
 func _name(id: int) -> String:
@@ -333,6 +367,15 @@ func _stage(value: String) -> String:
 	return "Встреча"
 
 
+func _current_stage(next: Dictionary, finished: bool) -> String:
+	if finished:
+		return "Турнир завершён"
+	var stage := String(next.get("stage", ""))
+	if stage.begins_with("group_"):
+		return "Групповой этап"
+	return _stage(stage)
+
+
 func _on_primary() -> void:
 	if _busy:
 		return
@@ -346,30 +389,35 @@ func _adapt_layout() -> void:
 	if not _built:
 		return
 	var narrow := size.x < 1000.0
+	var side_by_side := size.x >= 1120.0
 	var pad := 18 if narrow else 32
 	for edge in ["left", "right", "top", "bottom"]:
 		_margin.add_theme_constant_override("margin_" + edge, pad)
 	_title.add_theme_font_size_override("font_size", 26 if narrow else 32)
-	if is_instance_valid(_groups):
-		_groups.columns = 1 if narrow else 2
+	_actions.vertical = size.x < 420.0
+	if is_instance_valid(_overview):
+		_overview.vertical = not side_by_side
+		var group_index := 0 if side_by_side else 1
+		if _group_section.get_index() != group_index:
+			_overview.move_child(_group_section, group_index)
+		_groups.columns = 1 if narrow or side_by_side else 2
+	if is_instance_valid(_fixtures):
+		_fixtures.columns = 1 if narrow else 2
 	if is_instance_valid(_participants):
 		_participants.columns = 1 if narrow else 2
 
 
 func _label(text: String, font_size: int, color: Color = UiTheme.TEXT) -> Label:
-	var label := Label.new()
-	label.text = text
+	var label := VisualUtil.label(text, font_size)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.add_theme_font_size_override("font_size", font_size)
 	label.add_theme_color_override("font_color", color)
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return label
 
 
-func _card(parent: Node, accent: bool = false) -> VBoxContainer:
+func _card(parent: Node, accent: bool = false, pad: int = 14) -> VBoxContainer:
 	var panel := PanelContainer.new()
 	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	panel.add_theme_stylebox_override("panel", UiTheme.box(SURFACE, ACCENT.darkened(0.42) if accent else BORDER, 1, 12, 18))
+	panel.add_theme_stylebox_override("panel", UiTheme.box(SURFACE, ACCENT.darkened(0.22) if accent else BORDER, 1, 3, pad))
 	parent.add_child(panel)
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 10)

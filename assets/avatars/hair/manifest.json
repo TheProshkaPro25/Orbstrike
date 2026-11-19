@@ -117,6 +117,244 @@
           "triangles": 16810
         }
       ]
+    },
+    "clct_gear_allhair_248": {
+      "id": 15,
+      "collection": "clct_gear",
+      "studio_preset": "pixiv/VRoid/Hair/N00/AllHair/248",
+      "source_vrm_sha256": "6ba92ee2c29913357c6e4baa1fffacaaf3d1c8821888e6195a39c8e1f05a2ab3",
+      "resources": [
+        {
+          "file": "clct_gear_allhair_248_0.res",
+          "avatar": "Sakurada_Fumiriya",
+          "sha256": "ae1e177fb1f8ecf108f7d0931d283ed41d085a35e601b9ccf7353cf0f2a75e75",
+          "triangles": 11864
+        },
+        {
+          "file": "clct_gear_allhair_248_1.res",
+          "avatar": "Vita",
+          "sha256": "5117c0223891f1c36fc2ba6ea2d0da63d5f23ccb2c4eb4783a2b332834c2c35f",
+          "triangles": 11864
+        }
+      ]
+    },
+    "clct_gear_allhair_249": {
+      "id": 16,
+      "collection": "clct_gear",
+      "studio_preset": "pixiv/VRoid/Hair/N00/AllHair/249",
+      "source_vrm_sha256": "916389306dd7ead26c92a33b3eb077ff3b056649a4c4c4168fb880e767b1e601",
+      "resources": [
+        {
+          "file": "clct_gear_allhair_249_0.res",
+          "avatar": "Sakurada_Fumiriya",
+          "sha256": "487870915357c5ea26c8466eaa8e8d7901de9f156c31bb90371ea2c7137b0fe3",
+          "triangles": 19452
+        },
+        {
+          "file": "clct_gear_allhair_249_1.res",
+          "avatar": "Vita",
+          "sha256": "a4371ff82df89441730fe0fec4b4648d99f45b83ebca6295f98e258d25f10de8",
+          "triangles": 19452
+        }
+      ]
+    },
+    "clct_gear_allhair_250": {
+      "id": 17,
+      "collection": "clct_gear",
+      "studio_preset": "pixiv/VRoid/Hair/N00/AllHair/250",
+      "source_vrm_sha256": "7df536f399f83fa09dd8d86cb5bde3504c5bb742c1e72b86d8aad211b334d27c",
+      "resources": [
+        {
+          "file": "clct_gear_allhair_250_0.res",
+          "avatar": "Sakurada_Fumiriya",
+          "sha256": "17ce1a2633a0a8a9bd0587a3a3efdee52f064ef51f2b40fdca7d93b8c09e7dcf",
+          "triangles": 20554
+        },
+        {
+          "file": "clct_gear_allhair_250_1.res",
+          "avatar": "Vita",
+          "sha256": "912ca873bea78cf90aab24ddeedf7be91744e134dc9e5ad51400f413b7cec47a",
+          "triangles": 20554
+        }
+      ]
+    },
+    "clct_gear_allhair_251": {
+      "id": 18,
+      "collection": "clct_gear",
+      "studio_preset": "pixiv/VRoid/Hair/N00/AllHair/251",
+      "source_vrm_sha256": "16aa95794d473103dbe1a3f33caa364024b5177844dc8826e9b5d409628a8405",
+      "resources": [
+        {
+          "file": "clct_gear_allhair_251_0.res",
+          "avatar": "Sakurada_Fumiriya",
+          "sha256": "77a0f3a83dce81cd787b659927c551d1e92a0178c9ae464ce958b2cfd411b616",
+          "triangles": 20674
+        },
+        {
+          "file": "clct_gear_allhair_251_1.res",
+          "avatar": "Vita",
+          "sha256": "f56ceffb386613698721efd52c433a270408cf05382cd637ab492032bda0123a",
+          "triangles": 20674
+        }
+      ]
+    },
+    "clct_gear_allhair_252": {
+      "id": 19,
+      "collection": "clct_gear",
+      "studio_preset": "pixiv/VRoid/Hair/N00/AllHair/252",
+      "source_vrm_sha256": "7d6b8a5fc10f5e8dd9e94d430bf5aa1efbf60c44cc0e870b3b7804b0b46d6afb",
+      "resources": [
+        {
+          "file": "clct_gear_allhair_252_0.res",
+          "avatar": "Sakurada_Fumiriya",
+          "sha256": "b7ef21123346f4d4d3be9d878131277f90f5375be27f45243fcca25778aeda53",
+          "triangles": 17318
+        },
+        {
+          "file": "clct_gear_allhair_252_1.res",
+          "avatar": "Vita",
+          "sha256": "9a3ea239cf4a8040bcc0abf49059f0fd6d318b085087d68deee35e3a58293921",
+          "triangles": 17318
+        }
+      ]
+    },
+    "clct_gear_allhair_253": {
+      "id": 20,
+      "collection": "clct_gear",
+      "studio_preset": "pixiv/VRoid/Hair/N00/AllHair/253",
+      "source_vrm_sha256": "4b7bbdc84d1ed1dd59a4456938c61aa01155fe5c9d03fd74e59e257b74c6e6e5",
+      "resources": [
+        {
+          "file": "clct_gear_allhair_253_0.res",
+          "avatar": "Sakurada_Fumiriya",
+          "sha256": "daf288d0e497559f4c704ee721d1da298f9b9a2bb5f20e3e2971dfa5068e1297",
+          "triangles": 19310
+        },
+        {
+          "file": "clct_gear_allhair_253_1.res",
+          "avatar": "Vita",
+          "sha256": "782785acdda09e448277c3f3a9db620a28ce1cd97a9b6fbf89bdce4eca4c4459",
+          "triangles": 19310
+        }
+      ]
+    },
+    "clct_gear_allhair_254": {
+      "id": 21,
+      "collection": "clct_gear",
+      "studio_preset": "pixiv/VRoid/Hair/N00/AllHair/254",
+      "source_vrm_sha256": "efc4151c7a0c81038bf21d7b47f87c1d203c3187c67ff267062dc565f67c9064",
+      "resources": [
+        {
+          "file": "clct_gear_allhair_254_0.res",
+          "avatar": "Sakurada_Fumiriya",
+          "sha256": "8fdf1c36b49f7f6ffc346be59c24e4bbc1200d86eb9355fb095a12b1439dc305",
+          "triangles": 19488
+        },
+        {
+          "file": "clct_gear_allhair_254_1.res",
+          "avatar": "Vita",
+          "sha256": "9c5a4d05613f4cdd003bf1b91d1fd574660b46aec4614feb47a91c8fa5941841",
+          "triangles": 19488
+        }
+      ]
+    },
+    "clct_gear_back_142": {
+      "id": 22,
+      "collection": "clct_gear",
+      "studio_preset": "pixiv/VRoid/Hair/N00/Back/142",
+      "source_vrm_sha256": "935d3fc8275dfd8f4689c319cd022b78a455b52fc04f822e0e3a912c5c830fa5",
+      "complementary_presets": [
+        "pixiv/VRoid/Hair/N00/Front/041",
+        "default masculine base hair"
+      ],
+      "resources": [
+        {
+          "file": "clct_gear_back_142_0.res",
+          "avatar": "Sakurada_Fumiriya",
+          "sha256": "63ebcac37fda666885b3d3e0d2e4ed557ec248c477c5fa6dfb826700e60b3db9",
+          "triangles": 16812
+        },
+        {
+          "file": "clct_gear_back_142_1.res",
+          "avatar": "Vita",
+          "sha256": "7b2243c61af03c7e46544e5815bc78b03f65249f0e90c65abd93c146403089d4",
+          "triangles": 16812
+        }
+      ]
+    },
+    "clct_gear_tied_622": {
+      "id": 23,
+      "collection": "clct_gear",
+      "studio_preset": "pixiv/VRoid/Hair/N00/Tied/622",
+      "source_vrm_sha256": "920c5821f206d4215e879dfaba26a0122f3a1ca0828143773e1a8e96132b7072",
+      "complementary_presets": [
+        "pixiv/VRoid/Hair/N00/Front/041",
+        "pixiv/VRoid/Hair/N00/Back/326",
+        "default masculine base hair"
+      ],
+      "resources": [
+        {
+          "file": "clct_gear_tied_622_0.res",
+          "avatar": "Sakurada_Fumiriya",
+          "sha256": "a3aa48edcaea088ebfdb02beee3ce46a5ebe61e750592634726383365dc1df69",
+          "triangles": 14932
+        },
+        {
+          "file": "clct_gear_tied_622_1.res",
+          "avatar": "Vita",
+          "sha256": "01fb8c8b39ae1f36487cfe9f2e558c506caa99162a88146831541f1829ec1e7b",
+          "triangles": 14932
+        }
+      ]
+    },
+    "clct_gear_tied_623": {
+      "id": 24,
+      "collection": "clct_gear",
+      "studio_preset": "pixiv/VRoid/Hair/N00/Tied/623",
+      "source_vrm_sha256": "1b572ff91a3b06dadbb30398ac2afc4ccbafac24df572e7f0517834e77dc614f",
+      "complementary_presets": [
+        "pixiv/VRoid/Hair/N00/Front/041",
+        "pixiv/VRoid/Hair/N00/Back/326",
+        "default masculine base hair"
+      ],
+      "resources": [
+        {
+          "file": "clct_gear_tied_623_0.res",
+          "avatar": "Sakurada_Fumiriya",
+          "sha256": "13a5c524deae50576476d86252a698670283b9005d618c8ac061d2a4b5becc70",
+          "triangles": 13380
+        },
+        {
+          "file": "clct_gear_tied_623_1.res",
+          "avatar": "Vita",
+          "sha256": "aa666be05af7172c59f77f53e2dd4af7d24d359a6d434d7dd5e28dc0604ec298",
+          "triangles": 13380
+        }
+      ]
+    }
+  },
+  "collections": {
+    "clct_gear": {
+      "name": "CLCT for GEAR",
+      "author": "Mochi VirtualRabbit",
+      "publisher": "pixiv Inc.",
+      "page": "https://vroid.com/en/news/13wYERzQUdLccdo9DtRcVx",
+      "license_url": "https://vroid.com/en/studio/guidelines",
+      "release_notes": "https://vroid.com/en/studio/notice/2lvOGDTYM1AnvXKxbgJoQi",
+      "studio": "VRoid Studio 2.16.0. Default masculine avatar, original preset hair color and textures. VRM 0.0 export without mesh or texture reduction or material merging.",
+      "identification": "Seven Overall Hair presets, one Back preset and two Tied presets were added between the bundled Studio 1.18.0 and 1.19.0 thumbnail catalogs. Matched to the ten silhouettes in the pixiv announcement.",
+      "preparation": "Stage each donor with tools/avatars/stage_booth_vrm.py and import it in Godot. Run tools/avatars/fit_studio_hair.gd with the imported VRM path and the destination stem. Hair and HairBack scalp are fitted in head-local metres. The static parts retain UVs and MToon dye support. Identical materials are stored once for both bases.",
+      "materials": [
+        {
+          "file": "clct_gear_material_5ae73c0774d1eaaa532dfb50.res",
+          "sha256": "c37f1c38e29f4ed344905cd85da8bcb301e27c9b54d8009a60d7e37849de6478"
+        },
+        {
+          "file": "clct_gear_material_971e33760db032ba63e60bd5.res",
+          "sha256": "1a03efde3b02c2b6103992a4929837cd60c851a2d8727ed096eb5a2a5f7f3a98"
+        }
+      ],
+      "fitting": "tools/avatars/fit_gear_hair.gd fits the rear scalp and short strands of presets AllHair 248, Tied 622 and Tied 623 to Vita’s nape. The Sakurada Tactical Jacket embeds its own Tied 623 mesh with the four long strands curved over the padded hood."
     }
   }
 }

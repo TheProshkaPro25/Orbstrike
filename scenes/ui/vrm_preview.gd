@@ -45,8 +45,10 @@ func _ready() -> void:
 	row.add_child(preview)
 	viewport = SubViewport.new()
 	viewport.own_world_3d = true
-	GraphicsSettings.apply_viewport(viewport)
-	GraphicsSettings.watch(self, "_apply_graphics_settings")
+	# Keep face and outfit details sharp independently of world graphics settings.
+	viewport.scaling_3d_scale = 1.0
+	viewport.msaa_3d = Viewport.MSAA_4X
+	viewport.screen_space_aa = Viewport.SCREEN_SPACE_AA_DISABLED
 	preview.add_child(viewport)
 	var world := Node3D.new()
 	viewport.add_child(world)
@@ -102,10 +104,6 @@ func _ready() -> void:
 	_update_expressions()
 	set_face_view(false)
 	_preview_activity = preload("res://scenes/ui/preview_activity.gd").new(viewport,preview,self)
-
-func _apply_graphics_settings() -> void:
-	GraphicsSettings.apply_viewport(viewport)
-
 
 func _title_text() -> String:
 	return "АНИМЕ-МОДЕЛИ · ПРЕДПРОСМОТР"

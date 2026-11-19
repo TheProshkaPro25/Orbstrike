@@ -146,12 +146,24 @@ void fragment() {
 			D.piece(arena,rod,gold,p,yaw,Vector3(0,25.6,4.6),Vector3(.15,5,.15),Vector3(0,0,PI*.5))
 	# Главные ворота: настоящий открытый свод, врезанные панели, ступени и реликвии.
 	var gateway := Vector3(0,0,-116)
+	var pennant := PlaneMesh.new()
+	pennant.orientation = PlaneMesh.FACE_Z
+	pennant.size = Vector2(15, 6)
+	pennant.subdivide_width = 13
+	pennant.subdivide_depth = 5
+	var weave := ShaderMaterial.new()
+	weave.shader = preload("res://scenes/shaders/canyon_pennant.gdshader")
 	var arch := D.arch(15,3.0,7)
 	D.piece(arena,arch,pale,gateway,0,Vector3(0,20,0),Vector3.ONE)
 	var trim_arch := D.arch(15,.38,7.3)
 	D.piece(arena,trim_arch,gold,gateway,0,Vector3(0,20,0),Vector3.ONE)
 	for side in [-1.0,1.0]:
 		var p := gateway+Vector3(side*21,0,0)
+		D.piece(arena, rod, gold, p, 0, Vector3(0, 47, 0), Vector3(.30, 14, .30))
+		D.piece(arena, mesa, gold, p, 0, Vector3(0, 54, 0), Vector3(.65, 1.4, .65))
+		var flag: MeshInstance3D = arena._mi(pennant, weave, p + Vector3(7.5, 50, 0))
+		flag.name = "PassStandardWest" if side < 0 else "PassStandardEast"
+		flag.extra_cull_margin = 3.0
 		D.piece(arena,block,sand,p,0,Vector3(0,20,0),Vector3(12,40,12))
 		for y in [1.5,6.0,30.0,37.0,40.0]:
 			D.piece(arena,block,pale,p,0,Vector3(0,y,.3),Vector3(14,1.1,13.0))

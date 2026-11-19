@@ -289,7 +289,10 @@ static func card_kind(def: CardDef) -> String:
 				return "Ворота вида · %s" % CardDB.species_name(sp)
 		return "Ловушка" if CardEffects.is_gate_trap(def) else "Командные ворота"
 	if sp != &"":
-		return "%s · %s" % ["Слияние" if CardEffects.is_fusion(def) else "Вид", CardDB.species_name(sp)]
+		var name := CardDB.species_name(sp)
+		if CardEffects.is_fusion(def):
+			return "Слияние · %s" % name
+		return "%s · любая стихия" % name
 	if lock >= 0:
 		return "%s · %s" % ["Усиление" if def.effect_id == &"boost" else "Стихия", VisualUtil.attr_name(lock)]
 	return "Способность"
@@ -368,7 +371,7 @@ static func card_sigil(def: CardDef) -> int:
 			return 20
 		"radiance":
 			return 3
-		"pact", "dusk_throne":
+		"pact":
 			return 5
 	var a: int = int(def.params.get("attr", -1))
 	if def.kind == CardDef.Kind.ARENA and a >= 0:
@@ -403,7 +406,7 @@ static func card_badge(def: CardDef) -> String:
 	return ""
 
 
-## Какие кружки стихий подсветить на карте.
+## Подсветка стихии карты. Условие эффекта командных ворот остаётся в тексте.
 static func card_elements(def: CardDef) -> Array:
 	var lock: int = CardEffects.lock_attr(def)
 	if lock >= 0:
@@ -411,8 +414,6 @@ static func card_elements(def: CardDef) -> Array:
 	var a: int = int(def.params.get("attr", -1))
 	if a >= 0:
 		return [a]
-	if def.effect_id == &"dusk_throne":
-		return [4]
 	return []
 
 

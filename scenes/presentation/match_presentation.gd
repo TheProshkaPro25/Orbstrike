@@ -116,8 +116,9 @@ func set_finished(value: bool) -> void:
 func clear() -> void:
 	interaction_blocked = true
 	finished = true
-	if is_instance_valid(director) and is_instance_valid(director.effects):
-		director.effects.clear()
+	if is_instance_valid(director):
+		director.cancel_flight()
+		if is_instance_valid(director.effects): director.effects.clear()
 	clear_match_portraits()
 	for node in state.card_nodes.values():
 		if is_instance_valid(node): node.queue_free()

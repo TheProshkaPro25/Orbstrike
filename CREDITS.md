@@ -393,6 +393,19 @@ tools/avatars/build_street_set.gd, assets/avatars/street/manifest.json.
 пресеты pixiv используются по [условиям VRoid Studio](https://vroid.com/en/studio/guidelines).
 
 
+## Костюмы и причёски редактора (2026-11-19)
+
+- **Костюм с запахом kuro_Wa** и **Городская куртка с джинсами** для Виты.
+  Автор одежды и ботинок — くろの倉庫 (kurosakiworks). Автор разрешает
+  правки и распространение на условиях, близких к CC0.
+  [kuro_Wa](https://booth.pm/en/items/8906778) · [Куртка](https://booth.pm/en/items/8319281) ·
+  [Джинсы](https://booth.pm/en/items/8020416) · [Ботинки](https://booth.pm/en/items/6724039).
+- **Экипировка дуэлянта** и **причёски GEAR** из коллекции VRoid Studio
+  **CLCT for GEAR**. Коллекция — pixiv Inc., дизайн и модели одежды — YUHEI,
+  дизайн и модели волос — Mochi VirtualRabbit. Действуют условия VRoid Studio.
+  [Коллекция](https://vroid.com/en/news/13wYERzQUdLccdo9DtRcVx) ·
+  [Условия CLCT](https://vroid.pixiv.help/hc/en-us/articles/17427062939289).
+
 ## Звук волны карты (обновлён 2026-11-03)
 
 `assets/audio/sfx/gate_expand_wave.wav` — выбранный автором записанный эффект

@@ -629,12 +629,16 @@ func _connect_match_interface() -> void:
 	game_over_ui.restart_requested.connect(_on_restart)
 
 func _start_game() -> void:
+	if not is_inside_tree() or modes.leaving or _lifecycle.stage != MatchLifecycleT.Stage.PREPARING:
+		return
 	var spec := modes.current_spec
 	var origins: Array[Vector3] = [presentation.start_pos(HUMAN),presentation.start_pos(AI_PLAYER)]
 	var fighter_origins: Array[Vector3] = [Vector3(-2.3,0,THROW_Z+1.4),Vector3(2.3,0,-THROW_Z-1.4)]
 	_update_interaction_visibility()
 	var result := await _lifecycle.start(ctrl,presentation.state.definitions,presentation.state.owners,spec.profiles,origins,fighter_origins,spec.first_side)
-	if not result.is_ok() and _lifecycle.stage != MatchLifecycleT.Stage.RELEASED:
+	if not is_inside_tree() or modes.leaving or _lifecycle.stage == MatchLifecycleT.Stage.RELEASED:
+		return
+	if not result.is_ok():
 		ctrl = null
 		ai = null
 		presentation.bind_controller(null)
@@ -705,8 +709,9 @@ func _on_attach_window(player: int, _uid: int, _options: Array) -> void:
 	events.push(interaction.queue_request.bind(Request.make(Request.Kind.ATTACH,player) as Request))
 
 func _release_game_resources() -> void:
-	presentation.clear()
+	if is_instance_valid(events): events.stop()
 	interaction.stop()
+	presentation.clear()
 	if is_instance_valid(SoundFx._inst): SoundFx._inst.cancel_match_sfx()
 	if is_instance_valid(team_menu): team_menu._preview.release()
 	if is_instance_valid(_lifecycle): _lifecycle.release()
@@ -722,15 +727,23 @@ func _on_restart() -> void:
 	modes.request_restart(ctrl,presentation.state.stats,is_instance_valid(_lifecycle) and _lifecycle.stage == MatchLifecycleT.Stage.FAILED)
 
 func _restart_scene(entry: String) -> void:
+	_release_game_resources()
+	_restore_time_scale()
 	if GameLoading.i().ready_to_play:
-		_release_game_resources()
-		_restore_time_scale()
 		GameLoading.i().show_game()
 		if not entry.is_empty(): get_tree().current_scene.enter_requested_mode()
 	else: get_tree().reload_current_scene()
 
 func _exit_mode() -> void:
 	events.stop()
+	interaction.stop()
+	director.cancel_flight()
+	# A UI or landing signal may still be dispatching on the old scene.
+	_finish_mode_exit.call_deferred()
+
+func _finish_mode_exit() -> void:
+	if not is_inside_tree():
+		return
 	_release_game_resources()
 	_restore_time_scale()
 	get_tree().change_scene_to_file("res://scenes/menu/main_menu.tscn")

@@ -17,7 +17,9 @@ var close_after_save := false
 const CATALOGS := [preload("res://assets/avatars/editor/catalog_0.png"), preload("res://assets/avatars/editor/catalog_1.png")]
 const THUMBNAIL_SIZE := Vector2i(160, 192)
 const THUMBNAIL_COLUMNS := 5
-const NEW_HAIR_TILE_START := 25 # The first 11 hair and 14 outfit cells retain their positions.
+const NEW_HAIR_TILE_START := 25
+const EXPANDED_OUTFIT_TILE_START := 29
+const EXPANDED_HAIR_TILE_START := 32
 const MOTIONS := ["idle", "throw", "card_throw", "command", "gate", "victory", "defeat"]
 const MOTION_LABELS := ["Ожидание", "Бросок сферы", "Бросок карты", "Способность", "Открытие ворот", "Победа", "Поражение"]
 ## Keep the criticised side-part ID10 available to existing profiles/manual selection,
@@ -133,9 +135,12 @@ func _make_gallery(parent: VBoxContainer, key: String, count: int) -> void:
 	gallery_buttons[key] = buttons
 
 static func thumbnail_tile(key: String, id: int) -> int:
-	if key == "vrm_clothes": return HairCatalog.LEGACY_COUNT + id
+	if key == "vrm_clothes":
+		if id < WardrobeCatalog.KURO_WA: return HairCatalog.LEGACY_COUNT + id
+		return EXPANDED_OUTFIT_TILE_START + id - WardrobeCatalog.KURO_WA
 	if id < HairCatalog.LEGACY_COUNT: return id
-	return NEW_HAIR_TILE_START + id - HairCatalog.LEGACY_COUNT
+	if id <= HairCatalog.SHINO: return NEW_HAIR_TILE_START + id - HairCatalog.LEGACY_COUNT
+	return EXPANDED_HAIR_TILE_START + id - HairCatalog.SHINO - 1
 
 static func thumbnail_region(tile: int) -> Rect2i:
 	var cell := Vector2i(tile % THUMBNAIL_COLUMNS, tile / THUMBNAIL_COLUMNS)
@@ -149,15 +154,18 @@ func _refresh_galleries() -> void:
 			var button: Button = gallery_buttons[key][index]
 			var texture: Texture2D = CATALOGS[draft.vrm_model]
 			var region := thumbnail_region(thumbnail_tile(key, index))
+			var has_thumbnail := Rect2i(Vector2i.ZERO, Vector2i(texture.get_size())).encloses(region)
 			if key == "vrm_clothes":
 				button.visible = WardrobeCatalog.has_outfit(draft.vrm_model, index)
 			else:
-				button.visible = HairCatalog.has_style(index) and Rect2i(Vector2i.ZERO, Vector2i(texture.get_size())).encloses(region)
+				button.visible = HairCatalog.has_style(index) and has_thumbnail
 			if not button.visible: continue
-			var atlas := AtlasTexture.new()
-			atlas.atlas = texture
-			atlas.region = Rect2(region)
-			button.icon = atlas
+			button.icon = null
+			if has_thumbnail:
+				var atlas := AtlasTexture.new()
+				atlas.atlas = texture
+				atlas.region = Rect2(region)
+				button.icon = atlas
 			button.button_pressed = index == draft[key]
 			button.tooltip_text = selectors[key].get_item_text(index)
 

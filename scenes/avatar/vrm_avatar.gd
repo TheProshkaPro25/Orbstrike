@@ -283,8 +283,10 @@ func _sync_parts(p: Dictionary) -> void:
 		source = [selected,2,3,4,1-selected,5,6,7,8,9,10][source]
 	if _hair_source == source and _outfit == p.vrm_clothes: return
 	_hold_materials_until_draw()
-	hair_part.mesh = VrmParts.hair_mesh(selected, source)
 	body_part.mesh = VrmParts.outfit_mesh(selected, p.vrm_clothes)
+	var hair_overrides: Dictionary = body_part.mesh.get_meta("hair_overrides", {})
+	var fitted_hair := hair_overrides.get(source) as ArrayMesh
+	hair_part.mesh = fitted_hair if fitted_hair != null else VrmParts.hair_mesh(selected, source)
 	hair_part.visible = not body_part.mesh.get_meta("covers_hair", false)
 	_hair_source = source
 	_outfit = p.vrm_clothes

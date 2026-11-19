@@ -354,10 +354,17 @@ static func _palace(arena: Node3D, r: Dictionary, c: Vector3, yaw: float) -> voi
 		for y in [17.0,26.0,38.0,47.0]:
 			_window(arena,r,c,yaw,base+Vector3(0,y,11.8),2.6,5)
 	# Центральный фронтон: силуэт большого морского здания вместо одинаковых домов.
-	_p(arena,r,"box","pale",c,yaw,Vector3(0,40,5),Vector3(21,14,16))
-	_p(arena,r,"roof","copper",c,yaw,Vector3(0,47,5),Vector3(27,13,21))
-	_p(arena,r,"shaft","metal",c,yaw,Vector3(0,42.5,13.5),Vector3(4,.4,4),Vector3(PI*.5,0,0))
-	_p(arena,r,"shaft","blue",c,yaw,Vector3(0,42.5,13.8),Vector3(3.3,.2,3.3),Vector3(PI*.5,0,0))
+	_p(arena,r,"box","pale",c,yaw,Vector3(0,42,10),Vector3(21,20,22))
+	_p(arena,r,"roof","copper",c,yaw,Vector3(0,52,10),Vector3(27,13,26))
+	var face := QuadMesh.new()
+	face.size = Vector2(13, 13)
+	var enamel := ShaderMaterial.new()
+	enamel.shader = preload("res://scenes/shaders/harbor_tide_clock.gdshader")
+	var dial_pos := Vector3(0, 43, 21.4)
+	_p(arena,r,"shaft","metal",c,yaw,dial_pos,Vector3(7,.8,7),Vector3(PI*.5,0,0))
+	var clock: MeshInstance3D = arena._mi(face, enamel, c + Basis(Vector3.UP,yaw) * (dial_pos + Vector3.BACK * .42))
+	clock.name = "CustomsTideClock"
+	clock.rotation.y = yaw
 
 
 static func _observatory(arena: Node3D, r: Dictionary, c: Vector3, yaw: float) -> void:

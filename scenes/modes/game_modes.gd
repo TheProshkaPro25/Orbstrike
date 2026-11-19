@@ -170,6 +170,7 @@ func first_side() -> int:
 	return 0 if participant == 0 else 1
 
 func _request(spec: MatchSpec) -> void:
+	if leaving: return
 	_request_pending = true
 	current_spec = spec
 	match_requested.emit(spec)
@@ -204,6 +205,7 @@ func start_failed(message: String) -> void:
 	match_rejected(message)
 
 func register_tournament(creatures: Array[StringName], gates: Array[StringName], abilities: Array[StringName]) -> void:
+	if leaving: return
 	_team.show()
 	var error := CardDB.deck_error(creatures,gates,abilities)
 	if not error.is_empty():
@@ -224,6 +226,7 @@ func register_tournament(creatures: Array[StringName], gates: Array[StringName],
 	_interface.add_child(confirm)
 	_dialogs.append(confirm)
 	confirm.confirmed.connect(func() -> void:
+		if leaving: return
 		if invalid_save and (Campaign.archive_invalid() if campaign_registration else Tournament.archive_invalid()) != OK:
 			_team._error.text = "Не удалось сохранить резервную копию прежнего турнира"
 			confirm.queue_free()
@@ -288,7 +291,7 @@ func show_tournament() -> void:
 		tournament_panel.show_notice("Матч был прерван. Он начнётся заново с теми же участниками, первым ходом и начальным раскладом.")
 
 func advance_tournament() -> void:
-	if _request_pending or _match_in_progress or tournament == null: return
+	if leaving or _request_pending or _match_in_progress or tournament == null: return
 	if career != null and tournament.completed():
 		show_career()
 		return
@@ -310,7 +313,7 @@ func advance_tournament() -> void:
 			tournament_panel.show_notice(String(simulated.error),true)
 			return
 		await get_tree().process_frame
-		if not is_inside_tree(): return
+		if not is_inside_tree() or leaving: return
 	var history: Dictionary = {"entries":[]} if career != null else (Campaign.history() if campaign != null else Tournament.history())
 	tournament_panel.display(tournament,history.get("entries",[]),campaign)
 	career_tournament_heading()
@@ -321,7 +324,7 @@ func career_tournament_heading() -> void:
 		tournament_panel.exit_button.text = "К карьере"
 
 func play_tournament_match() -> void:
-	if _request_pending or _match_in_progress or tournament == null: return
+	if leaving or _request_pending or _match_in_progress or tournament == null: return
 	fixture = tournament.next_match()
 	if fixture.is_empty() or (int(fixture.a) != 0 and int(fixture.b) != 0): return
 	var code: Error = career.begin_match(String(fixture.id)) if career != null else (campaign.begin_match(String(fixture.id)) if campaign != null else tournament.begin_match(String(fixture.id)))
@@ -381,6 +384,7 @@ func accept_result(controller: MatchController, stats: Dictionary) -> ModeResult
 	return ModeResult.new(code,last_error() if code != OK else "")
 
 func request_restart(controller: MatchController, stats: Dictionary, failed: bool = false) -> ModeResult:
+	if leaving: return ModeResult.new(ERR_BUSY)
 	if tournament != null and not failed:
 		var accepted := accept_result(controller,stats)
 		if not accepted.is_ok():

@@ -10,6 +10,10 @@ signal replay_requested
 signal exit_requested
 
 const TAB_NAMES := ["01  Команда", "02  Колода", "Магазин", "Путь карьеры"]
+const SHOP_KINDS := ["Существа", "Ворота", "Способности"]
+const SHOP_TILE_WIDTH := 245
+const SHOP_GAP := 12
+const SHOP_WARNING := Color(1.0, 0.76, 0.54)
 const PORTRAITS := preload("res://scenes/ui/creature_portrait.gd")
 const ICONS := preload("res://scenes/element_icon.gd")
 const ART := preload("res://scenes/ui/card_artwork.gd")
@@ -44,6 +48,11 @@ var _element_choice: OptionButton
 var _difficulty_choice: OptionButton
 var _summary: Label
 var _starter_preview: HBoxContainer
+var _shop_bar: HFlowContainer
+var _shop_filters: HBoxContainer
+var _shop_balance: Label
+var _shop_grid: GridContainer
+var _shop_confirmation: ConfirmationDialog
 
 
 func _ready() -> void:
@@ -53,6 +62,7 @@ func _ready() -> void:
 
 ## null открывает первый шаг; существующее сохранение никогда не удаляется этим экраном.
 func display(career: RefCounted, notice: String = "") -> void:
+	_close_shop_confirmation()
 	var changed := _career != career
 	_career = career
 	_notice = notice
@@ -135,12 +145,16 @@ func _build() -> void:
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.pressed.connect(_switch_tab.bind(i))
 		_tabs.add_child(button)
+	_build_shop_bar(layout)
+	visibility_changed.connect(func() -> void:
+		if not is_visible_in_tree(): _close_shop_confirmation())
 	_scroll = ScrollContainer.new()
 	_scroll.name = "CareerScroll"
 	_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_scroll.follow_focus = true
+	_scroll.resized.connect(_fit_shop_grid)
 	layout.add_child(_scroll)
 	_page = VBoxContainer.new()
 	_page.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -168,16 +182,19 @@ func _build() -> void:
 	actions.add_child(_action)
 
 
-func _redraw() -> void:
+func _redraw(preferred_focus: String = "") -> void:
 	_navigation_generation += 1
 	var focused := get_viewport().gui_get_focus_owner() if is_inside_tree() else null
 	var focus_name := String(focused.name) if focused != null and is_ancestor_of(focused) else ""
+	if not preferred_focus.is_empty(): focus_name = preferred_focus
 	var scroll_position := _scroll.scroll_vertical
 	if focused != null and is_ancestor_of(focused): focused.release_focus()
+	_shop_grid = null
 	_clear(_page)
 	_status.text = _notice
 	_status.visible = not _notice.is_empty()
 	_tabs.visible = _career != null
+	_shop_bar.visible = _career != null and _tab == 2
 	_extra.hide()
 	_action.disabled = false
 	if _career == null:
@@ -189,7 +206,8 @@ func _redraw() -> void:
 		_restore_navigation.call_deferred(focus_name, scroll_position, _navigation_generation)
 		return
 	_head.text = "Карьера  /  " + _career.cup_title()
-	_summary.text = "%s  ·  %d кредитов  ·  %d существ в коллекции  |  %s" % [Attr.display_name(_element()), int(_career.state.credits), _career.state.owned_creatures.size(), str(_career.state.name)]
+	var balance_summary := "" if _tab == 2 else "  ·  %d кредитов" % int(_career.state.credits)
+	_summary.text = "%s%s  ·  %d существ в коллекции  |  %s" % [Attr.display_name(_element()), balance_summary, _career.state.owned_creatures.size(), str(_career.state.name)]
 	_summary.tooltip_text = _summary.text
 	for i in _tabs.get_child_count():
 		(_tabs.get_child(i) as Button).set_pressed_no_signal(i == _tab)
@@ -220,6 +238,7 @@ func _restore_navigation(focus_name: String, scroll_position: int, generation: i
 
 
 func _switch_tab(index: int) -> void:
+	if index != 2: _close_shop_confirmation()
 	_tab = index
 	_scroll.scroll_vertical = 0
 	_redraw()
@@ -474,63 +493,248 @@ func _choose_card(cls: StringName) -> void:
 	dialog.popup_centered_clamped(Vector2i(660, 390), 0.9)
 
 
+func _build_shop_bar(layout: VBoxContainer) -> void:
+	_shop_bar = HFlowContainer.new()
+	_shop_bar.name = "CareerShopBar"
+	_shop_bar.add_theme_constant_override("h_separation", SHOP_GAP)
+	_shop_bar.add_theme_constant_override("v_separation", 6)
+	_shop_bar.hide()
+	layout.add_child(_shop_bar)
+	_shop_filters = HBoxContainer.new()
+	_shop_filters.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_shop_filters.add_theme_constant_override("separation", 8)
+	_shop_bar.add_child(_shop_filters)
+	for i in SHOP_KINDS.size():
+		var button := _button(SHOP_KINDS[i])
+		button.name = "CareerShopKind%d" % i
+		button.toggle_mode = true
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.pressed.connect(_switch_shop_kind.bind(i))
+		_shop_filters.add_child(button)
+	var wallet := PanelContainer.new()
+	wallet.add_theme_stylebox_override("panel", UiTheme.box(UiTheme.panel_color().lightened(0.05), UiTheme.accent_dim(), 1, 6, 10))
+	_shop_bar.add_child(wallet)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
+	wallet.add_child(row)
+	var caption := _label("На счёте", 15)
+	caption.add_theme_color_override("font_color", UiTheme.TEXT_DIM)
+	caption.autowrap_mode = TextServer.AUTOWRAP_OFF
+	row.add_child(caption)
+	_shop_balance = _label("", 22)
+	_shop_balance.name = "CareerShopBalance"
+	_shop_balance.autowrap_mode = TextServer.AUTOWRAP_OFF
+	_shop_balance.add_theme_font_override("font", UiTheme.heading_font())
+	_shop_balance.add_theme_color_override("font_color", UiTheme.GOLD)
+	row.add_child(_shop_balance)
+
+
+func _switch_shop_kind(index: int) -> void:
+	_shop_kind = index
+	_scroll.scroll_vertical = 0
+	_redraw()
+
+
 func _build_shop() -> void:
-	_page.add_child(_label("Пополните коллекцию  ·  %d кредитов" % int(_career.state.credits), 20))
-	var shop_locked: bool = _career.cup != null and not _career.cup.completed()
-	if shop_locked:
-		var notice := _label("Покупки откроются после кубка. Сейчас можно посмотреть коллекцию и цены.", 15)
+	_shop_balance.text = "%d кр." % int(_career.state.credits)
+	for i in _shop_filters.get_child_count():
+		(_shop_filters.get_child(i) as Button).set_pressed_no_signal(i == _shop_kind)
+	if _shop_locked():
+		var notice := _label("Во время кубка каталог открыт для просмотра. Покупки доступны после завершения кубка.", 15)
 		notice.name = "CareerShopLocked"
+		notice.add_theme_color_override("font_color", SHOP_WARNING)
 		_page.add_child(notice)
-	var filters := _grid(3)
-	_page.add_child(filters)
-	for i in 3:
-		var filter := _button(["Существа", "Ворота", "Способности"][i])
-		filter.name = "CareerShopKind%d" % i
-		filter.toggle_mode = true
-		filter.set_pressed_no_signal(i == _shop_kind)
-		filter.pressed.connect(func() -> void:
-			_shop_kind = i
-			_scroll.scroll_vertical = 0
-			_redraw())
-		filters.add_child(filter)
-	var grid := _grid(3)
-	_page.add_child(grid)
+	_shop_grid = _grid(1)
+	_shop_grid.name = "CareerShopCatalog"
+	_shop_grid.add_theme_constant_override("h_separation", SHOP_GAP)
+	_shop_grid.add_theme_constant_override("v_separation", SHOP_GAP)
+	_page.add_child(_shop_grid)
+	_fit_shop_grid()
 	var ids: Array[StringName] = CardDB.creatures_of(_element()) if _shop_kind == 0 else (CardDB.arena_ids() if _shop_kind == 1 else CardDB.ability_ids())
 	ids.sort_custom(_shop_before)
 	for id in ids:
-		if id == CardDB.RARE_SHADOW_ID: continue
-		var creature := CardDB.creature(id) if _shop_kind == 0 else null
-		var card := CardDB.card(id) if _shop_kind != 0 else null
-		if card != null and not CardDB.card_fits(card, _element()): continue
-		var owned := _owned(id)
-		var reason := _unlock_reason(id)
 		var price: int = _career.price(String(id))
-		var box := _tile()
-		grid.add_child(box)
-		if creature != null:
-			box.get_node("Content").add_child(_creature_portrait(id, Vector2(100, 100)))
-			box.get_node("Content").add_child(_label(creature.display_name, 18))
-			box.get_node("Content").add_child(_label("%d G · уровень 1" % int(_career.power(id, 1)), 16))
-		else:
-			_card_summary(box.get_node("Content"), card)
-			var preview := _button("Все условия")
-			preview.pressed.connect(_show_card.bind(id))
-			box.get_node("Content").add_child(preview)
-		var buy := _button("✓ В коллекции" if owned else "Купить · %d кр." % price)
-		buy.name = "CareerBuy_" + String(id)
-		buy.disabled = owned or shop_locked or not reason.is_empty() or int(_career.state.credits) < price
-		buy.pressed.connect(_purchase.bind(id))
-		box.get_node("Content").add_child(buy)
-		if not owned:
-			if reason.is_empty() and int(_career.state.credits) < price:
-				reason = "Нужно ещё %d кр." % (price - int(_career.state.credits))
-			if reason.is_empty() and shop_locked: reason = "После завершения кубка"
-		if card != null:
-			var species: StringName = CardEffects.species_lock(card)
-			if species != &"" and not CardDB.team_species(_team).has(species):
-				reason += (" · " if not reason.is_empty() else "") + "Для вида «%s»" % CardDB.species_name(species)
-		buy.tooltip_text = reason
-		if not reason.is_empty(): box.get_node("Content").add_child(_label(reason, 14))
+		if price > 0 and id != CardDB.RARE_SHADOW_ID:
+			_shop_grid.add_child(_shop_tile(id, price))
+	if _shop_grid.get_child_count() == 0:
+		_page.add_child(_label("В этой категории нет предложений для вашей стихии.", 16))
+
+
+func _fit_shop_grid() -> void:
+	if not is_instance_valid(_shop_grid):
+		return
+	var scrollbar := _scroll.get_v_scroll_bar().get_combined_minimum_size().x
+	var width := _scroll.size.x - scrollbar
+	var columns := clampi(floori((width + SHOP_GAP) / (SHOP_TILE_WIDTH + SHOP_GAP)), 1, 4)
+	if _shop_grid.columns != columns:
+		_shop_grid.columns = columns
+
+
+func _shop_tile(id: StringName, price: int) -> PanelContainer:
+	var card := CardDB.card(id)
+	var box := _tile()
+	var content := box.get_node("Content") as VBoxContainer
+	content.add_theme_constant_override("separation", 7)
+	content.add_child(_shop_art(id, card, 112))
+	var kind := _label(Attr.display_name(_element()) if card == null else str(CLASS_NAMES[CardDB.card_class(card)]), 14)
+	kind.add_theme_color_override("font_color", UiTheme.accent())
+	content.add_child(kind)
+	var title := _label(_shop_item_name(id), 20)
+	title.add_theme_font_override("font", UiTheme.heading_font())
+	content.add_child(title)
+	var description := _label("%d G · уровень 1" % int(_career.power(id, 1)) if card == null else card.text, 15)
+	description.add_theme_color_override("font_color", UiTheme.TEXT_DIM)
+	description.max_lines_visible = 3
+	description.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	description.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	content.add_child(description)
+	if card != null:
+		var species := CardEffects.species_lock(card)
+		if species != &"":
+			var requirement := _label("Для этой карты нужен боец вида «%s»" % CardDB.species_name(species), 14)
+			requirement.add_theme_color_override("font_color", UiTheme.TEXT_DIM)
+			content.add_child(requirement)
+	var owned := _owned(id)
+	var reason := _shop_block_reason(id, price, owned)
+	var price_row := HBoxContainer.new()
+	price_row.add_theme_constant_override("separation", 8)
+	content.add_child(price_row)
+	var cost := _label("%d кр." % price, 21)
+	cost.autowrap_mode = TextServer.AUTOWRAP_OFF
+	cost.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	cost.add_theme_color_override("font_color", UiTheme.TEXT_DIM if owned else UiTheme.GOLD)
+	cost.add_theme_font_override("font", UiTheme.heading_font())
+	price_row.add_child(cost)
+	var status := _label("Можно купить" if reason.is_empty() else reason, 14)
+	status.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	status.add_theme_color_override("font_color", UiTheme.accent() if reason.is_empty() else (UiTheme.TEXT_DIM if owned else SHOP_WARNING))
+	price_row.add_child(status)
+	var actions := HBoxContainer.new()
+	actions.add_theme_constant_override("separation", 8)
+	content.add_child(actions)
+	if card != null:
+		var details := _button("Условия")
+		details.name = "CareerShopDetails_" + String(id)
+		details.pressed.connect(_show_card.bind(id, true))
+		actions.add_child(details)
+	var buy := _button("Куплено" if owned else "Купить")
+	buy.name = "CareerBuy_" + String(id)
+	buy.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	buy.disabled = not reason.is_empty()
+	buy.tooltip_text = reason if buy.disabled else "Купить за %d кр." % price
+	if not buy.disabled:
+		buy.add_theme_stylebox_override("normal", UiTheme.box(Color(0.06, 0.25, 0.27), UiTheme.accent_dim(), 1, 3, 10))
+		buy.add_theme_stylebox_override("hover", UiTheme.box(Color(0.09, 0.34, 0.36), UiTheme.accent(), 1, 3, 10))
+	buy.pressed.connect(_confirm_shop_purchase.bind(id, buy))
+	actions.add_child(buy)
+	return box
+
+
+func _shop_art(id: StringName, card: CardDef, height: int) -> PanelContainer:
+	var art := PanelContainer.new()
+	var tint: Color = VisualUtil.attr_color(_element()) if card == null else UiTheme.card_colors(card)[0]
+	var wash := Color(0.04, 0.08, 0.12).lerp(tint, 0.35)
+	var style := UiTheme.box(wash, tint.darkened(0.45), 1, 5, 4)
+	style.set_meta("device_styled", true)
+	art.add_theme_stylebox_override("panel", style)
+	if card == null:
+		art.add_child(_creature_portrait(id, Vector2(0, height)))
+	else:
+		var texture := ART.texture_for(card)
+		art.add_child(_image(texture if texture != null else ICONS.badge(_element()), Vector2(0, height)))
+	return art
+
+
+func _shop_locked() -> bool:
+	return _career.cup != null and not _career.cup.completed()
+
+
+func _shop_block_reason(id: StringName, price: int, owned: bool) -> String:
+	if owned:
+		return "В коллекции"
+	var unlock := _unlock_reason(id)
+	if _shop_locked():
+		return "После завершения кубка" + ("\n" + unlock if not unlock.is_empty() else "")
+	if not unlock.is_empty():
+		return unlock
+	var missing := price - int(_career.state.credits)
+	return "Не хватает %d кр." % missing if missing > 0 else ""
+
+
+func _shop_item_name(id: StringName) -> String:
+	var creature := CardDB.creature(id)
+	var card := CardDB.card(id)
+	if creature != null:
+		return creature.display_name
+	return card.display_name if card != null else String(id)
+
+
+func _confirm_shop_purchase(id: StringName, origin: Button) -> void:
+	if _career == null or _tab != 2 or origin.disabled or is_instance_valid(_shop_confirmation):
+		return
+	var price: int = _career.price(String(id))
+	var reason := _shop_block_reason(id, price, _owned(id))
+	if price <= 0 or not reason.is_empty():
+		_notice = "Покупка недоступна. %s" % reason if not reason.is_empty() else "Предложение недоступно."
+		_redraw("CareerShopKind%d" % _shop_kind)
+		return
+	var balance: int = int(_career.state.credits)
+	var dialog := _new_dialog("Подтверждение покупки", true) as ConfirmationDialog
+	_shop_confirmation = dialog
+	dialog.name = "CareerPurchaseConfirmation"
+	dialog.ok_button_text = "Купить"
+	dialog.cancel_button_text = "Отмена"
+	var content := VBoxContainer.new()
+	content.add_theme_constant_override("separation", 12)
+	dialog.add_child(content)
+	var item := HBoxContainer.new()
+	item.add_theme_constant_override("separation", 12)
+	content.add_child(item)
+	var art := _shop_art(id, CardDB.card(id), 66)
+	art.custom_minimum_size.x = 80
+	item.add_child(art)
+	var item_name := _label(_shop_item_name(id), 22)
+	item_name.autowrap_mode = TextServer.AUTOWRAP_OFF
+	item_name.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	item_name.tooltip_text = item_name.text
+	item_name.mouse_filter = Control.MOUSE_FILTER_PASS
+	item_name.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	item_name.add_theme_font_override("font", UiTheme.heading_font())
+	item.add_child(item_name)
+	var amounts := _grid(2)
+	content.add_child(amounts)
+	var captions := ["На счёте", "Стоимость", "После покупки"]
+	var values := [balance, price, balance - price]
+	for i in captions.size():
+		var caption := _label(captions[i], 16)
+		caption.autowrap_mode = TextServer.AUTOWRAP_OFF
+		amounts.add_child(caption)
+		var amount := _label("%d кр." % values[i], 18)
+		amount.autowrap_mode = TextServer.AUTOWRAP_OFF
+		amount.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		amount.add_theme_color_override("font_color", UiTheme.GOLD if i == 1 else UiTheme.TEXT)
+		amounts.add_child(amount)
+	dialog.confirmed.connect(func() -> void:
+		if _shop_confirmation != dialog:
+			return
+		_shop_confirmation = null
+		_purchase(id, "CareerShopKind%d" % _shop_kind))
+	dialog.canceled.connect(func() -> void:
+		if _shop_confirmation != dialog:
+			return
+		_shop_confirmation = null
+		if is_instance_valid(origin) and origin.is_visible_in_tree():
+			origin.grab_focus.call_deferred())
+	dialog.popup_centered_clamped(Vector2i(410, 255), 0.9)
+	dialog.get_cancel_button().grab_focus.call_deferred()
+
+
+func _close_shop_confirmation() -> void:
+	if is_instance_valid(_shop_confirmation):
+		var dialog := _shop_confirmation
+		_shop_confirmation = null
+		dialog.hide()
+		dialog.queue_free()
 
 
 func _shop_before(a: StringName, b: StringName) -> bool:
@@ -695,23 +899,27 @@ func _unlock_reason(id: StringName) -> String:
 	return "Откроется после второй лиги." if species in [&"dragnar", &"kolossar"] else "Откроется после первой лиги."
 
 
-func _purchase(id: StringName) -> void:
+func _purchase(id: StringName, preferred_focus: String = "") -> void:
+	var price: int = _career.price(String(id))
 	var error: int = _career.purchase(String(id))
-	_notice = "Куплено: %s" % (CardDB.creature(id).display_name if CardDB.creature(id) != null else CardDB.card(id).display_name) if error == OK else str(_career.last_error)
+	if error == OK:
+		_notice = "Куплено «%s» за %d кр. На счёте %d кр." % [_shop_item_name(id), price, int(_career.state.credits)]
+	else:
+		_notice = "Покупка не состоялась. %s" % str(_career.last_error)
 	_fix_cards()
-	_redraw()
+	_redraw(preferred_focus)
 
 
-func _show_card(id: StringName) -> void:
+func _show_card(id: StringName, shop_details: bool = false) -> void:
 	var def := CardDB.card(id)
 	if def == null:
 		return
 	var help := UiTheme.card_help(def)
-	_text_dialog(def.display_name, "%s\n\n%s\n\n%s\n\n%s" % [str(help[1]), str(help[4]), str(help[5]), str(help[6])])
+	_text_dialog(def.display_name, "%s\n\n%s\n\n%s\n\n%s" % [str(help[1]), str(help[4]), str(help[5]), str(help[6])], shop_details)
 
 
-func _new_dialog(title: String) -> AcceptDialog:
-	var dialog := AcceptDialog.new()
+func _new_dialog(title: String, confirm: bool = false) -> AcceptDialog:
+	var dialog: AcceptDialog = ConfirmationDialog.new() if confirm else AcceptDialog.new()
 	dialog.title = title
 	dialog.theme = theme
 	dialog.ok_button_text = "Закрыть"
@@ -727,16 +935,16 @@ func _new_dialog(title: String) -> AcceptDialog:
 	return dialog
 
 
-func _text_dialog(title: String, text: String) -> void:
+func _text_dialog(title: String, text: String, shop_details: bool = false) -> void:
 	var dialog := _new_dialog(title)
 	var scroll := DialogTextScroll.new()
-	scroll.custom_minimum_size = Vector2(600, 290)
+	if not shop_details: scroll.custom_minimum_size = Vector2(600, 290)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	dialog.add_child(scroll)
 	var label := _label(text, 17)
-	label.custom_minimum_size.x = 560
+	if not shop_details: label.custom_minimum_size.x = 560
 	scroll.add_child(label)
-	dialog.popup_centered_clamped(Vector2i(660, 390), 0.9)
+	dialog.popup_centered_clamped(Vector2i(530, 320) if shop_details else Vector2i(660, 390), 0.9)
 
 
 func _show_guide() -> void:

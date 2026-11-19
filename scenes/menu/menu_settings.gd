@@ -88,7 +88,7 @@ func _build() -> void:
 	var scale_option := OptionButton.new()
 	scale_option.name = "RenderScale"
 	for scale_value in GraphicsSettings.RENDER_SCALES: scale_option.add_item(str(roundi(scale_value * 100.0)) + "%")
-	scale_option.tooltip_text = "Разрешение трёхмерной сцены и предпросмотра. 75% уменьшает число пикселей примерно на 44%; текст и кнопки остаются чёткими."
+	scale_option.tooltip_text = "Разрешение трёхмерной сцены и предпросмотра существ. При 75% рендерится примерно на 44% меньше пикселей."
 	scale_option.item_selected.connect(func(i: int) -> void: GraphicsSettings.set_option("render_scale", GraphicsSettings.RENDER_SCALES[i]))
 	_row(grid, "Разрешение 3D", scale_option)
 	_controls["render_scale"] = scale_option

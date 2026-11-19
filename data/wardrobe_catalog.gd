@@ -2,6 +2,7 @@ class_name WardrobeCatalog
 extends RefCounted
 ## Each stored ID is the one-based gallery number minus one. Retired IDs stay vacant.
 const LEGACY_COUNTS := [7, 8]
+enum { KURO_WA = 14, CITY_JACKET_DENIM, CLCT_GEAR, SLOT_COUNT }
 const RETIRED_SAKURADA_IDS := [9, 10]
 const LEGACY_NAMES := [
 	["Школьный", "Худи", "Короткое худи", "Удлинённая куртка", "Контрастное худи", "Бомбер", "Спортивный костюм"],
@@ -16,6 +17,7 @@ const ADDITIONS := [
 		11: ["Хаори с оленями", "deer_haori_0"],
 		12: ["Доспех", "orchid_armor_0"],
 		13: ["Мундир", "orchid_uniform_0"],
+		CLCT_GEAR: ["Экипировка дуэлянта", "clct_gear_0"],
 	},
 	{
 		8: ["Форма OC", "oc_uniform_1"],
@@ -23,9 +25,10 @@ const ADDITIONS := [
 		10: ["Пальто оператора", "operator_1"],
 		11: ["Жакет и брюки", "jacket_pants_1"],
 		12: ["Dreamy Angel", "dreamy_angel_1"],
+		KURO_WA: ["Костюм с запахом kuro_Wa", "kuro_wa_1"],
+		CITY_JACKET_DENIM: ["Городская куртка с джинсами", "city_jacket_denim_1"],
 	},
 ]
-const SLOT_COUNT := 14
 
 static func outfit_for_model_switch(from_model: int, id: int, to_model: int) -> int:
 	if from_model == to_model: return id

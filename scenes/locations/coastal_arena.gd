@@ -56,6 +56,7 @@ static func build(arena: Node3D) -> void:
 	for side in [-1.0,1.0]:
 		arena._static(box,pale,Vector3(side*140,-.7,0),Vector3(1.5,.8,282),Vector3.ZERO)
 		arena._static(box,pale,Vector3(0,-.7,side*140),Vector3(282,.8,1.5),Vector3.ZERO)
+	_strait_terns(root)
 	var beacon := Vector2(ISLANDS[0][0],ISLANDS[0][1])
 	_lighthouse(arena,Vector3(beacon.x,_island_height(beacon,ISLANDS[0]),beacon.y)+Style.island_offset(0))
 	_sailboat(arena,Vector3(-194,SEA_LEVEL,-165)+Style.island_offset(0),1.0,-1.0)
@@ -235,6 +236,39 @@ static func _lighthouse(arena: Node3D, p: Vector3) -> void:
 	roof.height = 5
 	roof.radial_segments = 32
 	arena._static(roof,red,p+Vector3(0,66,0),Vector3.ONE,Vector3.ZERO)
+
+# A forked tail and swept, dark-tipped wings keep the flock legible against water.
+static func _strait_terns(root: Node3D) -> void:
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for side in [-1.0, 1.0]:
+		var head := Vector3(0, 0, -1.5)
+		var breast := Vector3(side * .45, -.32, .1)
+		var tail := Vector3(side * .72, .16, 1.6)
+		var elbow := Vector3(side * 1.8, .55, -.55)
+		var tip := Vector3(side * 3.5, .25, .7)
+		for p: Vector3 in [head, breast, tail, head, elbow, breast, breast, elbow, tip, tail, breast, Vector3(0, 0, .55)]:
+			st.set_color(Color(.09, .14, .18) if p == tip else Color(.84, .82, .72))
+			st.add_vertex(p)
+	st.generate_normals()
+	var flock := MultiMesh.new()
+	flock.transform_format = MultiMesh.TRANSFORM_3D
+	flock.mesh = st.commit()
+	flock.instance_count = 7
+	for i in flock.instance_count:
+		var rank := float(i - 3)
+		var offset := Vector3(rank * 11.5, sin(i * 2.4) * 4.0, -rank * 4.5 + absf(rank) * 2.0)
+		flock.set_instance_transform(i, Transform3D(Basis.IDENTITY, offset))
+	var feathers := ShaderMaterial.new()
+	feathers.shader = preload("res://scenes/shaders/coastal_tern.gdshader")
+	var birds := MultiMeshInstance3D.new()
+	birds.name = "StraitTerns"
+	birds.multimesh = flock
+	birds.material_override = feathers
+	birds.position = Vector3(-60, SEA_LEVEL + 22, -242)
+	birds.extra_cull_margin = 62
+	birds.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	root.add_child(birds)
 
 static func _sailboat(arena: Node3D, p: Vector3, s: float, yaw: float) -> void:
 	var wood := D.material(Color(.21,.105,.058),.84)
